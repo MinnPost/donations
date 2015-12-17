@@ -1,0 +1,111 @@
+.js .panel, .js .panel .honor fieldset, .js .swag.swag--separate, .js .swag .form-item--atlantic_id {
+	display: none;
+}
+.no-js .panel, .no-js .honor fieldset, .no-js .swag .form-item--atlantic_id {
+	display: block;
+}
+.panel {
+	h1, h2, h3 {
+		margin-bottom: 0;
+	}
+	h1 {
+		margin-bottom: 0;	
+	}
+	h2 {
+		margin-bottom: 0;
+	}
+	.actions {
+		list-style: none;
+		padding-left: 0;
+	}
+	.honor, .actions--edit-amount {
+		font-family: $helvetica;
+		font-size: $small-size;
+	}
+	.honor {
+		position: relative;
+		fieldset {
+			position: absolute;
+			background: $white;
+			top: 0;
+			left: 0;
+			border: 1px solid $gray-light;
+			padding: $milli-space;
+			h3 {
+				margin: 0 0 0.75em;
+			}
+			a.close {
+				display: block;
+				//float: right;
+				@include hide-text;
+				background: transparent url("//minnpost.com/sites/default/modules/custom/minnpost_directedmessages/libs/fancybox/fancybox.png") repeat scroll -40px 0;
+			    cursor: pointer;
+			    height: 30px;
+			    width: 30px;
+			    z-index: 1103;
+				position: absolute;
+				right: -15px;
+				top: -15px;
+			}
+		}
+	}
+	.actions--edit-amount {
+		line-height: normal;
+		font-size: 80%;
+		margin-bottom: $half-space;
+		li {
+			border-right: 1px solid $gray-med;
+			padding: 0 $half-space;
+			float: left;
+		}
+		li:first-child {
+			padding-left: 0;
+		}
+		li:last-child {
+			border: none;
+			padding-right: 0;
+		}
+	}
+	.benefits {
+		> label {
+			float: left;
+			max-width: 100px;
+			width: 32%;
+			height: 98px;
+			cursor: pointer;
+			margin-right: $quarter-space;
+			input {
+				display: none;
+			}
+			div {
+				padding: $half-space;
+				width: 100%;
+				height: 100%;
+			}
+			&:hover {
+				background: $gray-dark;
+				color: $white;
+			}
+		}
+		label.swag:last-of-type {
+			box-shadow: 0 0 3px 0 rgba(122,122,122, 1);
+		    display: block;
+		    float: left;
+		    max-width: 150px;
+		    text-align: center;
+		    font-family: $helvetica;
+		    height: 99px;
+		    margin-right: 0;
+		    div {
+		    	padding: $milli-space;
+		    }
+		}
+		input:checked ~ div {
+		  background: $minnpost-blue;
+		  color: $white;
+		}
+		h3.swag, p.swag {
+			clear: both;
+		}
+	}
+}

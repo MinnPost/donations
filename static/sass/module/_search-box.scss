@@ -1,0 +1,57 @@
+.search-box {
+	position: relative;
+	label {
+		display: none;
+	}
+	#{$all-text-inputs} {
+		font-family: $helvetica;
+		font-size: $small-size;
+		border: none;
+		background: transparent;
+		padding: 2px 2px 2px 3px;
+		height: 23px;
+		margin: 0;
+		color: palette(gray, light);		
+		&:focus {
+			color: $dark-gray;
+			outline: none;
+		}
+	}
+	.form-submit, .form-submit:hover, .form-submit:focus {
+		background: url('//minnpost.com/sites/default/themes/siteskin/inc/images/search.png') no-repeat transparent;
+		border: none;
+		width: 1rem;
+		height: 1rem;
+		font-size: $milli-size;
+		margin: 3px 1px 6px 0;
+		position: absolute;
+		right: 0;
+		display: block;
+		@include hide-text;
+		text-indent: -8rem;
+		top: 3px;
+	}
+}
+
+.search-box--utilities {
+	display: inline-block;
+	vertical-align: top;
+	.container-inline {
+		border: 2px solid $gray-lightest;
+		width: auto;
+		height: 29px;
+		vertical-align: top;
+		margin-top: -2px;
+		position: relative;
+	}
+}
+
+// media queries
+@media screen and (min-width: $nav-breaks) {
+	.search-box--utilities {
+		margin-left: 21px;
+		.container-inline {
+			width: 105px;
+		}
+	}
+}

@@ -1,0 +1,14 @@
+.support--summary {
+
+}
+
+@media screen and (min-width: $large-screen) {
+	.support--summary, .support--confirm, .support--post-confirm {
+		@include row();
+		> fieldset {
+			@include span-columns(6);
+			border: 0;
+			padding: 0;
+		}
+	}
+}

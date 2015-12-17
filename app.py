@@ -50,6 +50,30 @@ if app.config['ENABLE_SENTRY']:
     sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
 
 
+@app.route('/minnpostform')
+def minnpost_form():
+    form = DonateForm()
+    if request.args.get('amount'):
+        amount = request.args.get('amount')
+    else:
+        message = "The page you requested can't be found."
+        return render_template('error.html', message=message)
+    frequency = request.args.get('frequency')
+    if frequency is None:
+        frequency = 'one-time'
+    if frequency == 'monthly':
+        yearly = 12
+    else:
+        yearly = 1
+    installments = 'None'
+    openended_status = 'Open'
+    return render_template('minnpost-form.html', form=form, amount=amount,
+        frequency=frequency, installments=installments,
+        openended_status=openended_status,
+        yearly=yearly,
+        key=app.config['STRIPE_KEYS']['publishable_key'])
+
+
 @app.route('/memberform')
 def member_form():
     form = DonateForm()

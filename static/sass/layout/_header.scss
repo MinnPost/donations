@@ -1,0 +1,21 @@
+.l-header {
+	position: relative;
+}
+.l-header .wrapper {
+	display: flex;
+	flex-flow: column;
+}
+.l-header nav.sections {
+	order: 1;
+}
+.l-header nav.utilities {
+	order: 2;
+}
+
+// media queries
+@media screen and (min-width: $nav-breaks) {
+	.l-header .wrapper {
+		display: block;
+		flex-flow: none;
+	}
+}

@@ -13,13 +13,12 @@ class DonateForm(Form):
     amount = DecimalField(u'Amount',
         [validators.required(message="Please choose a donation amount."),
         validators.NumberRange(min=1)])
-    reason = StringField(u'Encouraged to contribute by')
-    installment_period = HiddenField(u'Installment Period')
+    frequency = HiddenField(u'Installment Period')
     installments = HiddenField(u'Installments')
     openended_status = HiddenField(u'Openended Status')
-    description = HiddenField(u'Description')
     pay_fees = BooleanField(u'Agree to pay fees')
     pay_fees_value = HiddenField(u'Pay Fees Value')
+
 
 class TexasWeeklyForm(Form):
     first_name = StringField(u'First',

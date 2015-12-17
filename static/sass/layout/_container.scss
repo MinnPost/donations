@@ -1,0 +1,10 @@
+.wrapper {
+	margin: $micro-space $h4-space;
+	max-width: 100%;
+}
+// media queries for wrapper
+@media screen and (min-width: $max-width) {
+	.wrapper {
+		@include outer-container($max-width);
+	}
+}

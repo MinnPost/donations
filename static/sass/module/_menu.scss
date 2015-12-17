@@ -1,0 +1,105 @@
+ul.menu {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	li {
+	    list-style: none;
+	    padding: 0 1em 0 0;
+	}
+}
+
+.sections {
+	font-family: $nimbus;
+	font-feature-settings: $nimbus-settings;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+  	width: 100%;
+  	display: none;
+	height: 0;
+	line-height: 0;
+	overflow: hidden;
+	transition: height 0.5s;
+	background: $minnpost-black;
+	font-size: 1rem;
+	letter-spacing: 1px;
+	margin-top: -1px;
+	padding: $milli-size / 2;
+	columns: 150px 4;
+	ul li {
+		text-transform: uppercase;
+		padding: 0;
+		&:hover, &:focus {
+			
+		}
+		a {
+			display: block;
+			padding: 0.5em;
+			color: $white;
+			text-decoration: none;
+			&:hover, &:focus, &:active, &.active {
+				color: $minnpost-black;
+				background: $minnpost-white;
+			}
+		}
+	}
+}
+.menu-show--secondary:checked ~ .utilities ~ .sections {
+	display: block;
+	height: auto;
+	line-height: normal;
+	overflow: visible;
+	padding-top: 0.75em;
+}
+
+ul.menu--secondary {
+	font-size: $small-size;
+	li {
+	  	float: left;
+	}
+	a {
+    	font-weight: bold;
+    }
+}
+
+// media queries
+@media screen and (min-width: $nav-breaks) {
+	.sections {
+		columns: 300px 4;
+		margin-top: 0;
+	}
+	ul.menu {
+		margin-top: $milli-size;
+		li {
+			float: left;
+		}
+	}
+	.sections {
+		columns: 1;
+		display: block;
+		height: auto;
+		overflow: visible;
+		margin-top: -1px;
+		line-height: normal;
+		clear: both;
+		float: left;
+		li:nth-last-child(-n+2) {
+			float: right;
+			text-transform: none;
+		}
+		ul li a {
+			display: inline;
+		}
+	}
+	.l-header ul.menu--secondary {
+		float: right;
+		margin-top: 0;
+		clear: right;
+		li {
+			padding-right: 15px;
+		}
+		li:last-child {
+	  		padding-right: 0;
+		}
+	}
+}

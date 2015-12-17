@@ -1,0 +1,58 @@
+<section class="panel panel--form" id="panel--review">
+  <div class="support support--summary">
+    <fieldset class="amount">
+      <h1>$<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency.title() }}</span> Donation</h1> <!-- load server-side from parsing querystring -->
+      <ul class="actions actions--edit-amount clear-block">
+        <li><a href="https://www.minnpost.com/support/">Edit</a></li>
+        <li><input type="checkbox" name="PaymentControl$cbPayFees" id="PaymentControl_cbPayFees_1"></li><!-- gets processed by javascript -->
+      </ul>
+      <div class="honor">
+        <p>This donation is <a href="#" class="in-honor">in honor</a> or <a href="#" class="in-memory">in memory</a>...</p>
+        <fieldset class="in-honor">
+          <h3>In honor of</h3>
+          <div class="form-item form-item--honoree-name">
+            <label>Name <input type="text" id="PaymentControl_txtTributeName_honor" name="PaymentControl$txtTributeName"></label>
+          </div>
+          <div class="form-item form-item--honoree-email">
+            <label>Email (we will send a message if you put an address here) <input type="email" id="PaymentControl_txtNotifyEmail_honor" name="PaymentControl$txtNotifyEmail"></label>
+            <label>Include Amount? <input type="checkbox" name="PaymentControl$includeAmount" id="PaymentControl_includeAmount_honor"></label>
+          </div>
+        </fieldset>
+        <fieldset class="in-memory">
+          <h3>In memory of</h3>
+          <div class="form-item form-item--memory-name">
+            <label>Name <input type="text" id="PaymentControl_txtTributeName_memory" name="PaymentControl$txtTributeName"></label>
+            <label>Notify someone? <input type="checkbox" name="notify" id="notify"></label>
+          </div>
+          <div class="form-item form-item--memory-notify">
+            <label>Email (we will send a message if you put an address here) <input type="email" id="PaymentControl_txtNotifyEmail_memory" name="PaymentControl$txtNotifyEmail"></label>
+            <label>Include Amount? <input type="checkbox" name="PaymentControl$includeAmount" id="PaymentControl_includeAmount_memory"></label>
+          </div>
+        </fieldset>
+      </div> <!-- this should trigger the fields for reporting, and also for emailing to the user specified with/without the amount -->
+    </fieldset>
+    <fieldset class="benefits">
+      <h2 class="level level--4">MinnPost <span class="level-name">Platinum</span></h2>  <!-- load server-side from parsing querystring -->
+      <p><span class="swag swag--2">Choose your thank you gift below.</span> You can <span class="swag swag--3">also</span> <a href="https://www.minnpost.com/support/member-benefits/?level=platinum" class="review-benefits" target="_blank">review all MinnPost <span class="level-name">Platinum</span> benefits</a>.</p>  <!-- load server-side from parsing querystring -->
+      <label class="swag swag--2"><input type="radio" name="swag" value="mug" id="swag-mug"> <div><img src="images/mug.png" alt="Coffee Mug"></div></label>
+      <label class="swag swag--2"><input type="radio" name="swag" value="water bottle" id="swag-bottle"> <div><img src="images/waterbottle.png" alt="Water Bottle"></div></label>
+      <label class="swag swag--2"><input type="radio" name="swag" value="no" id="swag-no"> <div>Give entire amount to MinnPost</div></label>
+      <p class="swag swag--separate swag--3">Also, <strong>MinnPost Gold and Platinum</strong> members are entitled to a 1-year subscription to The Atlantic. This offer is available each year that you qualify.</p>
+      <fieldset class="swag swag--3">
+        <label><input type="radio" value="new" id="atlantic_new" name="atlantic_status" class="swag--shipping"> Start a new subscription</label>
+        <label><input type="radio" value="existing" id="atlantic_existing" name="atlantic_status" class="swag--shipping"> Extend an existing subscription</label>
+        <div class="form-item form-item--atlantic_id" >
+          <label>Existing Subscription ID
+          <input type="text" value="" id="atlantic_id" name="atlantic_id" autocorrect="off" autocapitalize="off">
+          </label>
+        </div>
+        <label><input type="radio" value="decline" id="atlantic_decline" name="atlantic_status" class="swag--shipping"> Decline this item</label>
+      </fieldset>
+      <!-- load all swag/redeemable things from server; activate the eligible ones with javascript. not a huge deal if js hiccups here since it gets validated by person anyway -->
+    </fieldset>
+  </div>
+  <!-- load upsell options server-side from parsing querystring for current level. we only display it if it is within our range (currently $1 away from next level, unless it is bronze where we show all the time) -->
+  
+  <a href="1.html?step=panel--pay" class="btn btn--next">Payment</a>
+
+</section>

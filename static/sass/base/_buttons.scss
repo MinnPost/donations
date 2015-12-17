@@ -1,0 +1,76 @@
+#{$all-button-inputs},
+button, a.btn, input[type="submit"] {
+  @include appearance(none);
+  -webkit-font-smoothing: antialiased;
+  background-color: $action-color;
+  border-radius: $base-border-radius;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: $helvetica;
+  font-size: $base-font-size;
+  line-height: 1;
+  padding: $milli-space $h5-space;
+  text-decoration: none;
+  user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  // maybe test this later
+  //text-align: center;
+  //width: 100%;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: darken($action-color, 15%);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  &:active {
+    position: relative;
+    top: 1px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &.btn--next {
+    background-color: $minnpost-blue;
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: palette(blue, dark);
+    }
+  }
+  &.btn--final {
+    background-color: $minnpost-red;
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: palette(red, dark);
+    }
+  }
+  &.btn--text, &.btn--text:hover, &.btn--text:focus, &.btn--text:active {
+    background-color: transparent;
+    color: $action-color;
+    padding: 0;
+    font-weight: bold;
+    &.btn--text:hover, &.btn--text:focus, &.btn--text:active {
+      color: darken($action-color, 15%);
+      text-decoration: underline;
+    }
+  }
+}
+
+// maybe test this later
+/*@media screen and (min-width: $medium-screen) {
+  #{$all-button-inputs},
+  button, a.btn, input[type="submit"] {
+    width: auto;
+    text-align: left;
+  }
+}*/

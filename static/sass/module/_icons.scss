@@ -1,0 +1,69 @@
+.minnpost-weather {
+	//display: none;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: $h2-space;
+	width: 65px;
+	a {
+		color: $minnpost-black
+	}
+	img.weather-icon {
+		width: 25px;
+		padding-right: $quarter-space;
+		float: left;
+	}
+	.weather-temperature {
+		font-size: $small-size;
+		float: right;
+		padding-top: $third-space;
+		width: 35px;
+	}
+}
+ul.social-icons {
+	li a {
+		background: url('//minnpost.com/sites/default/themes/siteskin/inc/images/social-lg.png') no-repeat 0 0;
+		display: block;
+		height: 25px;
+		@include hide-text;
+		width: 25px;
+		&:hover, &:focus, &:active {
+	        opacity: 0.65;
+	    }
+	    &.subscribe {
+	    	background-position: 0 0;
+	    }
+	    &.twitter {
+	    	background-position: -25px 0;
+	    }
+	    &.facebook {
+	    	background-position: -50px 0;
+	    }
+	    &.tumblr {
+	    	background-position: -75px 0;
+	    }
+	    &.youtube {
+	    	background-position: -100px 0;
+	    }
+	    &.rss {
+	    	background-position: -125px 0;
+	    }
+	}
+}
+ul.social-icons--utilities {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: inline-block;
+	li {
+		float: left;
+	    list-style: none;
+	    padding: 0 5px 0 0;
+	}
+}
+
+// media queries
+@media screen and (min-width: $medium-screen) {
+	ul.social-icons--utilities {
+		width: 180px;
+	}	
+}

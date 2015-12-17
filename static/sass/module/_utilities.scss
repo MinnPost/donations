@@ -1,0 +1,107 @@
+@import 'icons';
+@import 'menu';
+@import 'search-box';
+
+.menu-show { // the checkbox
+	position: absolute;
+	opacity: 0;
+	top: 0;
+	right: 1em;
+}
+.menu-show-label { // the label
+	-webkit-touch-callout: none;
+	user-select: none;
+	z-index: 1;
+	cursor: pointer;
+	position: absolute;
+	top: 0;
+	right: 1.25em;
+	font-family: $helvetica;
+	padding: 4px;
+	border: 1px solid $gray-lightest;
+	border-radius: $base-border-radius;
+	font-size: 0.75rem;
+}
+.menu-show-label span {
+	@include burger(20px, 2px, 3px, #222);
+	margin-top: 4px;
+}
+.menu-show-label span, .menu-show-label span:before, .menu-show-label span:after {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 4px;
+}
+/* checked styles (menu open state) */
+.menu-show--secondary:checked ~ .menu-show--secondary-label, .menu-show--secondary-label:hover, .menu-show--secondary-label:focus {
+  background: $gray-lightest;
+}
+
+.utilities {
+	font-family: $helvetica;
+  	width: 100%;
+	height: 0;
+	line-height: 0;
+	overflow: hidden;
+	transition: height 0.5s;
+	position: relative;
+	display: flex;
+	flex-flow: column;
+}
+.menu-show--secondary:checked ~ .utilities {
+	height: auto;
+	line-height: normal;
+	overflow: visible;
+}
+.menu-show--secondary ~ .utilities ul.menu--secondary {
+	order: 1;
+	padding: 1em 0;
+}
+.menu-show--secondary:checked ~ .utilities .search-box--utilities {
+	order: 2;
+	padding-bottom: 1em;
+}
+.menu-show--secondary:checked ~ .utilities .social-icons--utilities {
+	order: 3;
+	padding-bottom: 1em;
+}
+.menu-show--secondary:checked ~ .utilities .minnpost-weather {
+	order: 4;
+}
+
+
+// media queries
+@media screen and (min-width: $small-screen) {
+	.menu-show-label { // the label
+		font-size: 1rem;
+	}
+	.menu-show-label span {
+		@include burger(25px, 3px, 5px, #222);
+	}
+}
+@media screen and (min-width: $nav-breaks) {
+	.menu-show--secondary ~ .utilities ul.menu--secondary {
+		padding: 0.75em 0;
+	}
+	.l-header nav.utilities {
+		width: 55%;
+		height: auto;
+		line-height: normal;
+		overflow: visible;
+		float: right;
+		text-align: right;
+		display: block;
+		flex-flow: none;
+	}
+	.givalike .l-header nav.utilities {
+		opacity: 0.3;
+	}
+	.menu-show-label, .menu-show {
+		display: none;
+	}
+}
+
+@media screen and (min-width: $max-width) {
+	.l-header nav.utilities {
+		width: 65%;
+	}
+}
