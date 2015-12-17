@@ -1,0 +1,104 @@
+<section class="panel panel--form" id="panel--pay">
+  <!-- this should always change with the previous tab amount -->
+  <h3>Donate $<span class="full-amount">20</span> <span class="frequency" data-year-freq="12">monthly</span></h3>
+  <ul class="actions actions--edit-amount clear-block">
+    <li><a href="https://www.minnpost.com/support">Edit</a></li>
+    <li><input type="checkbox" name="PaymentControl$cbPayFees" id="PaymentControl_cbPayFees_2"></li><!-- gets processed by javascript -->
+  </ul>
+  <fieldset class="payment" data-geo="data-geo">
+
+    <div class="form-item form-item--first-name">
+      <label>First name <input type="text" id="PaymentControl_txtFname" name="PaymentControl$txtFname" required value=""></label> <!-- load server-side from querystring -->
+    </div>
+
+    <div class="form-item form-item--last-name">
+      <label>Last name <input type="text" id="PaymentControl_txtLname" name="PaymentControl$txtLname" required value=""></label> <!-- load server-side from querystring -->
+    </div>
+    
+    <div class="form-item form-item--display-name">
+      <label>Display as (in our year-end report) <input type="text" id="PaymentControl_AdditionalInfoFields_AdditionalInfoTextbox_0" name="PaymentControl$AdditionalInfoFields$ctl00$AdditionalInfoTextbox"></label>
+
+      <label class="additional-option"><input type="checkbox" name="PaymentControl$AdditionalInfoFields$ctl03$AdditionalInfoCheckbox" id="PaymentControl_AdditionalInfoFields_AdditionalInfoCheckbox_3"> Make this donation anonymously</label>
+    </div>
+
+    <fieldset class="billing" data-geo="data-geo">
+      <div class="form-item form-item--nojs form-item--street">
+        <label>Billing Street Address
+          <input type="hidden" name="PaymentControl$txtBillAddress" id="PaymentControl_txtBillAddress" data-geo="name">
+        </label>
+      </div>
+
+      <div class="form-item form-item--nojs form-item--city">
+        <label>Billing City
+          <input type="hidden" name="PaymentControl$txtBillCity" id="PaymentControl_txtBillCity" data-geo="locality">
+        </label>
+      </div>
+
+      <div class="form-item form-item--nojs form-item--state">
+        <label>Billing State
+          <input type="hidden" name="PaymentControl$ddlBillState" id="PaymentControl_ddlBillState" data-geo="administrative_area_level_1">
+        </label>
+      </div>
+
+      <div class="form-item form-item--nojs form-item--zip">
+        <label>Billing Zip Code
+          <input type="hidden" name="PaymentControl$txtZip" id="PaymentControl_txtZip" data-geo="postal_code">
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="shipping" data-geo="data-ship-geo">
+
+      <div class="form-item form-item--nojs form-item--street">
+        <label>Shipping Street Address
+          <input type="hidden" name="PaymentControl$txtShipAddress" id="PaymentControl_txtShipAddress" data-ship-geo="name">
+        </label>
+      </div>
+
+      <div class="form-item form-item--nojs form-item--city">
+        <label>Shipping City
+          <input type="hidden" name="PaymentControl$txtShipCity" id="PaymentControl_txtShipCity" data-ship-geo="locality">
+        </label>
+      </div>
+
+      <div class="form-item form-item--nojs form-item--state">
+        <label>Shipping State
+          <input type="hidden" name="PaymentControl$txtShipState" id="PaymentControl_txtShipState" data-ship-geo="administrative_area_level_1">
+        </label>
+      </div>
+
+      <div class="form-item form-item--nojs form-item--zip">
+        <label>Shipping Zip Code
+          <input type="hidden" name="PaymentControl$txtShipZip" id="PaymentControl_txtShipZip" data-ship-geo="postal_code">
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="form-item form-item--email-address">
+      <label>Email Address <input type="email" id="PaymentControl_txtEmail" name="PaymentControl$txtEmail" required value=""></label> <!-- load server-side from querystring -->
+      <label class="additional-option"><input type="checkbox" name="creatempaccount" id="creatempaccount"> Create a free MinnPost.com account</label>
+    </div>
+
+    <div class="form-item form-item--password form-item--with-help">
+      <label>MinnPost.com Password
+        <input type="password" name="password" id="password" maxlength="128">
+      </label>
+    </div>
+
+    <fieldset class="form-item form-item--credit-card">
+      <legend>Credit Card Information</legend>
+      <div class="credit-card-group">
+        <label for="credit-card-number">Credit Card Number</label>
+        <input placeholder="1234 5678 9012 3456" type="tel" id="credit-card-number" autocomplete="cc-number" required>
+        <label for="card-expiration">Expiration Date</label>
+        <input placeholder="MM/YY" type="tel" id="card-expiration" required>
+        <label for="card-ccv">CVV Number</label>
+        <input placeholder="CVV" type="tel" id="card-cvv" required>
+      </div>
+    </fieldset>
+
+    <button type="submit" name="submit" id="submit" class="btn btn--submit">Place this Donation</button>
+
+  </fieldset>
+
+</section>

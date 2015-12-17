@@ -58,6 +58,11 @@
 			padding: 0 $half-space;
 			float: left;
 		}
+		label {
+			font-size: inherit;
+			font-family: inherit;
+			margin: 0;
+		}
 		li:first-child {
 			padding-left: 0;
 		}
