@@ -13,6 +13,13 @@ fieldset {
   }
 }
 
+fieldset.amount {
+  margin-bottom: 0;
+}
+fieldset.payment {
+  padding-top: 0;
+}
+
 .form-item {
   margin-bottom: $h3-space;
 }
@@ -112,6 +119,28 @@ textarea {
   &.error {
     color: $minnpost-red-error;
     border: 1px solid $minnpost-red-error;
+  }
+
+}
+
+.credit-card-group {
+
+  .card-group div {
+    float: left;
+    margin-right: 2.35765%;
+    width: 48.8212%;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  #cc-number-wrapper {
+    position: relative;
+    .card-image {
+      position: absolute;
+      top: 2.75em;
+      right: 1em;
+    }
   }
 
 }

@@ -4,598 +4,836 @@ http://www.minnpost.com
 Copyright (c) 2015 Jonathan Stegall
 License: MIT
 */
-(function($,window,document,undefined){var defaults={bounds:true,country:null,map:false,details:false,detailsAttribute:"name",autoselect:true,location:false,mapOptions:{zoom:14,scrollwheel:false,mapTypeId:"roadmap"},markerOptions:{draggable:false},maxZoom:16,types:["geocode"],blur:false,geocodeAfterResult:false,restoreValueAfterBlur:false};var componentTypes=("street_address route intersection political "+"country administrative_area_level_1 administrative_area_level_2 "+"administrative_area_level_3 colloquial_area locality sublocality "+"neighborhood premise subpremise postal_code natural_feature airport "+"park point_of_interest post_box street_number floor room "+"lat lng viewport location "+"formatted_address location_type bounds").split(" ");var placesDetails=("id place_id url website vicinity reference name rating "+"international_phone_number icon formatted_phone_number").split(" ");function GeoComplete(input,options){this.options=$.extend(true,{},defaults,options);this.input=input;this.$input=$(input);this._defaults=defaults;this._name="geocomplete";this.init()}$.extend(GeoComplete.prototype,{init:function(){this.initMap();this.initMarker();this.initGeocoder();this.initDetails();this.initLocation()},initMap:function(){if(!this.options.map){return}if(typeof this.options.map.setCenter=="function"){this.map=this.options.map;return}this.map=new google.maps.Map($(this.options.map)[0],this.options.mapOptions);google.maps.event.addListener(this.map,"click",$.proxy(this.mapClicked,this));google.maps.event.addListener(this.map,"zoom_changed",$.proxy(this.mapZoomed,this))},initMarker:function(){if(!this.map){return}var options=$.extend(this.options.markerOptions,{map:this.map});if(options.disabled){return}this.marker=new google.maps.Marker(options);google.maps.event.addListener(this.marker,"dragend",$.proxy(this.markerDragged,this))},initGeocoder:function(){var selected=false;var options={types:this.options.types,bounds:this.options.bounds===true?null:this.options.bounds,componentRestrictions:this.options.componentRestrictions};if(this.options.country){options.componentRestrictions={country:this.options.country}}this.autocomplete=new google.maps.places.Autocomplete(this.input,options);this.geocoder=new google.maps.Geocoder;if(this.map&&this.options.bounds===true){this.autocomplete.bindTo("bounds",this.map)}google.maps.event.addListener(this.autocomplete,"place_changed",$.proxy(this.placeChanged,this));this.$input.on("keypress."+this._name,function(event){if(event.keyCode===13){return false}});if(this.options.geocodeAfterResult===true){this.$input.bind("keypress."+this._name,$.proxy(function(){if(event.keyCode!=9&&this.selected===true){this.selected=false}},this))}this.$input.bind("geocode."+this._name,$.proxy(function(){this.find()},this));this.$input.bind("geocode:result."+this._name,$.proxy(function(){this.lastInputVal=this.$input.val()},this));if(this.options.blur===true){this.$input.on("blur."+this._name,$.proxy(function(){if(this.options.geocodeAfterResult===true&&this.selected===true){return}if(this.options.restoreValueAfterBlur===true&&this.selected===true){setTimeout($.proxy(this.restoreLastValue,this),0)}else{this.find()}},this))}},initDetails:function(){if(!this.options.details){return}var $details=$(this.options.details),attribute=this.options.detailsAttribute,details={};function setDetail(value){details[value]=$details.find("["+attribute+"="+value+"]")}$.each(componentTypes,function(index,key){setDetail(key);setDetail(key+"_short")});$.each(placesDetails,function(index,key){setDetail(key)});this.$details=$details;this.details=details},initLocation:function(){var location=this.options.location,latLng;if(!location){return}if(typeof location=="string"){this.find(location);return}if(location instanceof Array){latLng=new google.maps.LatLng(location[0],location[1])}if(location instanceof google.maps.LatLng){latLng=location}if(latLng){if(this.map){this.map.setCenter(latLng)}if(this.marker){this.marker.setPosition(latLng)}}},destroy:function(){if(this.map){google.maps.event.clearInstanceListeners(this.map);google.maps.event.clearInstanceListeners(this.marker)}this.autocomplete.unbindAll();google.maps.event.clearInstanceListeners(this.autocomplete);google.maps.event.clearInstanceListeners(this.input);this.$input.removeData();this.$input.off(this._name);this.$input.unbind("."+this._name)},find:function(address){this.geocode({address:address||this.$input.val()})},geocode:function(request){if(this.options.bounds&&!request.bounds){if(this.options.bounds===true){request.bounds=this.map&&this.map.getBounds()}else{request.bounds=this.options.bounds}}if(this.options.country){request.region=this.options.country}this.geocoder.geocode(request,$.proxy(this.handleGeocode,this))},selectFirstResult:function(){var selected="";if($(".pac-item-selected")[0]){selected="-selected"}var $span1=$(".pac-container:last .pac-item"+selected+":first span:nth-child(2)").text();var $span2=$(".pac-container:last .pac-item"+selected+":first span:nth-child(3)").text();var firstResult=$span1;if($span2){firstResult+=" - "+$span2}this.$input.val(firstResult);return firstResult},restoreLastValue:function(){if(this.lastInputVal){this.$input.val(this.lastInputVal)}},handleGeocode:function(results,status){if(status===google.maps.GeocoderStatus.OK){var result=results[0];this.$input.val(result.formatted_address);this.update(result);if(results.length>1){this.trigger("geocode:multiple",results)}}else{this.trigger("geocode:error",status)}},trigger:function(event,argument){this.$input.trigger(event,[argument])},center:function(geometry){if(geometry.viewport){this.map.fitBounds(geometry.viewport);if(this.map.getZoom()>this.options.maxZoom){this.map.setZoom(this.options.maxZoom)}}else{this.map.setZoom(this.options.maxZoom);this.map.setCenter(geometry.location)}if(this.marker){this.marker.setPosition(geometry.location);this.marker.setAnimation(this.options.markerOptions.animation)}},update:function(result){if(this.map){this.center(result.geometry)}if(this.$details){this.fillDetails(result)}this.trigger("geocode:result",result)},fillDetails:function(result){var data={},geometry=result.geometry,viewport=geometry.viewport,bounds=geometry.bounds;$.each(result.address_components,function(index,object){var name=object.types[0];$.each(object.types,function(index,name){data[name]=object.long_name;data[name+"_short"]=object.short_name})});$.each(placesDetails,function(index,key){data[key]=result[key]});$.extend(data,{formatted_address:result.formatted_address,location_type:geometry.location_type||"PLACES",viewport:viewport,bounds:bounds,location:geometry.location,lat:geometry.location.lat(),lng:geometry.location.lng()});$.each(this.details,$.proxy(function(key,$detail){var value=data[key];this.setDetail($detail,value)},this));this.data=data},setDetail:function($element,value){if(value===undefined){value=""}else if(typeof value.toUrlValue=="function"){value=value.toUrlValue()}if($element.is(":input")){$element.val(value)}else{$element.text(value)}},markerDragged:function(event){this.trigger("geocode:dragged",event.latLng)},mapClicked:function(event){this.trigger("geocode:click",event.latLng)},mapZoomed:function(event){this.trigger("geocode:zoom",this.map.getZoom())},resetMarker:function(){this.marker.setPosition(this.data.location);this.setDetail(this.details.lat,this.data.location.lat());this.setDetail(this.details.lng,this.data.location.lng())},placeChanged:function(){var place=this.autocomplete.getPlace();this.selected=true;if(!place.geometry){if(this.options.autoselect){var autoSelection=this.selectFirstResult();this.find(autoSelection)}}else{this.update(place)}}});$.fn.geocomplete=function(options){var attribute="plugin_geocomplete";if(typeof options=="string"){var instance=$(this).data(attribute)||$(this).geocomplete().data(attribute),prop=instance[options];if(typeof prop=="function"){prop.apply(instance,Array.prototype.slice.call(arguments,1));return $(this)}else{if(arguments.length==2){prop=arguments[1]}return prop}}else{return this.each(function(){var instance=$.data(this,attribute);if(!instance){instance=new GeoComplete(this,options);$.data(this,attribute,instance)}})}}})(jQuery,window,document);;// Generated by CoffeeScript 1.7.1
-(function() {
-  var cardFromNumber, cardFromType, cards, defaultFormat, formatBackCardNumber, formatBackExpiry, formatCardNumber, formatExpiry, formatForwardExpiry, formatForwardSlashAndSpace, hasTextSelected, luhnCheck, reFormatCVC, reFormatCardNumber, reFormatExpiry, reFormatNumeric, restrictCVC, restrictCardNumber, restrictExpiry, restrictNumeric, setCardType,
-    __slice = [].slice,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  $.payment = {};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}(g.payment || (g.payment = {})).js = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var QJ, rreturn, rtrim;
 
-  $.payment.fn = {};
+QJ = function(selector) {
+  if (QJ.isDOMElement(selector)) {
+    return selector;
+  }
+  return document.querySelectorAll(selector);
+};
 
-  $.fn.payment = function() {
-    var args, method;
-    method = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-    return $.payment.fn[method].apply(this, args);
-  };
+QJ.isDOMElement = function(el) {
+  return el && (el.nodeName != null);
+};
 
-  defaultFormat = /(\d{1,4})/g;
+rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
-  $.payment.cards = cards = [
-    {
-      type: 'visaelectron',
-      pattern: /^4(026|17500|405|508|844|91[37])/,
-      format: defaultFormat,
-      length: [16],
-      cvcLength: [3],
-      luhn: true
-    }, {
-      type: 'maestro',
-      pattern: /^(5(018|0[23]|[68])|6(39|7))/,
-      format: defaultFormat,
-      length: [12, 13, 14, 15, 16, 17, 18, 19],
-      cvcLength: [3],
-      luhn: true
-    }, {
-      type: 'forbrugsforeningen',
-      pattern: /^600/,
-      format: defaultFormat,
-      length: [16],
-      cvcLength: [3],
-      luhn: true
-    }, {
-      type: 'dankort',
-      pattern: /^5019/,
-      format: defaultFormat,
-      length: [16],
-      cvcLength: [3],
-      luhn: true
-    }, {
-      type: 'visa',
-      pattern: /^4/,
-      format: defaultFormat,
-      length: [13, 16],
-      cvcLength: [3],
-      luhn: true
-    }, {
-      type: 'mastercard',
-      pattern: /^5[0-5]/,
-      format: defaultFormat,
-      length: [16],
-      cvcLength: [3],
-      luhn: true
-    }, {
-      type: 'amex',
-      pattern: /^3[47]/,
-      format: /(\d{1,4})(\d{1,6})?(\d{1,5})?/,
-      length: [15],
-      cvcLength: [3, 4],
-      luhn: true
-    }, {
-      type: 'dinersclub',
-      pattern: /^3[0689]/,
-      format: /(\d{1,4})(\d{1,6})?(\d{1,4})?/,
-      length: [14],
-      cvcLength: [3],
-      luhn: true
-    }, {
-      type: 'discover',
-      pattern: /^6([045]|22)/,
-      format: defaultFormat,
-      length: [16],
-      cvcLength: [3],
-      luhn: true
-    }, {
-      type: 'unionpay',
-      pattern: /^(62|88)/,
-      format: defaultFormat,
-      length: [16, 17, 18, 19],
-      cvcLength: [3],
-      luhn: false
-    }, {
-      type: 'jcb',
-      pattern: /^35/,
-      format: defaultFormat,
-      length: [16],
-      cvcLength: [3],
-      luhn: true
-    }
-  ];
+QJ.trim = function(text) {
+  if (text === null) {
+    return "";
+  } else {
+    return (text + "").replace(rtrim, "");
+  }
+};
 
-  cardFromNumber = function(num) {
-    var card, _i, _len;
-    num = (num + '').replace(/\D/g, '');
-    for (_i = 0, _len = cards.length; _i < _len; _i++) {
-      card = cards[_i];
-      if (card.pattern.test(num)) {
-        return card;
-      }
-    }
-  };
+rreturn = /\r/g;
 
-  cardFromType = function(type) {
-    var card, _i, _len;
-    for (_i = 0, _len = cards.length; _i < _len; _i++) {
-      card = cards[_i];
-      if (card.type === type) {
-        return card;
-      }
-    }
-  };
-
-  luhnCheck = function(num) {
-    var digit, digits, odd, sum, _i, _len;
-    odd = true;
-    sum = 0;
-    digits = (num + '').split('').reverse();
-    for (_i = 0, _len = digits.length; _i < _len; _i++) {
-      digit = digits[_i];
-      digit = parseInt(digit, 10);
-      if ((odd = !odd)) {
-        digit *= 2;
-      }
-      if (digit > 9) {
-        digit -= 9;
-      }
-      sum += digit;
-    }
-    return sum % 10 === 0;
-  };
-
-  hasTextSelected = function($target) {
-    var _ref;
-    if (($target.prop('selectionStart') != null) && $target.prop('selectionStart') !== $target.prop('selectionEnd')) {
-      return true;
-    }
-    if ((typeof document !== "undefined" && document !== null ? (_ref = document.selection) != null ? _ref.createRange : void 0 : void 0) != null) {
-      if (document.selection.createRange().text) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  reFormatNumeric = function(e) {
-    return setTimeout(function() {
-      var $target, value;
-      $target = $(e.currentTarget);
-      value = $target.val();
-      value = value.replace(/\D/g, '');
-      return $target.val(value);
-    });
-  };
-
-  reFormatCardNumber = function(e) {
-    return setTimeout(function() {
-      var $target, value;
-      $target = $(e.currentTarget);
-      value = $target.val();
-      value = $.payment.formatCardNumber(value);
-      return $target.val(value);
-    });
-  };
-
-  formatCardNumber = function(e) {
-    var $target, card, digit, length, re, upperLength, value;
-    digit = String.fromCharCode(e.which);
-    if (!/^\d+$/.test(digit)) {
-      return;
-    }
-    $target = $(e.currentTarget);
-    value = $target.val();
-    card = cardFromNumber(value + digit);
-    length = (value.replace(/\D/g, '') + digit).length;
-    upperLength = 16;
-    if (card) {
-      upperLength = card.length[card.length.length - 1];
-    }
-    if (length >= upperLength) {
-      return;
-    }
-    if (($target.prop('selectionStart') != null) && $target.prop('selectionStart') !== value.length) {
-      return;
-    }
-    if (card && card.type === 'amex') {
-      re = /^(\d{4}|\d{4}\s\d{6})$/;
+QJ.val = function(el, val) {
+  var ret;
+  if (arguments.length > 1) {
+    return el.value = val;
+  } else {
+    ret = el.value;
+    if (typeof ret === "string") {
+      return ret.replace(rreturn, "");
     } else {
-      re = /(?:^|\s)(\d{4})$/;
-    }
-    if (re.test(value)) {
-      e.preventDefault();
-      return setTimeout(function() {
-        return $target.val(value + ' ' + digit);
-      });
-    } else if (re.test(value + digit)) {
-      e.preventDefault();
-      return setTimeout(function() {
-        return $target.val(value + digit + ' ');
-      });
-    }
-  };
-
-  formatBackCardNumber = function(e) {
-    var $target, value;
-    $target = $(e.currentTarget);
-    value = $target.val();
-    if (e.which !== 8) {
-      return;
-    }
-    if (($target.prop('selectionStart') != null) && $target.prop('selectionStart') !== value.length) {
-      return;
-    }
-    if (/\d\s$/.test(value)) {
-      e.preventDefault();
-      return setTimeout(function() {
-        return $target.val(value.replace(/\d\s$/, ''));
-      });
-    } else if (/\s\d?$/.test(value)) {
-      e.preventDefault();
-      return setTimeout(function() {
-        return $target.val(value.replace(/\d$/, ''));
-      });
-    }
-  };
-
-  reFormatExpiry = function(e) {
-    return setTimeout(function() {
-      var $target, value;
-      $target = $(e.currentTarget);
-      value = $target.val();
-      value = $.payment.formatExpiry(value);
-      return $target.val(value);
-    });
-  };
-
-  formatExpiry = function(e) {
-    var $target, digit, val;
-    digit = String.fromCharCode(e.which);
-    if (!/^\d+$/.test(digit)) {
-      return;
-    }
-    $target = $(e.currentTarget);
-    val = $target.val() + digit;
-    if (/^\d$/.test(val) && (val !== '0' && val !== '1')) {
-      e.preventDefault();
-      return setTimeout(function() {
-        return $target.val("0" + val + " / ");
-      });
-    } else if (/^\d\d$/.test(val)) {
-      e.preventDefault();
-      return setTimeout(function() {
-        return $target.val("" + val + " / ");
-      });
-    }
-  };
-
-  formatForwardExpiry = function(e) {
-    var $target, digit, val;
-    digit = String.fromCharCode(e.which);
-    if (!/^\d+$/.test(digit)) {
-      return;
-    }
-    $target = $(e.currentTarget);
-    val = $target.val();
-    if (/^\d\d$/.test(val)) {
-      return $target.val("" + val + " / ");
-    }
-  };
-
-  formatForwardSlashAndSpace = function(e) {
-    var $target, val, which;
-    which = String.fromCharCode(e.which);
-    if (!(which === '/' || which === ' ')) {
-      return;
-    }
-    $target = $(e.currentTarget);
-    val = $target.val();
-    if (/^\d$/.test(val) && val !== '0') {
-      return $target.val("0" + val + " / ");
-    }
-  };
-
-  formatBackExpiry = function(e) {
-    var $target, value;
-    $target = $(e.currentTarget);
-    value = $target.val();
-    if (e.which !== 8) {
-      return;
-    }
-    if (($target.prop('selectionStart') != null) && $target.prop('selectionStart') !== value.length) {
-      return;
-    }
-    if (/\d\s\/\s$/.test(value)) {
-      e.preventDefault();
-      return setTimeout(function() {
-        return $target.val(value.replace(/\d\s\/\s$/, ''));
-      });
-    }
-  };
-
-  reFormatCVC = function(e) {
-    return setTimeout(function() {
-      var $target, value;
-      $target = $(e.currentTarget);
-      value = $target.val();
-      value = value.replace(/\D/g, '').slice(0, 4);
-      return $target.val(value);
-    });
-  };
-
-  restrictNumeric = function(e) {
-    var input;
-    if (e.metaKey || e.ctrlKey) {
-      return true;
-    }
-    if (e.which === 32) {
-      return false;
-    }
-    if (e.which === 0) {
-      return true;
-    }
-    if (e.which < 33) {
-      return true;
-    }
-    input = String.fromCharCode(e.which);
-    return !!/[\d\s]/.test(input);
-  };
-
-  restrictCardNumber = function(e) {
-    var $target, card, digit, value;
-    $target = $(e.currentTarget);
-    digit = String.fromCharCode(e.which);
-    if (!/^\d+$/.test(digit)) {
-      return;
-    }
-    if (hasTextSelected($target)) {
-      return;
-    }
-    value = ($target.val() + digit).replace(/\D/g, '');
-    card = cardFromNumber(value);
-    if (card) {
-      return value.length <= card.length[card.length.length - 1];
-    } else {
-      return value.length <= 16;
-    }
-  };
-
-  restrictExpiry = function(e) {
-    var $target, digit, value;
-    $target = $(e.currentTarget);
-    digit = String.fromCharCode(e.which);
-    if (!/^\d+$/.test(digit)) {
-      return;
-    }
-    if (hasTextSelected($target)) {
-      return;
-    }
-    value = $target.val() + digit;
-    value = value.replace(/\D/g, '');
-    if (value.length > 6) {
-      return false;
-    }
-  };
-
-  restrictCVC = function(e) {
-    var $target, digit, val;
-    $target = $(e.currentTarget);
-    digit = String.fromCharCode(e.which);
-    if (!/^\d+$/.test(digit)) {
-      return;
-    }
-    if (hasTextSelected($target)) {
-      return;
-    }
-    val = $target.val() + digit;
-    return val.length <= 4;
-  };
-
-  setCardType = function(e) {
-    var $target, allTypes, card, cardType, val;
-    $target = $(e.currentTarget);
-    val = $target.val();
-    cardType = $.payment.cardType(val) || 'unknown';
-    if (!$target.hasClass(cardType)) {
-      allTypes = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = cards.length; _i < _len; _i++) {
-          card = cards[_i];
-          _results.push(card.type);
-        }
-        return _results;
-      })();
-      $target.removeClass('unknown');
-      $target.removeClass(allTypes.join(' '));
-      $target.addClass(cardType);
-      $target.toggleClass('identified', cardType !== 'unknown');
-      return $target.trigger('payment.cardType', cardType);
-    }
-  };
-
-  $.payment.fn.formatCardCVC = function() {
-    this.on('keypress', restrictNumeric);
-    this.on('keypress', restrictCVC);
-    this.on('paste', reFormatCVC);
-    this.on('change', reFormatCVC);
-    this.on('input', reFormatCVC);
-    return this;
-  };
-
-  $.payment.fn.formatCardExpiry = function() {
-    this.on('keypress', restrictNumeric);
-    this.on('keypress', restrictExpiry);
-    this.on('keypress', formatExpiry);
-    this.on('keypress', formatForwardSlashAndSpace);
-    this.on('keypress', formatForwardExpiry);
-    this.on('keydown', formatBackExpiry);
-    this.on('change', reFormatExpiry);
-    this.on('input', reFormatExpiry);
-    return this;
-  };
-
-  $.payment.fn.formatCardNumber = function() {
-    this.on('keypress', restrictNumeric);
-    this.on('keypress', restrictCardNumber);
-    this.on('keypress', formatCardNumber);
-    this.on('keydown', formatBackCardNumber);
-    this.on('keyup', setCardType);
-    this.on('paste', reFormatCardNumber);
-    this.on('change', reFormatCardNumber);
-    this.on('input', reFormatCardNumber);
-    this.on('input', setCardType);
-    return this;
-  };
-
-  $.payment.fn.restrictNumeric = function() {
-    this.on('keypress', restrictNumeric);
-    this.on('paste', reFormatNumeric);
-    this.on('change', reFormatNumeric);
-    this.on('input', reFormatNumeric);
-    return this;
-  };
-
-  $.payment.fn.cardExpiryVal = function() {
-    return $.payment.cardExpiryVal($(this).val());
-  };
-
-  $.payment.cardExpiryVal = function(value) {
-    var month, prefix, year, _ref;
-    value = value.replace(/\s/g, '');
-    _ref = value.split('/', 2), month = _ref[0], year = _ref[1];
-    if ((year != null ? year.length : void 0) === 2 && /^\d+$/.test(year)) {
-      prefix = (new Date).getFullYear();
-      prefix = prefix.toString().slice(0, 2);
-      year = prefix + year;
-    }
-    month = parseInt(month, 10);
-    year = parseInt(year, 10);
-    return {
-      month: month,
-      year: year
-    };
-  };
-
-  $.payment.validateCardNumber = function(num) {
-    var card, _ref;
-    num = (num + '').replace(/\s+|-/g, '');
-    if (!/^\d+$/.test(num)) {
-      return false;
-    }
-    card = cardFromNumber(num);
-    if (!card) {
-      return false;
-    }
-    return (_ref = num.length, __indexOf.call(card.length, _ref) >= 0) && (card.luhn === false || luhnCheck(num));
-  };
-
-  $.payment.validateCardExpiry = function(month, year) {
-    var currentTime, expiry, _ref;
-    if (typeof month === 'object' && 'month' in month) {
-      _ref = month, month = _ref.month, year = _ref.year;
-    }
-    if (!(month && year)) {
-      return false;
-    }
-    month = $.trim(month);
-    year = $.trim(year);
-    if (!/^\d+$/.test(month)) {
-      return false;
-    }
-    if (!/^\d+$/.test(year)) {
-      return false;
-    }
-    if (!((1 <= month && month <= 12))) {
-      return false;
-    }
-    if (year.length === 2) {
-      if (year < 70) {
-        year = "20" + year;
+      if (ret === null) {
+        return "";
       } else {
-        year = "19" + year;
+        return ret;
       }
     }
-    if (year.length !== 4) {
-      return false;
-    }
-    expiry = new Date(year, month);
-    currentTime = new Date;
-    expiry.setMonth(expiry.getMonth() - 1);
-    expiry.setMonth(expiry.getMonth() + 1, 1);
-    return expiry > currentTime;
-  };
+  }
+};
 
-  $.payment.validateCardCVC = function(cvc, type) {
-    var card, _ref;
-    cvc = $.trim(cvc);
-    if (!/^\d+$/.test(cvc)) {
-      return false;
+QJ.preventDefault = function(eventObject) {
+  if (typeof eventObject.preventDefault === "function") {
+    eventObject.preventDefault();
+    return;
+  }
+  eventObject.returnValue = false;
+  return false;
+};
+
+QJ.normalizeEvent = function(e) {
+  var original;
+  original = e;
+  e = {
+    which: original.which != null ? original.which : void 0,
+    target: original.target || original.srcElement,
+    preventDefault: function() {
+      return QJ.preventDefault(original);
+    },
+    originalEvent: original,
+    data: original.data || original.detail
+  };
+  if (e.which == null) {
+    e.which = original.charCode != null ? original.charCode : original.keyCode;
+  }
+  return e;
+};
+
+QJ.on = function(element, eventName, callback) {
+  var el, i, j, len, len1, multEventName, originalCallback, ref;
+  if (element.length) {
+    for (i = 0, len = element.length; i < len; i++) {
+      el = element[i];
+      QJ.on(el, eventName, callback);
     }
-    card = cardFromType(type);
-    if (card != null) {
-      return _ref = cvc.length, __indexOf.call(card.cvcLength, _ref) >= 0;
+    return;
+  }
+  if (eventName.match(" ")) {
+    ref = eventName.split(" ");
+    for (j = 0, len1 = ref.length; j < len1; j++) {
+      multEventName = ref[j];
+      QJ.on(element, multEventName, callback);
+    }
+    return;
+  }
+  originalCallback = callback;
+  callback = function(e) {
+    e = QJ.normalizeEvent(e);
+    return originalCallback(e);
+  };
+  if (element.addEventListener) {
+    return element.addEventListener(eventName, callback, false);
+  }
+  if (element.attachEvent) {
+    eventName = "on" + eventName;
+    return element.attachEvent(eventName, callback);
+  }
+  element['on' + eventName] = callback;
+};
+
+QJ.addClass = function(el, className) {
+  var e;
+  if (el.length) {
+    return (function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = el.length; i < len; i++) {
+        e = el[i];
+        results.push(QJ.addClass(e, className));
+      }
+      return results;
+    })();
+  }
+  if (el.classList) {
+    return el.classList.add(className);
+  } else {
+    return el.className += ' ' + className;
+  }
+};
+
+QJ.hasClass = function(el, className) {
+  var e, hasClass, i, len;
+  if (el.length) {
+    hasClass = true;
+    for (i = 0, len = el.length; i < len; i++) {
+      e = el[i];
+      hasClass = hasClass && QJ.hasClass(e, className);
+    }
+    return hasClass;
+  }
+  if (el.classList) {
+    return el.classList.contains(className);
+  } else {
+    return new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+  }
+};
+
+QJ.removeClass = function(el, className) {
+  var cls, e, i, len, ref, results;
+  if (el.length) {
+    return (function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = el.length; i < len; i++) {
+        e = el[i];
+        results.push(QJ.removeClass(e, className));
+      }
+      return results;
+    })();
+  }
+  if (el.classList) {
+    ref = className.split(' ');
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      cls = ref[i];
+      results.push(el.classList.remove(cls));
+    }
+    return results;
+  } else {
+    return el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+  }
+};
+
+QJ.toggleClass = function(el, className, bool) {
+  var e;
+  if (el.length) {
+    return (function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = el.length; i < len; i++) {
+        e = el[i];
+        results.push(QJ.toggleClass(e, className, bool));
+      }
+      return results;
+    })();
+  }
+  if (bool) {
+    if (!QJ.hasClass(el, className)) {
+      return QJ.addClass(el, className);
+    }
+  } else {
+    return QJ.removeClass(el, className);
+  }
+};
+
+QJ.append = function(el, toAppend) {
+  var e;
+  if (el.length) {
+    return (function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = el.length; i < len; i++) {
+        e = el[i];
+        results.push(QJ.append(e, toAppend));
+      }
+      return results;
+    })();
+  }
+  return el.insertAdjacentHTML('beforeend', toAppend);
+};
+
+QJ.find = function(el, selector) {
+  if (el instanceof NodeList || el instanceof Array) {
+    el = el[0];
+  }
+  return el.querySelectorAll(selector);
+};
+
+QJ.trigger = function(el, name, data) {
+  var e, error, ev;
+  try {
+    ev = new CustomEvent(name, {
+      detail: data
+    });
+  } catch (error) {
+    e = error;
+    ev = document.createEvent('CustomEvent');
+    if (ev.initCustomEvent) {
+      ev.initCustomEvent(name, true, true, data);
     } else {
-      return cvc.length >= 3 && cvc.length <= 4;
+      ev.initEvent(name, true, true, data);
     }
-  };
+  }
+  return el.dispatchEvent(ev);
+};
 
-  $.payment.cardType = function(num) {
-    var _ref;
-    if (!num) {
-      return null;
-    }
-    return ((_ref = cardFromNumber(num)) != null ? _ref.type : void 0) || null;
-  };
+module.exports = QJ;
 
-  $.payment.formatCardNumber = function(num) {
-    var card, groups, upperLength, _ref;
-    num = num.replace(/\D/g, '');
-    card = cardFromNumber(num);
-    if (!card) {
-      return num;
+
+},{}],2:[function(require,module,exports){
+(function (global){
+var Payment, QJ, cardFromNumber, cardFromType, cards, defaultFormat, formatBackCardNumber, formatBackExpiry, formatCardNumber, formatExpiry, formatForwardExpiry, formatForwardSlash, formatMonthExpiry, hasTextSelected, luhnCheck, reFormatCardNumber, restrictCVC, restrictCardNumber, restrictCombinedExpiry, restrictExpiry, restrictMonthExpiry, restrictNumeric, restrictYearExpiry, setCardType,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+QJ = require('qj/src/qj.coffee');
+
+defaultFormat = /(\d{1,4})/g;
+
+cards = [
+  {
+    type: 'amex',
+    pattern: /^3[47]/,
+    format: /(\d{1,4})(\d{1,6})?(\d{1,5})?/,
+    length: [15],
+    cvcLength: [4],
+    luhn: true
+  }, {
+    type: 'dankort',
+    pattern: /^5019/,
+    format: defaultFormat,
+    length: [16],
+    cvcLength: [3],
+    luhn: true
+  }, {
+    type: 'dinersclub',
+    pattern: /^(36|38|30[0-5])/,
+    format: defaultFormat,
+    length: [14],
+    cvcLength: [3],
+    luhn: true
+  }, {
+    type: 'discover',
+    pattern: /^(6011|65|64[4-9]|622)/,
+    format: defaultFormat,
+    length: [16],
+    cvcLength: [3],
+    luhn: true
+  }, {
+    type: 'jcb',
+    pattern: /^35/,
+    format: defaultFormat,
+    length: [16],
+    cvcLength: [3],
+    luhn: true
+  }, {
+    type: 'laser',
+    pattern: /^(6706|6771|6709)/,
+    format: defaultFormat,
+    length: [16, 17, 18, 19],
+    cvcLength: [3],
+    luhn: true
+  }, {
+    type: 'maestro',
+    pattern: /^(5018|5020|5038|6304|6703|6759|676[1-3])/,
+    format: defaultFormat,
+    length: [12, 13, 14, 15, 16, 17, 18, 19],
+    cvcLength: [3],
+    luhn: true
+  }, {
+    type: 'mastercard',
+    pattern: /^5[1-5]/,
+    format: defaultFormat,
+    length: [16],
+    cvcLength: [3],
+    luhn: true
+  }, {
+    type: 'unionpay',
+    pattern: /^62/,
+    format: defaultFormat,
+    length: [16, 17, 18, 19],
+    cvcLength: [3],
+    luhn: false
+  }, {
+    type: 'visaelectron',
+    pattern: /^4(026|17500|405|508|844|91[37])/,
+    format: defaultFormat,
+    length: [16],
+    cvcLength: [3],
+    luhn: true
+  }, {
+    type: 'visa',
+    pattern: /^4/,
+    format: defaultFormat,
+    length: [13, 16],
+    cvcLength: [3],
+    luhn: true
+  }, {
+    type: 'elo',
+    pattern: /^4011|438935|45(1416|76)|50(4175|6699|67|90[4-7])|63(6297|6368)/,
+    format: defaultFormat,
+    length: [16],
+    cvcLength: [3],
+    luhn: true
+  }
+];
+
+cardFromNumber = function(num) {
+  var card, i, len;
+  num = (num + '').replace(/\D/g, '');
+  for (i = 0, len = cards.length; i < len; i++) {
+    card = cards[i];
+    if (card.pattern.test(num)) {
+      return card;
     }
+  }
+};
+
+cardFromType = function(type) {
+  var card, i, len;
+  for (i = 0, len = cards.length; i < len; i++) {
+    card = cards[i];
+    if (card.type === type) {
+      return card;
+    }
+  }
+};
+
+luhnCheck = function(num) {
+  var digit, digits, i, len, odd, sum;
+  odd = true;
+  sum = 0;
+  digits = (num + '').split('').reverse();
+  for (i = 0, len = digits.length; i < len; i++) {
+    digit = digits[i];
+    digit = parseInt(digit, 10);
+    if ((odd = !odd)) {
+      digit *= 2;
+    }
+    if (digit > 9) {
+      digit -= 9;
+    }
+    sum += digit;
+  }
+  return sum % 10 === 0;
+};
+
+hasTextSelected = function(target) {
+  var ref;
+  if ((target.selectionStart != null) && target.selectionStart !== target.selectionEnd) {
+    return true;
+  }
+  if ((typeof document !== "undefined" && document !== null ? (ref = document.selection) != null ? ref.createRange : void 0 : void 0) != null) {
+    if (document.selection.createRange().text) {
+      return true;
+    }
+  }
+  return false;
+};
+
+reFormatCardNumber = function(e) {
+  return setTimeout((function(_this) {
+    return function() {
+      var target, value;
+      target = e.target;
+      value = QJ.val(target);
+      value = Payment.fns.formatCardNumber(value);
+      return QJ.val(target, value);
+    };
+  })(this));
+};
+
+formatCardNumber = function(e) {
+  var card, digit, length, re, target, upperLength, value;
+  digit = String.fromCharCode(e.which);
+  if (!/^\d+$/.test(digit)) {
+    return;
+  }
+  target = e.target;
+  value = QJ.val(target);
+  card = cardFromNumber(value + digit);
+  length = (value.replace(/\D/g, '') + digit).length;
+  upperLength = 16;
+  if (card) {
     upperLength = card.length[card.length.length - 1];
-    num = num.slice(0, upperLength);
-    if (card.format.global) {
-      return (_ref = num.match(card.format)) != null ? _ref.join(' ') : void 0;
-    } else {
-      groups = card.format.exec(num);
-      if (groups == null) {
-        return;
+  }
+  if (length >= upperLength) {
+    return;
+  }
+  if ((target.selectionStart != null) && target.selectionStart !== value.length) {
+    return;
+  }
+  if (card && card.type === 'amex') {
+    re = /^(\d{4}|\d{4}\s\d{6})$/;
+  } else {
+    re = /(?:^|\s)(\d{4})$/;
+  }
+  if (re.test(value)) {
+    e.preventDefault();
+    return QJ.val(target, value + ' ' + digit);
+  } else if (re.test(value + digit)) {
+    e.preventDefault();
+    return QJ.val(target, value + digit + ' ');
+  }
+};
+
+formatBackCardNumber = function(e) {
+  var target, value;
+  target = e.target;
+  value = QJ.val(target);
+  if (e.meta) {
+    return;
+  }
+  if (e.which !== 8) {
+    return;
+  }
+  if ((target.selectionStart != null) && target.selectionStart !== value.length) {
+    return;
+  }
+  if (/\d\s$/.test(value)) {
+    e.preventDefault();
+    return QJ.val(target, value.replace(/\d\s$/, ''));
+  } else if (/\s\d?$/.test(value)) {
+    e.preventDefault();
+    return QJ.val(target, value.replace(/\s\d?$/, ''));
+  }
+};
+
+formatExpiry = function(e) {
+  var digit, target, val;
+  digit = String.fromCharCode(e.which);
+  if (!/^\d+$/.test(digit)) {
+    return;
+  }
+  target = e.target;
+  val = QJ.val(target) + digit;
+  if (/^\d$/.test(val) && (val !== '0' && val !== '1')) {
+    e.preventDefault();
+    return QJ.val(target, "0" + val + " / ");
+  } else if (/^\d\d$/.test(val)) {
+    e.preventDefault();
+    return QJ.val(target, val + " / ");
+  }
+};
+
+formatMonthExpiry = function(e) {
+  var digit, target, val;
+  digit = String.fromCharCode(e.which);
+  if (!/^\d+$/.test(digit)) {
+    return;
+  }
+  target = e.target;
+  val = QJ.val(target) + digit;
+  if (/^\d$/.test(val) && (val !== '0' && val !== '1')) {
+    e.preventDefault();
+    return QJ.val(target, "0" + val);
+  } else if (/^\d\d$/.test(val)) {
+    e.preventDefault();
+    return QJ.val(target, "" + val);
+  }
+};
+
+formatForwardExpiry = function(e) {
+  var digit, target, val;
+  digit = String.fromCharCode(e.which);
+  if (!/^\d+$/.test(digit)) {
+    return;
+  }
+  target = e.target;
+  val = QJ.val(target);
+  if (/^\d\d$/.test(val)) {
+    return QJ.val(target, val + " / ");
+  }
+};
+
+formatForwardSlash = function(e) {
+  var slash, target, val;
+  slash = String.fromCharCode(e.which);
+  if (slash !== '/') {
+    return;
+  }
+  target = e.target;
+  val = QJ.val(target);
+  if (/^\d$/.test(val) && val !== '0') {
+    return QJ.val(target, "0" + val + " / ");
+  }
+};
+
+formatBackExpiry = function(e) {
+  var target, value;
+  if (e.metaKey) {
+    return;
+  }
+  target = e.target;
+  value = QJ.val(target);
+  if (e.which !== 8) {
+    return;
+  }
+  if ((target.selectionStart != null) && target.selectionStart !== value.length) {
+    return;
+  }
+  if (/\d(\s|\/)+$/.test(value)) {
+    e.preventDefault();
+    return QJ.val(target, value.replace(/\d(\s|\/)*$/, ''));
+  } else if (/\s\/\s?\d?$/.test(value)) {
+    e.preventDefault();
+    return QJ.val(target, value.replace(/\s\/\s?\d?$/, ''));
+  }
+};
+
+restrictNumeric = function(e) {
+  var input;
+  if (e.metaKey || e.ctrlKey) {
+    return true;
+  }
+  if (e.which === 32) {
+    return e.preventDefault();
+  }
+  if (e.which === 0) {
+    return true;
+  }
+  if (e.which < 33) {
+    return true;
+  }
+  input = String.fromCharCode(e.which);
+  if (!/[\d\s]/.test(input)) {
+    return e.preventDefault();
+  }
+};
+
+restrictCardNumber = function(e) {
+  var card, digit, target, value;
+  target = e.target;
+  digit = String.fromCharCode(e.which);
+  if (!/^\d+$/.test(digit)) {
+    return;
+  }
+  if (hasTextSelected(target)) {
+    return;
+  }
+  value = (QJ.val(target) + digit).replace(/\D/g, '');
+  card = cardFromNumber(value);
+  if (card) {
+    if (!(value.length <= card.length[card.length.length - 1])) {
+      return e.preventDefault();
+    }
+  } else {
+    if (!(value.length <= 16)) {
+      return e.preventDefault();
+    }
+  }
+};
+
+restrictExpiry = function(e, length) {
+  var digit, target, value;
+  target = e.target;
+  digit = String.fromCharCode(e.which);
+  if (!/^\d+$/.test(digit)) {
+    return;
+  }
+  if (hasTextSelected(target)) {
+    return;
+  }
+  value = QJ.val(target) + digit;
+  value = value.replace(/\D/g, '');
+  if (value.length > length) {
+    return e.preventDefault();
+  }
+};
+
+restrictCombinedExpiry = function(e) {
+  return restrictExpiry(e, 6);
+};
+
+restrictMonthExpiry = function(e) {
+  return restrictExpiry(e, 2);
+};
+
+restrictYearExpiry = function(e) {
+  return restrictExpiry(e, 4);
+};
+
+restrictCVC = function(e) {
+  var digit, target, val;
+  target = e.target;
+  digit = String.fromCharCode(e.which);
+  if (!/^\d+$/.test(digit)) {
+    return;
+  }
+  if (hasTextSelected(target)) {
+    return;
+  }
+  val = QJ.val(target) + digit;
+  if (!(val.length <= 4)) {
+    return e.preventDefault();
+  }
+};
+
+setCardType = function(e) {
+  var allTypes, card, cardType, target, val;
+  target = e.target;
+  val = QJ.val(target);
+  cardType = Payment.fns.cardType(val) || 'unknown';
+  if (!QJ.hasClass(target, cardType)) {
+    allTypes = (function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = cards.length; i < len; i++) {
+        card = cards[i];
+        results.push(card.type);
       }
-      groups.shift();
-      groups = $.grep(groups, function(n) {
-        return n;
-      });
-      return groups.join(' ');
+      return results;
+    })();
+    QJ.removeClass(target, 'unknown');
+    QJ.removeClass(target, allTypes.join(' '));
+    QJ.addClass(target, cardType);
+    QJ.toggleClass(target, 'identified', cardType !== 'unknown');
+    return QJ.trigger(target, 'payment.cardType', cardType);
+  }
+};
+
+Payment = (function() {
+  function Payment() {}
+
+  Payment.fns = {
+    cardExpiryVal: function(value) {
+      var month, prefix, ref, year;
+      value = value.replace(/\s/g, '');
+      ref = value.split('/', 2), month = ref[0], year = ref[1];
+      if ((year != null ? year.length : void 0) === 2 && /^\d+$/.test(year)) {
+        prefix = (new Date).getFullYear();
+        prefix = prefix.toString().slice(0, 2);
+        year = prefix + year;
+      }
+      month = parseInt(month, 10);
+      year = parseInt(year, 10);
+      return {
+        month: month,
+        year: year
+      };
+    },
+    validateCardNumber: function(num) {
+      var card, ref;
+      num = (num + '').replace(/\s+|-/g, '');
+      if (!/^\d+$/.test(num)) {
+        return false;
+      }
+      card = cardFromNumber(num);
+      if (!card) {
+        return false;
+      }
+      return (ref = num.length, indexOf.call(card.length, ref) >= 0) && (card.luhn === false || luhnCheck(num));
+    },
+    validateCardExpiry: function(month, year) {
+      var currentTime, expiry, prefix, ref;
+      if (typeof month === 'object' && 'month' in month) {
+        ref = month, month = ref.month, year = ref.year;
+      }
+      if (!(month && year)) {
+        return false;
+      }
+      month = QJ.trim(month);
+      year = QJ.trim(year);
+      if (!/^\d+$/.test(month)) {
+        return false;
+      }
+      if (!/^\d+$/.test(year)) {
+        return false;
+      }
+      if (!(parseInt(month, 10) <= 12)) {
+        return false;
+      }
+      if (year.length === 2) {
+        prefix = (new Date).getFullYear();
+        prefix = prefix.toString().slice(0, 2);
+        year = prefix + year;
+      }
+      expiry = new Date(year, month);
+      currentTime = new Date;
+      expiry.setMonth(expiry.getMonth() - 1);
+      expiry.setMonth(expiry.getMonth() + 1, 1);
+      return expiry > currentTime;
+    },
+    validateCardCVC: function(cvc, type) {
+      var ref, ref1;
+      cvc = QJ.trim(cvc);
+      if (!/^\d+$/.test(cvc)) {
+        return false;
+      }
+      if (type && cardFromType(type)) {
+        return ref = cvc.length, indexOf.call((ref1 = cardFromType(type)) != null ? ref1.cvcLength : void 0, ref) >= 0;
+      } else {
+        return cvc.length >= 3 && cvc.length <= 4;
+      }
+    },
+    cardType: function(num) {
+      var ref;
+      if (!num) {
+        return null;
+      }
+      return ((ref = cardFromNumber(num)) != null ? ref.type : void 0) || null;
+    },
+    formatCardNumber: function(num) {
+      var card, groups, ref, upperLength;
+      card = cardFromNumber(num);
+      if (!card) {
+        return num;
+      }
+      upperLength = card.length[card.length.length - 1];
+      num = num.replace(/\D/g, '');
+      num = num.slice(0, +upperLength + 1 || 9e9);
+      if (card.format.global) {
+        return (ref = num.match(card.format)) != null ? ref.join(' ') : void 0;
+      } else {
+        groups = card.format.exec(num);
+        if (groups != null) {
+          groups.shift();
+        }
+        return groups != null ? groups.join(' ') : void 0;
+      }
     }
   };
 
-  $.payment.formatExpiry = function(expiry) {
-    var mon, parts, sep, year;
-    parts = expiry.match(/^\D*(\d{1,2})(\D+)?(\d{1,4})?/);
-    if (!parts) {
-      return '';
-    }
-    mon = parts[1] || '';
-    sep = parts[2] || '';
-    year = parts[3] || '';
-    if (year.length > 0) {
-      sep = ' / ';
-    } else if (sep === ' /') {
-      mon = mon.substring(0, 1);
-      sep = '';
-    } else if (mon.length === 2 || sep.length > 0) {
-      sep = ' / ';
-    } else if (mon.length === 1 && (mon !== '0' && mon !== '1')) {
-      mon = "0" + mon;
-      sep = ' / ';
-    }
-    return mon + sep + year;
+  Payment.restrictNumeric = function(el) {
+    return QJ.on(el, 'keypress', restrictNumeric);
   };
 
-}).call(this);
-;// main.js
+  Payment.cardExpiryVal = function(el) {
+    return Payment.fns.cardExpiryVal(QJ.val(el));
+  };
+
+  Payment.formatCardCVC = function(el) {
+    Payment.restrictNumeric(el);
+    QJ.on(el, 'keypress', restrictCVC);
+    return el;
+  };
+
+  Payment.formatCardExpiry = function(el) {
+    var month, year;
+    Payment.restrictNumeric(el);
+    if (el.length && el.length === 2) {
+      month = el[0], year = el[1];
+      this.formatCardExpiryMultiple(month, year);
+    } else {
+      QJ.on(el, 'keypress', restrictCombinedExpiry);
+      QJ.on(el, 'keypress', formatExpiry);
+      QJ.on(el, 'keypress', formatForwardSlash);
+      QJ.on(el, 'keypress', formatForwardExpiry);
+      QJ.on(el, 'keydown', formatBackExpiry);
+    }
+    return el;
+  };
+
+  Payment.formatCardExpiryMultiple = function(month, year) {
+    QJ.on(month, 'keypress', restrictMonthExpiry);
+    QJ.on(month, 'keypress', formatMonthExpiry);
+    return QJ.on(year, 'keypress', restrictYearExpiry);
+  };
+
+  Payment.formatCardNumber = function(el) {
+    Payment.restrictNumeric(el);
+    QJ.on(el, 'keypress', restrictCardNumber);
+    QJ.on(el, 'keypress', formatCardNumber);
+    QJ.on(el, 'keydown', formatBackCardNumber);
+    QJ.on(el, 'keyup', setCardType);
+    QJ.on(el, 'paste', reFormatCardNumber);
+    return el;
+  };
+
+  Payment.getCardArray = function() {
+    return cards;
+  };
+
+  Payment.setCardArray = function(cardArray) {
+    cards = cardArray;
+    return true;
+  };
+
+  Payment.addToCardArray = function(cardObject) {
+    return cards.push(cardObject);
+  };
+
+  Payment.removeFromCardArray = function(type) {
+    var key, value;
+    for (key in cards) {
+      value = cards[key];
+      if (value.type === type) {
+        cards.splice(key, 1);
+      }
+    }
+    return true;
+  };
+
+  return Payment;
+
+})();
+
+module.exports = Payment;
+
+global.Payment = Payment;
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"qj/src/qj.coffee":1}]},{},[2])(2)
+});
+
+// main.js
 $(document).ready(function() {
 	// call plugin and pass options if need be
 	$('.support--forms').minnpost_giving({
@@ -621,7 +859,7 @@ $(document).ready(function() {
     'debug' : false, // this can be set to true on page level options
     'minnpost_root' : window.location.protocol + '//' + window.location.hostname,
     'review_form_selector' : '#panel--review',
-    'donate_form_selector' : '.support-pay',
+    'donate_form_selector' : '#panel--pay',
     'confirm_form_selector' : '#confirm',
     'active' : 'panel--review',
     'confirm' : 'panel--confirmation',
@@ -629,7 +867,7 @@ $(document).ready(function() {
     'percentage' : 0.029,
     'fixed_amount' : 0.3,
     'pay_cc_processing_selector' : 'input[id="edit-pay-fees"]',
-    'level_amount_selector' : '.amount .level-amount',
+    'level_amount_selector' : '#panel--review .amount .level-amount',
     'original_amount_selector' : '#original_amount',
     'frequency_selector' : '.frequency',
     'full_amount_selector' : '.full-amount',
@@ -770,7 +1008,7 @@ $(document).ready(function() {
         // add combined address fields for geocomplete
         $('> div', this.options.billing_selector).not('.form-item--geocode').hide();
         $('> div', this.options.shipping_selector).not('.form-item--geocode').hide();
-        $(this.options.billing_selector, this.element).prepend('<div class="form-item form-item--billing-address form-item--geocode"><label for="full_address">Billing Address: <span title="This field is required." class="form-required">*</span></label><input type="text" autocapitalize="off" autocorrect="off" name="full_address" id="full_address" class="geocomplete form-text required" required="required" placeholder=""></div>');
+        $(this.options.billing_selector, this.element).prepend('<div class="form-item form-item--billing-address form-item--geocode"><label for="full_address">Billing Address: <span title="This field is required." class="form-required">*</span></label><input type="text" autocapitalize="off" autocorrect="off" name="full_address" id="full_address" class="geocomplete form-text required"  placeholder=""></div>');
         this.getFullAddress($('#full_address'));
         $(this.options.shipping_selector, this.element).prepend('<div class="form-item form-item--shipping-address form-item--geocode"><label for="full_shipping_address">Shipping Address: </label><input type="text" autocapitalize="off" autocorrect="off" name="full_shipping_address" id="full_shipping_address" class="geocomplete form-text" placeholder=""></div>');
         this.getFullAddress($('#full_shipping_address'));
@@ -785,7 +1023,6 @@ $(document).ready(function() {
 
       this.paymentPanels(query_panel); // tabs
       if ($(this.options.pay_cc_processing_selector).length > 0) {
-        console.log('pay fees');
         this.creditCardProcessingFees(this.options, reset); // processing fees
       }
       if ($(this.options.review_form_selector).length > 0) {
@@ -1298,13 +1535,16 @@ $(document).ready(function() {
         Payment.formatCardCVC($(options.cc_cvv_selector, element));
         
         // get and show the card type
-        $(options.credit_card_fieldset, element).prepend('<span class="card-image"></span>');
+        $(options.cc_num_selector, element).parent().prepend('<span class="card-image"></span>');
         $(options.cc_num_selector, element).keyup(function() {
           options.cardType = Payment.fns.cardType($(options.cc_num_selector, element).val());
-          if (options.cardType !== null) {            
+          /*if (options.cardType !== null) {            
             $('.card-image').attr('class', 'card-image ' + options.cardType);
-          }
+          }*/
+          $('.card-image').prop('class', 'card-image ' + $('#cc-number').prop('class'));
         });
+
+
 
         /*$(options.credit_card_fieldset + ' input').focusin(function() {
           $(this).parent().addClass('focus');

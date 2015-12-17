@@ -6,10 +6,6 @@ from wtforms import validators
 from flask import request
 
 class DonateForm(Form):
-    first_name = StringField(u'First',
-        [validators.required(message="Your first name is required.")])
-    last_name = StringField(u'Last',
-        [validators.required(message="Your last name is required.")])
     amount = DecimalField(u'Amount',
         [validators.required(message="Please choose a donation amount."),
         validators.NumberRange(min=1)])
@@ -18,6 +14,15 @@ class DonateForm(Form):
     openended_status = HiddenField(u'Openended Status')
     pay_fees = BooleanField(u'Agree to pay fees')
     pay_fees_value = HiddenField(u'Pay Fees Value')
+
+    reason = StringField(u'Encouraged to contribute by')
+    installment_period = HiddenField(u'Installment Period')
+    description = HiddenField(u'Description')
+
+    first_name = StringField(u'First',
+        [validators.required(message="Your first name is required.")])
+    last_name = StringField(u'Last',
+        [validators.required(message="Your last name is required.")])
 
 
 class TexasWeeklyForm(Form):

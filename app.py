@@ -68,11 +68,24 @@ def minnpost_form():
     installments = 'None'
     openended_status = 'Open'
     level = checkLabel(amount, frequency, yearly)
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    else:
+        first_name = ''
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    else:
+        last_name = ''
+    if request.args.get('email'):
+        email = request.args.get('email')
+    else:
+        email = ''
     return render_template('minnpost-form.html', form=form, amount=amount,
         frequency=frequency, installments=installments,
         openended_status=openended_status,
         yearly=yearly,
         level=level,
+        first_name = first_name,last_name = last_name, email=email,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
@@ -242,3 +255,12 @@ def charge():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
+
+
+@app.route('/finish', methods=['POST'])
+def finish():
+
+    form = DonateForm(request.form)
+    pprint('Request: {}'.format(request))
+
+    

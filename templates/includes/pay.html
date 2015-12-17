@@ -1,81 +1,108 @@
 <section class="panel panel--form" id="panel--pay">
   <!-- this should always change with the previous tab amount -->
-  <h3>Donate $<span class="full-amount">20</span> <span class="frequency" data-year-freq="12">monthly</span></h3>
-  <ul class="actions actions--edit-amount clear-block">
-    <li><a href="https://www.minnpost.com/support">Edit</a></li>
-    <li><input type="checkbox" name="PaymentControl$cbPayFees" id="PaymentControl_cbPayFees_2"></li><!-- gets processed by javascript -->
-  </ul>
+
+  <fieldset class="amount">
+    <h3>Donate $<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency }}</span></h1>
+    <ul class="actions actions--edit-amount clear-block">
+      <li><a href="https://www.minnpost.com/support/">Edit</a></li>
+      <li><label><input type="checkbox" value="1" id="edit-pay-fees" name="pay_fees"> Cover MinnPost's credit card fees</label></li>
+    </ul>
+  </fieldset>
+
   <fieldset class="payment" data-geo="data-geo">
 
     <div class="form-item form-item--first-name">
-      <label>First name <input type="text" id="PaymentControl_txtFname" name="PaymentControl$txtFname" required value=""></label> <!-- load server-side from querystring -->
+      <label>First name <input type="text" id="first_name" name="first_name"  value="{{ first_name }}"></label> <!-- load server-side from querystring -->
     </div>
 
     <div class="form-item form-item--last-name">
-      <label>Last name <input type="text" id="PaymentControl_txtLname" name="PaymentControl$txtLname" required value=""></label> <!-- load server-side from querystring -->
+      <label>Last name <input type="text" id="last_name" name="last_name"  value="{{ last_name }}"></label> <!-- load server-side from querystring -->
     </div>
     
     <div class="form-item form-item--display-name">
-      <label>Display as (in our year-end report) <input type="text" id="PaymentControl_AdditionalInfoFields_AdditionalInfoTextbox_0" name="PaymentControl$AdditionalInfoFields$ctl00$AdditionalInfoTextbox"></label>
-
-      <label class="additional-option"><input type="checkbox" name="PaymentControl$AdditionalInfoFields$ctl03$AdditionalInfoCheckbox" id="PaymentControl_AdditionalInfoFields_AdditionalInfoCheckbox_3"> Make this donation anonymously</label>
+      <div>
+        <label>Display as (in our year-end report) <input type="text" id="display_as" name="edit-display-as"></label>
+      </div>
+      <div>
+        <label class="additional-option"><input type="checkbox" name="anonymous" id="edit-anonymous"> Make this donation anonymously</label>
+      </div>
     </div>
 
     <fieldset class="billing" data-geo="data-geo">
       <div class="form-item form-item--nojs form-item--street">
         <label>Billing Street Address
-          <input type="hidden" name="PaymentControl$txtBillAddress" id="PaymentControl_txtBillAddress" data-geo="name">
+          <input type="text" name="billing_street" id="edit-billing-street" data-geo-value="address">
         </label>
       </div>
 
       <div class="form-item form-item--nojs form-item--city">
         <label>Billing City
-          <input type="hidden" name="PaymentControl$txtBillCity" id="PaymentControl_txtBillCity" data-geo="locality">
+          <input type="text" name="billing_city" id="edit-billing-city" data-geo-value="city">
         </label>
       </div>
 
       <div class="form-item form-item--nojs form-item--state">
         <label>Billing State
-          <input type="hidden" name="PaymentControl$ddlBillState" id="PaymentControl_ddlBillState" data-geo="administrative_area_level_1">
+          <input type="text" name="billing_state" id="edit-billing-state" data-geo-value="state">
         </label>
       </div>
 
       <div class="form-item form-item--nojs form-item--zip">
         <label>Billing Zip Code
-          <input type="hidden" name="PaymentControl$txtZip" id="PaymentControl_txtZip" data-geo="postal_code">
+          <input type="tel" name="billing_zip" id="edit-billing-zip" data-geo-value="zip">
         </label>
       </div>
+
+      <div class="form-item form-item--nojs form-item--country">
+        <label>Billing Country
+          <input type="text" name="billing_country" id="edit-billing-country" data-geo-value="country">
+        </label>
+      </div>
+
+      <div class="form-item-group form-item--geocode">
+        <div class="form-item" id="useforshipping-wrapper">
+          <label class="option" for="useforshipping">
+          <input type="checkbox" name="useforshipping" id="useforshipping" value="1"  checked="checked"  class="form-checkbox" /> Use this address for shipping</label>
+        </div>
+      </div>
+
     </fieldset>
 
     <fieldset class="shipping" data-geo="data-ship-geo">
 
       <div class="form-item form-item--nojs form-item--street">
         <label>Shipping Street Address
-          <input type="hidden" name="PaymentControl$txtShipAddress" id="PaymentControl_txtShipAddress" data-ship-geo="name">
+          <input type="text" name="shipping_street" id="edit-shipping-street" data-geo-value="address">
         </label>
       </div>
 
       <div class="form-item form-item--nojs form-item--city">
         <label>Shipping City
-          <input type="hidden" name="PaymentControl$txtShipCity" id="PaymentControl_txtShipCity" data-ship-geo="locality">
+          <input type="text" name="shipping_city" id="edit-shipping-city" data-geo-value="city">
         </label>
       </div>
 
       <div class="form-item form-item--nojs form-item--state">
         <label>Shipping State
-          <input type="hidden" name="PaymentControl$txtShipState" id="PaymentControl_txtShipState" data-ship-geo="administrative_area_level_1">
+          <input type="text" name="shipping_state" id="edit-shipping-state" data-geo-value="state">
         </label>
       </div>
 
       <div class="form-item form-item--nojs form-item--zip">
         <label>Shipping Zip Code
-          <input type="hidden" name="PaymentControl$txtShipZip" id="PaymentControl_txtShipZip" data-ship-geo="postal_code">
+          <input type="tel" name="shipping_zip" id="edit-shipping-zip" data-geo-value="zip">
+        </label>
+      </div>
+
+      <div class="form-item form-item--nojs form-item--country">
+        <label>Shipping Country
+          <input type="text" name="shipping_country" id="edit-shipping-country" data-geo-value="country">
         </label>
       </div>
     </fieldset>
 
     <div class="form-item form-item--email-address">
-      <label>Email Address <input type="email" id="PaymentControl_txtEmail" name="PaymentControl$txtEmail" required value=""></label> <!-- load server-side from querystring -->
+      <label>Email Address <input type="email" id="edit-email" name="email"  value="{{ email }}"></label> <!-- load server-side from querystring -->
       <label class="additional-option"><input type="checkbox" name="creatempaccount" id="creatempaccount"> Create a free MinnPost.com account</label>
     </div>
 
@@ -85,15 +112,20 @@
       </label>
     </div>
 
-    <fieldset class="form-item form-item--credit-card">
-      <legend>Credit Card Information</legend>
-      <div class="credit-card-group">
-        <label for="credit-card-number">Credit Card Number</label>
-        <input placeholder="1234 5678 9012 3456" type="tel" id="credit-card-number" autocomplete="cc-number" required>
-        <label for="card-expiration">Expiration Date</label>
-        <input placeholder="MM/YY" type="tel" id="card-expiration" required>
-        <label for="card-ccv">CVV Number</label>
-        <input placeholder="CVV" type="tel" id="card-cvv" required>
+    <fieldset class="credit-card-group">
+      <div class="form-item" id="cc-number-wrapper">
+        <label for="cc-number">Credit Card Number: </label>
+        <input type="tel" maxlength="128" data-stripe="number" id="cc-number" size="60" value="" autocomplete="cc-number" placeholder="1234 5678 9012 3456" required="required" class="form-text" />
+      </div>
+      <div class="card-group clear-block">
+        <div class="form-item" id="cc-exp-wrapper">
+          <label for="cc-exp">Expiration Date: </label>
+          <input type="tel" maxlength="128" data-stripe="expiry" id="cc-exp" size="60" value="" autocomplete="cc-exp" placeholder="** / **" required="required" class="form-text" />
+        </div>
+        <div class="form-item" id="cc-cvc-wrapper">
+          <label for="cc-cvc">CVC Number: </label>
+          <input type="tel" maxlength="128" data-stripe="cvc" id="cc-cvc" size="60" value="" autocomplete="off" placeholder="***" required="required" class="form-text" />
+        </div>
       </div>
     </fieldset>
 
