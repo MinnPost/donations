@@ -252,15 +252,39 @@ def charge():
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+
+@app.route('/thanks/', methods=['POST'])
+def thanks():
+
+    form = MinnPostForm(request.form)
+    pprint('Request: {}'.format(request))
+
+    if form.validate():
+        #add_customer_and_charge.delay(form=request.form,
+                #customer=customer)
+
+        return render_template('thanks.html',
+                amount=request.form['amount'])
+    else:
+        message = "There was an issue saving your donation information."
+        return render_template('error.html', message=message)
 
 
-@app.route('/finish', methods=['POST'])
+@app.route('/finish/', methods=['POST'])
 def finish():
 
     form = DonateForm(request.form)
     pprint('Request: {}'.format(request))
 
+
+@app.route('/confirm/', methods=['POST'])
+def confirm():
+
+    form = MinnPostForm(request.form)
+    pprint('Request: {}'.format(request))
+
     
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
