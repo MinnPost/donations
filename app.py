@@ -125,7 +125,7 @@ def checkLabel(amount, frequency, yearly, prior_year_amount=None, coming_year_am
 
 
 
-@app.route('/memberform')
+@app.route('/memberform/')
 def member_form():
     form = DonateForm()
     if request.args.get('amount'):
@@ -144,7 +144,7 @@ def member_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
-@app.route('/donateform')
+@app.route('/donateform/')
 def donate_renew_form():
     form = DonateForm()
     if request.args.get('amount'):
@@ -160,7 +160,7 @@ def donate_renew_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
-@app.route('/circleform')
+@app.route('/circleform/')
 def circle_form():
     form = DonateForm()
     if request.args.get('amount'):
@@ -177,7 +177,7 @@ def circle_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
-@app.route('/internal-texasweekly')
+@app.route('/internal-texasweekly/')
 def internal_texasweekly_form():
     form = TexasWeeklyForm()
     if request.args.get('amount'):
@@ -188,7 +188,7 @@ def internal_texasweekly_form():
             amount=amount, key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
-@app.route('/submit-tw', methods=['POST'])
+@app.route('/submit-tw/', methods=['POST'])
 def submit_tw():
     form = TexasWeeklyForm(request.form)
 
@@ -213,7 +213,7 @@ def submit_tw():
         return render_template('error.html', message=message)
 
 
-@app.route('/error')
+@app.route('/error/')
 def error():
     message = "Something went wrong!"
     return render_template('error.html', message=message)
@@ -225,7 +225,7 @@ def page_not_found(error):
     return render_template('error.html', message=message)
 
 
-@app.route('/charge', methods=['POST'])
+@app.route('/charge/', methods=['POST'])
 def charge():
 
     form = DonateForm(request.form)
