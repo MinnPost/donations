@@ -833,14 +833,9 @@ global.Payment = Payment;
 },{"qj/src/qj.coffee":1}]},{},[2])(2)
 });
 
-// main.js
-$(document).ready(function() {
-	// call plugin and pass options if need be
-	$('.support--forms').minnpost_giving({
-		'minnpost_root' : 'http://minnpost.dev',
-		'debug' : true
-	});
-});;// the semi-colon before function invocation is a safety net against concatenated
+
+
+// the semi-colon before function invocation is a safety net against concatenated
 // scripts and/or other plugins which may not be closed properly.
 ;(function ( $, window, document, undefined ) {
 
@@ -881,7 +876,7 @@ $(document).ready(function() {
     'swag_selector' : '.swag',
     'separate_swag_selector' : 'fieldset.swag--separate',
     'separate_swag_redeem' : '.swag-redeem--separate',
-    'atlantic_status' : 'input[name="swag-atlanticsubscription"]',
+    'atlantic_status' : 'input[name="swag_atlanticsubscription"]',
     'atlantic_existing' : '#atlantic_existing',
     'atlantic_selector' : '.form-item--atlantic_id',
     'name_selector' : '.form-item--display-name',
@@ -1716,3 +1711,101 @@ $(document).ready(function() {
   };
 
 })( jQuery, window, document );
+
+
+
+
+function loadStripe(publishableKey) {
+    var button_text = $('button.give, input.give').text();
+    $(window).unload(function() {
+      $('button.give, input.give').removeAttr('disabled');
+      $('button.give, input.give').text(button_text);
+    }); 
+    Stripe.setPublishableKey(publishableKey);
+    var stripeResponseHandler = function(status, response) {
+      var supportform = $('#donate');
+
+      if (response.error) {
+        // Show the errors on the form
+        supportform.find('.payment-errors').text(response.error.message);
+        supportform.find('button').removeAttr('disabled');
+        supportform.find('button').text(button_text);
+      } else {
+        // response contains id and card, which contains additional card details
+        var token = response.id;
+        // Insert the token into the form so it gets submitted to the server
+        supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));
+        // and submit
+        //console.dir(response);
+        supportform.get(0).submit();
+      }
+    };
+
+    jQuery(function($) {
+     $('#donate').submit(function(e) {
+      e.preventDefault(); //prevent default form submit
+      
+      var supportform = $(this);
+
+      // Disable the submit button to prevent repeated clicks
+      supportform.find('button').attr('disabled', true);
+      supportform.find('button').text('Processing');
+
+      var full_name = '';
+      if ($('#full_name').length > 0) {
+        full_name = $('#full_name').val();
+      } else {
+        full_name = $('#first_name').val() + ' ' + $('#last_name').val();
+      }
+
+      var street = '';
+      if ($('#edit-billing-street').length > 0) {
+        street = $('#edit-billing-street').val();
+      }
+
+      var city = '';
+      if ($('#edit-billing-city').length > 0) {
+        city = $('#edit-billing-city').val();
+      }
+
+      var state = '';
+      if ($('#edit-billing-state').length > 0) {
+        state = $('#edit-billing-state').val();
+      }
+
+      var zip = '';
+      if ($('#edit-billing-zip').length > 0) {
+        zip = $('#edit-billing-zip').val();
+      }
+
+      var country = '';
+      if ($('#edit-billing-country').length > 0) {
+        country = $('#edit-billing-country').val();
+      }
+
+      Stripe.card.createToken({
+        number: $('#cc-number').val(),
+        cvc: $('#cc-cvc').val(),
+        exp: $('#cc-exp').val(),
+        name: full_name,
+        address_line1: street,
+        address_city: city,
+        address_state: state,
+        address_zip: zip,
+        address_country: country,
+      }, stripeResponseHandler);
+
+     });
+   });
+
+}
+
+
+// main.js
+$(document).ready(function() {
+	// call plugin and pass options if need be
+	$('.support--forms').minnpost_giving({
+		'minnpost_root' : 'http://minnpost.dev',
+		'debug' : true
+	});
+});
