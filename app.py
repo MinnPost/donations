@@ -259,9 +259,20 @@ def thanks():
     form = MinnPostForm(request.form)
     pprint('Request: {}'.format(request))
 
+    email_is_valid = validate_email(request.form['email'])
+
+    if email_is_valid:
+        customer = stripe.Customer.create(
+                email=request.form['email'],
+                card=request.form['stripeToken']
+        )
+    else:
+        message = "There was an issue saving your email address."
+        return render_template('error.html', message=message)
+
     if form.validate():
-        #add_customer_and_charge.delay(form=request.form,
-                #customer=customer)
+        add_customer_and_charge.delay(form=request.form,
+                customer=customer)
 
         return render_template('thanks.html',
                 amount=request.form['amount'])
