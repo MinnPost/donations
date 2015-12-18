@@ -12,19 +12,19 @@
 </section>
 
 <main>
-<div class="wrapper support--forms">
-  <form action="/thanks/" method="post" class="support support--donate" id="donate">
-    {{ form.csrf_token }}
+	<div class="wrapper support--forms">
+	  <form action="/thanks/" method="post" class="support support--donate" id="donate">
+	    {{ form.csrf_token }}
 
-    <input type="hidden" name="original_amount" id="original_amount" value="{{ amount }}"> <!-- load server-side from querystring -->
-    <input type="hidden" name="amount" id="amount" value="{{ amount }}"> <!-- load server-side from querystring -->
-    <input type="hidden" name="recurring" id="recurring" value="{{ frequency }}"> <!-- load server-side from querystring -->
+	    <input type="hidden" name="original_amount" id="original_amount" value="{{ amount }}"> <!-- load server-side from querystring -->
+	    <input type="hidden" name="amount" id="amount" value="{{ amount }}"> <!-- load server-side from querystring -->
+	    <input type="hidden" name="recurring" id="recurring" value="{{ frequency }}"> <!-- load server-side from querystring -->
 
-    {% include 'includes/review.html' %}
-    {% include 'includes/pay.html' %}
+	    {% include 'includes/review.html' %}
+	    {% include 'includes/pay.html' %}
 
-  </form>
-</div>
+	  </form>
+	</div>
 </main>
 
 {% endblock %}

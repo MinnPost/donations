@@ -860,7 +860,7 @@ $(document).ready(function() {
     'minnpost_root' : window.location.protocol + '//' + window.location.hostname,
     'review_form_selector' : '#panel--review',
     'donate_form_selector' : '#panel--pay',
-    'confirm_form_selector' : '#confirm',
+    'confirm_form_selector' : '#panel--confirmation',
     'active' : 'panel--review',
     'confirm' : 'panel--confirmation',
     'query' : 'step',
@@ -1004,7 +1004,7 @@ $(document).ready(function() {
       // call functions
 
       // geocomplete addresses if library loaded successfully
-      if (typeof google !== 'undefined' && google.hasOwnProperty('maps')) {
+      if (typeof google !== 'undefined' && google.hasOwnProperty('maps') && $('fieldset[data-geo="data-geo"]').length > 0) {
         // add combined address fields for geocomplete
         $('> div', this.options.billing_selector).not('.form-item--geocode').hide();
         $('> div', this.options.shipping_selector).not('.form-item--geocode').hide();
@@ -1170,9 +1170,14 @@ $(document).ready(function() {
       var that = this;
       // make some tabs for form
       $('.panel').hide();
-      $('#' + active).fadeIn();
       // activate the tabs
-      $('.progress--donation li.' + active + ' a').addClass('active');
+      if ($('.progress--donation li .active').length == 0) {
+        $('#' + active).fadeIn();
+        $('.progress--donation li.' + active + ' a').addClass('active');
+      } else {
+        active = $('.progress--donation li .active').parent().attr('class');
+        $('#' + active).fadeIn();
+      }
       $('.progress--donation li a, a.btn.btn--next').click(function(event) {
         event.preventDefault();
         $('.progress--donation li a').removeClass('active');
