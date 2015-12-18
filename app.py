@@ -2,7 +2,7 @@ import os
 import sys
 
 from flask import Flask, render_template, request
-from forms import DonateForm, TexasWeeklyForm
+from forms import DonateForm, MinnPostForm, TexasWeeklyForm
 from raven.contrib.flask import Sentry
 from sassutils.wsgi import SassMiddleware
 import stripe
@@ -50,9 +50,9 @@ if app.config['ENABLE_SENTRY']:
     sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
 
 
-@app.route('/minnpostform')
+@app.route('/minnpostform/')
 def minnpost_form():
-    form = DonateForm()
+    form = MinnPostForm()
     if request.args.get('amount'):
         amount = int(request.args.get('amount'))
     else:
