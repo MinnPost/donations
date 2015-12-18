@@ -1,7 +1,19 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  <form action="/charge" method="post" class="support support--donate" id="donate">
+<section class="progress progress--donation">
+	<div class="wrapper">
+	  <ol>
+	    <li class="panel--review"><a href="1.html?step=panel--review">Review</a></li>
+	    <li class="panel--pay"><a href="1.html?step=panel--pay">Payment</a></li>
+	    <li class="panel--confirmation"><span>Thank You</span></li>
+	  </ol>
+	</div>
+</section>
+
+<main>
+<div class="wrapper support--forms">
+  <form action="/thanks/" method="post" class="support support--donate" id="donate">
     {{ form.csrf_token }}
 
     <input type="hidden" name="original_amount" id="original_amount" value="{{ amount }}"> <!-- load server-side from querystring -->
@@ -12,5 +24,7 @@
     {% include 'includes/pay.html' %}
 
   </form>
+</div>
+</main>
 
 {% endblock %}

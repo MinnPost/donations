@@ -12,11 +12,11 @@
   <fieldset class="payment" data-geo="data-geo">
 
     <div class="form-item form-item--first-name">
-      <label>First name <input type="text" id="first_name" name="first_name"  value="{{ first_name }}"></label> <!-- load server-side from querystring -->
+      <label>First name <input type="text" id="first_name" name="first_name" required value="{{ first_name }}"></label> <!-- load server-side from querystring -->
     </div>
 
     <div class="form-item form-item--last-name">
-      <label>Last name <input type="text" id="last_name" name="last_name"  value="{{ last_name }}"></label> <!-- load server-side from querystring -->
+      <label>Last name <input type="text" id="last_name" name="last_name" required value="{{ last_name }}"></label> <!-- load server-side from querystring -->
     </div>
     
     <div class="form-item form-item--display-name">
@@ -115,16 +115,16 @@
     <fieldset class="credit-card-group">
       <div class="form-item" id="cc-number-wrapper">
         <label for="cc-number">Credit Card Number: </label>
-        <input type="tel" maxlength="128" data-stripe="number" id="cc-number" size="60" value="" autocomplete="cc-number" placeholder="1234 5678 9012 3456" required="required" class="form-text" />
+        <input type="tel" maxlength="128" data-stripe="number" id="cc-number" size="60" value="" autocomplete="cc-number" placeholder="1234 5678 9012 3456" required />
       </div>
       <div class="card-group clear-block">
         <div class="form-item" id="cc-exp-wrapper">
           <label for="cc-exp">Expiration Date: </label>
-          <input type="tel" maxlength="128" data-stripe="expiry" id="cc-exp" size="60" value="" autocomplete="cc-exp" placeholder="** / **" required="required" class="form-text" />
+          <input type="tel" maxlength="128" data-stripe="expiry" id="cc-exp" size="60" value="" autocomplete="cc-exp" placeholder="** / **" required />
         </div>
         <div class="form-item" id="cc-cvc-wrapper">
           <label for="cc-cvc">CVC Number: </label>
-          <input type="tel" maxlength="128" data-stripe="cvc" id="cc-cvc" size="60" value="" autocomplete="off" placeholder="***" required="required" class="form-text" />
+          <input type="tel" maxlength="128" data-stripe="cvc" id="cc-cvc" size="60" value="" autocomplete="off" placeholder="***" required />
         </div>
       </div>
     </fieldset>
