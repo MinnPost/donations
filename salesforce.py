@@ -268,25 +268,17 @@ def upsert_customer(customer=None, form=None):
 
 
 def _format_opportunity(contact=None, form=None, customer=None):
-    print('format opportunity here')
     """
     Format an opportunity for insertion.
     """
 
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     #print(form)
-    #if form['pay_fees'] == 1:
-    #    pay_fees = True
-    #else:
-    #    pay_fees = False
-    #print(pay_fees)
-    pay_fees = form.get('pay_fees_js')
-    if pay_fees is not 0:
-        pay_fees = 1
+    if form['pay_fees'] == 1:
+        pay_fees = True
     else:
-        pay_fees = 0
-    print('pay fees is ')
-    print(pay_fees)
+        pay_fees = False
+
     opportunity = {
             'AccountId': '{}'.format(contact['AccountId']),
             'Amount': '{}'.format(form['amount']),
@@ -332,7 +324,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
     amount = form['amount']
-    type__c = ''
+    type__c = 'Recurring'
     try:
         installments = form['installments']
     except:
@@ -342,16 +334,9 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     except:
         open_ended_status = 'None'
     try:
-        installment_period = form['installment_period']
+        installment_period = form['recurring']
     except:
         installment_period = 'None'
-
-    # TODO: test this
-    if open_ended_status == 'None' and (
-            installments == '3' or installments == '36') and (
-                    installment_period == 'yearly' or
-                    installment_period == 'monthly'):
-        type__c = 'Giving Circle'
 
     # TODO: test this:
     if installments != 'None':
@@ -359,7 +344,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     else:
         installments = 0
 
-    if form['pay_fees_value'] == 'True':
+    if form['pay_fees'] == 1:
         pay_fees = True
     else:
         pay_fees = False
@@ -433,8 +418,8 @@ def add_customer_and_charge(form=None, customer=None):
         add_opportunity(form=form, customer=customer)
     else:
         print("----Recurring payment...")
-        msg = '*{}* pledged *${}*{} [recurring]'.format(name, amount)
-        notify_slack(msg)
+        #msg = '*{}* pledged *${}*{} [recurring]'.format(name, amount)
+        #notify_slack(msg)
         add_recurring_donation(form=form, customer=customer)
     return True
 

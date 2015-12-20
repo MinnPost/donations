@@ -1018,7 +1018,9 @@ global.Payment = Payment;
 
       this.paymentPanels(query_panel); // tabs
       if ($(this.options.pay_cc_processing_selector).length > 0) {
+
         this.creditCardProcessingFees(this.options, reset); // processing fees
+        $(this.options.review_form_selector).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
       }
       if ($(this.options.review_form_selector).length > 0) {
         this.options.level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
@@ -1194,11 +1196,11 @@ global.Payment = Payment;
       var full_amount;
       var that = this;
       var remove = false;
-      $(this.options.pay_cc_processing_selector).parent().html('<a href="#" class="add-credit-card-processing">Add $<span class="processing-amount"></span></a> <span class="processing-explain">to each transaction to cover MinnPost\'s credit card fees?</span>');
+      $(this.options.pay_cc_processing_selector).parent().html('<a href="#" class="add-credit-card-processing">Add $<span class="processing-amount"></span></a> <span class="processing-explain">to each transaction to cover MinnPost\'s credit card fees?</span>');      
       $('.processing-amount').text(options.processing_fee);
       if (this.options.original_amount != this.options.amount) {
         $('.add-credit-card-processing').text('Remove $' + options.processing_fee);
-        $('#edit-pay-fees-js').val(1);
+        $('#edit-pay-fees').val(1);
         remove = true;
         $('.processing-explain').hide();
       }
@@ -1206,7 +1208,7 @@ global.Payment = Payment;
         remove = false;
         full_amount = that.options.original_amount;
         $('.add-credit-card-processing').text('Add $' + that.options.processing_fee);
-        $('#edit-pay-fees-js').val(0);
+        $('#edit-pay-fees').val(0);
         $('.processing-explain').show();
         $('#amount').val(full_amount);
       }
@@ -1216,13 +1218,13 @@ global.Payment = Payment;
           remove = true;
           full_amount = that.options.new_amount;
           $('.add-credit-card-processing').text('Remove $' + options.processing_fee);
-          $('#edit-pay-fees-js').val(1);
+          $('#edit-pay-fees').val(1);
           $('.processing-explain').hide();
         } else {
           remove = false;
           full_amount = that.options.original_amount;
           $('.add-credit-card-processing').text('Add $' + options.processing_fee);
-          $('#edit-pay-fees-js').val(0);
+          $('#edit-pay-fees').val(0);
           $('.processing-explain').show();
         }
         $('.add-credit-card-processing').toggleClass('remove');
