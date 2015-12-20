@@ -13,7 +13,7 @@ TIMEZONE = os.getenv('TIMEZONE', "US/Central")
 #######
 # Flask
 #
-FLASK_SECRET_KEY = os.getenv('FLASK_SECRET_KEY')
+FLASK_SECRET_KEY = os.getenv('FLASK_SECRET_KEY', '\xa5\xcc\xff\x8dT\xea%W\xdb\xdd\x85>\xdae\xd85D\xb7\xd2\x11(U\xac\x08')
 
 ########
 # Celery
@@ -54,6 +54,8 @@ SALESFORCE = {
     "PASSWORD": os.getenv('SALESFORCE_PASSWORD'),
     "HOST": os.getenv("SALESFORCE_HOST")
 }
+COMBINED_EMAIL_FIELD = os.getenv('COMBINED_EMAIL_FIELD', 'Consolidated_EMail__c')
+FORM_EMAIL_FIELD = os.getenv('FORM_EMAIL_FIELD', 'email')
 
 ########
 # Stripe
