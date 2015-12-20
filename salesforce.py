@@ -14,6 +14,7 @@ from config import ENABLE_SLACK
 from config import SLACK_API_KEY
 from config import SLACK_CHANNEL
 from config import MULTIPLE_ACCOUNT_WARNING_MAIL_RECIPIENT
+from config import COMBINED_EMAIL_FIELD
 
 from emails import send_email
 from check_response import check_response
@@ -149,12 +150,17 @@ class SalesforceConnection(object):
             stripe_id = None
 
         contact = {
-            'Email': form['stripeEmail'],
+            'Email': form['email'],
             'FirstName': form['first_name'],
             'LastName': form['last_name'],
             'Description': form['description'],
             'LeadSource': 'Stripe',
             'Stripe_Customer_Id__c': stripe_id,
+            'MailingStreet': form['billing_street_geocode'],
+            'MailingCity': form['billing_city_geocode'],
+            'MailingState': form['billing_state_geocode'],
+            'MailingPostalCode': form['billing_zip_geocode'],
+            'MailingCountry': form['billing_country_geocode']
             }
 
         return contact
@@ -185,8 +191,10 @@ class SalesforceConnection(object):
 
         print ("----Creating contact...")
         contact = self._format_contact(form=form)
+        #print(contact)
         path = '/services/data/v35.0/sobjects/Contact'
         response = self.post(path=path, data=contact)
+        #print(response)
         contact_id = response['id']
         contact = self._get_contact(contact_id)
         return contact
@@ -200,7 +208,7 @@ class SalesforceConnection(object):
         query = """
                 SELECT AccountId, Id, Stripe_Customer_Id__c
                 FROM Contact
-                WHERE All_In_One_EMail__c
+                WHERE Consolidated_EMail__c
                 LIKE '%{}%'
                 """.format(email)
         response = self.query(query)
@@ -213,7 +221,7 @@ class SalesforceConnection(object):
         """
 
         created = False
-        email = form['stripeEmail']
+        email = form['email']
 
         response = self.find_contact(email=email)
 
@@ -260,35 +268,45 @@ def upsert_customer(customer=None, form=None):
 
 
 def _format_opportunity(contact=None, form=None, customer=None):
+    print('format opportunity here')
     """
     Format an opportunity for insertion.
     """
 
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
-
-    if form['pay_fees_value'] == 'True':
-        pay_fees = True
+    #print(form)
+    #if form['pay_fees'] == 1:
+    #    pay_fees = True
+    #else:
+    #    pay_fees = False
+    #print(pay_fees)
+    pay_fees = form.get('pay_fees_js')
+    if pay_fees is not 0:
+        pay_fees = 1
     else:
-        pay_fees = False
-
+        pay_fees = 0
+    print('pay fees is ')
+    print(pay_fees)
     opportunity = {
             'AccountId': '{}'.format(contact['AccountId']),
             'Amount': '{}'.format(form['amount']),
             'CloseDate': today,
-            'RecordTypeId': DONATION_RECORDTYPEID,
+            'Campaignid': form['campaign'],
+            #'RecordTypeId': DONATION_RECORDTYPEID,
             'Name': '{} {} ({})'.format(
                 form['first_name'],
                 form['last_name'],
-                form['stripeEmail'],
+                form['email'],
                 ),
             'StageName': 'Pledged',
             'Stripe_Customer_Id__c': customer.id,
             'LeadSource': 'Stripe',
             'Description': '{}'.format(form['description']),
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
-            'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
+            #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
             }
+    print(opportunity)
     return opportunity
 
 
@@ -360,8 +378,8 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
             'Lead_Source__c': 'Stripe',
             'Stripe_Description__c': '{}'.format(form['description']),
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
-            'Encouraged_to_contribute_by__c': '{}'.format(
-                form['reason']),
+            #'Encouraged_to_contribute_by__c': '{}'.format(
+            #    form['reason']),
             'npe03__Open_Ended_Status__c': open_ended_status,
             'npe03__Installments__c': installments,
             'npe03__Installment_Period__c': installment_period,
@@ -397,20 +415,25 @@ def add_customer_and_charge(form=None, customer=None):
     """
     amount = form['amount']
     name = '{} {}'.format(form['first_name'], form['last_name'])
-    reason = form['reason']
-    if reason != '':
-        reason = ' (encouraged by {})'.format(reason)
+    #reason = form['reason']
+    #if reason != '':
+        #reason = ' (encouraged by {})'.format(reason)
 
     upsert_customer(form=form, customer=customer)
 
-    if (form['installment_period'] == 'None'):
+    print('added customer successfully. now add opportunity')
+
+    if (form['recurring'] == 'one-time'):
         print("----One time payment...")
-        msg = '*{}* pledged *${}*{}'.format(name, amount, reason)
-        notify_slack(msg)
+        #msg = '*{}* pledged *${}*{}'.format(name, amount)
+        #print(msg)
+        #notify_slack(msg)
+        #print(form)
+        #print(customer)
         add_opportunity(form=form, customer=customer)
     else:
         print("----Recurring payment...")
-        msg = '*{}* pledged *${}*{} [recurring]'.format(name, amount, reason)
+        msg = '*{}* pledged *${}*{} [recurring]'.format(name, amount)
         notify_slack(msg)
         add_recurring_donation(form=form, customer=customer)
     return True
@@ -431,7 +454,7 @@ def _format_tw_opportunity(contact=None, form=None, customer=None):
             'Name': '{}{} ({})'.format(
                 form['first_name'],
                 form['last_name'],
-                form['stripeEmail'],
+                form['email'],
                 ),
             'StageName': 'Pledged',
             'Stripe_Customer_Id__c': customer.id,

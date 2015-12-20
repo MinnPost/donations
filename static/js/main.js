@@ -1152,12 +1152,18 @@ global.Payment = Payment;
         });
                 var fieldset = $(selector).closest('fieldset[data-geo="data-geo"]');
                 var prefix = $(fieldset).attr('class');
-                $(fieldset).append('<input type="hidden" name="' + prefix + '_street" value="' + address.street_number + ' ' + address.route_short + '" />');
+                /*$(fieldset).append('<input type="hidden" name="' + prefix + '_street" value="' + address.street_number + ' ' + address.route_short + '" />');
                 $(fieldset).append('<input type="hidden" name="' + prefix + '_city" value="' + address.locality + '" />');
                 $(fieldset).append('<input type="hidden" name="' + prefix + '_state" value="' + address.administrative_area_level_1_short + '" />');
                 $(fieldset).append('<input type="hidden" name="' + prefix + '_zip" value="' + address.postal_code + '" />');
-                $(fieldset).append('<input type="hidden" name="' + prefix + '_country" value="' + address.country_short + '" />');
+                $(fieldset).append('<input type="hidden" name="' + prefix + '_country" value="' + address.country_short + '" />');*/
                 //$(fieldset).find('input[data-geo-value="address"]').val(address.street_number + ' ' + address.route_short);
+
+                $('#billing_street_geocode').val(address.street_number + ' ' + address.route_short);
+                $('#billing_city_geocode').val(address.locality);
+                $('#billing_state_geocode').val(address.administrative_area_level_1_short);
+                $('#billing_zip_geocode').val(address.postal_code);
+                $('#billing_country_geocode').val(address.country_short);
             });
     }, // getFullAddress
 
@@ -1192,6 +1198,7 @@ global.Payment = Payment;
       $('.processing-amount').text(options.processing_fee);
       if (this.options.original_amount != this.options.amount) {
         $('.add-credit-card-processing').text('Remove $' + options.processing_fee);
+        $('#edit-pay-fees-js').val(1);
         remove = true;
         $('.processing-explain').hide();
       }
@@ -1199,6 +1206,7 @@ global.Payment = Payment;
         remove = false;
         full_amount = that.options.original_amount;
         $('.add-credit-card-processing').text('Add $' + that.options.processing_fee);
+        $('#edit-pay-fees-js').val(0);
         $('.processing-explain').show();
         $('#amount').val(full_amount);
       }
@@ -1208,11 +1216,13 @@ global.Payment = Payment;
           remove = true;
           full_amount = that.options.new_amount;
           $('.add-credit-card-processing').text('Remove $' + options.processing_fee);
+          $('#edit-pay-fees-js').val(1);
           $('.processing-explain').hide();
         } else {
           remove = false;
           full_amount = that.options.original_amount;
           $('.add-credit-card-processing').text('Add $' + options.processing_fee);
+          $('#edit-pay-fees-js').val(0);
           $('.processing-explain').show();
         }
         $('.add-credit-card-processing').toggleClass('remove');
@@ -1759,40 +1769,34 @@ function loadStripe(publishableKey) {
       }
 
       var street = '';
-      if ($('#edit-billing-street').length > 0) {
-        street = $('#edit-billing-street').val();
+      if ($('input[name="billing_street"]').length > 0) {
+        street = $('input[name="billing_street"]').val();
       }
 
       var city = '';
-      if ($('#edit-billing-city').length > 0) {
-        city = $('#edit-billing-city').val();
+      if ($('input[name="billing_city"]').length > 0) {
+        city = $('input[name="billing_city"]').val();
       }
 
       var state = '';
-      if ($('#edit-billing-state').length > 0) {
-        state = $('#edit-billing-state').val();
+      if ($('input[name="billing_state"]').length > 0) {
+        state = $('input[name="billing_state"]').val();
       }
 
       var zip = '';
-      if ($('#edit-billing-zip').length > 0) {
-        zip = $('#edit-billing-zip').val();
+      if ($('input[name="billing_zip"]').length > 0) {
+        zip = $('input[name="billing_zip"]').val();
       }
 
       var country = '';
-      if ($('#edit-billing-country').length > 0) {
-        country = $('#edit-billing-country').val();
+      if ($('input[name="billing_country"]').length > 0) {
+        country = $('input[name="billing_country"]').val();
       }
 
       Stripe.card.createToken({
         number: $('#cc-number').val(),
         cvc: $('#cc-cvc').val(),
-        exp: $('#cc-exp').val(),
-        name: full_name,
-        address_line1: street,
-        address_city: city,
-        address_state: state,
-        address_zip: zip,
-        address_country: country,
+        exp: $('#cc-exp').val()
       }, stripeResponseHandler);
 
      });
