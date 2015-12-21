@@ -699,21 +699,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
 
 
 
-
-
     type__c = 'Recurring'
-    try:
-        installments = form['installments']
-    except:
-        installments = 'None'
-    try:
-        open_ended_status = form['openended_status']
-    except:
-        open_ended_status = 'None'
-    try:
-        installment_period = form['recurring']
-    except:
-        installment_period = 'None'
 
     # TODO: test this:
     if installments != 'None':
@@ -727,48 +713,48 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         pay_fees = False
 
     recurring_donation = {
-            'Name': '{0} {1} {2} {3}'.format(
-                form['first_name'],
-                form['last_name'],
-                'recurring donation',
-                today
-            ),
-            'npe03__Amount__c': '{}'.format(amount),
-            'Anonymous__c': anonymous,
-            'npe03__Recurring_Donation_Campaign__c': '{}'.format(form['campaign']),
-            'npe03__Contact__c': '{}'.format(contact['Id']),
-            'Credited_as__c': credited_as,
-            #'Daily_newsletter_sign_up__c': daily_newsletter,
-            'npe03__Date_Established__c': today,
-            'Donor_address_line_1__c': billing_street,
-            'Donor_city__c': billing_city,
-            'Donor_state__c': billing_state,
-            'Donor_ZIP__c': billing_zip,
-            'Donor_country__c': billing_country,
-            'Donor_e_mail__c': email,
-            'Donor_first_name__c': first_name,
-            'Donor_last_name__c': last_name,
-            #'Greater_MN_newsletter__c': greater_mn_newsletter,
-            'In_Honor_Memory__c': inhonorormemory,
-            'In_Honor_of_In_Memory__c': inhonorormemoryof,
-            'npe03__Installments__c': installments,
-            'npe03__Installment_Period__c': installment_period,
-            'Lead_Source__c': 'Stripe',
-            'Member_benefit_request_Swag__c': swag,
-            'Member_benefit_request_Other_benefits__c': swag_other_benefits,
-            'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
-            'npe03__Open_Ended_Status__c': open_ended_status,
-            'Payment_Page_Full_URL__c': full_url,
-            'Payment_Type__c': 'Stripe',
-            #'Reason_for_Gift__c': reason_for_gift,
-            #'Reason_for_gift_shareable__c': reason_shareable,
-            'Stripe_Agreed_to_pay_fees__c': pay_fees,
-            'Stripe_Customer_Id__c': customer.id,
-            'Stripe_Description__c': '{}'.format(form['description']),
-            #'Encouraged_to_contribute_by__c': '{}'.format(
-            #    form['reason']),
-            'Type__c': type__c,
-            }
+        'Name': '{0} {1} {2} {3}'.format(
+            form['first_name'],
+            form['last_name'],
+            'recurring donation',
+            today
+        ),
+        'npe03__Amount__c': '{}'.format(amount),
+        'Anonymous__c': anonymous,
+        'npe03__Recurring_Donation_Campaign__c': '{}'.format(form['campaign']),
+        'npe03__Contact__c': '{}'.format(contact['Id']),
+        'Credited_as__c': credited_as,
+        #'Daily_newsletter_sign_up__c': daily_newsletter,
+        'npe03__Date_Established__c': today,
+        'Donor_address_line_1__c': billing_street,
+        'Donor_city__c': billing_city,
+        'Donor_state__c': billing_state,
+        'Donor_ZIP__c': billing_zip,
+        'Donor_country__c': billing_country,
+        'Donor_e_mail__c': email,
+        'Donor_first_name__c': first_name,
+        'Donor_last_name__c': last_name,
+        #'Greater_MN_newsletter__c': greater_mn_newsletter,
+        'In_Honor_Memory__c': inhonorormemory,
+        'In_Honor_of_In_Memory__c': inhonorormemoryof,
+        'npe03__Installments__c': installments,
+        'npe03__Installment_Period__c': installment_period,
+        'Lead_Source__c': 'Stripe',
+        'Member_benefit_request_Swag__c': swag,
+        'Member_benefit_request_Other_benefits__c': swag_other_benefits,
+        'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
+        'npe03__Open_Ended_Status__c': open_ended_status,
+        'Payment_Page_Full_URL__c': full_url,
+        'Payment_Type__c': 'Stripe',
+        #'Reason_for_Gift__c': reason_for_gift,
+        #'Reason_for_gift_shareable__c': reason_shareable,
+        'Stripe_Agreed_to_pay_fees__c': pay_fees,
+        'Stripe_Customer_Id__c': customer.id,
+        'Stripe_Description__c': '{}'.format(form['description']),
+        #'Encouraged_to_contribute_by__c': '{}'.format(
+        #    form['reason']),
+        'Type__c': type__c,
+    }
     pprint(recurring_donation)   # TODO: rm
     return recurring_donation
 
@@ -836,6 +822,7 @@ def _format_tw_opportunity(contact=None, form=None, customer=None):
             'Amount': '{}'.format(form['amount']),
             'CloseDate': today,
             'RecordTypeId': TEXASWEEKLY_RECORDTYPEID,
+            'Type': 'Single',
             'Name': '{}{} ({})'.format(
                 form['first_name'],
                 form['last_name'],
