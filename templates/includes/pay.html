@@ -9,7 +9,7 @@
     </ul>
   </fieldset>
 
-  <fieldset class="payment" data-geo="data-geo">
+  <fieldset class="payment">
 
     <div class="form-item form-item--first-name">
       <label>First name <input type="text" id="first_name" name="first_name" required value="{{ first_name }}"></label> <!-- load server-side from querystring -->
@@ -68,9 +68,9 @@
 
     </fieldset>
 
-    <fieldset class="shipping" data-geo="data-ship-geo">
+    <fieldset class="shipping" data-geo="data-geo">
 
-      <div class="form-item-group form-item--geocode">
+      <div class="form-item-group form-item--shipping-name form-item--geocode">
         <div class="form-item form-item--shipping-name">
           <label>Ship To (if different)
             <input type="text" name="shipping_name" id="edit-shipping-name">
