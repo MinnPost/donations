@@ -881,7 +881,7 @@ global.Payment = Payment;
     'atlantic_selector' : '.form-item--atlantic_id',
     'name_selector' : '.form-item--display-name',
     'honor_selector' : '.honor',
-    'notify_selector' : '#notify',
+    'notify_selector' : '.notify_someone',
     'notify_field_selector' : '.form-item--memory-notify',
     'anonymous_selector' : '#edit-anonymous',
     //'needs_shipping_selector' : '.swag--shipping',
@@ -1005,7 +1005,7 @@ global.Payment = Payment;
         $('> div', this.options.shipping_selector).not('.form-item--geocode').hide();
         $(this.options.billing_selector, this.element).prepend('<div class="form-item form-item--billing-address form-item--geocode"><label for="full_address">Billing Address: <span title="This field is required." class="form-required">*</span></label><input type="text" autocapitalize="off" autocorrect="off" name="full_address" id="full_address" class="geocomplete form-text required"  placeholder=""></div>');
         this.getFullAddress($('#full_address'));
-        $(this.options.shipping_selector, this.element).prepend('<div class="form-item form-item--shipping-address form-item--geocode"><label for="full_shipping_address">Shipping Address: </label><input type="text" autocapitalize="off" autocorrect="off" name="full_shipping_address" id="full_shipping_address" class="geocomplete form-text" placeholder=""></div>');
+        $(this.options.shipping_selector, this.element).append('<div class="form-item form-item--shipping-address form-item--geocode"><label for="full_shipping_address">Shipping Address: </label><input type="text" autocapitalize="off" autocorrect="off" name="full_shipping_address" id="full_shipping_address" class="geocomplete form-text" placeholder=""></div>');
         this.getFullAddress($('#full_shipping_address'));
       } else {
         $('> div', this.options.billing_selector).not('.form-item--geocode').show();
@@ -1161,11 +1161,11 @@ global.Payment = Payment;
                 $(fieldset).append('<input type="hidden" name="' + prefix + '_country" value="' + address.country_short + '" />');*/
                 //$(fieldset).find('input[data-geo-value="address"]').val(address.street_number + ' ' + address.route_short);
 
-                $('#billing_street_geocode').val(address.street_number + ' ' + address.route_short);
-                $('#billing_city_geocode').val(address.locality);
-                $('#billing_state_geocode').val(address.administrative_area_level_1_short);
-                $('#billing_zip_geocode').val(address.postal_code);
-                $('#billing_country_geocode').val(address.country_short);
+                $('#' + prefix + '_street_geocode').val(address.street_number + ' ' + address.route_short);
+                $('#' + prefix + '_city_geocode').val(address.locality);
+                $('#' + prefix + '_state_geocode').val(address.administrative_area_level_1_short);
+                $('#' + prefix + '_zip_geocode').val(address.postal_code);
+                $('#' + prefix + '_country_geocode').val(address.country_short);
             });
     }, // getFullAddress
 
