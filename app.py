@@ -47,8 +47,8 @@ LOGGING = {
     }
 }
 
-if app.config['ENABLE_SENTRY']:
-    sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
+#if app.config['ENABLE_SENTRY']:
+#    sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
 
 
 @app.route('/minnpostform/')
