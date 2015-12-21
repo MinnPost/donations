@@ -689,6 +689,9 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     else:
         swag_other_benefits = ''
 
+
+    open_ended_status = 'Open'
+
     try:
         if form['pay_fees'] == '1':
             pay_fees = True
@@ -702,10 +705,10 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     type__c = 'Recurring'
 
     # TODO: test this:
-    if installments != 'None':
-        amount = int(amount) * int(installments)
-    else:
-        installments = 0
+    #if installments != 'None':
+    #    amount = int(amount) * int(installments)
+    #else:
+    #    installments = 0
 
     if form['pay_fees'] == '1':
         pay_fees = True
@@ -736,9 +739,9 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         'Donor_last_name__c': last_name,
         #'Greater_MN_newsletter__c': greater_mn_newsletter,
         'In_Honor_Memory__c': inhonorormemory,
-        'In_Honor_of_In_Memory__c': inhonorormemoryof,
-        'npe03__Installments__c': installments,
-        'npe03__Installment_Period__c': installment_period,
+        'In_honor_memory_of__c': inhonorormemoryof,
+        #'npe03__Installments__c': installments,
+        #'npe03__Installment_Period__c': installment_period,
         'Lead_Source__c': 'Stripe',
         'Member_benefit_request_Swag__c': swag,
         'Member_benefit_request_Other_benefits__c': swag_other_benefits,
@@ -796,17 +799,17 @@ def add_customer_and_charge(form=None, customer=None):
         #msg = '*{}* pledged *${}*'.format(name, amount)
         #notify_slack(msg)
         add_opportunity(form=form, customer=customer)
-        print('id is')
-        print(add_opportunity['id'])
-        print('showed id')
+        #print('id is')
+        #print(add_opportunity['id'])
+        #print('showed id')
     else:
         print("----Recurring payment...")
         #msg = '*{}* pledged *${}*{} [recurring]'.format(name, amount)
         #notify_slack(msg)
         add_recurring_donation(form=form, customer=customer)
-        print('id is')
-        print(add_recurring_donation['id'])
-        print('showed id')
+        #print('id is')
+        #print(add_recurring_donation['id'])
+        #print('showed id')
     return True
 
 
