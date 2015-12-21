@@ -56,6 +56,7 @@ SALESFORCE = {
 }
 COMBINED_EMAIL_FIELD = os.getenv('COMBINED_EMAIL_FIELD', 'Consolidated_EMail__c')
 FORM_EMAIL_FIELD = os.getenv('FORM_EMAIL_FIELD', 'email')
+DEFAULT_CAMPAIGN = os.getenv('DEFAULT_CAMPAIGN')
 
 ########
 # Stripe

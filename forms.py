@@ -25,6 +25,7 @@ class DonateForm(Form):
 class MinnPostForm(Form):
     original_amount = HiddenField(u'Original Amount')
     amount = HiddenField(u'Amount')
+    campaign = HiddenField(u'Campaign')
     recurring = HiddenField(u'Frequency')
     pay_fees = BooleanField(u'Agree to pay fees')
 

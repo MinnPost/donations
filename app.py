@@ -10,6 +10,7 @@ from validate_email import validate_email
 from helpers import checkLevel
 
 from config import FLASK_SECRET_KEY
+from config import DEFAULT_CAMPAIGN
 from salesforce import add_customer_and_charge
 from salesforce import add_tw_customer_and_charge
 from app_celery import make_celery
@@ -21,6 +22,7 @@ from pprint import pprint
 app = Flask(__name__)
 
 app.secret_key = FLASK_SECRET_KEY
+app.default_campaign = DEFAULT_CAMPAIGN
 
 app.wsgi_app = SassMiddleware(app.wsgi_app, {
         'app': ('static/sass', 'static/css', 'static/css')
@@ -59,6 +61,10 @@ def minnpost_form():
     else:
         message = "The page you requested can't be found."
         return render_template('error.html', message=message)
+    if request.args.get('campaign'):
+        campaign = request.args.get('campaign')
+    else:
+        campaign = app.default_campaign
     frequency = request.args.get('frequency')
     if frequency is None:
         frequency = 'one-time'
@@ -81,7 +87,7 @@ def minnpost_form():
         email = request.args.get('email')
     else:
         email = ''
-    return render_template('minnpost-form.html', form=form, amount=amount,
+    return render_template('minnpost-form.html', form=form, amount=amount, campaign=campaign,
         frequency=frequency, installments=installments,
         openended_status=openended_status,
         yearly=yearly,
