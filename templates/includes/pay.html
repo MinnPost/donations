@@ -21,7 +21,7 @@
     
     <div class="form-item form-item--display-name">
       <div>
-        <label>Display as (in our year-end report) <input type="text" id="display_as" name="edit_display_as"></label>
+        <label>Display as (in our year-end report) <input type="text" id="display_as" name="display_as"></label>
       </div>
       <div>
         <label class="additional-option"><input type="checkbox" name="anonymous" id="edit-anonymous"> Make this donation anonymously</label>
@@ -69,6 +69,14 @@
     </fieldset>
 
     <fieldset class="shipping" data-geo="data-ship-geo">
+
+      <div class="form-item-group form-item--geocode">
+        <div class="form-item form-item--shipping-name">
+          <label>Ship To (if different)
+            <input type="text" name="shipping_name" id="edit-shipping-name">
+          </label>
+        </div>
+      </div>
 
       <div class="form-item form-item--nojs form-item--street">
         <label>Shipping Street Address
