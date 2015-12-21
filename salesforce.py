@@ -272,27 +272,228 @@ def _format_opportunity(contact=None, form=None, customer=None):
     """
 
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
-    if form['pay_fees'] == 1:
-        pay_fees = True
+
+    try:
+        if form['anonymous'] == '1':
+            anonymous = True
+        else:
+            anonymous = False
+    except:
+        anonymous = False
+
+    try:
+        credited_as = form['display_as']
+    except:
+        credited_as = ''
+
+    try:
+        email = form[FORM_EMAIL_FIELD]
+    except:
+        email = ''
+
+    try:
+        first_name = form['first_name']
+    except:
+        first_name = ''
+
+    try:
+        last_name = form['last_name']
+    except:
+        last_name = ''
+
+    try:
+        billing_full = form['full_address']
+        try:
+            billing_street = form['billing_street_geocode']
+        except:
+            billing_street = ''
+        try:
+            billing_city = form['billing_city_geocode']
+        except:
+            billing_city = ''
+        try:
+            billing_state = form['billing_state_geocode']
+        except:
+            billing_state = ''
+        try:
+            billing_zip = form['billing_zip_geocode']
+        except:
+            billing_zip = ''
+        try:
+            billing_country = form['billing_country_geocode']
+        except:
+            billing_country = ''
+    except:
+        try:
+            billing_street = form['billing_street']
+        except:
+            billing_street = ''
+        try:
+            billing_city = form['billing_city']
+        except:
+            billing_city = ''
+        try:
+            billing_state = form['billing_state']
+        except:
+            billing_state = ''
+        try:
+            billing_zip = form['billing_zip']
+        except:
+            billing_zip = ''
+        try:
+            billing_country = form['billing_country']
+        except:
+            billing_country = ''
+
+    try:
+        shipping_name = form['shipping_name']
+    except:
+        shipping_name = ''
+    try:
+        shipping_full = form['full_shipping_address']
+        try:
+            shipping_street = form['shipping_street_geocode']
+        except:
+            shipping_street = ''
+        try:
+            shipping_city = form['shipping_city_geocode']
+        except:
+            shipping_city = ''
+        try:
+            shipping_state = form['shipping_state_geocode']
+        except:
+            shipping_state = ''
+        try:
+            shipping_zip = form['shipping_zip_geocode']
+        except:
+            shipping_zip = ''
+        try:
+            shipping_country = form['shipping_country_geocode']
+        except:
+            shipping_country = ''
+    except:
+        try:
+            shipping_street = form['shipping_street']
+        except:
+            shipping_street = ''
+        try:
+            shipping_city = form['shipping_city']
+        except:
+            shipping_city = ''
+        try:
+            shipping_state = form['shipping_state']
+        except:
+            shipping_state = ''
+        try:
+            shipping_zip = form['shipping_zip']
+        except:
+            shipping_zip = ''
+        try:
+            shipping_country = form['shipping_country']
+        except:
+            shipping_country = ''
+
+
+    try:
+        in_memory_name = form['in_memory_name']
+    except:
+        in_memory_name = ''
+
+    try:
+        in_honor_name = form['in_honor_name']
+    except:
+        in_honor_name = ''
+
+    if (in_memory_name != ''):
+        inhonorormemory = 'In memory of...'
+        inhonorormemoryof = in_memory_name
+    elif (in_honor_name != ''):
+        inhonorormemory = 'In honor of...'
+        inhonorormemoryof = in_honor_name
     else:
+        inhonorormemory = ''
+        inhonorormemoryof = ''
+
+    try:
+        full_url = form['url']
+    except:
+        full_url = ''
+
+    try:
+        swag = form['swag'].capitalize()
+    except:
+        swag = ''
+
+    try:
+        swag_other_benefits = form['swag_atlanticsubscription']
+        try:
+            existing_atlantic_id = form['atlantic_id']
+        except:
+            existing_atlantic_id = ''
+    except:
+        swag_other_benefits = ''
+        existing_atlantic_id = ''
+
+    if (swag_other_benefits == 'new' or swag_other_benefits == 'existing'):
+        swag_other_benefits = 'Atlantic subscription'
+    else:
+        swag_other_benefits = ''
+
+    try:
+        if form['pay_fees'] == '1':
+            pay_fees = True
+        else:
+            pay_fees = False
+    except:
         pay_fees = False
 
     opportunity = {
             'AccountId': '{}'.format(contact['AccountId']),
             'Amount': '{}'.format(form['amount']),
             'CloseDate': today,
-            'Campaignid': form['campaign'],
+            'Description': '{}'.format(form['description']),
+            'LeadSource': 'Stripe',
             #'RecordTypeId': DONATION_RECORDTYPEID,
-            'Name': '{} {} ({})'.format(
+            'Name': '{0} {1} {2} {3}'.format(
                 form['first_name'],
                 form['last_name'],
-                form[FORM_EMAIL_FIELD],
-                ),
+                'Donation',
+                today
+            ),
+            'Campaignid': form['campaign'],
             'StageName': 'Pledged',
-            'Stripe_Customer_Id__c': customer.id,
-            'LeadSource': 'Stripe',
-            'Description': '{}'.format(form['description']),
+            'Type': 'Donation',
+            'Anonymous__c': anonymous,
+            'Credited_as__c': credited_as,
+            #'Daily_newsletter_sign_up__c': daily_newsletter,
+            'Donor_first_name__c': first_name,
+            'Donor_last_name__c': last_name,
+            'Donor_e_mail__c': email,
+            'Donor_address_line_1__c': billing_street,
+            'Donor_city__c': billing_city,
+            'Donor_state__c': billing_state,
+            'Donor_ZIP__c': billing_zip,
+            'Donor_country__c': billing_country,
+            #'Greater_MN_newsletter__c': greater_mn_newsletter,
+            'In_Honor_Memory__c': inhonorormemory,
+            'In_Honor_of_In_Memory__c': inhonorormemoryof,
+            'Member_benefit_request_Swag__c': swag,
+            'Member_benefit_request_Other_benefits__c': swag_other_benefits,
+            'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
+            'Payment_Page_Full_URL__c': full_url,
+            'Payment_Type__c': 'Stripe',
+            #'Reason_for_Gift__c': reason_for_gift,
+            #'Reason_for_gift_shareable__c': reason_shareable,
+            'Shipping_address_name__c':shipping_name,
+            'Shipping_address_street__c': shipping_street,
+            'Shipping_address_city__c': shipping_city,
+            'Shipping_address_state__c': shipping_state,
+            'Shipping_address_ZIP__c': shipping_zip,
+            'Shipping_address_country__c': shipping_street,
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
+            'Stripe_Customer_Id__c': customer.id,
+            #'Sunday_Review_newsletter__c': sunday_review_newsletter,
+            
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
             }
@@ -321,6 +522,185 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
     amount = form['amount']
+
+    try:
+        if form['anonymous'] == '1':
+            anonymous = True
+        else:
+            anonymous = False
+    except:
+        anonymous = False
+
+    try:
+        credited_as = form['display_as']
+    except:
+        credited_as = ''
+
+    try:
+        email = form[FORM_EMAIL_FIELD]
+    except:
+        email = ''
+
+    try:
+        first_name = form['first_name']
+    except:
+        first_name = ''
+
+    try:
+        last_name = form['last_name']
+    except:
+        last_name = ''
+
+    try:
+        billing_full = form['full_address']
+        try:
+            billing_street = form['billing_street_geocode']
+        except:
+            billing_street = ''
+        try:
+            billing_city = form['billing_city_geocode']
+        except:
+            billing_city = ''
+        try:
+            billing_state = form['billing_state_geocode']
+        except:
+            billing_state = ''
+        try:
+            billing_zip = form['billing_zip_geocode']
+        except:
+            billing_zip = ''
+        try:
+            billing_country = form['billing_country_geocode']
+        except:
+            billing_country = ''
+    except:
+        try:
+            billing_street = form['billing_street']
+        except:
+            billing_street = ''
+        try:
+            billing_city = form['billing_city']
+        except:
+            billing_city = ''
+        try:
+            billing_state = form['billing_state']
+        except:
+            billing_state = ''
+        try:
+            billing_zip = form['billing_zip']
+        except:
+            billing_zip = ''
+        try:
+            billing_country = form['billing_country']
+        except:
+            billing_country = ''
+
+    try:
+        shipping_name = form['shipping_name']
+    except:
+        shipping_name = ''
+    try:
+        shipping_full = form['full_shipping_address']
+        try:
+            shipping_street = form['shipping_street_geocode']
+        except:
+            shipping_street = ''
+        try:
+            shipping_city = form['shipping_city_geocode']
+        except:
+            shipping_city = ''
+        try:
+            shipping_state = form['shipping_state_geocode']
+        except:
+            shipping_state = ''
+        try:
+            shipping_zip = form['shipping_zip_geocode']
+        except:
+            shipping_zip = ''
+        try:
+            shipping_country = form['shipping_country_geocode']
+        except:
+            shipping_country = ''
+    except:
+        try:
+            shipping_street = form['shipping_street']
+        except:
+            shipping_street = ''
+        try:
+            shipping_city = form['shipping_city']
+        except:
+            shipping_city = ''
+        try:
+            shipping_state = form['shipping_state']
+        except:
+            shipping_state = ''
+        try:
+            shipping_zip = form['shipping_zip']
+        except:
+            shipping_zip = ''
+        try:
+            shipping_country = form['shipping_country']
+        except:
+            shipping_country = ''
+
+
+    try:
+        in_memory_name = form['in_memory_name']
+    except:
+        in_memory_name = ''
+
+    try:
+        in_honor_name = form['in_honor_name']
+    except:
+        in_honor_name = ''
+
+    if (in_memory_name != ''):
+        inhonorormemory = 'In memory of...'
+        inhonorormemoryof = in_memory_name
+    elif (in_honor_name != ''):
+        inhonorormemory = 'In honor of...'
+        inhonorormemoryof = in_honor_name
+    else:
+        inhonorormemory = ''
+        inhonorormemoryof = ''
+
+    try:
+        full_url = form['url']
+    except:
+        full_url = ''
+
+    try:
+        swag = form['swag'].capitalize()
+    except:
+        swag = ''
+
+    try:
+        swag_other_benefits = form['swag_atlanticsubscription']
+        try:
+            existing_atlantic_id = form['atlantic_id']
+        except:
+            existing_atlantic_id = ''
+    except:
+        swag_other_benefits = ''
+        existing_atlantic_id = ''
+
+    if (swag_other_benefits == 'new' or swag_other_benefits == 'existing'):
+        swag_other_benefits = 'Atlantic subscription'
+    else:
+        swag_other_benefits = ''
+
+    try:
+        if form['pay_fees'] == '1':
+            pay_fees = True
+        else:
+            pay_fees = False
+    except:
+        pay_fees = False
+
+
+
+
+
     type__c = 'Recurring'
     try:
         installments = form['installments']
@@ -341,30 +721,52 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     else:
         installments = 0
 
-    if form['pay_fees'] == 1:
+    if form['pay_fees'] == '1':
         pay_fees = True
     else:
         pay_fees = False
 
     recurring_donation = {
-            'npe03__Contact__c': '{}'.format(contact['Id']),
-            'npe03__Amount__c': '{}'.format(amount),
-            'npe03__Date_Established__c': today,
-            'npe03__Open_Ended_Status__c': '',
-            'Name': '{} for {} {}'.format(
-                now,
+            'Name': '{0} {1} {2} {3}'.format(
                 form['first_name'],
                 form['last_name'],
-                ),
-            'Stripe_Customer_Id__c': customer.id,
-            'Lead_Source__c': 'Stripe',
-            'Stripe_Description__c': '{}'.format(form['description']),
-            'Stripe_Agreed_to_pay_fees__c': pay_fees,
-            #'Encouraged_to_contribute_by__c': '{}'.format(
-            #    form['reason']),
-            'npe03__Open_Ended_Status__c': open_ended_status,
+                'recurring donation',
+                today
+            ),
+            'npe03__Amount__c': '{}'.format(amount),
+            'Anonymous__c': anonymous,
+            'npe03__Recurring_Donation_Campaign__c': '{}'.format(form['campaign']),
+            'npe03__Contact__c': '{}'.format(contact['Id']),
+            'Credited_as__c': credited_as,
+            #'Daily_newsletter_sign_up__c': daily_newsletter,
+            'npe03__Date_Established__c': today,
+            'Donor_address_line_1__c': billing_street,
+            'Donor_city__c': billing_city,
+            'Donor_state__c': billing_state,
+            'Donor_ZIP__c': billing_zip,
+            'Donor_country__c': billing_country,
+            'Donor_e_mail__c': email,
+            'Donor_first_name__c': first_name,
+            'Donor_last_name__c': last_name,
+            #'Greater_MN_newsletter__c': greater_mn_newsletter,
+            'In_Honor_Memory__c': inhonorormemory,
+            'In_Honor_of_In_Memory__c': inhonorormemoryof,
             'npe03__Installments__c': installments,
             'npe03__Installment_Period__c': installment_period,
+            'Lead_Source__c': 'Stripe',
+            'Member_benefit_request_Swag__c': swag,
+            'Member_benefit_request_Other_benefits__c': swag_other_benefits,
+            'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
+            'npe03__Open_Ended_Status__c': open_ended_status,
+            'Payment_Page_Full_URL__c': full_url,
+            'Payment_Type__c': 'Stripe',
+            #'Reason_for_Gift__c': reason_for_gift,
+            #'Reason_for_gift_shareable__c': reason_shareable,
+            'Stripe_Agreed_to_pay_fees__c': pay_fees,
+            'Stripe_Customer_Id__c': customer.id,
+            'Stripe_Description__c': '{}'.format(form['description']),
+            #'Encouraged_to_contribute_by__c': '{}'.format(
+            #    form['reason']),
             'Type__c': type__c,
             }
     pprint(recurring_donation)   # TODO: rm
@@ -405,14 +807,20 @@ def add_customer_and_charge(form=None, customer=None):
 
     if (form['recurring'] == 'one-time'):
         print("----One time payment...")
-        #msg = '*{}* pledged *${}*{}'.format(name, amount)
+        #msg = '*{}* pledged *${}*'.format(name, amount)
         #notify_slack(msg)
         add_opportunity(form=form, customer=customer)
+        print('id is')
+        print(add_opportunity['id'])
+        print('showed id')
     else:
         print("----Recurring payment...")
         #msg = '*{}* pledged *${}*{} [recurring]'.format(name, amount)
         #notify_slack(msg)
         add_recurring_donation(form=form, customer=customer)
+        print('id is')
+        print(add_recurring_donation['id'])
+        print('showed id')
     return True
 
 
