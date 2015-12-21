@@ -144,7 +144,6 @@ def charge_cards():
         AND CloseDate >= {}
         AND StageName = 'Pledged'
         AND Stripe_Customer_Id__c != ''
-        AND Type != 'Giving Circle'
         """.format(today, three_days_ago)
 
     process_charges(query, log)
@@ -158,21 +157,21 @@ def charge_cards():
     # for Circles.
     #
 
-    log.it('---Processing Circle charges...')
+    # log.it('---Processing Circle charges...')
 
-    query = """
-        SELECT Amount, Name, Stripe_Customer_Id__c, Description,
-            Stripe_Agreed_to_pay_fees__c
-        FROM Opportunity
-        WHERE Giving_Circle_Expected_Giving_Date__c <= {}
-        AND Giving_Circle_Expected_Giving_Date__c >= {}
-        AND StageName = 'Pledged'
-        AND Stripe_Customer_Id__c != ''
-        AND Type = 'Giving Circle'
-        """.format(today, three_days_ago)
+    # query = """
+    #     SELECT Amount, Name, Stripe_Customer_Id__c, Description,
+    #         Stripe_Agreed_to_pay_fees__c
+    #     FROM Opportunity
+    #     WHERE Giving_Circle_Expected_Giving_Date__c <= {}
+    #     AND Giving_Circle_Expected_Giving_Date__c >= {}
+    #     AND StageName = 'Pledged'
+    #     AND Stripe_Customer_Id__c != ''
+    #     AND Type = 'Giving Circle'
+    #     """.format(today, three_days_ago)
 
-    process_charges(query, log)
-    log.send()
+    # process_charges(query, log)
+    # log.send()
 
 
 if __name__ == '__main__':
