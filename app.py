@@ -57,7 +57,13 @@ LOGGING = {
 def minnpost_form():
     form = MinnPostForm()
     if request.args.get('amount'):
-        amount = int(request.args.get('amount'))
+        amount = float(request.args.get('amount'))
+
+        if (amount).is_integer():
+            amount_formatted = int(request.args.get('amount'))
+        else:
+            amount_formatted = format(amount, ',.2f')
+
     else:
         message = "The page you requested can't be found."
         return render_template('error.html', message=message)
@@ -229,7 +235,23 @@ def charge():
 def thanks():
 
     form = MinnPostForm(request.form)
-    pprint('Request: {}'.format(request))
+    #pprint('Request: {}'.format(request))
+
+    amount = float(request.form['amount'])
+
+    if (amount).is_integer():
+        amount_formatted = int(request.form['amount'])
+    else:
+        amount_formatted = format(amount, ',.2f')
+
+    frequency = request.form['recurring']
+    if frequency is None:
+        frequency = 'one-time'
+    if frequency == 'monthly':
+        yearly = 12
+    else:
+        yearly = 1
+    level = checkLevel(amount, frequency, yearly)
 
     email_is_valid = validate_email(request.form['email'])
 
@@ -253,11 +275,13 @@ def thanks():
         return render_template('error.html', message=message)
 
 
+
 @app.route('/finish/', methods=['POST'])
 def finish():
 
     form = DonateForm(request.form)
     pprint('Request: {}'.format(request))
+
 
 
 @app.route('/confirm/', methods=['POST'])

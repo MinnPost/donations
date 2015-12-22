@@ -13,12 +13,12 @@
 
 <main>
   <div class="wrapper support--forms">
-    <form class="support support--confirm" method="post" id="confirm" action="confirm">
-      <input type="hidden" name="amount" id="amount" value="19"> <!-- load server-side from form submit -->
-      <input type="hidden" name="recurring" id="recurring" value="monthly"> <!-- load server-side from form submit -->
+    <form class="support support--confirm" method="post" id="confirm" action="/confirm/">
+      <input type="hidden" name="amount" id="amount" value="{{ amount }}"> <!-- load server-side from form submit -->
+      <input type="hidden" name="recurring" id="recurring" value="{{ frequency }}"> <!-- load server-side from form submit -->
       <section class="panel panel--form" id="panel--confirmation">
         <h1>Thank you for supporting MinnPost</h1>
-        <p>Thank you for your $<span class="level-amount">20</span> <span class="frequency" data-year-freq="12">monthly</span> donation. You are entitled to MinnPost <span class="level-name">Platinum</span> benefits, which you can <a href="https://www.minnpost.com/support/member-benefits/?level=platinum" target="_blank" class="review-benefits">review</a> anytime. You will receive an automatic receipt email, and if you've selected any items for shipping, we'll be shipping them to you.</p> <!-- load server-side from parsing querystring -->
+        <p>Thank you for your $<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency }}</span> donation. You are entitled to MinnPost <span class="level-name">{{ level.level.title() }}</span> benefits, which you can <a href="https://www.minnpost.com/support/member-benefits/?level={{ level.level }}" target="_blank" class="review-benefits">review</a> anytime. You will receive an automatic receipt email, and if you've selected any items for shipping, we'll be shipping them to you.</p> <!-- load server-side from parsing querystring -->
         <h2>What next?</h2>
         <p>Please take a quick moment to share why you chose to support MinnPost, and consider signing up for our email newsletters if you haven't already.</p>
         <div class="support support--post-confirm">
@@ -43,7 +43,7 @@
             </div>
           </fieldset> <!-- we have a working api endpoint for this already, and it is operating -->
         </div>
-        <button class="clear-block" type="submit" name="finish" id="finish" class="btn btn--submit">Send and Finish</button> <!-- ideally this would call both ajax endpoints, but the mailchimp one is the only one currently in use -->
+        <button type="submit" name="finish" id="finish" class="clear-block btn btn--submit">Send and Finish</button> <!-- ideally this would call both ajax endpoints, but the mailchimp one is the only one currently in use -->
       </section>
     </form>
   </div>
