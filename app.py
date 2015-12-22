@@ -53,7 +53,7 @@ LOGGING = {
 #    sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
 
 
-@app.route('/minnpostform/')
+@app.route('/give/')
 def minnpost_form():
     form = MinnPostForm()
     if request.args.get('amount'):
