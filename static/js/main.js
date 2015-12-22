@@ -906,8 +906,8 @@ global.Payment = Payment;
     'confirm_button_selector' : '#finish',
     'newsletter_group_selector' : '[name="newsletters"]',
     'message_group_selector' : '[name="messages"]',
-    'reason_field_selector' : '#PaymentControl_AdditionalInfoFields_AdditionalInfoTextbox_1',
-    'share_reason_selector' : '#PaymentControl_AdditionalInfoFields_AdditionalInfoLabel_2',
+    'reason_field_selector' : '#reason_for_supporting',
+    'share_reason_selector' : '#reason_shareable',
     'confirm_top_selector' : '.support--post-confirm',
     'levels' : {
       1 : {
