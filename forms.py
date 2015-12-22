@@ -1,6 +1,6 @@
 from flask_wtf import Form
 
-from wtforms.fields import StringField, HiddenField, BooleanField, DecimalField
+from wtforms.fields import StringField, HiddenField, BooleanField, DecimalField, TextAreaField, SelectMultipleField
 from wtforms import validators
 
 from flask import request
@@ -67,6 +67,13 @@ class MinnPostForm(Form):
         [validators.required(message="Your email address is required.")])
     creatempaccount = BooleanField(u'Create MinnPost Account?')
     # do not pass the password through here so we can pass it to ajax
+
+
+class ConfirmForm(Form):
+    reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
+    reason_shareable = BooleanField(u'Reason Shareable?')
+    newsletters = SelectMultipleField(u'Newsletters')
+    other_messages = SelectMultipleField(u'Periodic MinnPost Messages')
     
 
 class TexasWeeklyForm(Form):

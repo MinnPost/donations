@@ -1,8 +1,8 @@
 import os
 import sys
 
-from flask import Flask, render_template, request
-from forms import DonateForm, MinnPostForm, TexasWeeklyForm
+from flask import Flask, render_template, request, session
+from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
 from raven.contrib.flask import Sentry
 from sassutils.wsgi import SassMiddleware
 import stripe
@@ -13,6 +13,7 @@ from config import FLASK_SECRET_KEY
 from config import DEFAULT_CAMPAIGN
 from salesforce import add_customer_and_charge
 from salesforce import add_tw_customer_and_charge
+from salesforce import update_donation_object
 from app_celery import make_celery
 
 import batch
@@ -93,7 +94,7 @@ def minnpost_form():
         email = request.args.get('email')
     else:
         email = ''
-    return render_template('minnpost-form.html', form=form, amount=amount, campaign=campaign,
+    return render_template('minnpost-form.html', form=form, amount=amount_formatted, campaign=campaign,
         frequency=frequency, installments=installments,
         openended_status=openended_status,
         yearly=yearly,
@@ -207,7 +208,7 @@ def page_not_found(error):
 def charge():
 
     form = DonateForm(request.form)
-    pprint('Request: {}'.format(request))
+    #pprint('Request: {}'.format(request))
 
     email_is_valid = validate_email(request.form['stripeEmail'])
 
@@ -221,11 +222,14 @@ def charge():
         return render_template('error.html', message=message)
 
     if form.validate():
-        add_customer_and_charge.delay(form=request.form,
-                customer=customer)
+        #result = add_customer_and_charge.delay(form=request.form, customer=customer)
+        #if not result['errors']:
+        #    print(result['id'])
+        #else:
+        #    print('result has errors')
+        #    print(result)
 
-        return render_template('charge.html',
-                amount=request.form['amount'])
+        return render_template('charge.html', amount=request.form['amount'])
     else:
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
@@ -265,11 +269,19 @@ def thanks():
         return render_template('error.html', message=message)
 
     if form.validate():
-        add_customer_and_charge.delay(form=request.form,
-                customer=customer)
+        result = add_customer_and_charge(form=request.form, customer=customer)
 
-        return render_template('thanks.html',
-                amount=request.form['amount'])
+        if not result['errors']:
+            #print(result['id'])
+            session['sf_id'] = result['id']
+            if frequency == 'one-time':
+                session['sf_type'] = 'Opportunity'
+            else:
+                session['sf_type'] = 'npe03__Recurring_Donation__c'
+        else:
+            session['errors'] = result['errors']
+
+        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, session=session)
     else:
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
@@ -287,8 +299,19 @@ def finish():
 @app.route('/confirm/', methods=['POST'])
 def confirm():
 
-    form = MinnPostForm(request.form)
-    pprint('Request: {}'.format(request))
+    form = ConfirmForm(request.form)
+    #pprint('Request: {}'.format(request))
+
+    sf_id = session['sf_id']
+    sf_type = session['sf_type']
+
+    if sf_id:
+
+        result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
+        return render_template('finish.html', session=session)
+    else:
+        message = "there was an issue saving your preferences, but your donation was successful"
+        return render_template('error.html', message=message)
 
     
 

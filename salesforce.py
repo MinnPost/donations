@@ -758,7 +758,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         #    form['reason']),
         'Type__c': type__c,
     }
-    pprint(recurring_donation)   # TODO: rm
+    #pprint(recurring_donation)   # TODO: rm
     return recurring_donation
 
 
@@ -773,13 +773,13 @@ def add_recurring_donation(form=None, customer=None):
     recurring_donation = _format_recurring_donation(contact=contact,
             form=form, customer=customer)
     path = '/services/data/v35.0/sobjects/npe03__Recurring_Donation__c'
-    sf.post(path=path, data=recurring_donation)
+    response = sf.post(path=path, data=recurring_donation)
     send_multiple_account_warning()
 
-    return True
+    return response
 
 
-@celery.task(name='salesforce.add_customer_and_charge')
+#@celery.task(name='salesforce.add_customer_and_charge')
 def add_customer_and_charge(form=None, customer=None):
     """
     Add a contact and their donation into SF. This is done in the background
@@ -798,19 +798,16 @@ def add_customer_and_charge(form=None, customer=None):
         print("----One time payment...")
         #msg = '*{}* pledged *${}*'.format(name, amount)
         #notify_slack(msg)
-        add_opportunity(form=form, customer=customer)
-        #print('id is')
-        #print(add_opportunity['id'])
-        #print('showed id')
+        response = add_opportunity(form=form, customer=customer)
     else:
         print("----Recurring payment...")
         #msg = '*{}* pledged *${}*{} [recurring]'.format(name, amount)
         #notify_slack(msg)
-        add_recurring_donation(form=form, customer=customer)
+        response = add_recurring_donation(form=form, customer=customer)
         #print('id is')
         #print(add_recurring_donation['id'])
         #print('showed id')
-    return True
+    return response
 
 
 def _format_tw_opportunity(contact=None, form=None, customer=None):
@@ -861,3 +858,89 @@ def add_tw_customer_and_charge(form=None, customer=None):
     add_tw_subscription(form=form, customer=customer)
 
     return True
+
+
+
+
+@celery.task(name='salesforce.update_donation_object')
+def update_donation_object(object_name=None, sf_id=None, form=None):
+
+    #print('---Updating this {} ---'.format(object_name))
+
+    #three_days_ago = (datetime.now(tz=zone) - timedelta(
+    #    days=3)).strftime('%Y-%m-%d')
+    #today = datetime.now(tz=zone).strftime('%Y-%m-%d')
+
+    try:
+        reason_for_supporting = form['reason_for_supporting']
+    except:
+        reason_for_supporting = ''
+
+    try:
+        if form['reason_shareable'] == '1':
+            reason_for_supporting_shareable = True
+        else:
+            reason_for_supporting_shareable = False
+    except:
+        reason_for_supporting_shareable = False
+
+    newsletters = form.getlist('newsletters')
+    messages = form.getlist('messages')
+
+    if 'Daily newsletter' in newsletters:
+        daily_newsletter = True
+    else:
+        daily_newsletter = False
+
+    if 'Greater Minnesota newsletter' in newsletters:
+        greater_mn_newsletter = True
+    else:
+        greater_mn_newsletter = False
+
+    if 'Sunday review' in newsletters:
+        sunday_review_newsletter = True
+    else:
+        sunday_review_newsletter = False
+
+    if 'Events & member benefits' in messages:
+        event_messages = True
+    else:
+        event_messages = False
+
+    if 'Opportunities to give MinnPost input/feedback' in messages:
+        feedback_messages = True
+    else:
+        feedback_messages = False
+
+    sf = SalesforceConnection()
+
+    query = """
+        SELECT Reason_for_Gift__c, Reason_for_gift_shareable__c,
+        Daily_newsletter_sign_up__c, Greater_MN_newsletter__c, Sunday_Review_newsletter__c,
+        Event_member_benefit_messages__c, Input_feedback_messages__c
+        FROM {} 
+        WHERE Id = '{}'
+        """.format(object_name, sf_id)
+
+    response = sf.query(query)
+
+    update = {
+        'Reason_for_Gift__c': reason_for_supporting,
+        'Reason_for_gift_shareable__c': reason_for_supporting_shareable,
+        'Daily_newsletter_sign_up__c': daily_newsletter,
+        'Greater_MN_newsletter__c': greater_mn_newsletter,
+        'Sunday_Review_newsletter__c': sunday_review_newsletter,
+        'Event_member_benefit_messages__c': event_messages,
+        'Input_feedback_messages__c': feedback_messages
+        }
+
+    path = response[0]['attributes']['url']
+    url = '{}{}'.format(sf.instance_url, path)
+    #print (url)
+    resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+    # TODO: check 'errors' and 'success' too
+    #print (resp)
+    if resp.status_code == 204:
+        return True
+    else:
+        raise Exception('problem')
