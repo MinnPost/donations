@@ -29,9 +29,6 @@ app.debug = FLASK_DEBUG
 app.secret_key = FLASK_SECRET_KEY
 app.default_campaign = DEFAULT_CAMPAIGN
 
-if 'DYNO' in os.environ: # only trigger SSLify if the app is running on Heroku
-    sslify = SSLify(app)
-
 app.wsgi_app = SassMiddleware(app.wsgi_app, {
         'app': ('static/sass', 'static/css', 'static/css')
         })
