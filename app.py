@@ -59,12 +59,10 @@ def minnpost_form():
     form = MinnPostForm()
     if request.args.get('amount'):
         amount = float(request.args.get('amount'))
-
         if (amount).is_integer():
             amount_formatted = int(request.args.get('amount'))
         else:
             amount_formatted = format(amount, ',.2f')
-
     else:
         message = "The page you requested can't be found."
         return render_template('error.html', message=message)
