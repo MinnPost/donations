@@ -115,7 +115,7 @@ module.exports = function(grunt) {
         src: [
             '<%= dir.js %>/vendor/stripe.payment.js',
             '<%= dir.js %>/src/minnpost.giving.js',
-            '<%= dir.js %>/src/main.js'
+            //'<%= dir.js %>/src/main.js'
         ],
         dest: '<%= dir.js %>/main.js'
       },
