@@ -202,11 +202,12 @@ module.exports = function(grunt) {
    * run `grunt`
    */
   grunt.registerTask('default', [
-    'jshint',           // JShint
+    //'jshint',           // JShint
     'concat:js',        // Concatenate main JS files
     'uglify',           // Minifiy concatenated JS file
     //'compass:dev',      // Compile Sass with dev settings
     'autoprefixer:dev', // add prefixes to css
+    'cssmin',           // minify CSS files
   ]);
 
 
@@ -222,7 +223,8 @@ module.exports = function(grunt) {
     'svg2png',          // Convert svg files to png
     'svgmin',           // Compress svg files
     'imagemin',         // Compress jpg/jpeg + png files
-    'autoprefixer:dist',// add prefixes to css
+    'autoprefixer:dist',// add prefixes to css,
+    'cssmin',           // minify CSS files
   ]);
 
 

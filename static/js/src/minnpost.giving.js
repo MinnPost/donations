@@ -16,7 +16,7 @@
   var pluginName = 'minnpost_giving',
   defaults = {
     'debug' : false, // this can be set to true on page level options
-    'minnpost_root' : window.location.protocol + '//' + window.location.hostname,
+    'minnpost_root' : 'https://www.minnpost.com',
     'review_form_selector' : '#panel--review',
     'donate_form_selector' : '#panel--pay',
     'confirm_form_selector' : '#panel--confirmation',
@@ -658,49 +658,39 @@
       });
     }, // allowMinnpostAccount
 
-    checkMinnpostAccountExists: function(element, options, email) {
+    checkMinnpostAccountExists: function(element, options, email) {     
       var user = {
         email: email
       };
-
-      jQuery.ajax({
-            type: 'POST',
-            url: options.minnpost_root + '/accounts/exists',
-            data: user,
-            dataType: 'json',
-            success: function(data) {
-              if (data.status === 'success' && data.reason === 'user exists') { // user exists
+      $.ajax({
+        method: 'POST',
+        url: options.minnpost_root + '/accounts/exists',
+        data: user
+      }).done(function( data ) {
+        if (data.status === 'success' && data.reason === 'user exists') { // user exists
+          if ($(options.create_mp_selector, element).is(':checked')) {
+            $(options.password_selector, element).hide();
+            $(options.create_mp_selector, element).parent().hide();
+            $('.account-exists', element).show();
+          }
+          $(options.create_mp_selector, element).on('change', function() {
             if ($(options.create_mp_selector, element).is(':checked')) {
               $(options.password_selector, element).hide();
               $(options.create_mp_selector, element).parent().hide();
               $('.account-exists', element).show();
             }
-            /*$(options.create_mp_selector, element).on('change', function() {
-              if ($(options.create_mp_selector, element).is(':checked')) {
-                $(options.password_selector, element).hide();
-                $(options.create_mp_selector, element).parent().hide();
-                $('.account-exists', element).show();
-              }
-            });*/
-            $(options.create_mp_selector, element).change(function() {
-              if ($(options.create_mp_selector, element).is(':checked')) {
-                $(options.password_selector, element).hide();
-                $(options.create_mp_selector, element).parent().hide();
-                $('.account-exists', element).show();
-              }
-            });
-          } else { // user does not exist or ajax call failed
-            if ($(options.create_mp_selector, element).is(':checked')) {
-              $(options.password_selector, element).show();
-              options.create_account = true;
-            } else {
-              $(options.password_selector, element).hide();
-            }
-            $('.account-exists', element).hide();
-            return false;
+          });
+        } else { // user does not exist or ajax call failed
+          if ($(options.create_mp_selector, element).is(':checked')) {
+            $(options.password_selector, element).show();
+            options.create_account = true;
+          } else {
+            $(options.password_selector, element).hide();
           }
-            }
-        });
+          $('.account-exists', element).hide();
+          return false;
+        }
+      });
     }, // checkMinnpostAccountExists
 
     creditCardFields: function(element, options) {
