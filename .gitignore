@@ -1,7 +1,7 @@
 env
 .env
 *.pyc
-/static/css/
+*.scss.*
 *.DS_Store
 .cache
 .coverage
