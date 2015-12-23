@@ -1,9 +1,20 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="main">
+<section class="progress progress--donation">
+  <div class="wrapper">
+    <ol>
+      <li class="panel--review"><span>Review</span></li>
+      <li class="panel--pay"><span>Payment</span></li>
+      <li class="panel--confirmation"><span>Thank You</span></li>
+    </ol>
+  </div>
+</section>
 
-  <h2>{{ message }}</h2>
-
-</div>
+<main>
+  <div class="wrapper support--forms">
+  	<h1>Sorry, there has been an issue</h1>
+  	<p>{{ message }}</p>
+  </div>
+</main>
 {% endblock %}
