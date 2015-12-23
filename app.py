@@ -17,8 +17,6 @@ from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
 from app_celery import make_celery
 
-from flask_sslify import SSLify
-
 import batch
 
 from pprint import pprint
