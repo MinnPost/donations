@@ -8,3 +8,4 @@ env
 htmlcov
 sfstripe
 celerybeat-schedule
+node_modules
