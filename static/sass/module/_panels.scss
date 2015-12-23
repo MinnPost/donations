@@ -4,7 +4,7 @@
 .no-js .panel, .no-js .honor fieldset, .no-js .swag .form-item--atlantic_id {
 	display: block;
 }
-.panel {
+.panel, .panel--error {
 	h1, h2, h3 {
 		margin-bottom: 0;
 	}
