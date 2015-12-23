@@ -16,10 +16,12 @@
   var pluginName = 'minnpost_giving',
   defaults = {
     'debug' : false, // this can be set to true on page level options
+    'stripe_publishable_key' : '',
     'minnpost_root' : 'https://www.minnpost.com',
-    'review_form_selector' : '#panel--review',
-    'donate_form_selector' : '#panel--pay',
-    'confirm_form_selector' : '#panel--confirmation',
+    'donate_form_selector': '#donate',
+    'review_step_selector' : '#panel--review',
+    'donate_step_selector' : '#panel--pay',
+    'confirm_step_selector' : '#panel--confirmation',
     'active' : 'panel--review',
     'confirm' : 'panel--confirmation',
     'query' : 'step',
@@ -53,11 +55,11 @@
     'use_for_shipping_selector' : '#useforshipping',
     'email_field_selector' : '#edit-email',
     'password_field_selector' : '#password',
-    'firstname_field_selector' : '#edit-first-name',
-    'lastname_field_selector' : '#edit-last-name',
-    'city_field_selector' : '#edit-billing-city',
-    'state_field_selector' : '#edit-billing-state',
-    'zip_field_selector' : '#edit-billing-zip',
+    'firstname_field_selector' : '#first_name',
+    'lastname_field_selector' : '#last_name',
+    'account_city_selector' : '#billing_city_geocode',
+    'account_state_selector' : '#billing_state_geocode',
+    'account_zip_selector' : '#billing_zip_geocode',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.form-item--password',
     'billing_selector' : 'fieldset.billing',
@@ -149,6 +151,14 @@
       this.options.cardType = null;
       this.options.create_account = false;
 
+      var button_text = $('button.give, input.give').text();
+      $(window).unload(function() {
+        $('button.give, input.give').removeProp('disabled');
+        $('button.give, input.give').text(button_text);
+      });
+
+      Stripe.setPublishableKey(this.options.stripe_publishable_key);
+
       if (this.options.debug === true) {
         this.debug(this.options);
         // return;
@@ -174,19 +184,15 @@
       } else {
         $('> div', this.options.billing_selector).not('.form-item--geocode').show();
         $('> div', this.options.shipping_selector).not('.form-item--geocode').show();
-        // if we make them hidden fields, change them
-        /*$('> div', this.options.billing_selector).not('.form-item--geocode').each(function() {
-          $(this).attr('type', 'text');
-        });*/
       }
 
       this.paymentPanels(query_panel); // tabs
       if ($(this.options.pay_cc_processing_selector).length > 0) {
 
         this.creditCardProcessingFees(this.options, reset); // processing fees
-        $(this.options.review_form_selector).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
+        $(this.options.review_step_selector).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
       }
-      if ($(this.options.review_form_selector).length > 0) {
+      if ($(this.options.review_step_selector).length > 0) {
         this.options.level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
         this.options.levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
         this.honorOrMemory(this.element, this.options); // in honor or in memory of someone
@@ -194,15 +200,15 @@
         this.upsell(this.element, this.options, this.options.amount, this.options.frequency); // upsell to next level
       }
       
-      if ($(this.options.donate_form_selector).length > 0) {
+      if ($(this.options.donate_step_selector).length > 0) {
         this.donateAnonymously(this.element, this.options); // anonymous
         this.shippingAddress(this.element, this.options); // shipping address
         this.allowMinnpostAccount(this.element, this.options, false); // option for creating minnpost account
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
-        //this.validateAndSubmit(this.element, this.options); // validate and submit the form
+        this.validateAndSubmit(this.element, this.options); // validate and submit the form
       }
 
-      this.confirmMessageSubmit(this.element, this.options); // submit the stuff on the confirmation page
+      //this.confirmMessageSubmit(this.element, this.options); // submit the stuff on the confirmation page
 
     }, // init
 
@@ -269,7 +275,7 @@
         function () {
         // Redirect the location - delayed so that any other page functionality has time to run.
         setTimeout(function () {
-        var href = that.attr('href');
+        var href = that.prop('href');
         if (href && href.indexOf('#'') !== 0) {
         window.location = href;
         }
@@ -317,7 +323,7 @@
           });
         });
                 var fieldset = $(selector).closest('fieldset[data-geo="data-geo"]');
-                var prefix = $(fieldset).attr('class');
+                var prefix = $(fieldset).prop('class');
                 /*$(fieldset).append('<input type="hidden" name="' + prefix + '_street" value="' + address.street_number + ' ' + address.route_short + '" />');
                 $(fieldset).append('<input type="hidden" name="' + prefix + '_city" value="' + address.locality + '" />');
                 $(fieldset).append('<input type="hidden" name="' + prefix + '_state" value="' + address.administrative_area_level_1_short + '" />');
@@ -342,13 +348,13 @@
         $('#' + active).fadeIn();
         $('.progress--donation li.' + active + ' a').addClass('active');
       } else {
-        active = $('.progress--donation li .active').parent().attr('class');
+        active = $('.progress--donation li .active').parent().prop('class');
         $('#' + active).fadeIn();
       }
       $('.progress--donation li a, a.btn.btn--next').click(function(event) {
         event.preventDefault();
         $('.progress--donation li a').removeClass('active');
-        var link = $(this).attr('href');
+        var link = $(this).prop('href');
         var query = that.getQueryStrings(link);
         query = query['step'];
         $('.progress--donation li.' + query + ' a').addClass('active');
@@ -457,15 +463,15 @@
           }
         }
       });
-      $(options.level_indicator_selector, element).attr('class', levelclass);
+      $(options.level_indicator_selector, element).prop('class', levelclass);
       $(options.level_name_selector).text(level.charAt(0).toUpperCase() + level.slice(1));
 
-      var review_level_benefits = this.getQueryStrings($(options.review_benefits_selector, element).attr('href'));
+      var review_level_benefits = this.getQueryStrings($(options.review_benefits_selector, element).prop('href'));
       review_level_benefits = review_level_benefits['level'];
       
-      var link = $(options.review_benefits_selector, element).attr('href');
+      var link = $(options.review_benefits_selector, element).prop('href');
       link = link.replace(review_level_benefits, level);
-      $(options.review_benefits_selector).attr('href', link);
+      $(options.review_benefits_selector).prop('href', link);
       if (returnvalue === 'name') {
         return level;
       } else if (returnvalue === 'num') {
@@ -514,12 +520,12 @@
 
       $(options.honor_selector + ' fieldset').prepend('<a href="#" class="close">Close</a>');
       $(options.honor_selector + ' p a', element).click(function() {
-        var link_class = $(this).attr('class');
+        var link_class = $(this).prop('class');
         $('fieldset.' + link_class, element).addClass('visible').show();
         return false;
       });
       $(options.honor_selector + ' fieldset a.close', element).click(function() {
-        var link_class = $(this).parent().attr('class').substring(0, $(this).parent().attr('class').length - 8);
+        var link_class = $(this).parent().prop('class').substring(0, $(this).parent().prop('class').length - 8);
         $('fieldset.' + link_class, element).removeClass('visible').hide();
         return false;
       });
@@ -553,7 +559,7 @@
       if (change === false) { // keep this from repeating
         $(options.swag_selector, element).hide(); // hide all the swag items first
         $(options.swag_selector, element).filter(function(index) { // only show items that are less than or equal to donation level
-          return $(this).attr('class').slice(-1) <= currentlevel;
+          return $(this).prop('class').slice(-1) <= currentlevel;
         }).show();
 
         $(options.separate_swag_redeem, element).click(function(event) { // if user clicks to redeem a separate item (ie atlantic)
@@ -705,7 +711,7 @@
         $(options.cc_num_selector, element).keyup(function() {
           options.cardType = Payment.fns.cardType($(options.cc_num_selector, element).val());
           /*if (options.cardType !== null) {            
-            $('.card-image').attr('class', 'card-image ' + options.cardType);
+            $('.card-image').prop('class', 'card-image ' + options.cardType);
           }*/
           $('.card-image').prop('class', 'card-image ' + $('#cc-number').prop('class'));
         });
@@ -724,7 +730,6 @@
       var that = this;
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
-        //$(this).attr('disabled', true);
         // validate and submit the form
         var valid = true;
         if (typeof Payment !== 'undefined') {
@@ -764,23 +769,82 @@
 
         if (valid === true) {
 
-          // this can activate the thank you tab.
-          // though we might just need to redirect the user instead, depending on how we can get the data
-          // switch layout somehow
-          /*$('.progress--donation li a, .progress--donation li span').removeClass('active');
-          var query = options.confirm;
-          $('.progress--donation li.' + query + ' a, .progress--donation li.' + query + ' span').addClass('active');
-          that.paymentPanels(query);*/
+          // 1. process donation to stripe          
+          var supportform = $(options.donate_form_selector);
 
-          // create minnpost account if specified
+          var stripeResponseHandler = function(status, response) {
+            //var supportform = $('#donate');
+            var supportform = $(options.donate_form_selector);
+
+            if (response.error) {
+              // Show the errors on the form
+              supportform.find('.payment-errors').text(response.error.message);
+              supportform.find('button').removeProp('disabled');
+              supportform.find('button').text(button_text);
+            } else {
+              // response contains id and card, which contains additional card details
+              var token = response.id;
+              // Insert the token into the form so it gets submitted to the server
+              supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));
+              // and submit
+              //console.dir(response);
+              supportform.get(0).submit();
+            }
+          };
+
+          // Disable the submit button to prevent repeated clicks
+          supportform.find('button').prop('disabled', true);
+          supportform.find('button').text('Processing');
+
+          var full_name = '';
+          if ($('#full_name').length > 0) {
+            full_name = $('#full_name').val();
+          } else {
+            full_name = $('#first_name').val() + ' ' + $('#last_name').val();
+          }
+
+          var street = '';
+          if ($('input[name="billing_street"]').length > 0) {
+            street = $('input[name="billing_street"]').val();
+          }
+
+          var city = '';
+          if ($('input[name="billing_city"]').length > 0) {
+            city = $('input[name="billing_city"]').val();
+          }
+
+          var state = '';
+          if ($('input[name="billing_state"]').length > 0) {
+            state = $('input[name="billing_state"]').val();
+          }
+
+          var zip = '';
+          if ($('input[name="billing_zip"]').length > 0) {
+            zip = $('input[name="billing_zip"]').val();
+          }
+
+          var country = '';
+          if ($('input[name="billing_country"]').length > 0) {
+            country = $('input[name="billing_country"]').val();
+          }
+
+          Stripe.card.createToken({
+            number: $('#cc-number').val(),
+            cvc: $('#cc-cvc').val(),
+            exp: $('#cc-exp').val()
+          }, stripeResponseHandler);
+
+
+          // 2. create minnpost account if specified
           if (options.create_account === true) {
             var user = {
               email: $(options.email_field_selector, element).val(),
               first: $(options.firstname_field_selector, element).val(),
               last: $(options.lastname_field_selector, element).val(),
               password: $(options.password_field_selector, element).val(),
-              city: $(options.city_field_selector, element).val(),
-              state: $(options.state_field_selector, element).val()
+              city: $(options.account_city_selector, element).val(),
+              state: $(options.account_state_selector, element).val(),
+              zip: $(options.account_zip_selector, element).val(),
             };
             $.ajax({
               method: 'POST',
@@ -789,23 +853,28 @@
             }).done(function( data ) {
               if (data.status === 'success' && data.reason === 'new user') {
                 // user created - they should receive email
+                // submit the form
+                //supportform.get(0).submit();
               } else {
                 // user not created
+                // still submit the form
+                //supportform.get(0).submit();
               }
             });
+          } else {
+            //supportform.get(0).submit();
           }
-
-          return true;
+          //return true;
 
         }
 
       });
-      return false;
+      //return false;
     }, // validateAndSubmit
 
     confirmMessageSubmit: function(element, options) {
       var that = this;
-      $(options.confirm_form_selector).submit(function(event) {
+      $(options.confirm_step_selector).submit(function(event) {
         event.preventDefault();
         // validate and submit the form
         var valid = true;
@@ -877,85 +946,3 @@
   };
 
 })( jQuery, window, document );
-
-
-
-
-function loadStripe(publishableKey) {
-    var button_text = $('button.give, input.give').text();
-    $(window).unload(function() {
-      $('button.give, input.give').removeAttr('disabled');
-      $('button.give, input.give').text(button_text);
-    }); 
-    Stripe.setPublishableKey(publishableKey);
-    var stripeResponseHandler = function(status, response) {
-      var supportform = $('#donate');
-
-      if (response.error) {
-        // Show the errors on the form
-        supportform.find('.payment-errors').text(response.error.message);
-        supportform.find('button').removeAttr('disabled');
-        supportform.find('button').text(button_text);
-      } else {
-        // response contains id and card, which contains additional card details
-        var token = response.id;
-        // Insert the token into the form so it gets submitted to the server
-        supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));
-        // and submit
-        //console.dir(response);
-        supportform.get(0).submit();
-      }
-    };
-
-    jQuery(function($) {
-     $('#donate').submit(function(e) {
-      e.preventDefault(); //prevent default form submit
-      
-      var supportform = $(this);
-
-      // Disable the submit button to prevent repeated clicks
-      supportform.find('button').attr('disabled', true);
-      supportform.find('button').text('Processing');
-
-      var full_name = '';
-      if ($('#full_name').length > 0) {
-        full_name = $('#full_name').val();
-      } else {
-        full_name = $('#first_name').val() + ' ' + $('#last_name').val();
-      }
-
-      var street = '';
-      if ($('input[name="billing_street"]').length > 0) {
-        street = $('input[name="billing_street"]').val();
-      }
-
-      var city = '';
-      if ($('input[name="billing_city"]').length > 0) {
-        city = $('input[name="billing_city"]').val();
-      }
-
-      var state = '';
-      if ($('input[name="billing_state"]').length > 0) {
-        state = $('input[name="billing_state"]').val();
-      }
-
-      var zip = '';
-      if ($('input[name="billing_zip"]').length > 0) {
-        zip = $('input[name="billing_zip"]').val();
-      }
-
-      var country = '';
-      if ($('input[name="billing_country"]').length > 0) {
-        country = $('input[name="billing_country"]').val();
-      }
-
-      Stripe.card.createToken({
-        number: $('#cc-number').val(),
-        cvc: $('#cc-cvc').val(),
-        exp: $('#cc-exp').val()
-      }, stripeResponseHandler);
-
-     });
-   });
-
-}

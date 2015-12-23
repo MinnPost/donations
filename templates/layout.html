@@ -132,8 +132,14 @@
   <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>
 
   <script>
+  // main.js
   $(document).ready(function() {
-    loadStripe('{{key}}');
+    // call plugin and pass options if need be
+    $('.support--forms').minnpost_giving({
+      //'debug' : true,
+      //'minnpost_root' : 'http://minnpost.dev',
+      'stripe_publishable_key' : '{{key}}'
+    });
   });
   </script>
 
