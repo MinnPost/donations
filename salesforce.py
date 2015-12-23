@@ -864,7 +864,7 @@ def add_tw_customer_and_charge(form=None, customer=None):
 
 @celery.task(name='salesforce.update_donation_object')
 def update_donation_object(object_name=None, sf_id=None, form=None):
-
+    print ("----Update opportunity...")
     #print('---Updating this {} ---'.format(object_name))
 
     #three_days_ago = (datetime.now(tz=zone) - timedelta(
