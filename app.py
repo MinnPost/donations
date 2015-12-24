@@ -260,11 +260,12 @@ def thanks():
         yearly = 1
     level = checkLevel(amount, frequency, yearly)
 
-    email_is_valid = validate_email(request.form['email'])
+    email = request.form['email']
+    email_is_valid = validate_email(email)
 
     if email_is_valid:
         customer = stripe.Customer.create(
-                email=request.form['email'],
+                email=email,
                 card=request.form['stripeToken']
         )
     else:
@@ -284,7 +285,7 @@ def thanks():
         else:
             session['errors'] = result['errors']
 
-        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, session=session)
+        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, session=session)
     else:
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)

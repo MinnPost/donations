@@ -208,6 +208,10 @@
         this.validateAndSubmit(this.element, this.options); // validate and submit the form
       }
 
+      if ($(this.options.confirm_step_selector).length > 0) {
+        this.showNewsletterSettings(this.element, this.options);
+      }
+
       //this.confirmMessageSubmit(this.element, this.options); // submit the stuff on the confirmation page
 
     }, // init
@@ -871,6 +875,30 @@
       });
       //return false;
     }, // validateAndSubmit
+
+    showNewsletterSettings: function(element, options) {
+      var that = this;
+      if ($(options.newsletter_group_selector).length > 0 && typeof $(options.email_field_selector, element).val() !== 'undefined') {
+        var post_data = {
+            email: $(options.email_field_selector, element).val()
+          };
+        $.ajax({
+            method: 'POST',
+            url: options.minnpost_root + '/mailchimp/minnpost/groups',
+            data: post_data
+          }).done(function( result ) {
+            if (result.status === 'success' && result.reason === 'user exists') {
+              // user created - show a success message
+              $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
+              var groups = result.groups;
+              $.each(groups, function( index, value ) {
+                $(':checkbox[value="' + value + '"]').prop('checked','true');
+              });
+            }
+          });
+      }
+
+    }, // showNewsletterSettings
 
     confirmMessageSubmit: function(element, options) {
       var that = this;
