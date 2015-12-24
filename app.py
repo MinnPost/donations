@@ -9,8 +9,6 @@ import stripe
 from validate_email import validate_email
 from helpers import checkLevel
 
-from flask_sslify import SSLify
-
 from config import FLASK_SECRET_KEY
 from config import DEFAULT_CAMPAIGN
 from salesforce import add_customer_and_charge
@@ -23,9 +21,6 @@ import batch
 from pprint import pprint
 
 app = Flask(__name__)
-
-if 'DYNO' in os.environ: # only trigger SSLify if the app is running on Heroku
-    sslify = SSLify(app)
 
 app.secret_key = FLASK_SECRET_KEY
 app.default_campaign = DEFAULT_CAMPAIGN
