@@ -55,6 +55,7 @@
 .menu-show--secondary ~ .utilities ul.menu--secondary {
 	order: 1;
 	padding: 1em 0;
+	margin-top: 2.46153846153846em;
 }
 .menu-show--secondary:checked ~ .utilities .search-box--utilities {
 	order: 2;
@@ -66,6 +67,24 @@
 }
 .menu-show--secondary:checked ~ .utilities .minnpost-weather {
 	order: 4;
+	a {
+	  color: #1A1818;
+	}
+	a:hover {
+	  text-decoration: none;
+	  opacity: .65;
+	}
+	img.weather-icon {
+	  width: 25px;
+	  padding-right: 5px;
+	  float: left;
+	}
+	.weather-temperature {
+	  font-size: 13px;
+	  float: right;
+	  padding-top: 7px;
+	  width: 35px;
+	}
 }
 
 
