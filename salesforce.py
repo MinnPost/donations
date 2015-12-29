@@ -465,7 +465,6 @@ def _format_opportunity(contact=None, form=None, customer=None):
             'Type': 'Donation',
             'Anonymous__c': anonymous,
             'Credited_as__c': credited_as,
-            #'Daily_newsletter_sign_up__c': daily_newsletter,
             'Donor_first_name__c': first_name,
             'Donor_last_name__c': last_name,
             'Donor_e_mail__c': email,
@@ -474,7 +473,6 @@ def _format_opportunity(contact=None, form=None, customer=None):
             'Donor_state__c': billing_state,
             'Donor_ZIP__c': billing_zip,
             'Donor_country__c': billing_country,
-            #'Greater_MN_newsletter__c': greater_mn_newsletter,
             'In_Honor_Memory__c': inhonorormemory,
             'In_Honor_of_In_Memory__c': inhonorormemoryof,
             'Member_benefit_request_Swag__c': swag,
@@ -482,8 +480,6 @@ def _format_opportunity(contact=None, form=None, customer=None):
             'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
             'Payment_Page_Full_URL__c': full_url,
             'Payment_Type__c': 'Stripe',
-            #'Reason_for_Gift__c': reason_for_gift,
-            #'Reason_for_gift_shareable__c': reason_shareable,
             'Shipping_address_name__c':shipping_name,
             'Shipping_address_street__c': shipping_street,
             'Shipping_address_city__c': shipping_city,
@@ -491,9 +487,7 @@ def _format_opportunity(contact=None, form=None, customer=None):
             'Shipping_address_ZIP__c': shipping_zip,
             'Shipping_address_country__c': shipping_street,
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
-            'Stripe_Customer_Id__c': customer.id,
-            #'Sunday_Review_newsletter__c': sunday_review_newsletter,
-            
+            'Stripe_Customer_Id__c': customer.id,            
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
             }
@@ -723,7 +717,6 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         'npe03__Recurring_Donation_Campaign__c': '{}'.format(form['campaign']),
         'npe03__Contact__c': '{}'.format(contact['Id']),
         'Credited_as__c': credited_as,
-        #'Daily_newsletter_sign_up__c': daily_newsletter,
         'npe03__Date_Established__c': today,
         'Donor_address_line_1__c': billing_street,
         'Donor_city__c': billing_city,
@@ -733,7 +726,6 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         'Donor_e_mail__c': email,
         'Donor_first_name__c': first_name,
         'Donor_last_name__c': last_name,
-        #'Greater_MN_newsletter__c': greater_mn_newsletter,
         'In_Honor_Memory__c': inhonorormemory,
         'In_honor_memory_of__c': inhonorormemoryof,
         #'npe03__Installments__c': installments, # only add this if we need to close it
@@ -745,8 +737,6 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         'npe03__Open_Ended_Status__c': open_ended_status,
         'Payment_Page_Full_URL__c': full_url,
         'Payment_Type__c': 'Stripe',
-        #'Reason_for_Gift__c': reason_for_gift,
-        #'Reason_for_gift_shareable__c': reason_shareable,
         'Shipping_address_name__c':shipping_name,
         'Shipping_address_street__c': shipping_street,
         'Shipping_address_city__c': shipping_city,
@@ -867,10 +857,6 @@ def add_tw_customer_and_charge(form=None, customer=None):
 def update_donation_object(object_name=None, sf_id=None, form=None):
     print ("----Update opportunity...")
     #print('---Updating this {} ---'.format(object_name))
-
-    #three_days_ago = (datetime.now(tz=zone) - timedelta(
-    #    days=3)).strftime('%Y-%m-%d')
-    #today = datetime.now(tz=zone).strftime('%Y-%m-%d')
 
     try:
         reason_for_supporting = form['reason_for_supporting']
