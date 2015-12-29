@@ -17,8 +17,9 @@
 	    {{ form.csrf_token }}
 
 	    <input type="hidden" name="original_amount" id="original_amount" value="{{ amount }}"> <!-- load server-side from querystring -->
-	    <input type="hidden" name="amount" id="amount" value="{{ amount }}"> <!-- load server-side from querystring -->
-	    <input type="hidden" name="recurring" id="recurring" value="{{ frequency }}"> <!-- load server-side from querystring -->
+	    <input type="hidden" name="amount" id="amount" value="{{ amount }}">
+	    <input type="hidden" name="recurring" id="recurring" value="{{ frequency }}">
+	    <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
 	    <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
 	    <input type="hidden" name="description" id="description" value="MinnPost Membership">
 

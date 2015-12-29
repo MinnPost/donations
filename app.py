@@ -82,6 +82,10 @@ def minnpost_form():
         yearly = 12
     else:
         yearly = 1
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    else:
+        customer_id = ''
     installments = 'None'
     openended_status = 'Open'
     level = checkLevel(amount, frequency, yearly)
@@ -97,7 +101,7 @@ def minnpost_form():
         email = request.args.get('email')
     else:
         email = ''
-    return render_template('minnpost-form.html', form=form, amount=amount_formatted, campaign=campaign,
+    return render_template('minnpost-form.html', form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
         frequency=frequency, installments=installments,
         openended_status=openended_status,
         yearly=yearly,
@@ -245,6 +249,7 @@ def thanks():
     #pprint('Request: {}'.format(request))
 
     amount = float(request.form['amount'])
+    customer_id = request.form['customer_id']
 
     if (amount).is_integer():
         amount_formatted = int(request.form['amount'])
@@ -263,11 +268,15 @@ def thanks():
     email = request.form['email']
     email_is_valid = validate_email(email)
 
-    if email_is_valid:
+    if email_is_valid and customer_id is '':
         customer = stripe.Customer.create(
                 email=email,
                 card=request.form['stripeToken']
         )
+    elif customer_id is not None and customer_id != '':
+        customer = stripe.Customer.retrieve(customer_id)
+        customer.card=request.form['stripeToken']
+        customer.save()
     else:
         message = "There was an issue saving your email address."
         return render_template('error.html', message=message)
