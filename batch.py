@@ -7,6 +7,8 @@ from pytz import timezone
 import requests
 import stripe
 
+from helpers import amount_to_charge
+
 from salesforce import SalesforceConnection
 from config import STRIPE_KEYS
 from config import ACCOUNTING_MAIL_RECIPIENT
@@ -40,26 +42,6 @@ class Log(object):
         recipient = ACCOUNTING_MAIL_RECIPIENT
         subject = 'Batch run'
         send_email(body=body, recipient=recipient, subject=subject)
-
-
-def amount_to_charge(entry):
-    """
-    Determine the amount to charge. This depends on whether the payer agreed
-    to pay fees or not. If they did then we add that to the amount charged.
-    Stripe charges 2.9% + $0.30.
-
-    Stripe wants the amount to charge in cents. So we multiply by 100 and
-    return that.
-    """
-    amount = int(entry['Amount'])
-    if entry['Stripe_Agreed_to_pay_fees__c']:
-        fees = amount * .029 + .30
-    else:
-        fees = 0
-    total = amount + fees
-    total_in_cents = total * 100
-
-    return int(total_in_cents)
 
 
 def process_charges(query, log):

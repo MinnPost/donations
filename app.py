@@ -7,7 +7,7 @@ from raven.contrib.flask import Sentry
 from sassutils.wsgi import SassMiddleware
 import stripe
 from validate_email import validate_email
-from helpers import checkLevel
+from helpers import checkLevel, amount_to_charge
 
 from flask_sslify import SSLify
 

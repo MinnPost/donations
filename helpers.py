@@ -31,3 +31,23 @@ def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_am
 
     leveldata = {'level': level, 'levelnum': levelnum, 'levelint': levelint}
     return leveldata
+
+
+def amount_to_charge(entry):
+    """
+    Determine the amount to charge. This depends on whether the payer agreed
+    to pay fees or not. If they did then we add that to the amount charged.
+    Stripe charges 2.9% + $0.30.
+
+    Stripe wants the amount to charge in cents. So we multiply by 100 and
+    return that.
+    """
+    amount = int(entry['Amount'])
+    if entry['Stripe_Agreed_to_pay_fees__c'] == 1:
+        fees = amount * .029 + .30
+    else:
+        fees = 0
+    total = amount + fees
+    total_in_cents = total * 100
+
+    return int(total_in_cents)
