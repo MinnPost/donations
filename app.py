@@ -265,6 +265,12 @@ def thanks():
         yearly = 1
     level = checkLevel(amount, frequency, yearly)
 
+    pay_fees = request.form['pay_fees']
+    if pay_fees == '1':
+        entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
+        amount_plus_fees = amount_to_charge(entry)
+        amount_formatted = format(amount_plus_fees / 100, ',.2f')
+
     email = request.form['email']
     email_is_valid = validate_email(email)
 
