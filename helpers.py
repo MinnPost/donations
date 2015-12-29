@@ -43,7 +43,7 @@ def amount_to_charge(entry):
     return that.
     """
     amount = int(entry['Amount'])
-    if entry['Stripe_Agreed_to_pay_fees__c'] == 1:
+    if entry['Stripe_Agreed_to_pay_fees__c']:
         fees = amount * .029 + .30
     else:
         fees = 0
