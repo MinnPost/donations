@@ -522,7 +522,6 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
     amount = form['amount']
-
     try:
         if form['anonymous'] == '1':
             anonymous = True
@@ -643,7 +642,6 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         except:
             shipping_country = ''
 
-
     try:
         in_memory_name = form['in_memory_name']
     except:
@@ -699,8 +697,6 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
             pay_fees = False
     except:
         pay_fees = False
-
-
 
     type__c = 'Recurring'
 
