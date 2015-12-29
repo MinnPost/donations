@@ -710,10 +710,10 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     #else:
     #    installments = 0
 
-    if form['pay_fees'] == '1':
-        pay_fees = True
+    if form['recurring'] != 'None':
+        installment_period = form['recurring'].title()
     else:
-        pay_fees = False
+        installment_period = ''
 
     recurring_donation = {
         'Name': '{0} {1} {2} {3}'.format(
@@ -740,8 +740,8 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         #'Greater_MN_newsletter__c': greater_mn_newsletter,
         'In_Honor_Memory__c': inhonorormemory,
         'In_honor_memory_of__c': inhonorormemoryof,
-        #'npe03__Installments__c': installments,
-        #'npe03__Installment_Period__c': installment_period,
+        #'npe03__Installments__c': installments, # only add this if we need to close it
+        'npe03__Installment_Period__c': installment_period, # this has to be there even if it is open ended
         'Lead_Source__c': 'Stripe',
         'Member_benefit_request_Swag__c': swag,
         'Member_benefit_request_Other_benefits__c': swag_other_benefits,
@@ -751,11 +751,16 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         'Payment_Type__c': 'Stripe',
         #'Reason_for_Gift__c': reason_for_gift,
         #'Reason_for_gift_shareable__c': reason_shareable,
+        'Shipping_address_name__c':shipping_name,
+        'Shipping_address_street__c': shipping_street,
+        'Shipping_address_city__c': shipping_city,
+        'Shipping_address_state__c': shipping_state,
+        'Shipping_address_ZIP__c': shipping_zip,
+        'Shipping_address_country__c': shipping_street,
         'Stripe_Agreed_to_pay_fees__c': pay_fees,
         'Stripe_Customer_Id__c': customer.id,
         'Stripe_Description__c': '{}'.format(form['description']),
-        #'Encouraged_to_contribute_by__c': '{}'.format(
-        #    form['reason']),
+        #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
         'Type__c': type__c,
     }
     #pprint(recurring_donation)   # TODO: rm
