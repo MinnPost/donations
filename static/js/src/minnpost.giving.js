@@ -29,7 +29,7 @@
     'fixed_amount' : 0.3,
     'pay_cc_processing_selector' : 'input[id="edit-pay-fees"]',
     'level_amount_selector' : '#panel--review .amount .level-amount',
-    'original_amount_selector' : '#original_amount',
+    'original_amount_selector' : '#amount',
     'frequency_selector' : '.frequency',
     'full_amount_selector' : '.full-amount',
     'level_indicator_selector' : 'h2.level',
@@ -139,13 +139,16 @@
       } else {
         this.options.amount = amount;
       }
-      this.options.original_amount = parseFloat($(this.options.original_amount_selector, this.element).val());
+      this.options.original_amount = parseInt($(this.options.original_amount_selector, this.element).val());
       this.options.frequency = parseFloat($(this.options.frequency_selector, this.element).attr('data-year-freq'));
       this.options.processing_percent = parseFloat(this.options.percentage);
       this.options.fixed_fee = parseFloat(this.options.fixed_amount);
-      this.options.new_amount = (this.options.original_amount + this.options.fixed_fee) / (1 - this.options.processing_percent);
-      this.options.processing_fee = this.options.new_amount - this.options.original_amount;
-      this.options.processing_fee = parseFloat(this.options.processing_fee).toFixed(2);
+      //this.options.new_amount = (this.options.original_amount + this.options.fixed_fee) / (1 - this.options.processing_percent);
+      //this.options.processing_fee = this.options.new_amount - this.options.original_amount;
+      //this.options.processing_fee = parseFloat(this.options.processing_fee).toFixed(2);
+      this.options.processing_fee = parseFloat(this.options.original_amount * .029 + .30);
+      this.options.processing_fee_text = this.options.processing_fee.toFixed(2);
+      this.options.new_amount = parseFloat(this.options.original_amount + this.options.processing_fee);
       this.options.upsell_amount = parseFloat($(this.options.upsell_amount_selector, this.element).text());
       this.options.upsold = this.options.amount + this.options.upsell_amount;
       this.options.cardType = null;
@@ -371,9 +374,9 @@
       var that = this;
       var remove = false;
       $(this.options.pay_cc_processing_selector).parent().html('<a href="#" class="add-credit-card-processing">Add $<span class="processing-amount"></span></a> <span class="processing-explain">to each transaction to cover MinnPost\'s credit card fees?</span>');      
-      $('.processing-amount').text(options.processing_fee);
+      $('.processing-amount').text(options.processing_fee_text);
       if (this.options.original_amount != this.options.amount) {
-        $('.add-credit-card-processing').text('Remove $' + options.processing_fee);
+        $('.add-credit-card-processing').text('Remove $' + options.processing_fee_text);
         $('#edit-pay-fees').val(1);
         remove = true;
         $('.processing-explain').hide();
@@ -381,29 +384,29 @@
       if (reset === true) {
         remove = false;
         full_amount = that.options.original_amount;
-        $('.add-credit-card-processing').text('Add $' + that.options.processing_fee);
+        $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
         $('#edit-pay-fees').val(0);
         $('.processing-explain').show();
-        $('#amount').val(full_amount);
+        //$('#amount').val(full_amount);
       }
       $('.add-credit-card-processing').click(function(event) {
         $('.amount .level-amount').addClass('full-amount');
         if (!remove) {
           remove = true;
           full_amount = that.options.new_amount;
-          $('.add-credit-card-processing').text('Remove $' + options.processing_fee);
+          $('.add-credit-card-processing').text('Remove $' + options.processing_fee_text);
           $('#edit-pay-fees').val(1);
           $('.processing-explain').hide();
         } else {
           remove = false;
           full_amount = that.options.original_amount;
-          $('.add-credit-card-processing').text('Add $' + options.processing_fee);
+          $('.add-credit-card-processing').text('Add $' + options.processing_fee_text);
           $('#edit-pay-fees').val(0);
           $('.processing-explain').show();
         }
         $('.add-credit-card-processing').toggleClass('remove');
         $(options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
-        $('#amount').val(parseFloat(full_amount).toFixed(2));
+        //$('#amount').val(parseFloat(full_amount).toFixed(2));
         event.stopPropagation();
         event.preventDefault();
       });
