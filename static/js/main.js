@@ -1007,7 +1007,7 @@ global.Payment = Payment;
         // add combined address fields for geocomplete
         $('> div', this.options.billing_selector).not('.form-item--geocode').hide();
         $('> div', this.options.shipping_selector).not('.form-item--geocode').hide();
-        $(this.options.billing_selector, this.element).prepend('<div class="form-item form-item--billing-address form-item--geocode"><label for="full_address">Billing Address: <span title="This field is required." class="form-required">*</span></label><input type="text" autocapitalize="off" autocorrect="off" name="full_address" id="full_address" class="geocomplete form-text required"  placeholder=""></div>');
+        $(this.options.billing_selector, this.element).prepend('<div class="form-item form-item--billing-address form-item--geocode"><label for="full_address" class="required">Billing Address: </label><input type="text" autocapitalize="off" autocorrect="off" name="full_address" id="full_address" class="geocomplete form-text" required placeholder=""></div>');
         this.getFullAddress($('#full_address'));
         $(this.options.shipping_selector, this.element).append('<div class="form-item form-item--shipping-address form-item--geocode"><label for="full_shipping_address">Shipping Address: </label><input type="text" autocapitalize="off" autocorrect="off" name="full_shipping_address" id="full_shipping_address" class="geocomplete form-text" placeholder=""></div>');
         this.getFullAddress($('#full_shipping_address'));

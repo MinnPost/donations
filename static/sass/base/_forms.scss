@@ -45,6 +45,7 @@ label {
 
   &.required::after {
     content: "*";
+    color: $minnpost-red-error;
   }
   &.additional-option {
     margin-top: -$half-space;
