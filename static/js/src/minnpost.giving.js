@@ -21,6 +21,7 @@
     'donate_form_selector': '#donate',
     'review_step_selector' : '#panel--review',
     'donate_step_selector' : '#panel--pay',
+    'confirm_form_selector' : '#confirm',
     'confirm_step_selector' : '#panel--confirmation',
     'active' : 'panel--review',
     'confirm' : 'panel--confirmation',
@@ -75,6 +76,7 @@
     'reason_field_selector' : '#reason_for_supporting',
     'share_reason_selector' : '#reason_shareable',
     'confirm_top_selector' : '.support--post-confirm',
+    'existing_newsletter_settings' : '',
     'levels' : {
       1 : {
         'name' : 'bronze',
@@ -214,9 +216,8 @@
 
       if ($(this.options.confirm_step_selector).length > 0) {
         this.showNewsletterSettings(this.element, this.options);
+        this.confirmMessageSubmit(this.element, this.options); // submit the stuff on the confirmation page
       }
-
-      //this.confirmMessageSubmit(this.element, this.options); // submit the stuff on the confirmation page
 
     }, // init
 
@@ -803,7 +804,7 @@
               //console.dir(response);
               //supportform.get(0).submit();
 
-              setTimeout(function() {
+              //setTimeout(function() {
                 $.ajax({
                   url:'/charge_ajax/',
                   cache: false,
@@ -846,7 +847,7 @@
                   supportform.find('button').removeProp('disabled');
                   supportform.find('button').text(options.button_text);
                 });
-              },500);
+              //},500);
 
               // Disable the submit button to prevent repeated clicks
               supportform.find('button').prop('disabled', true);
@@ -934,38 +935,47 @@
       var that = this;
       if ($(options.newsletter_group_selector).length > 0 && typeof $(options.email_field_selector, element).val() !== 'undefined') {
         var post_data = {
-            email: $(options.email_field_selector, element).val()
-          };
+          email: $(options.email_field_selector, element).val()
+        };
         $.ajax({
-            method: 'POST',
-            url: options.minnpost_root + '/mailchimp/minnpost/groups',
-            data: post_data
-          }).done(function( result ) {
-            if (result.status === 'success' && result.reason === 'user exists') {
-              // user created - show a success message
-              $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
-              var groups = result.groups;
-              $.each(groups, function( index, value ) {
-                $(':checkbox[value="' + value + '"]').prop('checked','true');
-              });
-            }
-          });
+          method: 'POST',
+          url: options.minnpost_root + '/mailchimp/minnpost/groups',
+          data: post_data
+        }).done(function( result ) {
+          if (result.status === 'success' && result.reason === 'user exists') {
+            // user created - show a success message
+            $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
+            var groups = result.groups;
+            $.each(groups, function( index, value ) {
+              $(':checkbox[value="' + value + '"]').prop('checked','true');
+            });
+
+            //this.options.existing_newsletter_settings = $('.support-newsletter :input').serialize();
+
+          }
+        });
       }
 
     }, // showNewsletterSettings
 
     confirmMessageSubmit: function(element, options) {
-      var that = this;
-      $(options.confirm_step_selector).submit(function(event) {
+
+      //var existing_newsletter_settings = this.options.existing_newsletter_settings;
+      var existing_newsletter_settings = $('.support-newsletter :input').serialize();
+      //console.dir(existing_newsletter_settings);
+
+      $(options.confirm_form_selector).submit(function(event) {
         event.preventDefault();
-        // validate and submit the form
-        var valid = true;
-        $(options.confirm_top_selector, element).prepend('<ul class="well well--messages"></ul>');
+
+        var confirmform = $(options.confirm_form_selector);
+        // submit settings to mailchimp
+        // need to get user info on a hidden field here
+
         var newsletter_groups = $(options.newsletter_group_selector + ':checked');
         var message_groups = $(options.message_group_selector + ':checked');
+        var new_newsletter_settings = $('.support-newsletter :input:checked').serialize();
 
-        if (typeof newsletter_groups !== 'undefined' || typeof message_groups !== 'undefined') {
-          $('ul.well--messages').append('<li class="mailchimp"></li>');
+        if ((existing_newsletter_settings !== new_newsletter_settings) && (typeof newsletter_groups !== 'undefined' || typeof message_groups !== 'undefined')) {
           var post_data = {
             minnpost_mailchimp_js_form_action: 'newsletter_subscribe',
             minnpost_mailchimp_email: $(options.email_field_selector, element).val(),
@@ -995,24 +1005,19 @@
             data: post_data
           }).done(function( result ) {
             if (result.status === 'success') {
-              // user created - show a success message
-              $('.well--messages').addClass('success');
-              $('.well--messages .mailchimp', element).html(result.message);
+              // user created - show a success message?
+              //console.dir(result);
             } else {
               // user not created - show error message
-              $('.well--messages').addClass('error');
-              $('.well--messages .mailchimp', element).html(result.message);
+              //console.dir(result);
             }
           });
         }
 
-        if ($(options.reason_field_selector, element).val() !== '') {
-          var share = options.share_reason_selector.val();
-          var message = options.reason_field_selector.val();
-        }
+        confirmform.get(0).submit();
 
       });
-      return false;
+      //return false;
     }, // confirmMessageSubmit
 
   }; // plugin.prototype

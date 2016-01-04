@@ -847,6 +847,7 @@ global.Payment = Payment;
     'donate_form_selector': '#donate',
     'review_step_selector' : '#panel--review',
     'donate_step_selector' : '#panel--pay',
+    'confirm_form_selector' : '#confirm',
     'confirm_step_selector' : '#panel--confirmation',
     'active' : 'panel--review',
     'confirm' : 'panel--confirmation',
@@ -901,6 +902,7 @@ global.Payment = Payment;
     'reason_field_selector' : '#reason_for_supporting',
     'share_reason_selector' : '#reason_shareable',
     'confirm_top_selector' : '.support--post-confirm',
+    'existing_newsletter_settings' : '',
     'levels' : {
       1 : {
         'name' : 'bronze',
@@ -969,12 +971,12 @@ global.Payment = Payment;
       this.options.frequency = parseFloat($(this.options.frequency_selector, this.element).attr('data-year-freq'));
       this.options.processing_percent = parseFloat(this.options.percentage);
       this.options.fixed_fee = parseFloat(this.options.fixed_amount);
-      //this.options.new_amount = (this.options.original_amount + this.options.fixed_fee) / (1 - this.options.processing_percent);
-      //this.options.processing_fee = this.options.new_amount - this.options.original_amount;
-      //this.options.processing_fee = parseFloat(this.options.processing_fee).toFixed(2);
-      this.options.processing_fee = parseFloat(this.options.original_amount * .029 + .30);
-      this.options.processing_fee_text = this.options.processing_fee.toFixed(2);
-      this.options.new_amount = parseFloat(this.options.original_amount + this.options.processing_fee);
+      
+      this.options.new_amount = (this.options.original_amount + this.options.fixed_fee) / (1 - this.options.processing_percent);
+      this.options.processing_fee = this.options.new_amount - this.options.original_amount;
+      this.options.processing_fee = (Math.round(parseFloat(this.options.processing_fee)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2)
+      this.options.processing_fee_text = this.options.processing_fee;
+      
       this.options.upsell_amount = parseFloat($(this.options.upsell_amount_selector, this.element).text());
       this.options.upsold = this.options.amount + this.options.upsell_amount;
       this.options.cardType = null;
@@ -1040,9 +1042,8 @@ global.Payment = Payment;
 
       if ($(this.options.confirm_step_selector).length > 0) {
         this.showNewsletterSettings(this.element, this.options);
+        this.confirmMessageSubmit(this.element, this.options); // submit the stuff on the confirmation page
       }
-
-      //this.confirmMessageSubmit(this.element, this.options); // submit the stuff on the confirmation page
 
     }, // init
 
@@ -1629,7 +1630,7 @@ global.Payment = Payment;
               //console.dir(response);
               //supportform.get(0).submit();
 
-              setTimeout(function() {
+              //setTimeout(function() {
                 $.ajax({
                   url:'/charge_ajax/',
                   cache: false,
@@ -1672,7 +1673,7 @@ global.Payment = Payment;
                   supportform.find('button').removeProp('disabled');
                   supportform.find('button').text(options.button_text);
                 });
-              },500);
+              //},500);
 
               // Disable the submit button to prevent repeated clicks
               supportform.find('button').prop('disabled', true);
@@ -1760,38 +1761,47 @@ global.Payment = Payment;
       var that = this;
       if ($(options.newsletter_group_selector).length > 0 && typeof $(options.email_field_selector, element).val() !== 'undefined') {
         var post_data = {
-            email: $(options.email_field_selector, element).val()
-          };
+          email: $(options.email_field_selector, element).val()
+        };
         $.ajax({
-            method: 'POST',
-            url: options.minnpost_root + '/mailchimp/minnpost/groups',
-            data: post_data
-          }).done(function( result ) {
-            if (result.status === 'success' && result.reason === 'user exists') {
-              // user created - show a success message
-              $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
-              var groups = result.groups;
-              $.each(groups, function( index, value ) {
-                $(':checkbox[value="' + value + '"]').prop('checked','true');
-              });
-            }
-          });
+          method: 'POST',
+          url: options.minnpost_root + '/mailchimp/minnpost/groups',
+          data: post_data
+        }).done(function( result ) {
+          if (result.status === 'success' && result.reason === 'user exists') {
+            // user created - show a success message
+            $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
+            var groups = result.groups;
+            $.each(groups, function( index, value ) {
+              $(':checkbox[value="' + value + '"]').prop('checked','true');
+            });
+
+            //this.options.existing_newsletter_settings = $('.support-newsletter :input').serialize();
+
+          }
+        });
       }
 
     }, // showNewsletterSettings
 
     confirmMessageSubmit: function(element, options) {
-      var that = this;
-      $(options.confirm_step_selector).submit(function(event) {
+
+      //var existing_newsletter_settings = this.options.existing_newsletter_settings;
+      var existing_newsletter_settings = $('.support-newsletter :input').serialize();
+      //console.dir(existing_newsletter_settings);
+
+      $(options.confirm_form_selector).submit(function(event) {
         event.preventDefault();
-        // validate and submit the form
-        var valid = true;
-        $(options.confirm_top_selector, element).prepend('<ul class="well well--messages"></ul>');
+
+        var confirmform = $(options.confirm_form_selector);
+        // submit settings to mailchimp
+        // need to get user info on a hidden field here
+
         var newsletter_groups = $(options.newsletter_group_selector + ':checked');
         var message_groups = $(options.message_group_selector + ':checked');
+        var new_newsletter_settings = $('.support-newsletter :input:checked').serialize();
 
-        if (typeof newsletter_groups !== 'undefined' || typeof message_groups !== 'undefined') {
-          $('ul.well--messages').append('<li class="mailchimp"></li>');
+        if ((existing_newsletter_settings !== new_newsletter_settings) && (typeof newsletter_groups !== 'undefined' || typeof message_groups !== 'undefined')) {
           var post_data = {
             minnpost_mailchimp_js_form_action: 'newsletter_subscribe',
             minnpost_mailchimp_email: $(options.email_field_selector, element).val(),
@@ -1822,23 +1832,19 @@ global.Payment = Payment;
           }).done(function( result ) {
             if (result.status === 'success') {
               // user created - show a success message
-              $('.well--messages').addClass('success');
-              $('.well--messages .mailchimp', element).html(result.message);
+              console.dir(result);
             } else {
               // user not created - show error message
-              $('.well--messages').addClass('error');
-              $('.well--messages .mailchimp', element).html(result.message);
+              console.dir(result);
             }
           });
         }
 
-        if ($(options.reason_field_selector, element).val() !== '') {
-          var share = options.share_reason_selector.val();
-          var message = options.reason_field_selector.val();
-        }
+        //console.log('try to submit now');
+        confirmform.get(0).submit();
 
       });
-      return false;
+      //return false;
     }, // confirmMessageSubmit
 
   }; // plugin.prototype

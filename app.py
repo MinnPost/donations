@@ -272,6 +272,8 @@ def charge_ajax():
         amount_formatted = format(amount_plus_fees / 100, ',.2f')
 
     email = request.form['email']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
     email_is_valid = validate_email(email)
 
     if email_is_valid and customer_id is '':
@@ -304,7 +306,7 @@ def charge_ajax():
         else:
             session['errors'] = result['errors']
 
-        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, session=session)
+        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
     else:
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
@@ -340,10 +342,12 @@ def thanks():
         amount_formatted = format(amount_plus_fees / 100, ',.2f')
 
     email = request.form['email']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
     email_is_valid = validate_email(email)
 
     if form.validate():
-        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, session=session)
+        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
     else:
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
