@@ -1,7 +1,7 @@
 import os
 import sys
 
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, jsonify
 from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
 from raven.contrib.flask import Sentry
 from sassutils.wsgi import SassMiddleware
@@ -242,6 +242,74 @@ def charge():
         return render_template('error.html', message=message)
 
 
+@app.route('/charge_ajax/', methods=['POST'])
+def charge_ajax():
+
+    form = MinnPostForm(request.form)
+    #pprint('Request: {}'.format(request))
+
+    amount = float(request.form['amount'])
+    customer_id = request.form['customer_id']
+
+    if (amount).is_integer():
+        amount_formatted = int(request.form['amount'])
+    else:
+        amount_formatted = format(amount, ',.2f')
+
+    frequency = request.form['recurring']
+    if frequency is None:
+        frequency = 'one-time'
+    if frequency == 'monthly':
+        yearly = 12
+    else:
+        yearly = 1
+    level = checkLevel(amount, frequency, yearly)
+
+    pay_fees = request.form['pay_fees']
+    if pay_fees == '1':
+        entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
+        amount_plus_fees = amount_to_charge(entry)
+        amount_formatted = format(amount_plus_fees / 100, ',.2f')
+
+    email = request.form['email']
+    email_is_valid = validate_email(email)
+
+    if email_is_valid and customer_id is '':
+        try:
+            customer = stripe.Customer.create(
+                    email=email,
+                    card=request.form['stripeToken']
+            )
+        except stripe.error.CardError as e:
+            body = e.json_body
+            return jsonify(body)
+    elif customer_id is not None and customer_id != '':
+        customer = stripe.Customer.retrieve(customer_id)
+        customer.card=request.form['stripeToken']
+        customer.save()
+    else:
+        message = "There was an issue saving your email address."
+        return render_template('error.html', message=message)
+
+    if form.validate():
+        result = add_customer_and_charge(form=request.form, customer=customer)
+
+        if not result['errors']:
+            #print(result['id'])
+            session['sf_id'] = result['id']
+            if frequency == 'one-time':
+                session['sf_type'] = 'Opportunity'
+            else:
+                session['sf_type'] = 'npe03__Recurring_Donation__c'
+        else:
+            session['errors'] = result['errors']
+
+        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, session=session)
+    else:
+        message = "There was an issue saving your donation information."
+        return render_template('error.html', message=message)
+
+
 @app.route('/thanks/', methods=['POST'])
 def thanks():
 
@@ -274,37 +342,11 @@ def thanks():
     email = request.form['email']
     email_is_valid = validate_email(email)
 
-    if email_is_valid and customer_id is '':
-        customer = stripe.Customer.create(
-                email=email,
-                card=request.form['stripeToken']
-        )
-    elif customer_id is not None and customer_id != '':
-        customer = stripe.Customer.retrieve(customer_id)
-        customer.card=request.form['stripeToken']
-        customer.save()
-    else:
-        message = "There was an issue saving your email address."
-        return render_template('error.html', message=message)
-
     if form.validate():
-        result = add_customer_and_charge(form=request.form, customer=customer)
-
-        if not result['errors']:
-            #print(result['id'])
-            session['sf_id'] = result['id']
-            if frequency == 'one-time':
-                session['sf_type'] = 'Opportunity'
-            else:
-                session['sf_type'] = 'npe03__Recurring_Donation__c'
-        else:
-            session['errors'] = result['errors']
-
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, session=session)
     else:
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
-
 
 
 @app.route('/finish/', methods=['POST'])

@@ -70,14 +70,8 @@ def process_charges(query, log):
                     )
         except stripe.error.CardError as e:
             # look for decline code:
-            decline_code = ''
-            try:
-                decline_code = e.json_body['error']['decline_code']
-            except:
-                print('Unable to extract decline code')
-            log.it("The card has been declined: {} ({})".format(e,
-                decline_code))
-            continue
+            print('Unable to extract decline code')
+            return jsonify(e)
         except stripe.error.InvalidRequestError as e:
             log.it("Problem: {}".format(e))
             continue

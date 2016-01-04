@@ -155,6 +155,7 @@
       this.options.create_account = false;
 
       var button_text = $('button.give, input.give').text();
+      this.options.button_text = button_text;
       $(window).unload(function() {
         $('button.give, input.give').removeProp('disabled');
         $('button.give, input.give').text(button_text);
@@ -780,29 +781,61 @@
           var supportform = $(options.donate_form_selector);
 
           var stripeResponseHandler = function(status, response) {
-            //var supportform = $('#donate');
             var supportform = $(options.donate_form_selector);
 
             if (response.error) {
               // Show the errors on the form
               supportform.find('.payment-errors').text(response.error.message);
               supportform.find('button').removeProp('disabled');
-              supportform.find('button').text(button_text);
+              supportform.find('button').text(options.button_text);
             } else {
               // response contains id and card, which contains additional card details
               var token = response.id;
               // Insert the token into the form so it gets submitted to the server
-              supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));
+              if ($('input[name="stripeToken"]').length > 0) {
+                $('input[name="stripeToken"]').val(token);
+              } else {
+                supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));  
+              }
+              
               // and submit
+
               //console.dir(response);
-              supportform.get(0).submit();
+              //supportform.get(0).submit();
+
+              setTimeout(function() {
+                $.ajax({
+                  url:'/charge_ajax/',
+                  cache: false,
+                  data: $(supportform).serialize(),
+                  type: 'POST'
+                })
+                .done(function(data) {
+                  if (typeof data.error !== 'undefined') {
+                    // do not submit. there is an error.
+                    supportform.find('.payment-errors').text(data.error.message);
+                    supportform.find('button').removeProp('disabled');
+                    supportform.find('button').text(options.button_text);
+                  } else {
+                    //window.location.href = '/thanks';
+                    supportform.get(0).submit();
+                  }
+                })
+                .error(function(data) {
+                  supportform.find('.payment-errors').text(data.error.message);
+                  supportform.find('button').removeProp('disabled');
+                  supportform.find('button').text(options.button_text);
+                });
+              },500);
+
+              // Disable the submit button to prevent repeated clicks
+              supportform.find('button').prop('disabled', true);
+              supportform.find('button').text('Processing');
+
             }
-          };
+          }; // end stripeResponseHandler          
 
-          // Disable the submit button to prevent repeated clicks
-          supportform.find('button').prop('disabled', true);
-          supportform.find('button').text('Processing');
-
+          // prepare for stripeResponseHandler
           var full_name = '';
           if ($('#full_name').length > 0) {
             full_name = $('#full_name').val();
@@ -835,13 +868,6 @@
             country = $('input[name="billing_country"]').val();
           }
 
-          Stripe.card.createToken({
-            number: $('#cc-number').val(),
-            cvc: $('#cc-cvc').val(),
-            exp: $('#cc-exp').val()
-          }, stripeResponseHandler);
-
-
           // 2. create minnpost account if specified
           if (options.create_account === true) {
             var user = {
@@ -868,9 +894,14 @@
                 //supportform.get(0).submit();
               }
             });
-          } else {
-            //supportform.get(0).submit();
           }
+
+          // finally, get a token from stripe, and try to charge it
+          Stripe.card.createToken({
+            number: $('#cc-number').val(),
+            cvc: $('#cc-cvc').val(),
+            exp: $('#cc-exp').val()
+          }, stripeResponseHandler);
           //return true;
 
         }
