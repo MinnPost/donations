@@ -44,7 +44,13 @@ def amount_to_charge(entry):
     """
     amount = int(entry['Amount'])
     if entry['Stripe_Agreed_to_pay_fees__c']:
-        fees = amount * .029 + .30
+
+        processing_percent = 0.029
+        fixed_fee = 0.3
+        new_amount = (amount + fixed_fee) / (1 - processing_percent)
+        processing_fee = new_amount - amount
+        fees = round(processing_fee, 2)
+
     else:
         fees = 0
     total = amount + fees

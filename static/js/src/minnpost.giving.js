@@ -143,12 +143,12 @@
       this.options.frequency = parseFloat($(this.options.frequency_selector, this.element).attr('data-year-freq'));
       this.options.processing_percent = parseFloat(this.options.percentage);
       this.options.fixed_fee = parseFloat(this.options.fixed_amount);
-      //this.options.new_amount = (this.options.original_amount + this.options.fixed_fee) / (1 - this.options.processing_percent);
-      //this.options.processing_fee = this.options.new_amount - this.options.original_amount;
-      //this.options.processing_fee = parseFloat(this.options.processing_fee).toFixed(2);
-      this.options.processing_fee = parseFloat(this.options.original_amount * .029 + .30);
-      this.options.processing_fee_text = this.options.processing_fee.toFixed(2);
-      this.options.new_amount = parseFloat(this.options.original_amount + this.options.processing_fee);
+      
+      this.options.new_amount = (this.options.original_amount + this.options.fixed_fee) / (1 - this.options.processing_percent);
+      this.options.processing_fee = this.options.new_amount - this.options.original_amount;
+      this.options.processing_fee = (Math.round(parseFloat(this.options.processing_fee)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2)
+      this.options.processing_fee_text = this.options.processing_fee;
+      
       this.options.upsell_amount = parseFloat($(this.options.upsell_amount_selector, this.element).text());
       this.options.upsold = this.options.amount + this.options.upsell_amount;
       this.options.cardType = null;
