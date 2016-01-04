@@ -12,18 +12,18 @@
   <fieldset class="payment">
 
     <div class="form-item form-item--first-name">
-      <label class="required">First name: </label>
+      <label for="first_name" class="required">First name: </label>
       <input type="text" id="first_name" name="first_name" required value="{{ first_name }}">
     </div>
 
     <div class="form-item form-item--last-name">
-      <label class="required">Last name: </label>
+      <label for="last_name" class="required">Last name: </label>
       <input type="text" id="last_name" name="last_name" required value="{{ last_name }}">
     </div>
     
     <div class="form-item form-item--display-name">
       <div>
-        <label>Display as (in our year-end report): </label>
+        <label for="display_as">Display as (in our year-end report): </label>
         <input type="text" id="display_as" name="display_as">
       </div>
       <div>
@@ -70,47 +70,46 @@
 
       <div class="form-item-group form-item--shipping-name form-item--geocode">
         <div class="form-item form-item--shipping-name">
-          <label>Ship To (if different): </label>
+          <label for="edit-shipping-name">Ship To (if different): </label>
           <input type="text" name="shipping_name" id="edit-shipping-name">
         </div>
       </div>
 
       <div class="form-item form-item--nojs form-item--street">
-        <label>Shipping Street Address: </label>
+        <label for="edit-shipping-street">Shipping Street Address: </label>
         <input type="text" name="shipping_street" id="edit-shipping-street" data-geo-value="address">
       </div>
 
       <div class="form-item form-item--nojs form-item--city">
-        <label>Shipping City: </label>
+        <label for="edit-shipping-city">Shipping City: </label>
         <input type="text" name="shipping_city" id="edit-shipping-city" data-geo-value="city">
       </div>
 
       <div class="form-item form-item--nojs form-item--state">
-        <label>Shipping State: </label>
+        <label for="edit-shipping-state">Shipping State: </label>
         <input type="text" name="shipping_state" id="edit-shipping-state" data-geo-value="state">
       </div>
 
       <div class="form-item form-item--nojs form-item--zip">
-        <label>Shipping Zip Code: </label>
+        <label for="edit-shipping-zip">Shipping Zip Code: </label>
         <input type="tel" name="shipping_zip" id="edit-shipping-zip" data-geo-value="zip">
       </div>
 
       <div class="form-item form-item--nojs form-item--country">
-        <label>Shipping Country: </label>
+        <label for="edit-shipping-country">Shipping Country: </label>
         <input type="text" name="shipping_country" id="edit-shipping-country" data-geo-value="country">
       </div>
     </fieldset>
 
     <div class="form-item form-item--email-address">
-      <label class="required">Email Address: </label>
+      <label for="edit-email" class="required">Email Address: </label>
       <input type="email" id="edit-email" name="email" required value="{{ email }}">
       <label class="additional-option"><input type="checkbox" name="creatempaccount" id="creatempaccount"> Create a free MinnPost.com account</label>
     </div>
 
     <div class="form-item form-item--password form-item--with-help">
-      <label>MinnPost.com Password
-        <input type="password" name="password" id="password" maxlength="128">
-      </label>
+      <label for="password">MinnPost.com Password: </label>
+      <input type="password" name="password" id="password" maxlength="128">
     </div>
 
     <fieldset class="credit-card-group">
