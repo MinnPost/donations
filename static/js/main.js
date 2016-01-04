@@ -1618,7 +1618,12 @@ global.Payment = Payment;
               // response contains id and card, which contains additional card details
               var token = response.id;
               // Insert the token into the form so it gets submitted to the server
-              supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));
+              if ($('input[name="stripeToken"]').length > 0) {
+                $('input[name="stripeToken"]').val(token);
+              } else {
+                supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));  
+              }
+              
               // and submit
 
               //console.dir(response);
