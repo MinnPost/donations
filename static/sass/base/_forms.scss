@@ -31,7 +31,7 @@ select {
   font-family: $base-font-family;
   font-size: $base-font-size;
   &.error {
-    color: $minnpost-red;
+    color: $minnpost-red-error;
   }
 }
 
@@ -270,6 +270,19 @@ textarea {
   &.cvv2 {
     background-image: url('../images/cc-back.png');
   }
+}
+
+.card-instruction {
+  font-size: 80%;
+  color: $gray-dark;
+
+  &.invalid {
+    color: $minnpost-red-error;
+  }
+
+  /*&.valid {
+    color: $valid;
+  }*/
 }
 
 textarea {

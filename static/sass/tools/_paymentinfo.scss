@@ -210,19 +210,6 @@ $valid : #089e00;
 	}
 }
 
-.card-instruction {
-	font-size: 80%;
-	color: $gray-dark;
-
-	&.invalid {
-		color: $error;
-	}
-
-	&.valid {
-		color: $valid;
-	}
-}
-
 .shake {
 	-webkit-animation-iteration-count: 1;
 	-moz-animation-iteration-count: 1;

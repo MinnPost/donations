@@ -1642,6 +1642,26 @@ global.Payment = Payment;
                     supportform.find('.payment-errors').text(data.error.message);
                     supportform.find('button').removeProp('disabled');
                     supportform.find('button').text(options.button_text);
+
+                    // add some error messages and styles
+                    if (data.error.code == 'invalid_number' || data.error.code == 'incorrect_number' || data.error.code == 'card_declined' || data.error.code == 'processing_error') {
+                      $(options.cc_num_selector, element).addClass('error');
+                      $(options.cc_num_selector, element).prev().addClass('error');
+                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + data.error.message + '</span>');
+                    }
+
+                    if (data.error.code == 'invalid_expiry_month' || data.error.code == 'invalid_expiry_year' || data.error.code == 'expired_card') {
+                      $(options.cc_exp_selector, element).addClass('error');
+                      $(options.cc_exp_selector, element).prev().addClass('error');
+                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + data.error.message + '</span>');
+                    }
+
+                    if (data.error.code == 'invalid_cvc' || data.error.code == 'incorrect_cvc') {
+                      $(options.cc_cvv_selector, element).addClass('error');
+                      $(options.cc_cvv_selector, element).prev().addClass('error');
+                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + data.error.message + '</span>');
+                    }
+
                   } else {
                     //window.location.href = '/thanks';
                     supportform.get(0).submit();
