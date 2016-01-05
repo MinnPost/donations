@@ -165,6 +165,11 @@
 
       Stripe.setPublishableKey(this.options.stripe_publishable_key);
 
+      // use a referrer for edit link if we have one
+      if (document.referrer != '') {
+        $('#edit_url').prop('href', document.referrer);
+      }
+
       if (this.options.debug === true) {
         this.debug(this.options);
         // return;
@@ -350,6 +355,7 @@
 
     paymentPanels: function(active) {
       var that = this;
+      var title = 'MinnPost | Support Us | ';
       // make some tabs for form
       $('.panel').hide();
       // activate the tabs
@@ -360,6 +366,11 @@
         active = $('.progress--donation li .active').parent().prop('class');
         $('#' + active).fadeIn();
       }
+      var page = $('.progress--donation li.' + active).text();
+      var next = $('.progress--donation li.' + active).next().text();
+      var step = $('.progress--donation li .active').parent().index() + 1;
+      var next_step = step + 1;
+      document.title = title + page;
       $('.progress--donation li a, a.btn.btn--next').click(function(event) {
         event.preventDefault();
         $('.progress--donation li a').removeClass('active');
