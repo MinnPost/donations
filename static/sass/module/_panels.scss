@@ -10,6 +10,7 @@
 	}
 	h1 {
 		margin-bottom: 0;	
+		font-size: 1.95rem;
 	}
 	h2 {
 		margin-bottom: 0;
@@ -17,6 +18,7 @@
 	.actions {
 		list-style: none;
 		padding-left: 0;
+		font-size: $micro-size;
 	}
 	.honor, .actions--edit-amount {
 		font-family: $helvetica;
@@ -51,7 +53,7 @@
 	}
 	.actions--edit-amount {
 		line-height: normal;
-		font-size: 80%;
+		font-size: 55%;
 		margin-bottom: $half-space;
 		li {
 			border-right: 1px solid $gray-med;
@@ -111,6 +113,18 @@
 		}
 		h3.swag, p.swag {
 			clear: both;
+		}
+	}
+}
+
+// media queries
+@media screen and (min-width: $small-screen) {
+	.panel, .panel--error {
+		h1 {
+			font-size: $h1-size;
+		}
+		.actions--edit-amount {
+			font-size: 80%;
 		}
 	}
 }
