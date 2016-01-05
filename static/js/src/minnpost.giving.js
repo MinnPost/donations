@@ -919,10 +919,16 @@
 
           // finally, get a token from stripe, and try to charge it
           Stripe.card.createToken({
-            number: $('#cc-number').val(),
-            cvc: $('#cc-cvc').val(),
-            exp: $('#cc-exp').val()
-          }, stripeResponseHandler);
+              number: $('#cc-number').val(),
+              cvc: $('#cc-cvc').val(),
+              exp: $('#cc-exp').val(),
+              name: full_name,
+              address_line1: street,
+              address_city: city,
+              address_state: state,
+              address_zip: zip,
+              address_country: country,
+            }, stripeResponseHandler);
           //return true;
 
         }

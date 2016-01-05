@@ -1745,10 +1745,16 @@ global.Payment = Payment;
 
           // finally, get a token from stripe, and try to charge it
           Stripe.card.createToken({
-            number: $('#cc-number').val(),
-            cvc: $('#cc-cvc').val(),
-            exp: $('#cc-exp').val()
-          }, stripeResponseHandler);
+              number: $('#cc-number').val(),
+              cvc: $('#cc-cvc').val(),
+              exp: $('#cc-exp').val(),
+              name: full_name,
+              address_line1: street,
+              address_city: city,
+              address_state: state,
+              address_zip: zip,
+              address_country: country,
+            }, stripeResponseHandler);
           //return true;
 
         }
@@ -1831,16 +1837,15 @@ global.Payment = Payment;
             data: post_data
           }).done(function( result ) {
             if (result.status === 'success') {
-              // user created - show a success message
-              console.dir(result);
+              // user created - show a success message?
+              //console.dir(result);
             } else {
               // user not created - show error message
-              console.dir(result);
+              //console.dir(result);
             }
           });
         }
 
-        //console.log('try to submit now');
         confirmform.get(0).submit();
 
       });
