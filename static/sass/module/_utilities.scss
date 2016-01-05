@@ -26,6 +26,9 @@
 	@include burger(20px, 2px, 3px, #222);
 	margin-top: 4px;
 }
+.menu-show-label span.burger {
+	display: inline-block;
+}
 .menu-show-label span, .menu-show-label span:before, .menu-show-label span:after {
 	display: inline-block;
 	vertical-align: middle;
