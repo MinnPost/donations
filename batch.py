@@ -62,12 +62,23 @@ def process_charges(query, log):
             log.it("---- Charging ${} to {} ({})".format(amount / 100,
                 item['Stripe_Customer_ID__c'],
                 item['Name']))
+
+            if item['Shipping_address_name__c'] != '':
+                shipping_address = {'line1' : item['Shipping_address_street__c'], 'city' : item['Shipping_address_city__c'], 'state' : item['Shipping_address_state__c'], 'postal_code' : item['Shipping_address_ZIP__c'], 'country' : item['Shipping_address_country__c']}
+                shipping_details = {'name' : item['Shipping_address_name__c'], 'address' : shipping_address}
+            else:
+                shipping_details = NULL
+
             charge = stripe.Charge.create(
                     customer=item['Stripe_Customer_ID__c'],
                     amount=amount,
                     currency='usd',
                     description=item['Description'],
+                    metadata={'source': item['Referring_page__c']},
+                    shipping=shipping_details
                     )
+
+
         except stripe.error.CardError as e:
             # look for decline code:
             print('Unable to extract decline code')
@@ -114,7 +125,8 @@ def charge_cards():
 
     query = """
         SELECT Amount, Name, Stripe_Customer_Id__c, Description,
-            Stripe_Agreed_to_pay_fees__c
+            Stripe_Agreed_to_pay_fees__c, Referring_page__c, Shipping_address_name__c, Shipping_address_street__c,
+            Shipping_address_city__c, Shipping_address_state__c, Shipping_address_ZIP__c, Shipping_address_country__c
         FROM Opportunity
         WHERE CloseDate <= {}
         AND CloseDate >= {}

@@ -415,6 +415,11 @@ def _format_opportunity(contact=None, form=None, customer=None):
         inhonorormemoryof = ''
 
     try:
+        referral_url = form['source']
+    except:
+        referral_url = ''
+
+    try:
         full_url = form['url']
     except:
         full_url = ''
@@ -480,6 +485,7 @@ def _format_opportunity(contact=None, form=None, customer=None):
             'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
             'Payment_Page_Full_URL__c': full_url,
             'Payment_Type__c': 'Stripe',
+            'Referring_page__c': referral_url,
             'Shipping_address_name__c':shipping_name,
             'Shipping_address_street__c': shipping_street,
             'Shipping_address_city__c': shipping_city,
@@ -657,6 +663,11 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         inhonorormemoryof = ''
 
     try:
+        referral_url = form['source']
+    except:
+        referral_url = ''
+
+    try:
         full_url = form['url']
     except:
         full_url = ''
@@ -737,6 +748,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         'npe03__Open_Ended_Status__c': open_ended_status,
         'Payment_Page_Full_URL__c': full_url,
         'Payment_Type__c': 'Stripe',
+        'Referring_page__c': referral_url,
         'Shipping_address_name__c':shipping_name,
         'Shipping_address_street__c': shipping_street,
         'Shipping_address_city__c': shipping_city,

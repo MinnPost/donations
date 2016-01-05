@@ -288,6 +288,7 @@ def charge_ajax():
     elif customer_id is not None and customer_id != '':
         customer = stripe.Customer.retrieve(customer_id)
         customer.card=request.form['stripeToken']
+        customer.email = email
         customer.save()
     else:
         message = "There was an issue saving your email address."

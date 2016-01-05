@@ -737,6 +737,7 @@
 
     validateAndSubmit: function(element, options) {
       var that = this;
+      $(this.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
         // validate and submit the form
@@ -865,28 +866,28 @@
           }
 
           var street = '';
-          if ($('input[name="billing_street"]').length > 0) {
-            street = $('input[name="billing_street"]').val();
+          if ($('input[name="billing_street_geocode"]').length > 0) {
+            street = $('input[name="billing_street_geocode"]').val();
           }
 
           var city = '';
-          if ($('input[name="billing_city"]').length > 0) {
-            city = $('input[name="billing_city"]').val();
+          if ($('input[name="billing_city_geocode"]').length > 0) {
+            city = $('input[name="billing_city_geocode"]').val();
           }
 
           var state = '';
-          if ($('input[name="billing_state"]').length > 0) {
-            state = $('input[name="billing_state"]').val();
+          if ($('input[name="billing_state_geocode"]').length > 0) {
+            state = $('input[name="billing_state_geocode"]').val();
           }
 
           var zip = '';
-          if ($('input[name="billing_zip"]').length > 0) {
-            zip = $('input[name="billing_zip"]').val();
+          if ($('input[name="billing_zip_geocode"]').length > 0) {
+            zip = $('input[name="billing_zip_geocode"]').val();
           }
 
           var country = '';
-          if ($('input[name="billing_country"]').length > 0) {
-            country = $('input[name="billing_country"]').val();
+          if ($('input[name="billing_country_geocode"]').length > 0) {
+            country = $('input[name="billing_country_geocode"]').val();
           }
 
           // 2. create minnpost account if specified
