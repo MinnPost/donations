@@ -404,9 +404,12 @@ def _format_opportunity(contact=None, form=None, customer=None):
         in_honor_name = ''
 
     try:
-        in_honor_notify = form['in_honor_notify']
+        if form['in_honor_notify'] == '1':
+            in_honor_notify = True
+        else:
+            in_honor_notify = False
     except:
-        in_honor_notify = ''
+        in_honor_notify = False
 
     try:
         in_honor_email = form['in_honor_email']
@@ -414,14 +417,20 @@ def _format_opportunity(contact=None, form=None, customer=None):
         in_honor_email = ''
 
     try:
-        in_honor_amount = form['in_honor_amount']
+        if form['in_honor_amount'] == '1':
+            in_honor_amount = True
+        else:
+            in_honor_amount = False
     except:
-        in_honor_amount = ''
+        in_honor_amount = False
 
     try:
-        in_memory_notify = form['in_memory_notify']
+        if form['in_memory_notify'] == '1':
+            in_memory_notify = True
+        else:
+            in_memory_notify = False
     except:
-        in_memory_notify = ''
+        in_memory_notify = False
 
     try:
         in_memory_email = form['in_memory_email']
@@ -429,9 +438,12 @@ def _format_opportunity(contact=None, form=None, customer=None):
         in_memory_email = ''
 
     try:
-        in_memory_amount = form['in_memory_amount']
+        if form['in_memory_amount'] == '1':
+            in_memory_amount = True
+        else:
+            in_memory_amount = False
     except:
-        in_memory_amount = ''
+        in_memory_amount = False
 
     if (in_memory_name != ''):
         inhonorormemory = 'In memory of...'
@@ -538,6 +550,7 @@ def _format_opportunity(contact=None, form=None, customer=None):
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
             }
+
     return opportunity
 
 
@@ -694,9 +707,12 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         in_honor_name = ''
 
     try:
-        in_honor_notify = form['in_honor_notify']
+        if form['in_honor_notify'] == '1':
+            in_honor_notify = True
+        else:
+            in_honor_notify = False
     except:
-        in_honor_notify = ''
+        in_honor_notify = False
 
     try:
         in_honor_email = form['in_honor_email']
@@ -704,14 +720,20 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         in_honor_email = ''
 
     try:
-        in_honor_amount = form['in_honor_amount']
+        if form['in_honor_amount'] == '1':
+            in_honor_amount = True
+        else:
+            in_honor_amount = False
     except:
-        in_honor_amount = ''
+        in_honor_amount = False
 
     try:
-        in_memory_notify = form['in_memory_notify']
+        if form['in_memory_notify'] == '1':
+            in_memory_notify = True
+        else:
+            in_memory_notify = False
     except:
-        in_memory_notify = ''
+        in_memory_notify = False
 
     try:
         in_memory_email = form['in_memory_email']
@@ -719,9 +741,12 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         in_memory_email = ''
 
     try:
-        in_memory_amount = form['in_memory_amount']
+        if form['in_memory_amount'] == '1':
+            in_memory_amount = True
+        else:
+            in_memory_amount = False
     except:
-        in_memory_amount = ''
+        in_memory_amount = False
 
     if (in_memory_name != ''):
         inhonorormemory = 'In memory of...'
