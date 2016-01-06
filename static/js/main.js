@@ -1024,11 +1024,12 @@ global.Payment = Payment;
       }
 
       this.paymentPanels(query_panel); // tabs
-      if ($(this.options.pay_cc_processing_selector).length > 0) {
 
+      if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options, reset); // processing fees
         $(this.options.review_step_selector).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
       }
+
       if ($(this.options.review_step_selector).length > 0) {
         this.options.level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
         this.options.levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
