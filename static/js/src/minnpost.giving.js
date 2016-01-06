@@ -253,56 +253,6 @@
       }
     }, // debug
 
-    loadAnalytics: function(options) {
-      var ga = window.gaq;
-      var that = this;
-      if (ga) { // is ga object present?
-        this.debug('we have analytics');                  
-        jQuery.each(options, function( key, value ) {
-          that.debug('key is '+key+' and value is '+value);
-          if (typeof value === 'object') {
-            var onevent = options.on;
-            var label = options.label($(this));
-            var selector = value.selector;
-            var category = value.category;
-            var action = value.action;
-            if (typeof value.on !== 'undefined') {
-              onevent = value.on;
-            }
-            $(selector).on(onevent, function(event) {
-              if (options.debug === true) {
-                if (typeof value.label !== 'undefined') {
-                  label = value.label($(this));
-                } else {
-                  label = options.label($(this));
-                }
-                this.debug('we did a '+onevent+' on the '+selector+' object which has the category '+category+' and action '+action+' and label '+label);
-                ga('send', 'event', category, action, label);
-                return false; // do i actually need this?
-              }
-            });
-          }
-        }); // for each option
-
-        // Push data to google. do we still need this or is it replaced by line 275?
-        /* $.when(gaq.push(args)).done(
-        function () {
-        // Redirect the location - delayed so that any other page functionality has time to run.
-        setTimeout(function () {
-        var href = that.prop('href');
-        if (href && href.indexOf('#'') !== 0) {
-        window.location = href;
-        }
-        }, 100);
-        }
-        );*/
-
-      } else {
-        this.debug('Google Analaytics _gaq is not defined');
-      }
-
-    }, // loadAnalytics
-
     getQueryStrings: function(link) {
       if (typeof link === 'undefined' || link === '') {
         return {};
