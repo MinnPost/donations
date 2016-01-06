@@ -245,6 +245,7 @@ def charge():
         return render_template('error.html', message=message)
 
 
+## for minnpost, start with ajax, then submit to /thanks
 @app.route('/charge_ajax/', methods=['POST'])
 def charge_ajax():
 

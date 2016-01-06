@@ -897,6 +897,8 @@ global.Payment = Payment;
     'cc_cvv_selector' : '#cc-cvc',
     'payment_button_selector' : '#submit',
     'confirm_button_selector' : '#finish',
+    'opp_id_selector' : '#opp_id',
+    'recurring_selector' : '#recurring',
     'newsletter_group_selector' : '[name="newsletters"]',
     'message_group_selector' : '[name="messages"]',
     'reason_field_selector' : '#reason_for_supporting',
@@ -969,6 +971,10 @@ global.Payment = Payment;
       }
       this.options.original_amount = parseInt($(this.options.original_amount_selector, this.element).val());
       this.options.frequency = parseFloat($(this.options.frequency_selector, this.element).attr('data-year-freq'));
+      var recurring = $(this.options.recurring_selector, this.element).val();
+      if (typeof recurring !== 'undefined') {
+        this.options.recurring = recurring.charAt(0).toUpperCase() + recurring.slice(1);
+      }
       this.options.processing_percent = parseFloat(this.options.percentage);
       this.options.fixed_fee = parseFloat(this.options.fixed_amount);
       
@@ -1133,6 +1139,13 @@ global.Payment = Payment;
     paymentPanels: function(active) {
       var that = this;
       var title = 'MinnPost | Support Us | ';
+      var page = $('.progress--donation li.' + active).text();
+      var next = $('.progress--donation li.' + active).next().text();
+      var step = $('.progress--donation li .active').parent().index() + 1;
+      var next_step = step + 1;
+      document.title = title + page;
+      this.analyticsTrackingStep(step);
+
       // make some tabs for form
       $('.panel').hide();
       // activate the tabs
@@ -1143,11 +1156,7 @@ global.Payment = Payment;
         active = $('.progress--donation li .active').parent().prop('class');
         $('#' + active).fadeIn();
       }
-      var page = $('.progress--donation li.' + active).text();
-      var next = $('.progress--donation li.' + active).next().text();
-      var step = $('.progress--donation li .active').parent().index() + 1;
-      var next_step = step + 1;
-      document.title = title + page;
+      
       $('.progress--donation li a, a.btn.btn--next').click(function(event) {
         event.preventDefault();
         $('.progress--donation li a').removeClass('active');
@@ -1158,6 +1167,38 @@ global.Payment = Payment;
         that.paymentPanels(query);    
       });
     }, // paymentPanels
+
+    analyticsTrackingStep: function(step) {
+
+      var level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
+      var levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
+      var amount = $(this.options.original_amount_selector).val();
+      var recurring = this.options.recurring;
+      var opp_id = $(this.options.opp_id_selector).val();
+
+      ga('ec:addProduct', {
+        'id': 'minnpost_' + level.toLowerCase() + '_membership',
+        'name': 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership',
+        'category': 'Donation',
+        'brand': 'MinnPost',
+        'variant':  recurring,
+        'price': amount,
+        'quantity': 1
+      });
+
+      if (step == 1 || step == 2) {
+        ga('ec:setAction','checkout', {
+          'step': step,            // A value of 1 indicates first checkout step.Value of 2 indicates second checkout step
+        });
+      } else if (step == 3) { 
+        ga('ec:setAction', 'purchase',{
+          'id': opp_id, // Transaction id - Type: string
+          'affiliation': 'MinnPost', // Store name - Type: string
+          'revenue': amount, // Total Revenue - Type: numeric
+        });
+      }
+
+    }, // analyticsTrackingStep
 
     creditCardProcessingFees: function(options, reset) {
       var full_amount;
@@ -1260,15 +1301,17 @@ global.Payment = Payment;
           }
         }
       });
-      $(options.level_indicator_selector, element).prop('class', levelclass);
-      $(options.level_name_selector).text(level.charAt(0).toUpperCase() + level.slice(1));
+      if ($(options.level_indicator_selector).length > 0) {
+        $(options.level_indicator_selector, element).prop('class', levelclass);
+        $(options.level_name_selector).text(level.charAt(0).toUpperCase() + level.slice(1));
 
-      var review_level_benefits = this.getQueryStrings($(options.review_benefits_selector, element).prop('href'));
-      review_level_benefits = review_level_benefits['level'];
-      
-      var link = $(options.review_benefits_selector, element).prop('href');
-      link = link.replace(review_level_benefits, level);
-      $(options.review_benefits_selector).prop('href', link);
+        var review_level_benefits = this.getQueryStrings($(options.review_benefits_selector, element).prop('href'));
+        review_level_benefits = review_level_benefits['level'];
+        
+        var link = $(options.review_benefits_selector, element).prop('href');
+        link = link.replace(review_level_benefits, level);
+        $(options.review_benefits_selector).prop('href', link);
+      }
       if (returnvalue === 'name') {
         return level;
       } else if (returnvalue === 'num') {
@@ -1587,12 +1630,8 @@ global.Payment = Payment;
               } else {
                 supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));  
               }
-              
-              // and submit
 
-              //console.dir(response);
-              //supportform.get(0).submit();
-
+              // get the card validated first by ajax
               //setTimeout(function() {
                 $.ajax({
                   url:'/charge_ajax/',
@@ -1600,39 +1639,40 @@ global.Payment = Payment;
                   data: $(supportform).serialize(),
                   type: 'POST'
                 })
-                .done(function(data) {
-                  if (typeof data.error !== 'undefined') {
+                .done(function(response) {
+                  if (typeof response.error !== 'undefined') {
                     // do not submit. there is an error.
-                    supportform.find('.payment-errors').text(data.error.message);
+                    supportform.find('.payment-errors').text(response.error.message);
                     supportform.find('button').removeProp('disabled');
                     supportform.find('button').text(options.button_text);
 
                     // add some error messages and styles
-                    if (data.error.code == 'invalid_number' || data.error.code == 'incorrect_number' || data.error.code == 'card_declined' || data.error.code == 'processing_error') {
+                    if (response.error.code == 'invalid_number' || response.error.code == 'incorrect_number' || response.error.code == 'card_declined' || response.error.code == 'processing_error') {
                       $(options.cc_num_selector, element).addClass('error');
                       $(options.cc_num_selector, element).prev().addClass('error');
-                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + data.error.message + '</span>');
+                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.error.message + '</span>');
                     }
 
-                    if (data.error.code == 'invalid_expiry_month' || data.error.code == 'invalid_expiry_year' || data.error.code == 'expired_card') {
+                    if (response.error.code == 'invalid_expiry_month' || response.error.code == 'invalid_expiry_year' || response.error.code == 'expired_card') {
                       $(options.cc_exp_selector, element).addClass('error');
                       $(options.cc_exp_selector, element).prev().addClass('error');
-                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + data.error.message + '</span>');
+                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.error.message + '</span>');
                     }
 
-                    if (data.error.code == 'invalid_cvc' || data.error.code == 'incorrect_cvc') {
+                    if (response.error.code == 'invalid_cvc' || response.error.code == 'incorrect_cvc') {
                       $(options.cc_cvv_selector, element).addClass('error');
                       $(options.cc_cvv_selector, element).prev().addClass('error');
-                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + data.error.message + '</span>');
+                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.error.message + '</span>');
                     }
 
                   } else {
-                    //window.location.href = '/thanks';
-                    supportform.get(0).submit();
+                    //console.dir(response);
+                    //that.analyticsTrackingStep('charged');
+                    supportform.get(0).submit(); // continue submitting the form
                   }
                 })
-                .error(function(data) {
-                  supportform.find('.payment-errors').text(data.error.message);
+                .error(function(response) {
+                  supportform.find('.payment-errors').text(response.error.message);
                   supportform.find('button').removeProp('disabled');
                   supportform.find('button').text(options.button_text);
                 });

@@ -19,6 +19,7 @@
       <input type="hidden" name="email" id="edit-email" value="{{ email }}">
       <input type="hidden" name="first_name" id="first_name" value="{{ first_name }}">
       <input type="hidden" name="last_name" id="last_name" value="{{ last_name }}">
+      <input type="hidden" name="opp_id" id="opp_id" value="{{ session['sf_id'] }}">
       <section class="panel panel--form" id="panel--confirmation">
         <h1>Thank you for supporting MinnPost</h1>
         <p>Thank you for your $<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency }}</span> donation. You are entitled to MinnPost <span class="level-name">{{ level.level.title() }}</span> benefits, which you can <a href="https://www.minnpost.com/support/member-benefits/?level={{ level.level }}" target="_blank" class="review-benefits">review</a> anytime. You will receive an automatic receipt email.</p>
