@@ -16,20 +16,36 @@ def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_am
         level = 'bronze'
         levelnum = 'one'
         levelint = 1
+        nextlevel = 'silver'
+        nextlevelnum = 'two'
+        nextlevelint = 2
+        nextlevelmonthlystart = 5
     elif (thisyear > 59 and thisyear < 120):
         level = 'silver'
         levelnum = 'two'
         levelint = 2
+        nextlevel = 'gold'
+        nextlevelnum = 'three'
+        nextlevelint = 3
+        nextlevelmonthlystart = 10
     elif (thisyear > 119 and thisyear < 240):
         level = 'gold'
         levelnum = 'three'
         levelint = 3
+        nextlevel = 'platinum'
+        nextlevelnum = 'four'
+        nextlevelint = 4
+        nextlevelmonthlystart = 20
     elif (thisyear > 239):
         level = 'platinum'
         levelnum = 'four'
         levelint = 4
+        nextlevel = ''
+        nextlevelnum = ''
+        nextlevelint = ''
+        nextlevelmonthlystart = ''
 
-    leveldata = {'level': level, 'levelnum': levelnum, 'levelint': levelint}
+    leveldata = {'level': level, 'levelnum': levelnum, 'levelint': levelint, 'nextlevel' : nextlevel, 'nextlevelnum' : nextlevelnum, 'nextlevelint' : nextlevelint, 'nextlevelmonthlystart' : nextlevelmonthlystart}
     return leveldata
 
 

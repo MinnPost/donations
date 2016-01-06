@@ -13,6 +13,7 @@ from flask_sslify import SSLify
 
 from config import FLASK_SECRET_KEY
 from config import DEFAULT_CAMPAIGN
+from config import SHOW_UPSELL
 from salesforce import add_customer_and_charge
 from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
@@ -29,6 +30,7 @@ if 'DYNO' in os.environ: # only trigger SSLify if the app is running on Heroku
 
 app.secret_key = FLASK_SECRET_KEY
 app.default_campaign = DEFAULT_CAMPAIGN
+app.show_upsell = SHOW_UPSELL
 
 app.wsgi_app = SassMiddleware(app.wsgi_app, {
         'app': ('static/sass', 'static/css', 'static/css')
@@ -107,6 +109,7 @@ def minnpost_form():
         yearly=yearly,
         level=level,
         first_name = first_name,last_name = last_name, email=email,
+        show_upsell = app.show_upsell,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
