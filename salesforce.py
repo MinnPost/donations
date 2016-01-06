@@ -393,7 +393,6 @@ def _format_opportunity(contact=None, form=None, customer=None):
         except:
             shipping_country = ''
 
-
     try:
         in_memory_name = form['in_memory_name']
     except:
@@ -404,15 +403,54 @@ def _format_opportunity(contact=None, form=None, customer=None):
     except:
         in_honor_name = ''
 
+    try:
+        in_honor_notify = form['in_honor_notify']
+    except:
+        in_honor_notify = ''
+
+    try:
+        in_honor_email = form['in_honor_email']
+    except:
+        in_honor_email = ''
+
+    try:
+        in_honor_amount = form['in_honor_amount']
+    except:
+        in_honor_amount = ''
+
+    try:
+        in_memory_notify = form['in_memory_notify']
+    except:
+        in_memory_notify = ''
+
+    try:
+        in_memory_email = form['in_memory_email']
+    except:
+        in_memory_email = ''
+
+    try:
+        in_memory_amount = form['in_memory_amount']
+    except:
+        in_memory_amount = ''
+
     if (in_memory_name != ''):
         inhonorormemory = 'In memory of...'
         inhonorormemoryof = in_memory_name
+        inhonorormemory_notify = in_memory_notify
+        inhonorormemory_email = in_memory_email
+        inhonorormemory_include_amount = in_memory_amount
     elif (in_honor_name != ''):
         inhonorormemory = 'In honor of...'
         inhonorormemoryof = in_honor_name
+        inhonorormemory_notify = in_honor_notify
+        inhonorormemory_email = in_honor_email
+        inhonorormemory_include_amount = in_honor_amount
     else:
         inhonorormemory = ''
         inhonorormemoryof = ''
+        inhonorormemory_notify = ''
+        inhonorormemory_email = ''
+        inhonorormemory_include_amount = ''
 
     try:
         referral_url = form['source']
@@ -478,8 +516,11 @@ def _format_opportunity(contact=None, form=None, customer=None):
             'Donor_state__c': billing_state,
             'Donor_ZIP__c': billing_zip,
             'Donor_country__c': billing_country,
+            'Email_to_notify__c': inhonorormemory_email,
+            'Include_amount_in_notification__c': inhonorormemory_include_amount,
             'In_Honor_Memory__c': inhonorormemory,
             'In_Honor_of_In_Memory__c': inhonorormemoryof,
+            'Notify_someone__c': in_honor_notify,
             'Member_benefit_request_Swag__c': swag,
             'Member_benefit_request_Other_benefits__c': swag_other_benefits,
             'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
@@ -652,15 +693,54 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     except:
         in_honor_name = ''
 
+    try:
+        in_honor_notify = form['in_honor_notify']
+    except:
+        in_honor_notify = ''
+
+    try:
+        in_honor_email = form['in_honor_email']
+    except:
+        in_honor_email = ''
+
+    try:
+        in_honor_amount = form['in_honor_amount']
+    except:
+        in_honor_amount = ''
+
+    try:
+        in_memory_notify = form['in_memory_notify']
+    except:
+        in_memory_notify = ''
+
+    try:
+        in_memory_email = form['in_memory_email']
+    except:
+        in_memory_email = ''
+
+    try:
+        in_memory_amount = form['in_memory_amount']
+    except:
+        in_memory_amount = ''
+
     if (in_memory_name != ''):
         inhonorormemory = 'In memory of...'
         inhonorormemoryof = in_memory_name
+        inhonorormemory_notify = in_memory_notify
+        inhonorormemory_email = in_memory_email
+        inhonorormemory_include_amount = in_memory_amount
     elif (in_honor_name != ''):
         inhonorormemory = 'In honor of...'
         inhonorormemoryof = in_honor_name
+        inhonorormemory_notify = in_honor_notify
+        inhonorormemory_email = in_honor_email
+        inhonorormemory_include_amount = in_honor_amount
     else:
         inhonorormemory = ''
         inhonorormemoryof = ''
+        inhonorormemory_notify = ''
+        inhonorormemory_email = ''
+        inhonorormemory_include_amount = ''
 
     try:
         referral_url = form['source']
@@ -737,8 +817,11 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         'Donor_e_mail__c': email,
         'Donor_first_name__c': first_name,
         'Donor_last_name__c': last_name,
+        'Email_to_notify__c': inhonorormemory_email,
+        'Include_amount_in_notification__c': inhonorormemory_include_amount,
         'In_Honor_Memory__c': inhonorormemory,
         'In_honor_memory_of__c': inhonorormemoryof,
+        'Notify_someone__c': in_honor_notify,
         #'npe03__Installments__c': installments, # only add this if we need to close it
         'npe03__Installment_Period__c': installment_period, # this has to be there even if it is open ended
         'Lead_Source__c': 'Stripe',
