@@ -364,13 +364,13 @@
         ga('ec:setAction','checkout', {
           'step': step,            // A value of 1 indicates first checkout step.Value of 2 indicates second checkout step
         });
-      } else if (step == 3) { 
+      } else if (step == 3) {
         ga('ec:setAction', 'purchase',{
           'id': opp_id, // Transaction id - Type: string
           'affiliation': 'MinnPost', // Store name - Type: string
           'revenue': amount, // Total Revenue - Type: numeric
         });
-      }
+      } // need something for step 4. maybe an event
 
     }, // analyticsTrackingStep
 
