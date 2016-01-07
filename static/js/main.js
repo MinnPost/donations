@@ -1842,14 +1842,16 @@ global.Payment = Payment;
             if (result.status === 'success') {
               // user created - show a success message?
               //console.dir(result);
+              confirmform.get(0).submit();
             } else {
               // user not created - show error message
               //console.dir(result);
+              confirmform.get(0).submit();
             }
           });
+        } else { // end part where settings changed
+          confirmform.get(0).submit();
         }
-
-        confirmform.get(0).submit();
 
       });
       //return false;
