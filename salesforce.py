@@ -284,6 +284,22 @@ def _format_opportunity(contact=None, form=None, customer=None):
         campaign = DEFAULT_CAMPAIGN_ONETIME
 
     try:
+        if form['type'] != '':
+            type__c = form['type']
+        else:
+            type__c = 'Donation'
+    except:
+        type__c = 'Donation'
+
+    try:
+        if form['subtype'] != '':
+            subtype = form['subtype']
+        else:
+            subtype = 'Donation: Individual'
+    except:
+        subtype = 'Donation: Individual'
+
+    try:
         if form['anonymous'] == '1':
             anonymous = True
         else:
@@ -527,7 +543,7 @@ def _format_opportunity(contact=None, form=None, customer=None):
             ),
             'Campaignid': campaign,
             'StageName': 'Pledged',
-            'Type': 'Donation',
+            'Type': type__c,
             'Anonymous__c': anonymous,
             'Credited_as__c': credited_as,
             'Donor_first_name__c': first_name,
@@ -546,6 +562,7 @@ def _format_opportunity(contact=None, form=None, customer=None):
             'Member_benefit_request_Swag__c': swag,
             'Member_benefit_request_Other_benefits__c': swag_other_benefits,
             'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
+            'Opportunity_Subtype__c': subtype,
             'Payment_Page_Full_URL__c': full_url,
             'Payment_Type__c': 'Stripe',
             'Referring_page__c': referral_url,
@@ -827,7 +844,13 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     except:
         pay_fees = False
 
-    type__c = 'Recurring'
+    try:
+        if form['type'] != '':
+            type__c = form['type']
+        else:
+            type__c = 'Donation'
+    except:
+        type__c = 'Donation'
 
     # TODO: test this:
     #if installments != 'None':

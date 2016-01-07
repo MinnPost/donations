@@ -94,7 +94,9 @@ def process_charges(query, log):
         update = {
                 'Stripe_Transaction_Id__c': charge.id,
                 'Stripe_Card__c': charge.source.id,
-                #'Card_acct_last_4__c': charge.last4,
+                'Card_type__c': charge.brand,
+                'Card_expiration_date__c': charge.exp_month + ' / ' + charge.exp_year,
+                'Card_acct_last_4__c': charge.last4,
                 'StageName': 'Closed Won',
                 }
         path = item['attributes']['url']
