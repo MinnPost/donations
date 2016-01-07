@@ -974,7 +974,7 @@ def add_tw_subscription(form=None, customer=None, charge=None):
     return response
 
 
-@celery.task(name='salesforce.add_tw_customer_and_charge')
+#@celery.task(name='salesforce.add_tw_customer_and_charge')
 def add_tw_customer_and_charge(form=None, customer=None):
 
     upsert_customer(customer=customer, form=form)
