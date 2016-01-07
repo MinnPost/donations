@@ -33,7 +33,7 @@ def notify_slack(message):
     """
     Send a notification about a donation to Slack.
     """
-    if ENABLE_SLACK:
+    if ENABLE_SLACK == 'True':
         payload = {
                 'token': SLACK_API_KEY,
                 'channel': SLACK_CHANNEL,
@@ -926,17 +926,16 @@ def add_customer_and_charge(form=None, customer=None):
 
     if (form['recurring'] == 'one-time'):
         print("----One time payment...")
-        #msg = '*{}* pledged *${}*'.format(name, amount)
-        #notify_slack(msg)
+        msg = '*{}* pledged *${}*'.format(name, amount)
+        print(msg)
+        notify_slack(msg)
         response = add_opportunity(form=form, customer=customer)
     else:
         print("----Recurring payment...")
-        #msg = '*{}* pledged *${}*{} [recurring]'.format(name, amount)
-        #notify_slack(msg)
+        msg = '*{}* pledged *${}* [recurring]'.format(name, amount)
+        print(msg)
+        notify_slack(msg)
         response = add_recurring_donation(form=form, customer=customer)
-        #print('id is')
-        #print(add_recurring_donation['id'])
-        #print('showed id')
     return response
 
 
