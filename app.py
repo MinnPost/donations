@@ -16,6 +16,9 @@ from config import DEFAULT_CAMPAIGN_ONETIME
 from config import DEFAULT_CAMPAIGN_RECURRING
 from config import SHOW_UPSELL
 from config import ALLOW_DONATION_NOTIFICATION
+from config import OPBEAT_ORGANIZATION_ID
+from config import OPBEAT_APP_ID
+from config import OPBEAT_SECRET_TOKEN
 from salesforce import add_customer_and_charge
 from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
