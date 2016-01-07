@@ -276,7 +276,10 @@ def _format_opportunity(contact=None, form=None, customer=None):
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
 
     try:
-        campaign = form['campaign']
+        if form['campaign'] != '':
+            campaign = form['campaign']
+        else:
+            campaign = DEFAULT_CAMPAIGN_ONETIME
     except:
         campaign = DEFAULT_CAMPAIGN_ONETIME
 
@@ -585,7 +588,10 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     amount = form['amount']
 
     try:
-        campaign = form['campaign']
+        if form['campaign'] != '':
+            campaign = form['campaign']
+        else:
+            campaign = DEFAULT_CAMPAIGN_RECURRING
     except:
         campaign = DEFAULT_CAMPAIGN_RECURRING
 
