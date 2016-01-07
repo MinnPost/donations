@@ -16,6 +16,8 @@ from config import SLACK_CHANNEL
 from config import MULTIPLE_ACCOUNT_WARNING_MAIL_RECIPIENT
 from config import COMBINED_EMAIL_FIELD
 from config import FORM_EMAIL_FIELD
+from config import DEFAULT_CAMPAIGN_ONETIME
+from config import DEFAULT_CAMPAIGN_RECURRING
 
 from emails import send_email
 from check_response import check_response
@@ -274,6 +276,11 @@ def _format_opportunity(contact=None, form=None, customer=None):
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
 
     try:
+        campaign = form['campaign']
+    except:
+        campaign = DEFAULT_CAMPAIGN_ONETIME
+
+    try:
         if form['anonymous'] == '1':
             anonymous = True
         else:
@@ -515,7 +522,7 @@ def _format_opportunity(contact=None, form=None, customer=None):
                 'Donation',
                 today
             ),
-            'Campaignid': form['campaign'],
+            'Campaignid': campaign,
             'StageName': 'Pledged',
             'Type': 'Donation',
             'Anonymous__c': anonymous,
@@ -576,6 +583,12 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
     amount = form['amount']
+
+    try:
+        campaign = form['campaign']
+    except:
+        campaign = DEFAULT_CAMPAIGN_RECURRING
+
     try:
         if form['anonymous'] == '1':
             anonymous = True
@@ -830,7 +843,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         ),
         'npe03__Amount__c': '{}'.format(amount),
         'Anonymous__c': anonymous,
-        'npe03__Recurring_Donation_Campaign__c': '{}'.format(form['campaign']),
+        'npe03__Recurring_Donation_Campaign__c': '{}'.format(campaign),
         'npe03__Contact__c': '{}'.format(contact['Id']),
         'Credited_as__c': credited_as,
         'npe03__Date_Established__c': today,

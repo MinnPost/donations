@@ -12,7 +12,8 @@ from helpers import checkLevel, amount_to_charge
 from flask_sslify import SSLify
 
 from config import FLASK_SECRET_KEY
-from config import DEFAULT_CAMPAIGN
+from config import DEFAULT_CAMPAIGN_ONETIME
+from config import DEFAULT_CAMPAIGN_RECURRING
 from config import SHOW_UPSELL
 from config import ALLOW_DONATION_NOTIFICATION
 from salesforce import add_customer_and_charge
@@ -30,7 +31,8 @@ if 'DYNO' in os.environ: # only trigger SSLify if the app is running on Heroku
     sslify = SSLify(app)
 
 app.secret_key = FLASK_SECRET_KEY
-app.default_campaign = DEFAULT_CAMPAIGN
+app.default_campaign_onetime = DEFAULT_CAMPAIGN_ONETIME
+app.default_campaign_recurring = DEFAULT_CAMPAIGN_RECURRING
 app.show_upsell = SHOW_UPSELL
 app.allow_donation_notification = ALLOW_DONATION_NOTIFICATION
 
@@ -78,7 +80,7 @@ def minnpost_form():
     if request.args.get('campaign'):
         campaign = request.args.get('campaign')
     else:
-        campaign = app.default_campaign
+        campaign = ''
     frequency = request.args.get('frequency')
     if frequency is None:
         frequency = 'one-time'
