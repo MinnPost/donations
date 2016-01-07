@@ -49,7 +49,7 @@
     'name_selector' : '.form-item--display-name',
     'honor_selector' : '.honor',
     'notify_selector' : '.notify_someone',
-    'notify_field_selector' : '.form-item--memory-notify',
+    'notify_field_selector' : '.form-item--notify',
     'anonymous_selector' : '#edit-anonymous',
     //'needs_shipping_selector' : '.swag--shipping',
     'shipping_address_selector' : '.form-item--shipping-address',
