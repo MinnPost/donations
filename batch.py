@@ -95,7 +95,7 @@ def process_charges(query, log):
                 'Stripe_Transaction_Id__c': charge.id,
                 'Stripe_Card__c': charge.source.id,
                 'Card_type__c': charge.source.brand,
-                'Card_expiration_date__c': charge.source.exp_month + ' / ' + charge.source.exp_year,
+                'Card_expiration_date__c': str(charge.source.exp_month) + ' / ' + str(charge.source.exp_year),
                 'Card_acct_last_4__c': charge.source.last4,
                 'StageName': 'Closed Won',
                 }
