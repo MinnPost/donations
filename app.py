@@ -3,7 +3,8 @@ import sys
 
 from flask import Flask, render_template, request, session, jsonify
 from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
-from raven.contrib.flask import Sentry
+#from raven.contrib.flask import Sentry
+from opbeat.contrib.flask import Opbeat
 from sassutils.wsgi import SassMiddleware
 import stripe
 from validate_email import validate_email
@@ -63,6 +64,8 @@ LOGGING = {
         },
     }
 }
+
+opbeat = Opbeat(app)
 
 #if app.config['ENABLE_SENTRY']:
 #    sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
