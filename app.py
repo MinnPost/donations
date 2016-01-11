@@ -2,10 +2,11 @@ import os
 import sys
 
 from flask import Flask, render_template, request, session, jsonify
-from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
+#from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
+from forms import MinnPostForm, ConfirmForm
 #from raven.contrib.flask import Sentry
 from opbeat.contrib.flask import Opbeat
-from sassutils.wsgi import SassMiddleware
+from sassutils.wsgi import SassMiddleware # maybe put this into grunt instead
 import stripe
 from validate_email import validate_email
 from helpers import checkLevel, amount_to_charge
@@ -21,7 +22,7 @@ from config import OPBEAT_ORGANIZATION_ID
 from config import OPBEAT_APP_ID
 from config import OPBEAT_SECRET_TOKEN
 from salesforce import add_customer_and_charge
-from salesforce import add_tw_customer_and_charge
+#from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
 from app_celery import make_celery
 
@@ -70,7 +71,7 @@ opbeat = Opbeat(app)
 #if app.config['ENABLE_SENTRY']:
 #    sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
 
-
+# used at support.minnpost.com/give
 @app.route('/give/')
 def minnpost_form():
     form = MinnPostForm()
@@ -123,7 +124,7 @@ def minnpost_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
-
+# this is a texas url
 @app.route('/memberform/')
 def member_form():
     form = DonateForm()
@@ -143,6 +144,7 @@ def member_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
+# this is a texas url
 @app.route('/donateform/')
 def donate_renew_form():
     form = DonateForm()
@@ -159,6 +161,7 @@ def donate_renew_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
+# this is a texas url
 @app.route('/circleform/')
 def circle_form():
     form = DonateForm()
@@ -176,6 +179,7 @@ def circle_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
+# this is a texas url
 @app.route('/internal-texasweekly/')
 def internal_texasweekly_form():
     form = TexasWeeklyForm()
@@ -187,6 +191,7 @@ def internal_texasweekly_form():
             amount=amount, key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
+# this is a texas url
 @app.route('/submit-tw/', methods=['POST'])
 def submit_tw():
     form = TexasWeeklyForm(request.form)
@@ -211,23 +216,23 @@ def submit_tw():
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
 
-
+# generalized error with a specific template
 @app.route('/error/')
 def error():
     message = "Something went wrong!"
     return render_template('error.html', message=message)
 
-
+# generalized error with a specific template
 @app.errorhandler(404)
 def page_not_found(error):
     message = "The page you requested can't be found."
     return render_template('error.html', message=message)
 
-
+# this is a minnpost url
 @app.route('/charge/', methods=['POST'])
 def charge():
 
-    form = DonateForm(request.form)
+    form = MinnPostForm(request.form)
     #pprint('Request: {}'.format(request))
 
     email_is_valid = validate_email(request.form['stripeEmail'])
@@ -255,7 +260,7 @@ def charge():
         return render_template('error.html', message=message)
 
 
-## for minnpost, start with ajax, then submit to /thanks
+## this is a minnpost url. when submitting a charge, start with ajax, then submit to /thanks
 @app.route('/charge_ajax/', methods=['POST'])
 def charge_ajax():
 
@@ -327,6 +332,7 @@ def charge_ajax():
         return render_template('error.html', message=message)
 
 
+# this is a minnpost url. it gets called after successful response from stripe
 @app.route('/thanks/', methods=['POST'])
 def thanks():
 
@@ -368,6 +374,7 @@ def thanks():
         return render_template('error.html', message=message)
 
 
+# this is a minnpost url
 @app.route('/finish/', methods=['POST'])
 def finish():
 
@@ -375,7 +382,7 @@ def finish():
     pprint('Request: {}'.format(request))
 
 
-
+# this is a minnpost url
 @app.route('/confirm/', methods=['POST'])
 def confirm():
 
@@ -394,7 +401,7 @@ def confirm():
         return render_template('error.html', message=message)
 
     
-
+# initialize
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
