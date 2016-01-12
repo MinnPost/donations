@@ -28,8 +28,32 @@ module.exports = function(grunt) {
     dir: {
       js: 'static/js',
       css: 'static/css',
-      //sass: 'sass',
+      sass: 'static/sass',
       img: 'static/img'
+    },
+
+
+    /**
+     * Sass compiling
+     * @github.com/gruntjs/grunt-contrib-sass
+     */
+    sass: {
+
+      dist: {
+        options: {
+          style: 'expanded'
+        },
+
+        files: [{
+            expand: true,        // Enable dynamic expansion.
+            cwd: '<%= dir.sass %>/',  // Src matches are relative to this path.
+            src: ['*.scss'],     // Actual pattern(s) to match.
+            dest: '<%= dir.css %>/',  // Destination path prefix.
+            ext: '.scss.css',         // Dest filepaths will have this extension.
+        }]
+
+      }
+      
     },
 
 
@@ -205,7 +229,7 @@ module.exports = function(grunt) {
     //'jshint',           // JShint
     'concat:js',        // Concatenate main JS files
     'uglify',           // Minifiy concatenated JS file
-    //'compass:dev',      // Compile Sass with dev settings
+    'sass:dist',      // Compile Sass
     'autoprefixer:dev', // add prefixes to css
     'cssmin',           // minify CSS files
   ]);
@@ -219,7 +243,7 @@ module.exports = function(grunt) {
     'jshint',           // JShint
     'concat:js',        // Concatenate main JS files
     'uglify',           // Minifiy concatenated JS file
-    //'compass:dist',     // Compile Sass with distribution settings
+    'sass:dist',      // Compile Sass
     'svg2png',          // Convert svg files to png
     'svgmin',           // Compress svg files
     'imagemin',         // Compress jpg/jpeg + png files
@@ -244,7 +268,7 @@ module.exports = function(grunt) {
    */
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-concat');
-  //grunt.loadNpmTasks('grunt-contrib-compass');
+  grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-imagemin');

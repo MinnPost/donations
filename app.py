@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, session, jsonify
 from forms import MinnPostForm, ConfirmForm
 #from raven.contrib.flask import Sentry
 from opbeat.contrib.flask import Opbeat
-from sassutils.wsgi import SassMiddleware # maybe put this into grunt instead
+#from sassutils.wsgi import SassMiddleware # mp put this into grunt instead
 import stripe
 from validate_email import validate_email
 from helpers import checkLevel, amount_to_charge
@@ -41,9 +41,9 @@ app.default_campaign_recurring = DEFAULT_CAMPAIGN_RECURRING
 app.show_upsell = SHOW_UPSELL
 app.allow_donation_notification = ALLOW_DONATION_NOTIFICATION
 
-app.wsgi_app = SassMiddleware(app.wsgi_app, {
-        'app': ('static/sass', 'static/css', 'static/css')
-        })
+#app.wsgi_app = SassMiddleware(app.wsgi_app, {
+#        'app': ('static/sass', 'static/css', 'static/css')
+#        })
 
 app.config.from_pyfile('config.py')
 app.config.update(
