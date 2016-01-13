@@ -32,8 +32,9 @@ from pprint import pprint
 
 app = Flask(__name__)
 
-if 'DYNO' in os.environ: # only trigger SSLify if the app is running on Heroku
-    sslify = SSLify(app)
+if 'DYNO' in os.environ:
+    sslify = SSLify(app) # only trigger SSLify if the app is running on Heroku
+    opbeat = Opbeat(app) # only trigger opbeat if the app is running on Heroku
 
 app.secret_key = FLASK_SECRET_KEY
 app.default_campaign_onetime = DEFAULT_CAMPAIGN_ONETIME
