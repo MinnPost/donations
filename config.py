@@ -70,6 +70,11 @@ STRIPE_KEYS = {
     'publishable_key': os.getenv('PUBLISHABLE_KEY')
 }
 
+############
+# Postgres
+#
+SQLALCHEMY_DATABASE_URI = "postgresql://localhost/salesforce_stripe"
+
 #######
 # Slack
 #
