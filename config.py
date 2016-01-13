@@ -73,7 +73,7 @@ STRIPE_KEYS = {
 ############
 # Postgres
 #
-SQLALCHEMY_DATABASE_URI = "postgresql://localhost/salesforce_stripe"
+SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
 
 #######
 # Slack
