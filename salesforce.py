@@ -583,7 +583,8 @@ def _format_opportunity(contact=None, form=None, customer=None):
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
             }
-
+    print('opportunity')
+    print(opportunity)
     return opportunity
 
 
