@@ -2,6 +2,7 @@ import os
 import sys
 
 from flask import Flask, render_template, request, session, jsonify
+from flask.ext.sqlalchemy import SQLAlchemy
 #from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
 from forms import MinnPostForm, ConfirmForm
 #from raven.contrib.flask import Sentry
@@ -55,6 +56,23 @@ app.config.update(
 stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 
 celery = make_celery(app)
+
+db = SQLAlchemy(app)
+
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    transaction_id = db.Column(db.String())
+    sf_id = db.Column(db.String())
+
+    def __init__(self, transaction_id, sf_id):
+        self.transaction_id = transaction_id
+        self.sf_id = sf_id
+
+    def __repr__(self):
+        return '<Transaction %r>'.format(self.id)
+
 
 # Set up to send logging to stdout and Heroku forwards to Papertrail
 LOGGING = {
@@ -314,18 +332,27 @@ def charge_ajax():
         return render_template('error.html', message=message)
 
     if form.validate():
-        result = add_customer_and_charge(form=request.form, customer=customer)
 
-        if not result['errors']:
+        #if not result['errors']:
             #print(result['id'])
-            session['sf_id'] = result['id']
-            if frequency == 'one-time':
-                session['sf_type'] = 'Opportunity'
-            else:
-                session['sf_type'] = 'npe03__Recurring_Donation__c'
-        else:
-            session['errors'] = result['errors']
+            # store some id (currently the opportunity/recurring donation id)
+            # so the script can update it with their newsletter and/or testimonial
+        transaction = Transaction('NULL', 'NULL')
+        db.session.add(transaction)
+        result = db.session.commit()
+        #session['sf_id'] = result['id']
+        session['flask_id'] = transaction.id
 
+        # this adds the contact and the opportunity to salesforce
+        add_customer_and_charge.delay(form=request.form, customer=customer, session=session)
+
+        if frequency == 'one-time':
+            session['sf_type'] = 'Opportunity'
+        else:
+            session['sf_type'] = 'npe03__Recurring_Donation__c'
+        #else:
+        #    session['errors'] = result['errors']
+        #return 'foo'
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
     else:
         message = "There was an issue saving your donation information."
