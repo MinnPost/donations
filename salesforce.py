@@ -939,7 +939,7 @@ def add_recurring_donation(form=None, customer=None):
 
 
 @celery.task(name='salesforce.add_customer_and_charge')
-def add_customer_and_charge(form=None, customer=None, session=None):
+def add_customer_and_charge(form=None, customer=None, flask_id=None):
     """
     Add a contact and their donation into SF. This is done in the background
     because there are a lot of API calls and there's no point in making the
@@ -948,8 +948,8 @@ def add_customer_and_charge(form=None, customer=None, session=None):
     amount = form['amount']
     name = '{} {}'.format(form['first_name'], form['last_name'])
 
-    if session != None:
-        form['flask_id'] = session['flask_id']
+    if flask_id != None:
+        form['flask_id'] = flask_id
     #reason = form['reason']
     #if reason != '':
         #reason = ' (encouraged by {})'.format(reason)

@@ -341,15 +341,15 @@ def charge_ajax():
         db.session.add(transaction)
         result = db.session.commit()
         #session['sf_id'] = result['id']
-        session['flask_id'] = transaction.id
+        #session['flask_id'] = transaction.id
 
         # this adds the contact and the opportunity to salesforce
-        add_customer_and_charge.delay(form=request.form, customer=customer, session=session)
+        add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=transaction.id)
 
-        if frequency == 'one-time':
-            session['sf_type'] = 'Opportunity'
-        else:
-            session['sf_type'] = 'npe03__Recurring_Donation__c'
+        #if frequency == 'one-time':
+        #    session['sf_type'] = 'Opportunity'
+        #else:
+        #    session['sf_type'] = 'npe03__Recurring_Donation__c'
         #else:
         #    session['errors'] = result['errors']
         #return 'foo'
