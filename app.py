@@ -65,9 +65,7 @@ LOGGING = {
             'strm': sys.stdout
         },
     }
-}
-
-opbeat = Opbeat(app)
+}    
 
 #if app.config['ENABLE_SENTRY']:
 #    sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
