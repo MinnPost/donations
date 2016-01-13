@@ -245,7 +245,7 @@ def page_not_found(error):
     message = "The page you requested can't be found."
     return render_template('error.html', message=message)
 
-# this is a texas url
+# this is a minnpost url
 @app.route('/charge/', methods=['POST'])
 def charge():
 
@@ -264,12 +264,12 @@ def charge():
         return render_template('error.html', message=message)
 
     if form.validate():
-        add_customer_and_charge.delay(form=request.form, customer=customer)
-        if not result['errors']:
-            print(result['id'])
-        else:
-            print('result has errors')
-            print(result)
+        #result = add_customer_and_charge.delay(form=request.form, customer=customer)
+        #if not result['errors']:
+        #    print(result['id'])
+        #else:
+        #    print('result has errors')
+        #    print(result)
 
         return render_template('charge.html', amount=request.form['amount'])
     else:
@@ -303,7 +303,6 @@ def charge_ajax():
 
     pay_fees = request.form['pay_fees']
     if pay_fees == '1':
-        # get fee amount so the user can see it
         entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
         amount_plus_fees = amount_to_charge(entry)
         amount_formatted = format(amount_plus_fees / 100, ',.2f')
@@ -313,21 +312,21 @@ def charge_ajax():
     last_name = request.form['last_name']
     email_is_valid = validate_email(email)
 
-    if email_is_valid and customer_id is '': # this is a new customer
+    if email_is_valid and customer_id is '':
         try:
             customer = stripe.Customer.create(
                     email=email,
                     card=request.form['stripeToken']
             )
-        except stripe.error.CardError as e: # stripe returned an error on the credit card
+        except stripe.error.CardError as e:
             body = e.json_body
             return jsonify(body)
-    elif customer_id is not None and customer_id != '': # this is an existing customer
+    elif customer_id is not None and customer_id != '':
         customer = stripe.Customer.retrieve(customer_id)
         customer.card=request.form['stripeToken']
         customer.email = email
         customer.save()
-    else: # the email was invalid
+    else:
         message = "There was an issue saving your email address."
         return render_template('error.html', message=message)
 
@@ -385,7 +384,6 @@ def thanks():
 
     pay_fees = request.form['pay_fees']
     if pay_fees == '1':
-        # get fee amount so the user can see it
         entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
         amount_plus_fees = amount_to_charge(entry)
         amount_formatted = format(amount_plus_fees / 100, ',.2f')
