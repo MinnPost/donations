@@ -949,6 +949,9 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
     name = '{} {}'.format(form['first_name'], form['last_name'])
 
     if flask_id != None:
+        print('flask id is')
+        print(flask_id)
+        print('printed')
         form['flask_id'] = flask_id
     #reason = form['reason']
     #if reason != '':

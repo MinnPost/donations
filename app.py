@@ -339,7 +339,7 @@ def charge_ajax():
             # so the script can update it with their newsletter and/or testimonial
         transaction = Transaction('NULL', 'NULL')
         db.session.add(transaction)
-        result = db.session.commit()
+        db.session.commit()
         #session['sf_id'] = result['id']
         #session['flask_id'] = transaction.id
 
