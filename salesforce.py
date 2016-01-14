@@ -1,12 +1,11 @@
 from datetime import datetime
 import json
 import locale
-from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
 from pprint import pprint   # TODO: remove
 
 import celery
 import requests
+import json
 from pytz import timezone
 
 from config import SALESFORCE
@@ -24,30 +23,12 @@ from config import DEFAULT_CAMPAIGN_RECURRING
 from emails import send_email
 from check_response import check_response
 
-app = Flask(__name__)
-db = SQLAlchemy(app)
-
 zone = timezone(TIMEZONE)
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 WARNINGS = dict()
 
-
-class Transaction(db.Model):
-    __tablename__ = 'transactions'
-
-    id = db.Column(db.Integer, primary_key=True)
-    transaction_id = db.Column(db.String())
-    sf_id = db.Column(db.String())
-
-    def __init__(self, id, transaction_id, sf_id):
-        self.id = id
-        self.transaction_id = transaction_id
-        self.sf_id = sf_id
-
-    def __repr__(self):
-        return '<Transaction %r>'.format(self.id)
 
 def notify_slack(message):
     """
@@ -966,10 +947,6 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
     because there are a lot of API calls and there's no point in making the
     payer wait for them.
     """
-
-    app = Flask(__name__)
-    db = SQLAlchemy(app)
-
     amount = form['amount']
     name = '{} {}'.format(form['first_name'], form['last_name'])
         
@@ -997,14 +974,11 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         response = add_recurring_donation(form=form, customer=customer)
 
     if not response['errors']:
-        print('update transaction record. flask id and sf id.')
-        print(flask_id)
-        print(response['id'])
-        print('ids are there now')
-        #transaction = Transaction.query.get(flask_id)
-        transaction = db.session.query(Transaction).get(flask_id)
-        transaction.sf_id = response['id']
-        db.session.commit()
+        # do something to notify that the task was finished successfully
+        message = {'flask_id' : flask_id, 'sf_id' : response['id']}
+        print(message)
+        print('call endpoint now and update it')
+        res = requests.post('/transaction_result/', data=json.dumps(message))
     return response
 
 

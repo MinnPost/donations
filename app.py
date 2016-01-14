@@ -347,6 +347,13 @@ def charge_ajax():
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=str(transaction.id))
 
+        ## we need to get notified of result here somehow and then update the db
+        #transaction = Transaction.query.get(flask_id)
+        #transaction = db.session.query(Transaction).get(flask_id)
+        #transaction.sf_id = response['id']
+        #db.session.commit()
+
+
         #if frequency == 'one-time':
         #    session['sf_type'] = 'Opportunity'
         #else:
@@ -403,6 +410,19 @@ def thanks():
     else:
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
+
+## this is a minnpost url. after celery does things to the opportunity, it will call this url to tell us what happened locally
+@app.route('/transaction_result/', methods=['POST'])
+def transaction_result():
+    print('this is the endpoint')
+    input_json = request.get_json(force=True)
+    print(input_json)
+    print('try to update the database')
+    ## we need to get notified of result here somehow and then update the db
+    transaction = Transaction.query.get(input_json.flask_id)
+    #transaction = db.session.query(Transaction).get(flask_id)
+    transaction.sf_id = input_json.sf_id
+    db.session.commit()
 
 
 # this is a minnpost url
