@@ -948,17 +948,19 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
     """
     amount = form['amount']
     name = '{} {}'.format(form['first_name'], form['last_name'])
-
-    if flask_id != None:
-        print('flask id is')
-        print(flask_id)
-        print('printed')
-        form['flask_id'] = flask_id
+        
     #reason = form['reason']
     #if reason != '':
         #reason = ' (encouraged by {})'.format(reason)
 
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
+
+    if flask_id != None:
+        print('flask id is')
+        print(flask_id)
+        print('printed')
+        form = form.to_dict()
+        form['flask_id'] = flask_id
 
     if (form['recurring'] == 'one-time'):
         print("----One time payment...")

@@ -344,7 +344,7 @@ def charge_ajax():
         #session['flask_id'] = transaction.id
 
         # this adds the contact and the opportunity to salesforce
-        add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=transaction.id)
+        add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=str(transaction.id))
 
         #if frequency == 'one-time':
         #    session['sf_type'] = 'Opportunity'
