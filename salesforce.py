@@ -41,7 +41,8 @@ class Transaction(db.Model):
     transaction_id = db.Column(db.String())
     sf_id = db.Column(db.String())
 
-    def __init__(self, transaction_id, sf_id):
+    def __init__(self, id, transaction_id, sf_id):
+        self.id = id
         self.transaction_id = transaction_id
         self.sf_id = sf_id
 
