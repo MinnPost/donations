@@ -992,7 +992,10 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         response = add_recurring_donation(form=form, customer=customer)
 
     if not response['errors']:
-        print('update transaction record {}. add sf id {}').format(flask_id, response['id'])
+        print('update transaction record. flask id and sf id.')
+        print(flask_id)
+        print(response['id'])
+        print('ids are there now')
         #transaction = Transaction.query.get(flask_id)
         transaction = db_session.query(Transaction).filter(id=flask_id).one()
         transaction.sf_id = response['id']
