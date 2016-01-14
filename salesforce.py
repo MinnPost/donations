@@ -978,8 +978,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         message = {'flask_id' : flask_id, 'sf_id' : response['id']}
         print(message)
         print('call endpoint now and update it')
-        url = url_for('transaction_result', _external=True)
-        res = requests.post(url, data=json.dumps(message))
+        #url = url_for('transaction_result', _external=True)
+        res = requests.post('http://0.0.0.0:5000/transaction_result/', data=json.dumps(message))
     return response
 
 
