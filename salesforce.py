@@ -1,6 +1,8 @@
 from datetime import datetime
 import json
 import locale
+from flask import Flask
+from flask.ext.sqlalchemy import SQLAlchemy
 from pprint import pprint   # TODO: remove
 
 import celery
@@ -28,6 +30,23 @@ locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 WARNINGS = dict()
 
+app = Flask(__name__)
+
+db = SQLAlchemy(app)
+
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    transaction_id = db.Column(db.String())
+    sf_id = db.Column(db.String())
+
+    def __init__(self, transaction_id, sf_id):
+        self.transaction_id = transaction_id
+        self.sf_id = sf_id
+
+    def __repr__(self):
+        return '<Transaction %r>'.format(self.id)
 
 def notify_slack(message):
     """
@@ -973,7 +992,9 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         response = add_recurring_donation(form=form, customer=customer)
 
     if not response['errors']:
-        transaction = Transaction.query.get(flask_id)
+        print('update transaction record {}. add sf id {}').format(flask_id, response['id'])
+        #transaction = Transaction.query.get(flask_id)
+        transaction = db_session.query(Transaction).filter(id=flask_id).one()
         transaction.sf_id = response['id']
         db.session.commit()
     return response
