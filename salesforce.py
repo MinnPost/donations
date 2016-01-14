@@ -24,15 +24,15 @@ from config import DEFAULT_CAMPAIGN_RECURRING
 from emails import send_email
 from check_response import check_response
 
+app = Flask(__name__)
+db = SQLAlchemy(app)
+
 zone = timezone(TIMEZONE)
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 WARNINGS = dict()
 
-app = Flask(__name__)
-
-db = SQLAlchemy(app)
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
@@ -966,6 +966,10 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
     because there are a lot of API calls and there's no point in making the
     payer wait for them.
     """
+
+    app = Flask(__name__)
+    db = SQLAlchemy(app)
+
     amount = form['amount']
     name = '{} {}'.format(form['first_name'], form['last_name'])
         
@@ -998,9 +1002,9 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         print(response['id'])
         print('ids are there now')
         #transaction = Transaction.query.get(flask_id)
-        transaction = self.db.session.query(Transaction).get(flask_id)
+        transaction = db.session.query(Transaction).get(flask_id)
         transaction.sf_id = response['id']
-        self.db.session.commit()
+        db.session.commit()
     return response
 
 
