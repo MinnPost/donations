@@ -956,9 +956,6 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
 
     if flask_id != None:
-        print('flask id is')
-        print(flask_id)
-        print('printed')
         form = form.to_dict()
         form['flask_id'] = flask_id
 
@@ -974,6 +971,11 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         print(msg)
         notify_slack(msg)
         response = add_recurring_donation(form=form, customer=customer)
+
+    if not response['errors']:
+        transaction = Transaction.query.get(flask_id)
+        transaction.sf_id = response['id']
+        db.session.commit()
     return response
 
 

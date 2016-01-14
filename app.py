@@ -333,6 +333,7 @@ def charge_ajax():
 
     if form.validate():
 
+        #result = add_customer_and_charge(form=request.form, customer=customer)
         #if not result['errors']:
             #print(result['id'])
             # store some id (currently the opportunity/recurring donation id)
@@ -354,6 +355,8 @@ def charge_ajax():
         #    session['errors'] = result['errors']
         #return 'foo'
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
+        #body = transaction.id
+        #return jsonify(body)
     else:
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
