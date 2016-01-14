@@ -998,7 +998,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         print(response['id'])
         print('ids are there now')
         #transaction = Transaction.query.get(flask_id)
-        transaction = db.session.query(Transaction).filter(id=flask_id).one()
+        transaction = db.session.query(Transaction).get(flask_id)
         transaction.sf_id = response['id']
         db.session.commit()
     return response
