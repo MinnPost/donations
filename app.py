@@ -3,7 +3,7 @@ import sys
 
 from flask import Flask, render_template, request, session, jsonify, json
 from flask.ext.sqlalchemy import SQLAlchemy
-import base64
+
 #from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
 from forms import MinnPostForm, ConfirmForm
 #from raven.contrib.flask import Sentry
@@ -421,16 +421,8 @@ def transaction_result():
     #print(data)
     print('print json')
 
-    try:
-        decoded = base64.b64decode(request.get_data())
-        data = json.loads(decoded)
-        print(data)
-    except (ValueError, TypeError):
-        print('failed to decode json with errors: {} {}').format(ValueError, TypeError)
-    else:
-        # do something with the decoded data
-        data = json.loads(request.get_data())
-        print(data)
+    data = json.loads(request.get_data())
+    print(data)
 
     #dataDict = json.loads(data)
     #print(dataDict)
