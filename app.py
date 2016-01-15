@@ -422,20 +422,10 @@ def transaction_result():
     print('print json')
 
     data = request.get_data()
-
-    print('show data items here')
-    print(data['flask_id'])
-    print(data['sf_id'])
-    print('showed the items')
-
-    #print(data)
-
     data = json.loads(data)
 
-    #dataDict = json.loads(data)
-    #print(dataDict)
-    #print('print json')
-    #result = request.get_json()
+    pprint(data)
+
     print('show json items here')
     print(data['flask_id'])
     print(data['sf_id'])
