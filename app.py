@@ -415,9 +415,10 @@ def thanks():
 ## this is a minnpost url. after celery does things to the opportunity, it will call this url to tell us what happened locally
 @app.route('/transaction_result/', methods=['POST'])
 def transaction_result():
-    print('print result')
+    print('print data')
+    print(request.get_data())
+    print('print json')
     result = request.get_json()
-    print(result)
     print(result['flask_id'])
     print(result['sf_id'])
     print('stop printing and do the database')
