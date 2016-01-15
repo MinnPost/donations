@@ -426,7 +426,7 @@ def transaction_result():
         data = json.loads(decoded)
         print(data)
     except (ValueError, TypeError):
-        print('failed to decode json')
+        print('failed to decode json with errors: {} {}').format(ValueError, TypeError)
     else:
         # do something with the decoded data
         data = json.loads(request.get_data())
