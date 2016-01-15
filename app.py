@@ -419,10 +419,10 @@ def transaction_result():
     #print('print data')
     #data = request.get_data()
     #print(data)
-    print('print json')
-    data = request.get_json(force=True)
-    print(data)
-    print(type(data))
+    #print('print json')
+    data = request.get_json()
+    #print(data)
+    #print(type(data))
 
 #    print('print data')
 #    data = request.get_data().decode("utf-8")
@@ -430,7 +430,7 @@ def transaction_result():
 #    print('print type')
 #    print(type(data))
 
-#    data = json.loads(data)
+    data = json.loads(data)
 
     print('show json items here')
     print(data['flask_id'])
