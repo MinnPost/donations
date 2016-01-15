@@ -981,7 +981,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         print(message)
         print('call endpoint now and update it')
         #url = url_for('transaction_result', _external=True)
-        res = requests.post('http://localhost:5000/transaction_result/', json=message)
+        res = requests.post('http://127.0.0.1:5000/transaction_result/', json=message)
     return response
 
 
