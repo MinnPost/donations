@@ -5,7 +5,6 @@ from pprint import pprint   # TODO: remove
 
 import celery
 import requests
-import json
 from pytz import timezone
 
 from config import SALESFORCE

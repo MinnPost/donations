@@ -411,18 +411,55 @@ def thanks():
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
 
+
 ## this is a minnpost url. after celery does things to the opportunity, it will call this url to tell us what happened locally
 @app.route('/transaction_result/', methods=['POST'])
 def transaction_result():
-    print('this is the endpoint')
-    input_json = request.get_json(force=True)
-    print(input_json)
-    print('try to update the database')
+    print('start parsing')
+    print(request.data)
+    datadict = json.loads(data)
+    print(datadict)
+    print('stop parsing')
+    #content = json.dumps(request.json)
+    #if request.form:
+    #    content = 'test'
+    #    return content
+    #if not request.json:
+    #    return render_template('error.html', message='there is an error here')
+    #else:
+        #print(request.json)
+    #    return request.json
+    #print(jsonify(request.data))
+    #content = request.json()
+    #print(request.json())
+    #if request.headers['content-type'] == 'application/json':
+        # Ensure data is a valid JSON
+        #try:
+            #user_submission = json.loads(request.data)
+    #print('show data')
+    #content = request.json()
+    #content = request.json()
+    #print('data up there')
+    #body = request.data
+    #return 'test'
+            #print(user_submission)
+            #return 'success'
+        #except:
+            #return 'error1'
+    # User submitted an unsupported Content-Type
+    #else:
+        #return 'error2'
+
+    #print('this is the endpoint')
+    #print('this is the json')
+    #input_json = request.get_json(force=True)
+    #print(input_json)
+    #print('try to update the database')
     ## we need to get notified of result here somehow and then update the db
-    transaction = Transaction.query.get(input_json.flask_id)
+    #transaction = Transaction.query.get(input_json.flask_id)
     #transaction = db.session.query(Transaction).get(flask_id)
-    transaction.sf_id = input_json.sf_id
-    db.session.commit()
+    #transaction.sf_id = input_json.sf_id
+    #db.session.commit()
 
 
 # this is a minnpost url
