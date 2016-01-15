@@ -419,10 +419,11 @@ def transaction_result():
     #print('print data')
     #data = request.get_data()
     #print(data)
-    print('print json')
-
+    print('print data')
     data = request.get_data()
-    print type(data)
+    print(data)
+    print('print type')
+    print(type(data))
 
     data = json.loads(data)
 
