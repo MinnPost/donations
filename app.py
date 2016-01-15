@@ -1,8 +1,9 @@
 import os
 import sys
 
-from flask import Flask, render_template, request, session, jsonify
+from flask import Flask, render_template, request, session, jsonify, json
 from flask.ext.sqlalchemy import SQLAlchemy
+import base64
 #from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
 from forms import MinnPostForm, ConfirmForm
 #from raven.contrib.flask import Sentry
@@ -415,12 +416,24 @@ def thanks():
 ## this is a minnpost url. after celery does things to the opportunity, it will call this url to tell us what happened locally
 @app.route('/transaction_result/', methods=['POST'])
 def transaction_result():
-    print('print data')
-    data = request.get_data()
-    print(data)
-    print('print dict')
-    dataDict = json.loads(data)
-    print(dataDict)
+    #print('print data')
+    #data = request.get_data()
+    #print(data)
+    print('print json')
+
+    try:
+        decoded = base64.b64decode(request.get_data())
+        data = json.loads(decoded)
+        print(data)
+    except (ValueError, TypeError):
+        print('failed to decode json')
+    else:
+        # do something with the decoded data
+        data = json.loads(request.get_data())
+        print(data)
+
+    #dataDict = json.loads(data)
+    #print(dataDict)
     #print('print json')
     #result = request.get_json()
     #print(result['flask_id'])
