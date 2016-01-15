@@ -416,37 +416,25 @@ def thanks():
 ## this is a minnpost url. after celery does things to the opportunity, it will call this url to tell us what happened locally
 @app.route('/transaction_result/', methods=['POST'])
 def transaction_result():
-    #print('print data')
-    #data = request.get_data()
-    #print(data)
-    #print('print json')
+
     data = request.get_json()
-    #print(data)
-    #print(type(data))
-
-#    print('print data')
-#    data = request.get_data().decode("utf-8")
-#    print(data)
-#    print('print type')
-#    print(type(data))
-
     data = json.loads(data)
 
-    print('show json items here')
-    print(data['flask_id'])
-    print(data['sf_id'])
-    print('showed the items')
+    #print('show json items here')
+    #print(data['flask_id'])
+    #print(data['sf_id'])
+    #print('showed the items')
 
     #print('stop printing and do the database')
     ## we need to get notified of result here somehow and then update the db
-    #transaction = Transaction.query.get(result['flask_id'])
+    transaction = Transaction.query.get(data['flask_id'])
     #print('print from db')
-    #print(transaction)
+    print(transaction)
     #transaction = db.session.query(Transaction).get(flask_id)
-    #transaction.sf_id = result['sf_id']
-    #db.session.commit()
-    #body = transaction
-    #return jsonify(body)
+    transaction.sf_id = data['sf_id']
+    db.session.commit()
+    body = transaction
+    return jsonify(body)
     #print(result)
     #return result['flask_id']
     #print('start parsing')
