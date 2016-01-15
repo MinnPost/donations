@@ -429,8 +429,8 @@ def transaction_result():
     #print('print json')
     #result = request.get_json()
     print('show json items')
-    print(data.flask_id)
-    print(data.sf_id)
+    print(data['flask_id'])
+    print(data['sf_id'])
     #print('stop printing and do the database')
     ## we need to get notified of result here somehow and then update the db
     #transaction = Transaction.query.get(result['flask_id'])
