@@ -975,11 +975,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
     if not response['errors']:
         # do something to notify that the task was finished successfully
         message = {'flask_id' : flask_id, 'sf_id' : response['id']}
-        print(message)
         message = json.dumps(message)
-        print('json message')
-        print(message)
-        print('call endpoint now and update it')
         #url = url_for('transaction_result', _external=True)
         res = requests.post('https://mp-st-sf-test.herokuapp.com/transaction_result/', json=message)
     return response
