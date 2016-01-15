@@ -422,20 +422,14 @@ def transaction_result():
     print('print json')
 
     data = request.get_data()
+    print type(data)
 
-    print('show data items here')
+    data = json.loads(data)
+
+    print('show json items here')
     print(data['flask_id'])
     print(data['sf_id'])
     print('showed the items')
-
-    #print(data)
-
-    #data = json.loads(data)
-
-    #print('show json items here')
-    #print(data['flask_id'])
-    #print(data['sf_id'])
-    #print('showed the items')
 
     #print('stop printing and do the database')
     ## we need to get notified of result here somehow and then update the db
