@@ -18,6 +18,7 @@ from config import COMBINED_EMAIL_FIELD
 from config import FORM_EMAIL_FIELD
 from config import DEFAULT_CAMPAIGN_ONETIME
 from config import DEFAULT_CAMPAIGN_RECURRING
+from config import ROOT_URL
 
 from emails import send_email
 from check_response import check_response
