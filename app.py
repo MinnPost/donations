@@ -416,21 +416,26 @@ def thanks():
 @app.route('/transaction_result/', methods=['POST'])
 def transaction_result():
     print('print data')
-    print(request.get_data())
-    print('print json')
-    result = request.get_json()
-    print(result['flask_id'])
-    print(result['sf_id'])
-    print('stop printing and do the database')
+    #print(request.get_data())
+    data = request.data
+    print(data)
+    print('print dict')
+    dataDict = json.loads(data)
+    print(dataDict)
+    #print('print json')
+    #result = request.get_json()
+    #print(result['flask_id'])
+    #print(result['sf_id'])
+    #print('stop printing and do the database')
     ## we need to get notified of result here somehow and then update the db
-    transaction = Transaction.query.get(result['flask_id'])
-    print('print from db')
-    print(transaction)
+    #transaction = Transaction.query.get(result['flask_id'])
+    #print('print from db')
+    #print(transaction)
     #transaction = db.session.query(Transaction).get(flask_id)
-    transaction.sf_id = result['sf_id']
-    db.session.commit()
-    body = transaction
-    return jsonify(body)
+    #transaction.sf_id = result['sf_id']
+    #db.session.commit()
+    #body = transaction
+    #return jsonify(body)
     #print(result)
     #return result['flask_id']
     #print('start parsing')
