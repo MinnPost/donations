@@ -420,7 +420,7 @@ def transaction_result():
     #data = request.get_data()
     #print(data)
     print('print json')
-    data = request.get_json(Force=True).decode("utf-8")
+    data = request.get_json(force=True).decode("utf-8")
     print(data)
     print(type(data))
 
