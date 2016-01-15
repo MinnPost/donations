@@ -977,8 +977,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         # do something to notify that the task was finished successfully
         message = {'flask_id' : flask_id, 'sf_id' : response['id']}
         message = json.dumps(message)
-        #url = url_for('transaction_result', _external=True)
-        res = requests.post('https://mp-st-sf-test.herokuapp.com/transaction_result/', json=message)
+        res = requests.post('{0}/transaction_result/'.format(ROOT_URL), json=message)
     return response
 
 
