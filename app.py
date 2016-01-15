@@ -406,14 +406,15 @@ def transaction_result():
     #print('stop printing and do the database')
     ## we need to get notified of result here somehow and then update the db
     transaction = Transaction.query.get(data['flask_id'])
-    print('print from db')
-    print(transaction)
+    print('update db')
+    #print(transaction)
     #transaction = db.session.query(Transaction).get(flask_id)
-    #transaction.sf_id = data['sf_id']
-    transaction.data = {'sf_id': data['sf_id']}
+    transaction.sf_id = data['sf_id']
+    #transaction.data = {'sf_id': data['sf_id']}
     db.session.commit()
-    body = transaction
-    return jsonify(body)
+    message = {'flask_id' : transaction.flask_id, 'sf_id' : transaction.response['id']}
+    message = json.dumps(message)
+    return message
     #print(result)
     #return result['flask_id']
     #print('start parsing')
