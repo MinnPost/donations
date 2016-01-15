@@ -421,8 +421,16 @@ def transaction_result():
     #print(data)
     print('print json')
 
-    data = json.loads(request.get_data())
-    print(data)
+    data = request.get_data()
+
+    print('show data items here')
+    print(data['flask_id'])
+    print(data['sf_id'])
+    print('showed the items')
+
+    #print(data)
+
+    data = json.loads(data)
 
     #dataDict = json.loads(data)
     #print(dataDict)
