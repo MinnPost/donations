@@ -417,8 +417,15 @@ def thanks():
 def transaction_result():
     print('do something here with result')
     result = request.get_json()
-    print(result)
-    return result['flask_id']
+    ## we need to get notified of result here somehow and then update the db
+    transaction = Transaction.query.get(result['flask_id'])
+    #transaction = db.session.query(Transaction).get(flask_id)
+    transaction.sf_id = result['sf_id']
+    db.session.commit()
+    body = transaction
+    return jsonify(body)
+    #print(result)
+    #return result['flask_id']
     #print('start parsing')
     #print(request.data)
     #datadict = json.loads(data)
