@@ -416,8 +416,7 @@ def thanks():
 @app.route('/transaction_result/', methods=['POST'])
 def transaction_result():
     print('print data')
-    #print(request.get_data())
-    data = request.data
+    data = request.get_data()
     print(data)
     print('print dict')
     dataDict = json.loads(data)
