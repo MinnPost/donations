@@ -412,7 +412,7 @@ def transaction_result():
     transaction.sf_id = data['sf_id']
     #transaction.data = {'sf_id': data['sf_id']}
     db.session.commit()
-    message = {'flask_id' : transaction.flask_id, 'sf_id' : transaction.response['id']}
+    message = {'flask_id' : transaction.id, 'sf_id' : transaction.sf_id}
     message = json.dumps(message)
     return message
     #print(result)
