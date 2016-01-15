@@ -334,34 +334,12 @@ def charge_ajax():
 
     if form.validate():
 
-        #result = add_customer_and_charge(form=request.form, customer=customer)
-        #if not result['errors']:
-            #print(result['id'])
-            # store some id (currently the opportunity/recurring donation id)
-            # so the script can update it with their newsletter and/or testimonial
         transaction = Transaction('NULL', 'NULL')
         db.session.add(transaction)
         db.session.commit()
-        #session['sf_id'] = result['id']
-        #session['flask_id'] = transaction.id
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=str(transaction.id))
-
-        ## we need to get notified of result here somehow and then update the db
-        #transaction = Transaction.query.get(flask_id)
-        #transaction = db.session.query(Transaction).get(flask_id)
-        #transaction.sf_id = response['id']
-        #db.session.commit()
-
-
-        #if frequency == 'one-time':
-        #    session['sf_type'] = 'Opportunity'
-        #else:
-        #    session['sf_type'] = 'npe03__Recurring_Donation__c'
-        #else:
-        #    session['errors'] = result['errors']
-        #return 'foo'
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
         #body = transaction.id
         #return jsonify(body)
@@ -420,18 +398,19 @@ def transaction_result():
     data = request.get_json()
     data = json.loads(data)
 
-    #print('show json items here')
-    #print(data['flask_id'])
-    #print(data['sf_id'])
-    #print('showed the items')
+    print('show json items here')
+    print(data['flask_id'])
+    print(data['sf_id'])
+    print('showed the items')
 
     #print('stop printing and do the database')
     ## we need to get notified of result here somehow and then update the db
     transaction = Transaction.query.get(data['flask_id'])
-    #print('print from db')
+    print('print from db')
     print(transaction)
     #transaction = db.session.query(Transaction).get(flask_id)
-    transaction.sf_id = data['sf_id']
+    #transaction.sf_id = data['sf_id']
+    transaction.data = {'sf_id': data['sf_id']}
     db.session.commit()
     body = transaction
     return jsonify(body)
