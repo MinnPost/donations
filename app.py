@@ -4,6 +4,9 @@ import sys
 from flask import Flask, render_template, request, session, jsonify, json
 from flask.ext.sqlalchemy import SQLAlchemy
 
+from core import db
+from models import Transaction
+
 #from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
 from forms import MinnPostForm, ConfirmForm
 #from raven.contrib.flask import Sentry
@@ -54,25 +57,26 @@ app.config.update(
         CELERY_ALWAYS_EAGER=False,
         CELERY_IMPORTS=('app', 'salesforce', 'batch'),
         )
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 
 celery = make_celery(app)
 
-db = SQLAlchemy(app)
+db.init_app(app)
 
-class Transaction(db.Model):
-    __tablename__ = 'transactions'
+#class Transaction(db.Model):
+#    __tablename__ = 'transactions'
 
-    id = db.Column(db.Integer, primary_key=True)
-    transaction_id = db.Column(db.String())
-    sf_id = db.Column(db.String())
+#    id = db.Column(db.Integer, primary_key=True)
+#    transaction_id = db.Column(db.String())
+#    sf_id = db.Column(db.String())
 
-    def __init__(self, transaction_id, sf_id):
-        self.transaction_id = transaction_id
-        self.sf_id = sf_id
+#    def __init__(self, transaction_id, sf_id):
+#        self.transaction_id = transaction_id
+#        self.sf_id = sf_id
 
-    def __repr__(self):
-        return '<Transaction %r>'.format(self.id)
+#    def __repr__(self):
+#        return '<Transaction %r>'.format(self.id)
 
 
 # Set up to send logging to stdout and Heroku forwards to Papertrail
@@ -337,6 +341,8 @@ def charge_ajax():
         transaction = Transaction('NULL', 'NULL')
         db.session.add(transaction)
         db.session.commit()
+        print('add a transaction and then delay the sf method')
+        print(transaction)
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=str(transaction.id))
@@ -494,4 +500,4 @@ def confirm():
 # initialize
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=True)

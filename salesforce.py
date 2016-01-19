@@ -4,6 +4,8 @@ import locale
 from pprint import pprint   # TODO: remove
 
 import celery
+from core import db
+from models import Transaction
 import requests
 from pytz import timezone
 
@@ -960,6 +962,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         form = form.to_dict()
         form['flask_id'] = flask_id
 
+        print('db is here')
+
     if (form['recurring'] == 'one-time'):
         print("----One time payment...")
         msg = '*{}* pledged *${}*'.format(name, amount)
@@ -974,10 +978,25 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         response = add_recurring_donation(form=form, customer=customer)
 
     if not response['errors']:
+        print('update the database')
+
+        transaction = Transaction.query.get(data['flask_id'])
+        print('update db now')
+        #print(transaction)
+        #transaction = db.session.query(Transaction).get(flask_id)
+        transaction.sf_id = response['id']
+        print('here is the id')
+        #transaction.data = {'sf_id': data['sf_id']}
+        db.session.commit()
+        print('commit the db')
+        #message = {'flask_id' : transaction.id, 'sf_id' : transaction.sf_id}
+        #message = json.dumps(message)
+        #return message
+
         # do something to notify that the task was finished successfully
-        message = {'flask_id' : flask_id, 'sf_id' : response['id']}
-        message = json.dumps(message)
-        res = requests.post('{0}/transaction_result/'.format(ROOT_URL), json=message)
+        #message = {'flask_id' : flask_id, 'sf_id' : response['id']}
+        #message = json.dumps(message)
+        #res = requests.post('{0}/transaction_result/'.format(ROOT_URL), json=message)
     return response
 
 
