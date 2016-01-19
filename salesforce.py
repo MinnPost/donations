@@ -984,31 +984,18 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         response = add_recurring_donation(form=form, customer=customer)
 
     if not response['errors']:
-        print('update the database')
+        # print('update the database')
 
         with app.app_context():
-            # within this block, current_app points to app.
-            print(app.name)
-
+            # add the salesforce id to the local database where the flask id matches
             transaction = Transaction.query.get(flask_id)
-            print('update db now with flask id')
-            print(flask_id)
-            #print(transaction)
-            #transaction = db.session.query(Transaction).get(flask_id)
+            # print(flask_id)
+            # print(transaction)
+            # transaction = db.session.query(Transaction).get(flask_id)
             transaction.sf_id = response['id']
-            print('here is the sf id')
-            print(response['id'])
-            #transaction.data = {'sf_id': data['sf_id']}
             db.session.commit()
-            print('committed the db')
-            #message = {'flask_id' : transaction.id, 'sf_id' : transaction.sf_id}
-            #message = json.dumps(message)
-            #return message
+            # print('committed the db')
 
-        # do something to notify that the task was finished successfully
-        #message = {'flask_id' : flask_id, 'sf_id' : response['id']}
-        #message = json.dumps(message)
-        #res = requests.post('{0}/transaction_result/'.format(ROOT_URL), json=message)
     return response
 
 
