@@ -990,15 +990,17 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
             # within this block, current_app points to app.
             print(app.name)
 
-            transaction = Transaction.query.get(data['flask_id'])
-            print('update db now')
+            transaction = Transaction.query.get(flask_id)
+            print('update db now with flask id')
+            print(flask_id)
             #print(transaction)
             #transaction = db.session.query(Transaction).get(flask_id)
             transaction.sf_id = response['id']
-            print('here is the id')
+            print('here is the sf id')
+            print(response['id'])
             #transaction.data = {'sf_id': data['sf_id']}
             db.session.commit()
-            print('commit the db')
+            print('committed the db')
             #message = {'flask_id' : transaction.id, 'sf_id' : transaction.sf_id}
             #message = json.dumps(message)
             #return message
