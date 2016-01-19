@@ -57,7 +57,6 @@ app.config.update(
         CELERY_ALWAYS_EAGER=False,
         CELERY_IMPORTS=('app', 'salesforce', 'batch'),
         )
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 
 celery = make_celery(app)

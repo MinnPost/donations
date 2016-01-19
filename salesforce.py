@@ -6,7 +6,7 @@ from pprint import pprint   # TODO: remove
 #import celery
 from app_celery import make_celery
 
-from core import db
+from core import db, create_app
 from models import Transaction
 import requests
 from pytz import timezone
@@ -24,6 +24,9 @@ from config import DEFAULT_CAMPAIGN_ONETIME
 from config import DEFAULT_CAMPAIGN_RECURRING
 from config import ROOT_URL
 
+from config import CELERY_BROKER_URL
+from config import CELERY_RESULT_BACKEND
+
 from emails import send_email
 from check_response import check_response
 
@@ -34,7 +37,8 @@ locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 WARNINGS = dict()
 
 app = create_app() # create new app instance
-celery=create_celery(app)
+app.config.from_pyfile('config.py')
+celery=make_celery(app)
 
 def notify_slack(message):
     """
