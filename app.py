@@ -341,8 +341,8 @@ def charge_ajax():
         transaction = Transaction('NULL', 'NULL')
         db.session.add(transaction)
         db.session.commit()
-        print('add a transaction and then delay the sf method')
-        print(transaction)
+        print('add a transaction show me the id. then do sf method.')
+        print(transaction.id)
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=str(transaction.id))
