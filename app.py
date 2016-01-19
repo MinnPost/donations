@@ -415,14 +415,9 @@ def confirm():
     #sf_id = session['sf_id']
     #sf_type = session['sf_type']
 
-    print('flask id')
-    print(flask_id)
-    print('sf type')
-    print(sf_type)
-
-    if sf_id:
-
-        result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
+    if flask_id:
+        #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
+        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('finish.html', session=session)
     else:
         message = "there was an issue saving your preferences, but your donation was successful"
