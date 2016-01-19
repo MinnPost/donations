@@ -1099,39 +1099,45 @@ def update_donation_object(object_name=None, flask_id=None, form=None):
         feedback_messages = False
 
     with app.app_context():
-            # get the salesforce id from the local database where the flask id matches
-            transaction = Transaction.query.get(flask_id)
-            sf_id = transaction.sf_id
+        print('get stuff from database')
+        # get the salesforce id from the local database where the flask id matches
+        print('flask id')
+        print(flask_id)
+        transaction = Transaction.query.get(flask_id)
+        print(transaction)
+        sf_id = transaction.sf_id
+        print('sf id?')
+        print(sf_id)
 
-            sf = SalesforceConnection()
+        sf = SalesforceConnection()
 
-            query = """
-                SELECT Reason_for_Gift__c, Reason_for_gift_shareable__c,
-                Daily_newsletter_sign_up__c, Greater_MN_newsletter__c, Sunday_Review_newsletter__c,
-                Event_member_benefit_messages__c, Input_feedback_messages__c
-                FROM {} 
-                WHERE Id = '{}'
-                """.format(object_name, sf_id)
+        query = """
+            SELECT Reason_for_Gift__c, Reason_for_gift_shareable__c,
+            Daily_newsletter_sign_up__c, Greater_MN_newsletter__c, Sunday_Review_newsletter__c,
+            Event_member_benefit_messages__c, Input_feedback_messages__c
+            FROM {} 
+            WHERE Id = '{}'
+            """.format(object_name, sf_id)
 
-            response = sf.query(query)
+        response = sf.query(query)
 
-            update = {
-                'Reason_for_Gift__c': reason_for_supporting,
-                'Reason_for_gift_shareable__c': reason_for_supporting_shareable,
-                'Daily_newsletter_sign_up__c': daily_newsletter,
-                'Greater_MN_newsletter__c': greater_mn_newsletter,
-                'Sunday_Review_newsletter__c': sunday_review_newsletter,
-                'Event_member_benefit_messages__c': event_messages,
-                'Input_feedback_messages__c': feedback_messages
-                }
+        update = {
+            'Reason_for_Gift__c': reason_for_supporting,
+            'Reason_for_gift_shareable__c': reason_for_supporting_shareable,
+            'Daily_newsletter_sign_up__c': daily_newsletter,
+            'Greater_MN_newsletter__c': greater_mn_newsletter,
+            'Sunday_Review_newsletter__c': sunday_review_newsletter,
+            'Event_member_benefit_messages__c': event_messages,
+            'Input_feedback_messages__c': feedback_messages
+            }
 
-            path = response[0]['attributes']['url']
-            url = '{}{}'.format(sf.instance_url, path)
-            #print (url)
-            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
-            # TODO: check 'errors' and 'success' too
-            #print (resp)
-            if resp.status_code == 204:
-                return True
-            else:
-                raise Exception('problem')
+        path = response[0]['attributes']['url']
+        url = '{}{}'.format(sf.instance_url, path)
+        #print (url)
+        resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+        # TODO: check 'errors' and 'success' too
+        #print (resp)
+        if resp.status_code == 204:
+            return True
+        else:
+            raise Exception('problem')
