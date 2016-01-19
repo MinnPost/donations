@@ -4,7 +4,7 @@ import locale
 from pprint import pprint   # TODO: remove
 
 import celery
-from flask import Flask, current_app
+from flask import current_app as app
 from core import db
 from models import Transaction
 import requests
@@ -32,7 +32,7 @@ locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 WARNINGS = dict()
 
-app = Flask(__name__)
+#app = Flask(__name__)
 
 def notify_slack(message):
     """
@@ -964,8 +964,6 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         form = form.to_dict()
         form['flask_id'] = flask_id
 
-        print('db is here')
-
     if (form['recurring'] == 'one-time'):
         print("----One time payment...")
         msg = '*{}* pledged *${}*'.format(name, amount)
@@ -984,7 +982,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
 
         with app.app_context():
             # within this block, current_app points to app.
-            print current_app.name
+            print(current_app.name)
 
             transaction = Transaction.query.get(data['flask_id'])
             print('update db now')
