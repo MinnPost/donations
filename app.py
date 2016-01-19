@@ -335,15 +335,16 @@ def charge_ajax():
         #else:
         #    session['sf_type'] = 'npe03__Recurring_Donation__c'
 
+        session['flask_id'] = flask_id
         if frequency == 'one-time':
-            sf_type = 'Opportunity'
+            session['sf_type'] = 'Opportunity'
         else:
-            sf_type = 'npe03__Recurring_Donation__c'
+            session['sf_type'] = 'npe03__Recurring_Donation__c'
 
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id)
-        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, flask_id=flask_id, sf_type=sf_type, session=session)
+        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
         #body = transaction.id
         #return jsonify(body)
     else:
@@ -388,7 +389,7 @@ def thanks():
     email_is_valid = validate_email(email)
 
     if form.validate():
-        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, flask_id=flask_id, session=session)
+        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
     else:
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
