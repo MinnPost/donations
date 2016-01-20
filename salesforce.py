@@ -1097,21 +1097,18 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
         feedback_messages = False
 
     with app.app_context():
-        #print('get stuff from database')
         # get the salesforce id from the local database where the flask id matches
         #print('flask id')
         #print(flask_id)
-        #transaction = Transaction.query.get(flask_id)
         transaction = Transaction.query.filter(Transaction.id==flask_id,Transaction.sf_id!='NULL').first()
         #if len(transaction) > 0:
         if transaction is not None:
-            print(transaction)
-            #if transaction.sf_id != 'NULL':
+            print('transaction has been processed. get its id and update it.')
             sf_id = transaction.sf_id
             #print('sf id?')
             #print(sf_id)
         else:
-            #print('no sf id here. delay.')
+            print('no sf id here yet. delay and try again.')
             raise self.retry(countdown=120)
 
         sf = SalesforceConnection()
