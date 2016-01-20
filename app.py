@@ -325,13 +325,13 @@ def charge_ajax():
     else:
         yearly = 1
     level = checkLevel(amount, frequency, yearly)
-
-    pay_fees = request.form['pay_fees']
-    if pay_fees == '1':
-        # get fee amount so the user can see it
-        entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
-        amount_plus_fees = amount_to_charge(entry)
-        amount_formatted = format(amount_plus_fees / 100, ',.2f')
+    if 'pay_fees' in request.form:
+        pay_fees = request.form['pay_fees']
+        if pay_fees == '1':
+            # get fee amount so the user can see it
+            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
+            amount_plus_fees = amount_to_charge(entry)
+            amount_formatted = format(amount_plus_fees / 100, ',.2f')
 
     email = request.form['email']
     first_name = request.form['first_name']
@@ -412,12 +412,13 @@ def thanks():
         yearly = 1
     level = checkLevel(amount, frequency, yearly)
 
-    pay_fees = request.form['pay_fees']
-    if pay_fees == '1':
-        # get fee amount so the user can see it
-        entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
-        amount_plus_fees = amount_to_charge(entry)
-        amount_formatted = format(amount_plus_fees / 100, ',.2f')
+    if 'pay_fees' in request.form:
+        pay_fees = request.form['pay_fees']
+        if pay_fees == '1':
+            # get fee amount so the user can see it
+            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
+            amount_plus_fees = amount_to_charge(entry)
+            amount_formatted = format(amount_plus_fees / 100, ',.2f')
 
     email = request.form['email']
     first_name = request.form['first_name']
