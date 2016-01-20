@@ -16,6 +16,7 @@
   var pluginName = 'minnpost_giving',
   defaults = {
     'debug' : false, // this can be set to true on page level options
+    'tabs' : true, // are we doing the tab thing
     'stripe_publishable_key' : '',
     'minnpost_root' : 'https://www.minnpost.com',
     'donate_form_selector': '#donate',
@@ -196,8 +197,10 @@
         $('> div', this.options.shipping_selector).not('.form-item--geocode').hide();
         $(this.options.billing_selector, this.element).prepend('<div class="form-item form-item--billing-address form-item--geocode"><label for="full_address" class="required">Billing Address: </label><input type="text" autocapitalize="off" autocorrect="off" name="full_address" id="full_address" class="geocomplete form-text" required placeholder=""></div>');
         this.getFullAddress($('#full_address'));
-        $(this.options.shipping_selector, this.element).append('<div class="form-item form-item--shipping-address form-item--geocode"><label for="full_shipping_address">Shipping Address: </label><input type="text" autocapitalize="off" autocorrect="off" name="full_shipping_address" id="full_shipping_address" class="geocomplete form-text" placeholder=""></div>');
-        this.getFullAddress($('#full_shipping_address'));
+        if ($(this.options.shipping_selector).length > 0) {
+          $(this.options.shipping_selector, this.element).append('<div class="form-item form-item--shipping-address form-item--geocode"><label for="full_shipping_address">Shipping Address: </label><input type="text" autocapitalize="off" autocorrect="off" name="full_shipping_address" id="full_shipping_address" class="geocomplete form-text" placeholder=""></div>');
+          this.getFullAddress($('#full_shipping_address'));
+        }
       } else {
         $('> div', this.options.billing_selector).not('.form-item--geocode').show();
         $('> div', this.options.shipping_selector).not('.form-item--geocode').show();
@@ -312,6 +315,7 @@
 
     paymentPanels: function(active) {
       var that = this;
+      var usetabs = this.options.tabs;
       var title = 'MinnPost | Support Us | ';
       var page = $('.progress--donation li.' + active).text();
       var next = $('.progress--donation li.' + active).next().text();
@@ -321,7 +325,11 @@
       this.analyticsTrackingStep(step);
 
       // make some tabs for form
-      $('.panel').hide();
+      if (usetabs === true) {
+        $('.panel').hide();
+      } else {
+        $('.panel').show();
+      }
       // activate the tabs
       if ($('.progress--donation li .active').length == 0) {
         $('#' + active).fadeIn();
@@ -475,7 +483,7 @@
           }
         }
       });
-      if ($(options.level_indicator_selector).length > 0) {
+      if ($(options.level_indicator_selector).length > 0 && $(options.review_benefits_selector).length > 0) {
         $(options.level_indicator_selector, element).prop('class', levelclass);
         $(options.level_name_selector).text(level.charAt(0).toUpperCase() + level.slice(1));
 
