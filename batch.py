@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import json
 
-from flask import jsonify
+#from flask import jsonify
 
 import celery
 from emails import send_email
@@ -84,7 +84,7 @@ def process_charges(query, log):
         except stripe.error.CardError as e:
             # look for decline code:
             print('Unable to extract decline code')
-            return jsonify(e)
+            #return jsonify(e)
         except stripe.error.InvalidRequestError as e:
             log.it("Problem: {}".format(e))
             continue
