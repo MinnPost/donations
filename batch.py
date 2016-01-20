@@ -84,11 +84,11 @@ def process_charges(query, log):
         except stripe.error.CardError as e:
             # look for decline code:
             print('Unable to extract decline code')
-            log.it("Problem: {}".format(e))
+            log.it("Error: {}".format(e))
             continue
             #return jsonify(e)
         except stripe.error.InvalidRequestError as e:
-            log.it("Problem: {}".format(e))
+            log.it("Error: {}".format(e))
             continue
         # print ('Charge: {}'.format(charge))
         # TODO: check for success
@@ -112,8 +112,8 @@ def process_charges(query, log):
         if resp.status_code == 204:
             log.it("ok")
         else:
-            log.it("problem")
-            raise Exception('problem')
+            log.it("error because status code was not 204")
+            raise Exception('error')
 
 
 @celery.task()
