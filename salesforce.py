@@ -751,6 +751,11 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
             shipping_country = ''
 
     try:
+        flask_id = form['flask_id']
+    except:
+        flask_id = ''
+
+    try:
         in_memory_name = form['in_memory_name']
     except:
         in_memory_name = ''
@@ -1099,10 +1104,10 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
         feedback_messages = False
 
     with app.app_context():
-        print('get stuff from database')
+        #print('get stuff from database')
         # get the salesforce id from the local database where the flask id matches
-        print('flask id')
-        print(flask_id)
+        #print('flask id')
+        #print(flask_id)
         #transaction = Transaction.query.get(flask_id)
         transaction = Transaction.query.filter(Transaction.id==flask_id,Transaction.sf_id!='NULL').first()
         #if len(transaction) > 0:
@@ -1110,11 +1115,11 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
             print(transaction)
             #if transaction.sf_id != 'NULL':
             sf_id = transaction.sf_id
-            print('sf id?')
-            print(sf_id)
+            #print('sf id?')
+            #print(sf_id)
         else:
-            print('no sf id here. delay.')
-            raise self.retry(countdown=60)
+            #print('no sf id here. delay.')
+            raise self.retry(countdown=120)
 
         sf = SalesforceConnection()
 
