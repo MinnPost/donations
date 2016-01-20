@@ -1103,10 +1103,11 @@ def update_donation_object(object_name=None, flask_id=None, form=None):
         # get the salesforce id from the local database where the flask id matches
         print('flask id')
         print(flask_id)
-        transaction = Transaction.query.get(flask_id)
-        #if len(transaction) > 0:
-        print(transaction)
-        if transaction.sf_id != NULL:
+        #transaction = Transaction.query.get(flask_id)
+        transaction = Transaction.query.filter_by(id=flask_id, sf_id != 'NULL')
+        if len(transaction) > 0:
+            print(transaction)
+            #if transaction.sf_id != 'NULL':
             sf_id = transaction.sf_id
             print('sf id?')
             print(sf_id)
