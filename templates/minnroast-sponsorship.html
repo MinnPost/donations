@@ -1,0 +1,27 @@
+{% extends "minnroast-sponsorship/layout.html" %}
+
+{% block content %}
+
+<main>
+  <div class="wrapper support--forms">
+    <form action="/thanks/" method="post" class="support support--donate" id="donate">
+      {{ form.csrf_token }}
+
+      <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
+      <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
+      <input type="hidden" name="description" id="description" value="MinnPost Event">
+
+      <input type="hidden" name="billing_street_geocode" id="billing_street_geocode" value="">
+      <input type="hidden" name="billing_city_geocode" id="billing_city_geocode" value="">
+      <input type="hidden" name="billing_state_geocode" id="billing_state_geocode" value="">
+      <input type="hidden" name="billing_zip_geocode" id="billing_zip_geocode" value="">
+      <input type="hidden" name="billing_country_geocode" id="billing_country_geocode" value="">
+
+      {% include 'minnroast-sponsorship/includes/details.html' %}
+      {% include 'minnroast-sponsorship/includes/pay.html' %}
+
+    </form>
+  </div>
+</main>
+
+{% endblock %}

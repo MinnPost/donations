@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 
 from flask import Flask, render_template, request, session, jsonify, json
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -127,6 +128,41 @@ def minnpost_form():
         level=level,
         first_name = first_name,last_name = last_name, email=email,
         show_upsell = app.show_upsell, allow_donation_notification = app.allow_donation_notification,
+        key=app.config['STRIPE_KEYS']['publishable_key'])
+
+
+# used at support.minnpost.com/minnroast-sponsorship
+@app.route('/minnroast-sponsorship/')
+def minnroast_sponsorship_form():
+    form = MinnPostForm()
+
+    now = datetime.now()
+    year = now.year
+
+    if request.args.get('campaign'):
+        campaign = request.args.get('campaign')
+    else:
+        campaign = ''
+
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    else:
+        customer_id = ''
+
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    else:
+        first_name = ''
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    else:
+        last_name = ''
+    if request.args.get('email'):
+        email = request.args.get('email')
+    else:
+        email = ''
+    return render_template('minnroast-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
+        first_name = first_name,last_name = last_name, email=email,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
