@@ -1053,7 +1053,7 @@ def add_tw_customer_and_charge(form=None, customer=None):
 
 @celery.task(name='salesforce.update_donation_object', bind=True)
 #def update_donation_object(object_name=None, sf_id=None, form=None):
-def update_donation_object(object_name=None, flask_id=None, form=None):
+def update_donation_object(self, object_name=None, flask_id=None, form=None):
     print ("----Update opportunity...")
     #print('---Updating this {} ---'.format(object_name))
 
