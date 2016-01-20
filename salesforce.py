@@ -1105,7 +1105,8 @@ def update_donation_object(object_name=None, flask_id=None, form=None):
         print(flask_id)
         #transaction = Transaction.query.get(flask_id)
         transaction = Transaction.query.filter(Transaction.id==flask_id,Transaction.sf_id!='NULL')
-        if len(transaction) > 0:
+        #if len(transaction) > 0:
+        if transaction.count() > 0:
             print(transaction)
             #if transaction.sf_id != 'NULL':
             sf_id = transaction.sf_id
