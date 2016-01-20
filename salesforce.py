@@ -1057,7 +1057,7 @@ def add_tw_customer_and_charge(form=None, customer=None):
 
 
 
-@celery.task(name='salesforce.update_donation_object', bind=True, max_retries=None)
+@celery.task(name='salesforce.update_donation_object', bind=True, max_retries=5)
 #def update_donation_object(object_name=None, sf_id=None, form=None):
 def update_donation_object(self, object_name=None, flask_id=None, form=None):
     print ("----Update opportunity...")
@@ -1110,14 +1110,14 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
         #print(flask_id)
         transaction = Transaction.query.filter(Transaction.id==flask_id,Transaction.sf_id!='NULL').first()
         if transaction is not None:
-            print('transaction has been processed. get its id and update it.')
+            print('transaction has been added to salesforce. get its local id and update it in salesforce.')
             #if transaction.sf_id != 'NULL':
             sf_id = transaction.sf_id
             #print('sf id?')
             #print(sf_id)
         else:
             print('no sf id here yet. delay and try again.')
-            raise self.retry(countdown=120)
+            raise self.retry(countdown=300)
 
         sf = SalesforceConnection()
 
