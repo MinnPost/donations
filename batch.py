@@ -80,22 +80,8 @@ def process_charges(query, log):
                     shipping=shipping_details
                     )
 
-
-        except stripe.error.CardError as e:
-            # look for decline code:
-            print('Unable to extract decline code')
-            log.it("Error: {}".format(e))
-            continue
-            #return jsonify(e)
-        except stripe.error.InvalidRequestError as e:
-            log.it("Error: {}".format(e))
-            continue
-        # print ('Charge: {}'.format(charge))
-        # TODO: check for success
-        # TODO: catch other errors
-
-        # print ("Charge id: {}".format(charge.id))
-        update = {
+            # charge was successful
+            update = {
                 'Stripe_Transaction_Id__c': charge.id,
                 'Stripe_Card__c': charge.source.id,
                 'Card_type__c': charge.source.brand,
@@ -103,6 +89,35 @@ def process_charges(query, log):
                 'Card_acct_last_4__c': charge.source.last4,
                 'StageName': 'Closed Won',
                 }
+
+
+        except stripe.error.CardError as e:
+            # look for decline code:
+            print('Unable to extract decline code')
+            log.it("Error: {}".format(e))
+            # continue
+
+            # charge was unsuccessful
+            update = {
+                'StageName': 'Closed Lost',
+                'Stripe_Error_Message__c': e
+                }
+
+        except stripe.error.InvalidRequestError as e:
+            log.it("Error: {}".format(e))
+            #continue
+
+            # charge was unsuccessful
+            update = {
+                'StageName': 'Closed Lost',
+                'Stripe_Error_Message__c': e
+                }
+        # print ('Charge: {}'.format(charge))
+        # TODO: check for success
+        # TODO: catch other errors
+
+        # print ("Charge id: {}".format(charge.id))
+        
         path = item['attributes']['url']
         url = '{}{}'.format(sf.instance_url, path)
         # print (url)
