@@ -14,6 +14,7 @@ TIMEZONE = os.getenv('TIMEZONE', "US/Central")
 # Flask
 #
 FLASK_SECRET_KEY = os.getenv('FLASK_SECRET_KEY', '\xa5\xcc\xff\x8dT\xea%W\xdb\xdd\x85>\xdae\xd85D\xb7\xd2\x11(U\xac\x08')
+ROOT_URL = os.getenv('ROOT_URL')
 
 ########
 # Celery
@@ -69,6 +70,12 @@ STRIPE_KEYS = {
     'secret_key': os.getenv('SECRET_KEY'),
     'publishable_key': os.getenv('PUBLISHABLE_KEY')
 }
+
+############
+# Postgres
+#
+SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 #######
 # Slack

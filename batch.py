@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 import json
 
+from flask import jsonify
+
 import celery
 from emails import send_email
 from pytz import timezone

@@ -3,7 +3,11 @@ import json
 import locale
 from pprint import pprint   # TODO: remove
 
-import celery
+#import celery
+from app_celery import make_celery
+
+from core import db, create_app
+from models import Transaction
 import requests
 from pytz import timezone
 
@@ -18,6 +22,10 @@ from config import COMBINED_EMAIL_FIELD
 from config import FORM_EMAIL_FIELD
 from config import DEFAULT_CAMPAIGN_ONETIME
 from config import DEFAULT_CAMPAIGN_RECURRING
+from config import ROOT_URL
+
+from config import CELERY_BROKER_URL
+from config import CELERY_RESULT_BACKEND
 
 from emails import send_email
 from check_response import check_response
@@ -28,6 +36,9 @@ locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 WARNINGS = dict()
 
+app = create_app() # create new app instance
+app.config.from_pyfile('config.py')
+celery=make_celery(app)
 
 def notify_slack(message):
     """
@@ -577,8 +588,8 @@ def _format_opportunity(contact=None, form=None, customer=None):
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
             }
-    print('opportunity')
-    print(opportunity)
+    #print('opportunity')
+    #print(opportunity)
     return opportunity
 
 
@@ -732,6 +743,11 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
             shipping_country = form['shipping_country']
         except:
             shipping_country = ''
+
+    try:
+        flask_id = form['flask_id']
+    except:
+        flask_id = ''
 
     try:
         in_memory_name = form['in_memory_name']
@@ -889,6 +905,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         'Include_amount_in_notification__c': inhonorormemory_include_amount,
         'In_Honor_Memory__c': inhonorormemory,
         'In_honor_memory_of__c': inhonorormemoryof,
+        'Flask_Transaction_ID__c': flask_id,
         'Notify_someone__c': in_honor_notify,
         #'npe03__Installments__c': installments, # only add this if we need to close it
         'npe03__Installment_Period__c': installment_period, # this has to be there even if it is open ended
@@ -965,15 +982,18 @@ def add_customer_and_charge(form=None, customer=None):
         response = add_recurring_donation(form=form, customer=customer)
 
     if not response['errors']:
-        # do something to notify that the task was finished successfully
-        message = {'flask_id' : flask_id, 'sf_id' : response['id']}
-        print(message)
-        message = json.dumps(message)
-        print('json message')
-        print(message)
-        print('call endpoint now and update it')
-        #url = url_for('transaction_result', _external=True)
-        res = requests.post('http://0.0.0.0:5000/transaction_result/', json=message)
+        # print('update the database')
+
+        with app.app_context():
+            # add the salesforce id to the local database where the flask id matches
+            transaction = Transaction.query.get(flask_id)
+            # print(flask_id)
+            # print(transaction)
+            # transaction = db.session.query(Transaction).get(flask_id)
+            transaction.sf_id = response['id']
+            db.session.commit()
+            # print('committed the db')
+
     return response
 
 
@@ -1029,8 +1049,9 @@ def add_tw_customer_and_charge(form=None, customer=None):
 
 
 
-@celery.task(name='salesforce.update_donation_object')
-def update_donation_object(object_name=None, sf_id=None, form=None):
+@celery.task(name='salesforce.update_donation_object', bind=True, max_retries=None)
+#def update_donation_object(object_name=None, sf_id=None, form=None):
+def update_donation_object(self, object_name=None, flask_id=None, form=None):
     print ("----Update opportunity...")
     #print('---Updating this {} ---'.format(object_name))
 
@@ -1075,35 +1096,53 @@ def update_donation_object(object_name=None, sf_id=None, form=None):
     else:
         feedback_messages = False
 
-    sf = SalesforceConnection()
+    with app.app_context():
+        #print('get stuff from database')
+        # get the salesforce id from the local database where the flask id matches
+        #print('flask id')
+        #print(flask_id)
+        #transaction = Transaction.query.get(flask_id)
+        transaction = Transaction.query.filter(Transaction.id==flask_id,Transaction.sf_id!='NULL').first()
+        #if len(transaction) > 0:
+        if transaction is not None:
+            print(transaction)
+            #if transaction.sf_id != 'NULL':
+            sf_id = transaction.sf_id
+            #print('sf id?')
+            #print(sf_id)
+        else:
+            #print('no sf id here. delay.')
+            raise self.retry(countdown=120)
 
-    query = """
-        SELECT Reason_for_Gift__c, Reason_for_gift_shareable__c,
-        Daily_newsletter_sign_up__c, Greater_MN_newsletter__c, Sunday_Review_newsletter__c,
-        Event_member_benefit_messages__c, Input_feedback_messages__c
-        FROM {} 
-        WHERE Id = '{}'
-        """.format(object_name, sf_id)
+        sf = SalesforceConnection()
 
-    response = sf.query(query)
+        query = """
+            SELECT Reason_for_Gift__c, Reason_for_gift_shareable__c,
+            Daily_newsletter_sign_up__c, Greater_MN_newsletter__c, Sunday_Review_newsletter__c,
+            Event_member_benefit_messages__c, Input_feedback_messages__c
+            FROM {} 
+            WHERE Id = '{}'
+            """.format(object_name, sf_id)
 
-    update = {
-        'Reason_for_Gift__c': reason_for_supporting,
-        'Reason_for_gift_shareable__c': reason_for_supporting_shareable,
-        'Daily_newsletter_sign_up__c': daily_newsletter,
-        'Greater_MN_newsletter__c': greater_mn_newsletter,
-        'Sunday_Review_newsletter__c': sunday_review_newsletter,
-        'Event_member_benefit_messages__c': event_messages,
-        'Input_feedback_messages__c': feedback_messages
-        }
+        response = sf.query(query)
 
-    path = response[0]['attributes']['url']
-    url = '{}{}'.format(sf.instance_url, path)
-    #print (url)
-    resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
-    # TODO: check 'errors' and 'success' too
-    #print (resp)
-    if resp.status_code == 204:
-        return True
-    else:
-        raise Exception('problem')
+        update = {
+            'Reason_for_Gift__c': reason_for_supporting,
+            'Reason_for_gift_shareable__c': reason_for_supporting_shareable,
+            'Daily_newsletter_sign_up__c': daily_newsletter,
+            'Greater_MN_newsletter__c': greater_mn_newsletter,
+            'Sunday_Review_newsletter__c': sunday_review_newsletter,
+            'Event_member_benefit_messages__c': event_messages,
+            'Input_feedback_messages__c': feedback_messages
+            }
+
+        path = response[0]['attributes']['url']
+        url = '{}{}'.format(sf.instance_url, path)
+        #print (url)
+        resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+        # TODO: check 'errors' and 'success' too
+        #print (resp)
+        if resp.status_code == 204:
+            return True
+        else:
+            raise Exception('problem')

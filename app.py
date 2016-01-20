@@ -1,7 +1,12 @@
 import os
 import sys
 
-from flask import Flask, render_template, request, session, jsonify
+from flask import Flask, render_template, request, session, jsonify, json
+from flask.ext.sqlalchemy import SQLAlchemy
+
+from core import db
+from models import Transaction
+
 #from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
 from forms import MinnPostForm, ConfirmForm
 #from raven.contrib.flask import Sentry
@@ -55,6 +60,8 @@ app.config.update(
 stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 
 celery = make_celery(app)
+
+db.init_app(app)
 
 # Set up to send logging to stdout and Heroku forwards to Papertrail
 LOGGING = {
@@ -314,17 +321,29 @@ def charge_ajax():
         return render_template('error.html', message=message)
 
     if form.validate():
-        result = add_customer_and_charge(form=request.form, customer=customer)
-        if not result['errors']:
-            #print(result['id'])
-            session['sf_id'] = result['id']
-            if frequency == 'one-time':
-                session['sf_type'] = 'Opportunity'
-            else:
-                session['sf_type'] = 'npe03__Recurring_Donation__c'
-        else:
-            session['errors'] = result['errors']
 
+        transaction = Transaction('NULL', 'NULL')
+        db.session.add(transaction)
+        db.session.commit()
+        #print('add a transaction show me the id. then do sf method.')
+        # print(transaction.id)
+        flask_id = str(transaction.id)
+
+        #session['sf_id'] = result['id']
+        #if frequency == 'one-time':
+        #    session['sf_type'] = 'Opportunity'
+        #else:
+        #    session['sf_type'] = 'npe03__Recurring_Donation__c'
+
+        session['flask_id'] = flask_id
+        if frequency == 'one-time':
+            session['sf_type'] = 'Opportunity'
+        else:
+            session['sf_type'] = 'npe03__Recurring_Donation__c'
+
+
+        # this adds the contact and the opportunity to salesforce
+        add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id)
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
         #body = transaction.id
         #return jsonify(body)
@@ -376,60 +395,6 @@ def thanks():
         return render_template('error.html', message=message)
 
 
-## this is a minnpost url. after celery does things to the opportunity, it will call this url to tell us what happened locally
-@app.route('/transaction_result/', methods=['POST'])
-def transaction_result():
-    result = jsonify(request.get_json(force=True))
-    print('id')
-    print(result.flask_id)
-    return result.flask_id
-    #print('start parsing')
-    #print(request.data)
-    #datadict = json.loads(data)
-    #print(datadict)
-    #print('stop parsing')
-    #content = json.dumps(request.json)
-    #if request.form:
-    #    content = 'test'
-    #    return content
-    #if not request.json:
-    #    return render_template('error.html', message='there is an error here')
-    #else:
-        #print(request.json)
-    #    return request.json
-    #print(jsonify(request.data))
-    #content = request.json()
-    #print(request.json())
-    #if request.headers['content-type'] == 'application/json':
-        # Ensure data is a valid JSON
-        #try:
-            #user_submission = json.loads(request.data)
-    #print('show data')
-    #content = request.json()
-    #content = request.json()
-    #print('data up there')
-    #body = request.data
-    #return 'test'
-            #print(user_submission)
-            #return 'success'
-        #except:
-            #return 'error1'
-    # User submitted an unsupported Content-Type
-    #else:
-        #return 'error2'
-
-    #print('this is the endpoint')
-    #print('this is the json')
-    #input_json = request.get_json(force=True)
-    #print(input_json)
-    #print('try to update the database')
-    ## we need to get notified of result here somehow and then update the db
-    #transaction = Transaction.query.get(input_json.flask_id)
-    #transaction = db.session.query(Transaction).get(flask_id)
-    #transaction.sf_id = input_json.sf_id
-    #db.session.commit()
-
-
 # this is a minnpost url
 @app.route('/finish/', methods=['POST'])
 def finish():
@@ -445,12 +410,14 @@ def confirm():
     form = ConfirmForm(request.form)
     #pprint('Request: {}'.format(request))
 
-    sf_id = session['sf_id']
-    sf_type = session['sf_type']
+    flask_id = request.form['flask_id']
+    sf_type = request.form['sf_type']
+    #sf_id = session['sf_id']
+    #sf_type = session['sf_type']
 
-    if sf_id:
-
-        result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
+    if flask_id:
+        #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
+        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('finish.html', session=session)
     else:
         message = "there was an issue saving your preferences, but your donation was successful"
@@ -460,4 +427,4 @@ def confirm():
 # initialize
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=True)
