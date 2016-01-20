@@ -911,6 +911,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         'Include_amount_in_notification__c': inhonorormemory_include_amount,
         'In_Honor_Memory__c': inhonorormemory,
         'In_honor_memory_of__c': inhonorormemoryof,
+        'Flask_Transaction_ID__c': flask_id,
         'Notify_someone__c': in_honor_notify,
         #'npe03__Installments__c': installments, # only add this if we need to close it
         'npe03__Installment_Period__c': installment_period, # this has to be there even if it is open ended
