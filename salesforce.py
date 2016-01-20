@@ -1104,10 +1104,15 @@ def update_donation_object(object_name=None, flask_id=None, form=None):
         print('flask id')
         print(flask_id)
         transaction = Transaction.query.get(flask_id)
+        #if len(transaction) > 0:
         print(transaction)
-        sf_id = transaction.sf_id
-        print('sf id?')
-        print(sf_id)
+        if transaction.sf_id:
+            sf_id = transaction.sf_id
+            print('sf id?')
+            print(sf_id)
+        else:
+            print('no sf id here. delay.')
+            raise self.retry().delay(300)
 
         sf = SalesforceConnection()
 
