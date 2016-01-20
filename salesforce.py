@@ -949,7 +949,7 @@ def add_recurring_donation(form=None, customer=None):
 
     return response
 
-#@celery.task(name='salesforce.add_customer_and_charge')
+@celery.task(name='salesforce.add_customer_and_charge')
 def add_customer_and_charge(form=None, customer=None):
     """
     Add a contact and their donation into SF. This is done in the background
