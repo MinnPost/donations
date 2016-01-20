@@ -100,7 +100,7 @@ def process_charges(query, log):
             # charge was unsuccessful
             update = {
                 'StageName': 'Closed Lost',
-                'Stripe_Error_Message__c': e
+                'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
 
         except stripe.error.InvalidRequestError as e:
@@ -110,7 +110,7 @@ def process_charges(query, log):
             # charge was unsuccessful
             update = {
                 'StageName': 'Closed Lost',
-                'Stripe_Error_Message__c': e
+                'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
         # print ('Charge: {}'.format(charge))
         # TODO: check for success
