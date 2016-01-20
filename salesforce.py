@@ -249,7 +249,7 @@ class SalesforceConnection(object):
 
         return created, response[0]
 
-
+# customer already exists in stripe; this is adding it to salesforce
 def upsert_customer(customer=None, form=None):
     """
     Creates the user if it doesn't exist in Salesforce. If it does exist
@@ -431,6 +431,11 @@ def _format_opportunity(contact=None, form=None, customer=None):
             shipping_country = ''
 
     try:
+        flask_id = form['flask_id']
+    except:
+        flask_id = ''
+
+    try:
         in_memory_name = form['in_memory_name']
     except:
         in_memory_name = ''
@@ -567,6 +572,7 @@ def _format_opportunity(contact=None, form=None, customer=None):
             'Donor_country__c': billing_country,
             'Email_to_notify__c': inhonorormemory_email,
             'Include_amount_in_notification__c': inhonorormemory_include_amount,
+            'Flask_Transaction_ID__c': flask_id,
             'In_Honor_Memory__c': inhonorormemory,
             'In_Honor_of_In_Memory__c': inhonorormemoryof,
             'Notify_someone__c': in_honor_notify,
@@ -949,8 +955,9 @@ def add_recurring_donation(form=None, customer=None):
 
     return response
 
+
 @celery.task(name='salesforce.add_customer_and_charge')
-def add_customer_and_charge(form=None, customer=None):
+def add_customer_and_charge(form=None, customer=None, flask_id=None):
     """
     Add a contact and their donation into SF. This is done in the background
     because there are a lot of API calls and there's no point in making the
@@ -958,6 +965,7 @@ def add_customer_and_charge(form=None, customer=None):
     """
     amount = form['amount']
     name = '{} {}'.format(form['first_name'], form['last_name'])
+        
     #reason = form['reason']
     #if reason != '':
         #reason = ' (encouraged by {})'.format(reason)
@@ -1101,9 +1109,9 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
         #print('flask id')
         #print(flask_id)
         transaction = Transaction.query.filter(Transaction.id==flask_id,Transaction.sf_id!='NULL').first()
-        #if len(transaction) > 0:
         if transaction is not None:
             print('transaction has been processed. get its id and update it.')
+            #if transaction.sf_id != 'NULL':
             sf_id = transaction.sf_id
             #print('sf id?')
             #print(sf_id)
