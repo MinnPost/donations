@@ -391,9 +391,23 @@ def charge_ajax():
         if 'subtype' in request.form:
             session['opp_subtype'] = request.form['opp_subtype']
 
+        if amount == 500:
+            fair_market_value = 100
+        elif amount == 1500:
+            fair_market_value = 300
+        elif amount == 3000:
+            fair_market_value = 400
+        elif amount == 5000:
+            fair_market_value = 500
+        elif amount == 8000:
+            fair_market_value = 600
+        else:
+            fair_market_value = ''
+
+        extra_values['fair_market_value'] = fair_market_value
 
         # this adds the contact and the opportunity to salesforce
-        add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id)
+        add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
         #body = transaction.id
         #return jsonify(body)

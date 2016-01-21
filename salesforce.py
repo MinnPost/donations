@@ -279,7 +279,7 @@ def upsert_customer(customer=None, form=None):
     return True
 
 
-def _format_opportunity(contact=None, form=None, customer=None):
+def _format_opportunity(contact=None, form=None, customer=None, extra_values=None):
     """
     Format an opportunity for insertion.
     """
@@ -293,6 +293,17 @@ def _format_opportunity(contact=None, form=None, customer=None):
             campaign = DEFAULT_CAMPAIGN_ONETIME
     except:
         campaign = DEFAULT_CAMPAIGN_ONETIME
+
+    print('extra values')
+    print(extra_values)
+
+    try:
+        if extra_values['fair_market_value'] != '':
+            fair_market_value = extra_values['fair_market_value']
+        else:
+            fair_market_value = ''
+    except:
+        fair_market_value = ''
 
     try:
         if form['opp_type'] != '':
@@ -571,6 +582,7 @@ def _format_opportunity(contact=None, form=None, customer=None):
             'Donor_ZIP__c': billing_zip,
             'Donor_country__c': billing_country,
             'Email_to_notify__c': inhonorormemory_email,
+            'Fair_market_value__c': fair_market_value,
             'Include_amount_in_notification__c': inhonorormemory_include_amount,
             'Flask_Transaction_ID__c': flask_id,
             'In_Honor_Memory__c': inhonorormemory,
@@ -599,13 +611,13 @@ def _format_opportunity(contact=None, form=None, customer=None):
     return opportunity
 
 
-def add_opportunity(form=None, customer=None, charge=None):
+def add_opportunity(form=None, customer=None, extra_values=None, charge=None):
 
     print ("----Adding opportunity...")
     sf = SalesforceConnection()
     _, contact = sf.get_or_create_contact(form)
     opportunity = _format_opportunity(contact=contact, form=form,
-            customer=customer)
+            customer=customer, extra_values=extra_values)
     path = '/services/data/v35.0/sobjects/Opportunity'
     response = sf.post(path=path, data=opportunity)
     send_multiple_account_warning()
@@ -613,7 +625,7 @@ def add_opportunity(form=None, customer=None, charge=None):
     return response
 
 
-def _format_recurring_donation(contact=None, form=None, customer=None):
+def _format_recurring_donation(contact=None, form=None, customer=None, extra_values=None):
     """
     Format a recurring donation for insertion into SF.
     """
@@ -939,7 +951,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
     return recurring_donation
 
 
-def add_recurring_donation(form=None, customer=None):
+def add_recurring_donation(form=None, customer=None, extra_values=None):
     """
     Insert a recurring donation into SF.
     """
@@ -948,7 +960,7 @@ def add_recurring_donation(form=None, customer=None):
     sf = SalesforceConnection()
     _, contact = sf.get_or_create_contact(form)
     recurring_donation = _format_recurring_donation(contact=contact,
-            form=form, customer=customer)
+            form=form, customer=customer, extra_values=extra_values)
     path = '/services/data/v35.0/sobjects/npe03__Recurring_Donation__c'
     response = sf.post(path=path, data=recurring_donation)
     send_multiple_account_warning()
@@ -957,7 +969,7 @@ def add_recurring_donation(form=None, customer=None):
 
 
 @celery.task(name='salesforce.add_customer_and_charge')
-def add_customer_and_charge(form=None, customer=None, flask_id=None):
+def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_values=None):
     """
     Add a contact and their donation into SF. This is done in the background
     because there are a lot of API calls and there's no point in making the
@@ -965,6 +977,9 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
     """
     amount = form['amount']
     name = '{} {}'.format(form['first_name'], form['last_name'])
+
+    print('extra values')
+    print(extra_values)
         
     #reason = form['reason']
     #if reason != '':
@@ -981,13 +996,13 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         msg = '*{}* pledged *${}*'.format(name, amount)
         print(msg)
         notify_slack(msg)
-        response = add_opportunity(form=form, customer=customer)
+        response = add_opportunity(form=form, customer=customer, extra_values=extra_values)
     else:
         print("----Recurring payment...")
         msg = '*{}* pledged *${}* [recurring]'.format(name, amount)
         print(msg)
         notify_slack(msg)
-        response = add_recurring_donation(form=form, customer=customer)
+        response = add_recurring_donation(form=form, customer=customer, extra_values=extra_values)
 
     if not response['errors']:
         #print('update the database')
