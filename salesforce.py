@@ -295,16 +295,16 @@ def _format_opportunity(contact=None, form=None, customer=None):
         campaign = DEFAULT_CAMPAIGN_ONETIME
 
     try:
-        if form['type'] != '':
-            type__c = form['type']
+        if form['opp_type'] != '':
+            type__c = form['opp_type']
         else:
             type__c = 'Donation'
     except:
         type__c = 'Donation'
 
     try:
-        if form['subtype'] != '':
-            subtype = form['subtype']
+        if form['opp_subtype'] != '':
+            subtype = form['opp_subtype']
         else:
             subtype = 'Donation: Individual'
     except:
@@ -554,7 +554,7 @@ def _format_opportunity(contact=None, form=None, customer=None):
             'Name': '{0} {1} {2} {3}'.format(
                 form['first_name'],
                 form['last_name'],
-                'Donation',
+                type__c,
                 today
             ),
             'Campaignid': campaign,
@@ -868,8 +868,8 @@ def _format_recurring_donation(contact=None, form=None, customer=None):
         pay_fees = False
 
     try:
-        if form['type'] != '':
-            type__c = form['type']
+        if form['opp_type'] != '':
+            type__c = form['opp_type']
         else:
             type__c = 'Donation'
     except:
@@ -990,7 +990,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None):
         response = add_recurring_donation(form=form, customer=customer)
 
     if not response['errors']:
-        # print('update the database')
+        #print('update the database')
+        #print(response)
 
         with app.app_context():
             # add the salesforce id to the local database where the flask id matches

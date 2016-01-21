@@ -136,6 +136,8 @@ def minnpost_form():
 def minnroast_sponsorship_form():
     form = MinnPostForm()
 
+    redirect_url = 'minnroast-sponsorship-thanks'
+
     now = datetime.now()
     year = now.year
 
@@ -148,6 +150,16 @@ def minnroast_sponsorship_form():
         customer_id = request.args.get('customer_id')
     else:
         customer_id = ''
+
+    if request.args.get('opp_type'):
+        opp_type = request.args.get('opp_type')
+    else:
+        opp_type = 'Sponsorship'
+
+    if request.args.get('opp_subtype'):
+        opp_subtype = request.args.get('opp_subtype')
+    else:
+        opp_subtype = 'Sponsorship: Event (individual)'
 
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
@@ -162,6 +174,7 @@ def minnroast_sponsorship_form():
     else:
         email = ''
     return render_template('minnroast-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
+        opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
@@ -302,12 +315,14 @@ def charge():
         return render_template('error.html', message=message)
 
 
-## this is a minnpost url. when submitting a charge, start with ajax, then submit to /thanks
+## this is a minnpost url. when submitting a charge, start with ajax, then submit to the /thanks or whatever other url
 @app.route('/charge_ajax/', methods=['POST'])
 def charge_ajax():
 
     form = MinnPostForm(request.form)
     #pprint('Request: {}'.format(request))
+
+    #next_page_template = 'thanks.html'
 
     amount = float(request.form['amount'])
     customer_id = request.form['customer_id']
@@ -357,25 +372,24 @@ def charge_ajax():
         return render_template('error.html', message=message)
 
     if form.validate():
-
+        # add a row to the heroku database so we can track it
         transaction = Transaction('NULL', 'NULL')
         db.session.add(transaction)
         db.session.commit()
         #print('add a transaction show me the id. then do sf method.')
         # print(transaction.id)
         flask_id = str(transaction.id)
-
-        #session['sf_id'] = result['id']
-        #if frequency == 'one-time':
-        #    session['sf_type'] = 'Opportunity'
-        #else:
-        #    session['sf_type'] = 'npe03__Recurring_Donation__c'
-
         session['flask_id'] = flask_id
         if frequency == 'one-time':
             session['sf_type'] = 'Opportunity'
         else:
             session['sf_type'] = 'npe03__Recurring_Donation__c'
+
+        # if we specify opportunity type and/or subtype, put it in the session
+        if 'opp_type' in request.form:
+            session['opp_type'] = request.form['opp_type']
+        if 'subtype' in request.form:
+            session['opp_subtype'] = request.form['opp_subtype']
 
 
         # this adds the contact and the opportunity to salesforce
@@ -384,6 +398,7 @@ def charge_ajax():
         #body = transaction.id
         #return jsonify(body)
     else:
+        print('form did not validate')
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
 
@@ -432,7 +447,7 @@ def thanks():
         return render_template('error.html', message=message)
 
 
-# this is a minnpost url
+# this is a texas url? or maybe a mp one we do not use?
 @app.route('/finish/', methods=['POST'])
 def finish():
 
@@ -460,8 +475,31 @@ def confirm():
         message = "there was an issue saving your preferences, but your donation was successful"
         return render_template('error.html', message=message)
 
+# this is a minnpost url
+@app.route('/minnroast-sponsorship-confirm/', methods=['POST'])
+def minnroast_sponsorship_confirm():
+
+    form = ConfirmForm(request.form)
+    #pprint('Request: {}'.format(request))
+    amount = float(request.form['amount'])
+    if (amount).is_integer():
+        amount_formatted = int(request.form['amount'])
+    else:
+        amount_formatted = format(amount, ',.2f')
+
+    flask_id = session['flask_id']
+    sf_type = session['sf_type']
+
+    if flask_id:
+        #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
+        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        return render_template('minnroast-sponsorship/finish.html', amount=amount_formatted, session=session)
+    else:
+        message = "there was an issue saving your preferences, but your donation was successful"
+        return render_template('error.html', message=message)
+
     
 # initialize
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=True)

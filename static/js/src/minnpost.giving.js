@@ -165,10 +165,6 @@
 
       var button_text = $('button.give, input.give').text();
       this.options.button_text = button_text;
-      $(window).unload(function() {
-        $('button.give, input.give').removeProp('disabled');
-        $('button.give, input.give').text(button_text);
-      });
 
       Stripe.setPublishableKey(this.options.stripe_publishable_key);
 

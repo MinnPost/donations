@@ -991,10 +991,6 @@ global.Payment = Payment;
 
       var button_text = $('button.give, input.give').text();
       this.options.button_text = button_text;
-      $(window).unload(function() {
-        $('button.give, input.give').removeProp('disabled');
-        $('button.give, input.give').text(button_text);
-      });
 
       Stripe.setPublishableKey(this.options.stripe_publishable_key);
 
@@ -1577,6 +1573,7 @@ global.Payment = Payment;
     validateAndSubmit: function(element, options) {
       var that = this;
       $(this.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
+      $('button').attr('autocomplete', 'off');
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
         // validate and submit the form
