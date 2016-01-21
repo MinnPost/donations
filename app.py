@@ -482,10 +482,7 @@ def minnroast_sponsorship_confirm():
     form = ConfirmForm(request.form)
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    if (amount).is_integer():
-        amount_formatted = int(request.form['amount'])
-    else:
-        amount_formatted = format(amount, ',.2f')
+    amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
