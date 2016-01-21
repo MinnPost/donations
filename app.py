@@ -404,6 +404,7 @@ def charge_ajax():
         else:
             fair_market_value = ''
 
+        extra_values = {}
         extra_values['fair_market_value'] = fair_market_value
 
         # this adds the contact and the opportunity to salesforce
