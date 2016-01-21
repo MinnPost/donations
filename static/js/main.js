@@ -1573,7 +1573,6 @@ global.Payment = Payment;
     validateAndSubmit: function(element, options) {
       var that = this;
       $(this.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
-      $('button').attr('autocomplete', 'off');
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
         // validate and submit the form
@@ -1765,7 +1764,7 @@ global.Payment = Payment;
             }, stripeResponseHandler);
           //return true;
 
-        }
+        } // valid = true
 
       });
       //return false;

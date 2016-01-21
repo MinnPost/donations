@@ -938,7 +938,7 @@
             }, stripeResponseHandler);
           //return true;
 
-        }
+        } // valid = true
 
       });
       //return false;
