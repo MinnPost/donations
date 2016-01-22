@@ -133,6 +133,37 @@ def minnpost_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
+# used at support.minnpost.com/give
+@app.route('/event-register/')
+def minnpost_event_form():
+    form = MinnPostForm()
+
+    if request.args.get('campaign'):
+        campaign = request.args.get('campaign')
+    else:
+        campaign = ''
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    else:
+        customer_id = ''
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    else:
+        first_name = ''
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    else:
+        last_name = ''
+    if request.args.get('email'):
+        email = request.args.get('email')
+    else:
+        email = ''
+
+    return render_template('minnpost-events/form.html', form=form, campaign=campaign, customer_id=customer_id,
+        first_name = first_name,last_name = last_name, email=email,
+        key=app.config['STRIPE_KEYS']['publishable_key'])
+
+
 # used at support.minnpost.com/minnroast-sponsorship
 @app.route('/minnroast-sponsorship/')
 def minnroast_sponsorship_form():
