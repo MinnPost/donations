@@ -96,7 +96,7 @@ def minnpost_form():
     if request.args.get('campaign'):
         campaign = request.args.get('campaign')
     else:
-        campaign = MINNROAST_CAMPAIGN_ID
+        campaign = ''
     frequency = request.args.get('frequency')
     if frequency is None:
         frequency = 'one-time'
@@ -146,7 +146,7 @@ def minnroast_sponsorship_form():
     if request.args.get('campaign'):
         campaign = request.args.get('campaign')
     else:
-        campaign = ''
+        campaign = MINNROAST_CAMPAIGN_ID
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
