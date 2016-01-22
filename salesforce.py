@@ -553,8 +553,8 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     except:
         pay_fees = False
 
-    additional_donation = extra_values['additional_donation']
-    if additional_donation != None:
+    if extra_values['additional_donation'] != None:
+        additional_donation = extra_values['additional_donation']
         amount = float(amount) + float(additional_donation)
 
     opportunity = {
@@ -889,8 +889,8 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     except:
         type__c = 'Donation'
 
-    additional_donation = extra_values['additional_donation']
-    if additional_donation != None:
+    if extra_values['additional_donation'] != None:
+        additional_donation = extra_values['additional_donation']
         amount = float(amount) + float(additional_donation)
 
     # TODO: test this:
