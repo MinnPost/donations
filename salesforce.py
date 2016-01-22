@@ -285,6 +285,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     """
 
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
+    amount = form['amount']
 
     try:
         if form['campaign'] != '':
@@ -554,11 +555,11 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
 
     additional_donation = extra_values['additional_donation']
     if additional_donation != None:
-        amount = float(form['amount']) + float(additional_donation)
+        amount = float(amount) + float(additional_donation)
 
     opportunity = {
             'AccountId': '{}'.format(contact['AccountId']),
-            'Amount': '{}'.format(form['amount']),
+            'Amount': '{}'.format(amount),
             'CloseDate': today,
             'Description': '{}'.format(form['description']),
             'LeadSource': 'Stripe',
@@ -890,7 +891,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
 
     additional_donation = extra_values['additional_donation']
     if additional_donation != None:
-        amount = float(form['amount']) + float(additional_donation)
+        amount = float(amount) + float(additional_donation)
 
     # TODO: test this:
     #if installments != 'None':
