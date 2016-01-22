@@ -390,34 +390,37 @@ def charge_ajax():
         else:
             session['sf_type'] = 'npe03__Recurring_Donation__c'
 
+        extra_values = {}
         # if we specify opportunity type and/or subtype, put it in the session
         if 'opp_type' in request.form:
             session['opp_type'] = request.form['opp_type']
+
+            if request.form['opp_type'] == 'Sponsorship':
+                if amount == 500:
+                    fair_market_value = 100
+                elif amount == 1500:
+                    fair_market_value = 300
+                elif amount == 3000:
+                    fair_market_value = 400
+                elif amount == 5000:
+                    fair_market_value = 500
+                elif amount == 8000:
+                    fair_market_value = 600
+                else:
+                    fair_market_value = ''
+
+                extra_values['fair_market_value'] = fair_market_value
+
         if 'subtype' in request.form:
             session['opp_subtype'] = request.form['opp_subtype']
 
-        if amount == 500:
-            fair_market_value = 100
-        elif amount == 1500:
-            fair_market_value = 300
-        elif amount == 3000:
-            fair_market_value = 400
-        elif amount == 5000:
-            fair_market_value = 500
-        elif amount == 8000:
-            fair_market_value = 600
-        else:
-            fair_market_value = ''
-
-        extra_values = {}
-        extra_values['fair_market_value'] = fair_market_value
-
-        if request.form['additional_donation'] != '':
-            additional_donation = float(request.form['additional_donation'])
-            extra_values['additional_donation'] = additional_donation
-            session['additional_donation'] = format(additional_donation, ',.2f')
-        else:
-            session['additional_donation'] = ''
+        if 'additional_donation' in request.form:
+            if request.form['additional_donation'] != '':
+                additional_donation = float(request.form['additional_donation'])
+                extra_values['additional_donation'] = additional_donation
+                session['additional_donation'] = format(additional_donation, ',.2f')
+            else:
+                session['additional_donation'] = ''
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
