@@ -412,8 +412,8 @@ def charge_ajax():
         extra_values = {}
         extra_values['fair_market_value'] = fair_market_value
 
-        additional_donation = float(request.form['additional_donation'])
-        if additional_donation != '':
+        if request.form['additional_donation'] != '':
+            additional_donation = float(request.form['additional_donation'])
             extra_values['additional_donation'] = additional_donation
             session['additional_donation'] = format(additional_donation, ',.2f')
         else:
