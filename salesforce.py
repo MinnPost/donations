@@ -553,9 +553,14 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     except:
         pay_fees = False
 
-    if extra_values['additional_donation'] != None:
-        additional_donation = extra_values['additional_donation']
-        amount = float(amount) + float(additional_donation)
+    try:
+        if extra_values['additional_donation'] != None:
+            additional_donation = extra_values['additional_donation']
+            amount = float(amount) + float(additional_donation)
+        else:
+            additional_donation = ''
+    except:
+        additional_donation = ''
 
     opportunity = {
             'AccountId': '{}'.format(contact['AccountId']),
@@ -889,9 +894,14 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     except:
         type__c = 'Donation'
 
-    if extra_values['additional_donation'] != None:
-        additional_donation = extra_values['additional_donation']
-        amount = float(amount) + float(additional_donation)
+    try:
+        if extra_values['additional_donation'] != None:
+            additional_donation = extra_values['additional_donation']
+            amount = float(amount) + float(additional_donation)
+        else:
+            additional_donation = ''
+    except:
+        additional_donation = ''
 
     # TODO: test this:
     #if installments != 'None':
