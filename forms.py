@@ -67,7 +67,7 @@ class MinnPostForm(Form):
     creatempaccount = BooleanField(u'Create MinnPost Account?')
     # do not pass the password through here so we can pass it to ajax
 
-    additional_donation = DecimalField(u'Additional Donation', [validators.NumberRange(min=1)])
+    additional_donation = DecimalField(u'Additional Donation', validators=[validators.Optional()])
 
 
 class ConfirmForm(Form):

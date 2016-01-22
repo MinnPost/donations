@@ -425,7 +425,8 @@ def charge_ajax():
         #body = transaction.id
         #return jsonify(body)
     else:
-        print('form did not validate')
+        print('form did not validate: error below')
+        print(form.errors)
         message = "There was an issue saving your donation information."
         return render_template('error.html', message=message)
 
