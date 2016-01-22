@@ -552,6 +552,10 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     except:
         pay_fees = False
 
+    additional_donation = extra_values['additional_donation']
+    if additional_donation != None:
+        amount = float(amount) + float(additional_donation)
+
     opportunity = {
             'AccountId': '{}'.format(contact['AccountId']),
             'Amount': '{}'.format(form['amount']),
@@ -884,6 +888,10 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     except:
         type__c = 'Donation'
 
+    additional_donation = extra_values['additional_donation']
+    if additional_donation != None:
+        amount = float(amount) + float(additional_donation)
+
     # TODO: test this:
     #if installments != 'None':
     #    amount = int(amount) * int(installments)
@@ -973,11 +981,6 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
     payer wait for them.
     """
     amount = form['amount']
-    additional_donation = extra_values['additional_donation']
-    if additional_donation != None:
-        amount = float(amount) + float(additional_donation)
-        print('amount is')
-        print(amount)
     name = '{} {}'.format(form['first_name'], form['last_name'])
         
     #reason = form['reason']

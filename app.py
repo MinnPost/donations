@@ -414,9 +414,10 @@ def charge_ajax():
 
         additional_donation = float(request.form['additional_donation'])
         if additional_donation != '':
-            print('add to amount')
             extra_values['additional_donation'] = additional_donation
-            session['additional_donation'] = additional_donation
+            session['additional_donation'] = format(additional_donation, ',.2f')
+        else:
+            session['additional_donation'] = ''
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
