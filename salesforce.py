@@ -294,9 +294,6 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     except:
         campaign = DEFAULT_CAMPAIGN_ONETIME
 
-    print('extra values')
-    print(extra_values)
-
     try:
         if extra_values['fair_market_value'] != '':
             fair_market_value = extra_values['fair_market_value']
@@ -976,10 +973,12 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
     payer wait for them.
     """
     amount = form['amount']
+    additional_donation = extra_values['additional_donation']
+    if additional_donation != None:
+        amount = amount + additional_donation
+        print('amount is')
+        print(amount)
     name = '{} {}'.format(form['first_name'], form['last_name'])
-
-    print('extra values')
-    print(extra_values)
         
     #reason = form['reason']
     #if reason != '':
@@ -1014,6 +1013,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
             # print(flask_id)
             # print(transaction)
             # transaction = db.session.query(Transaction).get(flask_id)
+            print('add the sf id to the transaction')
             transaction.sf_id = response['id']
             db.session.commit()
             # print('committed the db')

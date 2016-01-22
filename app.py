@@ -173,9 +173,14 @@ def minnroast_sponsorship_form():
         email = request.args.get('email')
     else:
         email = ''
+    if request.args.get('additional_donation'):
+        additional_donation = request.args.get('additional_donation')
+    else:
+        additional_donation = ''
     return render_template('minnroast-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
+        additional_donation = additional_donation,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
@@ -406,6 +411,12 @@ def charge_ajax():
 
         extra_values = {}
         extra_values['fair_market_value'] = fair_market_value
+
+        additional_donation = float(request.form['additional_donation'])
+        if additional_donation != '':
+            print('add to amount')
+            extra_values['additional_donation'] = additional_donation
+            session['additional_donation'] = additional_donation
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
