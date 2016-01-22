@@ -975,7 +975,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
     amount = form['amount']
     additional_donation = extra_values['additional_donation']
     if additional_donation != None:
-        amount = amount + additional_donation
+        amount = float(amount) + float(additional_donation)
         print('amount is')
         print(amount)
     name = '{} {}'.format(form['first_name'], form['last_name'])
