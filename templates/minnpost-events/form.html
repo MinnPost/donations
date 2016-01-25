@@ -4,8 +4,8 @@
 <section class="progress progress--donation">
   <div class="wrapper">
     <ol>
-      <li class="panel--review"><a href="/event-register/?customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--review">Tickets</a></li>
-      <li class="panel--review"><a href="/event-register/?customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--attendees">Attendees</a></li>
+      <li class="panel--tickets"><a href="/event-register/?customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--tickets">Tickets</a></li>
+      <li class="panel--attendees"><a href="/event-register/?customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--attendees">Attendees</a></li>
       <li class="panel--pay"><a href="/event-register/?customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--pay">Payment</a></li>
       <li class="panel--confirmation"><span>Thank You</span></li>
     </ol>
@@ -33,8 +33,9 @@
       <input type="hidden" name="shipping_zip_geocode" id="shipping_zip_geocode" value="">
       <input type="hidden" name="shipping_country_geocode" id="shipping_country_geocode" value="">
 
-
-      {% include 'includes/pay.html' %}
+      {% include 'minnpost-events/includes/tickets.html' %}
+      {% include 'minnpost-events/includes/attendees.html' %}
+      {% include 'minnpost-events/includes/pay.html' %}
 
     </form>
   </div>
