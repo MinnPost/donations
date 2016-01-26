@@ -14,12 +14,12 @@
 
 <main>
   <div class="wrapper support--forms">
-    <form action="/thanks/" method="post" class="support support--donate" id="donate">
+    <form action="/minnpost-event-confirm/" method="post" class="support support--donate" id="donate">
       {{ form.csrf_token }}
 
       <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
       <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
-      <input type="hidden" name="description" id="description" value="MinnPost Event">
+      <input type="hidden" name="description" id="description" value="MinnPost Event Registration">
 
       <input type="hidden" name="billing_street_geocode" id="billing_street_geocode" value="">
       <input type="hidden" name="billing_city_geocode" id="billing_city_geocode" value="">
