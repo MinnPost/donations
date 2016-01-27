@@ -890,6 +890,13 @@ global.Payment = Payment;
     'account_zip_selector' : '#billing_zip_geocode',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.form-item--password',
+    'calculated_amount_selector' : '.calculated-amount',
+    'quantity_selector' : '#quantity',
+    'single_unit_price_attribute' : 'unit-price',
+    'additional_amount_selector' : '#additional_donation',
+    'promo_selector' : '.form-item--promo-code',
+    'use_promocode_selector' : '#use-promo-code',
+    'promocode_selector' : '#promo_code',
     'billing_selector' : 'fieldset.billing',
     'shipping_selector' : 'fieldset.shipping',
     'credit_card_fieldset' : '.credit-card-group',
@@ -1050,6 +1057,14 @@ global.Payment = Payment;
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
         this.validateAndSubmit(this.element, this.options); // validate and submit the form
       }
+
+      if ($(this.options.calculated_amount_selector).length > 0) {
+        this.calculateAmount(this.element, this.options, false); //
+      } // calculate amount based on quantity
+
+      if ($(this.options.use_promocode_selector).length > 0) {
+        this.usePromoCode(this.element, this.options); // handle promo code field
+      } // allow users to enter a promo code on a page
 
       if ($(this.options.confirm_step_selector).length > 0) {
         this.showNewsletterSettings(this.element, this.options);
@@ -1508,6 +1523,68 @@ global.Payment = Payment;
       });
     }, // allowMinnpostAccount
 
+    calculateAmount: function(element, options, valid_code) {
+      var that = this;
+      var quantity = $(options.quantity_selector).val();
+      var single_unit_price = $(options.quantity_selector).data(options.single_unit_price_attribute);
+      var amount = quantity * single_unit_price;
+      //var use_promo = false;
+
+      if (valid_code == true) {
+        console.log('this is discounted');
+        single_unit_price = 5;
+      }
+
+      quantity = $(options.quantity_selector).val();
+      amount = quantity * single_unit_price;
+      if ($(options.additional_amount_selector).val() > 0) {
+        amount += parseFloat($(options.additional_amount_selector).val());
+      }
+      $(options.calculated_amount_selector).text(amount);
+      //});
+
+      $( options.quantity_selector + ', ' + options.additional_amount_selector ).change(function() {
+        that.calculateAmount(element, options, valid_code);
+      });
+
+      if ($(this.options.promocode_selector).length > 0) {
+        //$(this.options.promocode_selector).after('');
+        $('.apply-promo-code').click(function(event) {
+          var code = $(options.promocode_selector, element).val();
+          use_promo = that.checkPromoCode(code);
+          that.calculateAmount(element, options, valid_code);
+          event.preventDefault();
+        });
+      }
+
+    }, // calculateAmount
+
+    checkPromoCode: function(code) {
+      var data = {
+        promo_code: code
+      };
+      $.ajax({
+        method: 'POST',
+        url: '/event-check-promo/',
+        data: data
+      }).done(function( data ) {
+        if (data.success === true) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+    }, // checkPromoCode
+
+    usePromoCode: function(element, options) {
+      $(this.options.use_promocode_selector).parent().html('<a href="#" class="use-promo-code">Use promo code</a>');      
+      $(options.promo_selector + ' div:first', element).hide();
+      $('.use-promo-code').click(function(event) {
+        $(options.promo_selector + ' div:first', element).toggle();
+        event.preventDefault();
+      });
+    }, //usePromoCode
+
     checkMinnpostAccountExists: function(element, options, email) {     
       var user = {
         email: email
@@ -1702,22 +1779,22 @@ global.Payment = Payment;
             street = $('input[name="billing_street_geocode"]').val();
           }
 
-          var city = '';
+          var city = 'None';
           if ($('input[name="billing_city_geocode"]').length > 0) {
             city = $('input[name="billing_city_geocode"]').val();
           }
 
-          var state = '';
+          var state = 'None';
           if ($('input[name="billing_state_geocode"]').length > 0) {
             state = $('input[name="billing_state_geocode"]').val();
           }
 
-          var zip = '';
+          var zip = 'None';
           if ($('input[name="billing_zip_geocode"]').length > 0) {
             zip = $('input[name="billing_zip_geocode"]').val();
           }
 
-          var country = '';
+          var country = 'US';
           if ($('input[name="billing_country_geocode"]').length > 0) {
             country = $('input[name="billing_country_geocode"]').val();
           }
