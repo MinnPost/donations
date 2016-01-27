@@ -351,6 +351,8 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         billing_full = form['full_address']
         try:
             billing_street = form['billing_street_geocode']
+            if billing_street == '':
+                billing_street = billing_full
         except:
             billing_street = ''
         try:
@@ -681,6 +683,8 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         billing_full = form['full_address']
         try:
             billing_street = form['billing_street_geocode']
+            if billing_street == '':
+                billing_street = billing_full
         except:
             billing_street = ''
         try:

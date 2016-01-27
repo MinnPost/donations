@@ -948,28 +948,28 @@
             full_name = $('#first_name').val() + ' ' + $('#last_name').val();
           }
 
-          var street = '';
-          if ($('input[name="billing_street_geocode"]').length > 0) {
+          var street = $('#full_address').val();
+          if ($('input[name="billing_street_geocode"]').val() != '') {
             street = $('input[name="billing_street_geocode"]').val();
           }
 
           var city = 'None';
-          if ($('input[name="billing_city_geocode"]').length > 0) {
+          if ($('input[name="billing_city_geocode"]').val() != '') {
             city = $('input[name="billing_city_geocode"]').val();
           }
 
           var state = 'None';
-          if ($('input[name="billing_state_geocode"]').length > 0) {
+          if ($('input[name="billing_state_geocode"]').val() != '') {
             state = $('input[name="billing_state_geocode"]').val();
           }
 
           var zip = 'None';
-          if ($('input[name="billing_zip_geocode"]').length > 0) {
+          if ($('input[name="billing_zip_geocode"]').val() != '') {
             zip = $('input[name="billing_zip_geocode"]').val();
           }
 
           var country = 'US';
-          if ($('input[name="billing_country_geocode"]').length > 0) {
+          if ($('input[name="billing_country_geocode"]').val() != '') {
             country = $('input[name="billing_country_geocode"]').val();
           }
 
