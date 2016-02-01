@@ -1,0 +1,50 @@
+.form-item--ticket-quantity {
+	margin: 0.25em 0 0.25em 0;
+	font-size: 2em;
+	#quantity {
+		width: auto;
+		display: inline-block;
+		border: 1px solid #ccc;
+	    padding: 0.35em 0;
+	    width: 3em;
+	    font-size: 1.5rem;
+	    font-family: NimbusSanNovConD-Bol,Helvetica,Arial,Geneva,sans-serif;
+	    text-align: center;
+    	vertical-align: top;
+	}
+	label {
+		width: auto;
+		display: inline-block;
+		margin: 0.5em 0 0 0.5em;
+	}
+}
+.tickets .calculated-amount::before {
+	content: '$';
+}
+
+.form-item--promo-code .code-result {
+	&.error {
+     color: $minnpost-red-error;
+    }
+    &.success {
+     color: $minnpost-green;
+    }
+}
+
+@media screen and (min-width: $large-screen) {
+	#panel--tickets .ticket-select {
+		margin: 0.5em 0 0 0;
+		.form-item--promo-code:last-child {
+			margin-bottom: 0;
+		}
+		@include row();
+		> fieldset {
+			@include span-columns(6);
+			border: 0;
+			padding: 0;
+		}
+		> fieldset:first-child {
+			@include span-columns(6);
+		}
+	}
+}

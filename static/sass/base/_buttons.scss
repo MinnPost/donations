@@ -33,11 +33,19 @@ button, a.btn, input[type="submit"] {
     top: 1px;
   }
 
-  &:disabled {
+  &:disabled, &.btn--disabled {
     cursor: not-allowed;
     opacity: 0.5;
   }
 
+  &.btn--action {
+    background-color: $gray-dark;
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: $gray-darkest;
+    }
+  }
   &.btn--next {
     background-color: $minnpost-blue;
     &:hover,

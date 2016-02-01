@@ -28,6 +28,9 @@ from config import ALLOW_DONATION_NOTIFICATION
 from config import OPBEAT_ORGANIZATION_ID
 from config import OPBEAT_APP_ID
 from config import OPBEAT_SECRET_TOKEN
+from config import EVENT_SINGLE_UNIT_PRICE
+from config import EVENT_DISCOUNT_SINGLE_UNIT_PRICE
+from config import EVENT_PROMO_CODE
 from salesforce import add_customer_and_charge
 #from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
@@ -138,6 +141,8 @@ def minnpost_form():
 def minnpost_event_form():
     form = MinnPostForm()
 
+    event_promo_code = EVENT_PROMO_CODE
+
     if request.args.get('campaign'):
         campaign = request.args.get('campaign')
     else:
@@ -146,6 +151,10 @@ def minnpost_event_form():
         customer_id = request.args.get('customer_id')
     else:
         customer_id = ''
+    if request.args.get('promo_code'):
+        promo_code = request.args.get('promo_code')
+    else:
+        promo_code = ''
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
     else:
@@ -158,10 +167,34 @@ def minnpost_event_form():
         email = request.args.get('email')
     else:
         email = ''
+    if request.args.get('quantity'):
+        quantity = request.args.get('quantity')
+    else:
+        quantity = 1
+
+    single_unit_price = EVENT_SINGLE_UNIT_PRICE
+    if promo_code == event_promo_code:
+        single_unit_price = EVENT_DISCOUNT_SINGLE_UNIT_PRICE
+    starting_amount = format(quantity * single_unit_price)
 
     return render_template('minnpost-events/form.html', form=form, campaign=campaign, customer_id=customer_id,
-        first_name = first_name,last_name = last_name, email=email,
+        first_name = first_name,last_name = last_name, email=email, promo_code=promo_code, event_promo_code=event_promo_code,
+        quantity=quantity, single_unit_price = single_unit_price, starting_amount = starting_amount,
         key=app.config['STRIPE_KEYS']['publishable_key'])
+
+
+@app.route('/event-check-promo/', methods=['POST'])
+def event_check_promo():
+    promo_code = EVENT_PROMO_CODE
+    sent_promo_code = request.form['promo_code']
+    if sent_promo_code == promo_code:
+        success = True
+        single_unit_price = EVENT_DISCOUNT_SINGLE_UNIT_PRICE
+    else:
+        success = False
+        single_unit_price = EVENT_SINGLE_UNIT_PRICE
+    ret_data = {"success": success, "single_unit_price": single_unit_price}
+    return jsonify(ret_data)
 
 
 # used at support.minnpost.com/minnroast-sponsorship

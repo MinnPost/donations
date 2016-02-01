@@ -1523,16 +1523,19 @@ global.Payment = Payment;
       });
     }, // allowMinnpostAccount
 
-    calculateAmount: function(element, options, valid_code) {
+    calculateAmount: function(element, options, valid_code, single_unit_ajax, changed) {
       var that = this;
       var quantity = $(options.quantity_selector).val();
       var single_unit_price = $(options.quantity_selector).data(options.single_unit_price_attribute);
       var amount = quantity * single_unit_price;
+      $('.code-result').remove();
       //var use_promo = false;
 
       if (valid_code == true) {
-        console.log('this is discounted');
-        single_unit_price = 5;
+        single_unit_price = single_unit_ajax;
+        $('.apply-promo-code').after('<p class="code-result success">Your member discount code was successfully added.</p>');
+      } else if (changed == true && valid_code == false) {
+        $('.apply-promo-code').after('<p class="code-result error">This code is incorrect. Try again.</p>');
       }
 
       quantity = $(options.quantity_selector).val();
@@ -1551,9 +1554,22 @@ global.Payment = Payment;
         //$(this.options.promocode_selector).after('');
         $('.apply-promo-code').click(function(event) {
           var code = $(options.promocode_selector, element).val();
-          use_promo = that.checkPromoCode(code);
-          that.calculateAmount(element, options, valid_code);
+          //use_promo = that.checkPromoCode(code);
+          //that.calculateAmount(element, options, valid_code);
           event.preventDefault();
+          if (changed != true) {
+            var data = {
+              promo_code: code
+            };
+            $.ajax({
+              method: 'POST',
+              url: '/event-check-promo/',
+              data: data
+            }).done(function( data ) {
+              that.calculateAmount(element, options, data.success, data.single_unit_price, true);
+            });
+          }
+
         });
       }
 
@@ -1577,8 +1593,10 @@ global.Payment = Payment;
     }, // checkPromoCode
 
     usePromoCode: function(element, options) {
-      $(this.options.use_promocode_selector).parent().html('<a href="#" class="use-promo-code">Use promo code</a>');      
-      $(options.promo_selector + ' div:first', element).hide();
+      $(this.options.use_promocode_selector).parent().html('<a href="#" class="use-promo-code">Use promo code</a>');
+      if ($(this.options.promocode_selector).val() === '') {
+        $(options.promo_selector + ' div:first', element).hide();
+      }
       $('.use-promo-code').click(function(event) {
         $(options.promo_selector + ' div:first', element).toggle();
         event.preventDefault();
