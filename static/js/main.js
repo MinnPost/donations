@@ -1534,6 +1534,7 @@ global.Payment = Payment;
       if (valid_code == true) {
         single_unit_price = single_unit_ajax;
         $('.apply-promo-code').after('<p class="code-result success">Your member discount code was successfully added.</p>');
+        $('.apply-promo-code').text('Applied').addClass('btn--disabled');
       } else if (changed == true && valid_code == false) {
         $('.apply-promo-code').after('<p class="code-result error">This code is incorrect. Try again.</p>');
       }
@@ -1596,6 +1597,8 @@ global.Payment = Payment;
       $(this.options.use_promocode_selector).parent().html('<a href="#" class="use-promo-code">Use promo code</a>');
       if ($(this.options.promocode_selector).val() === '') {
         $(options.promo_selector + ' div:first', element).hide();
+      } else {
+         $(options.promo_selector + ' div:last', element).hide();
       }
       $('.use-promo-code').click(function(event) {
         $(options.promo_selector + ' div:first', element).show();
