@@ -1548,7 +1548,7 @@ global.Payment = Payment;
       //});
 
       $( options.quantity_selector + ', ' + options.additional_amount_selector ).change(function() {
-        that.calculateAmount(element, options, valid_code);
+        that.calculateAmount(element, options, valid_code, single_unit_price, false);
       });
 
       if ($(this.options.promocode_selector).length > 0) {
