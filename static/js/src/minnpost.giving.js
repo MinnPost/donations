@@ -772,7 +772,8 @@
         $(options.promo_selector + ' div:first', element).hide();
       }
       $('.use-promo-code').click(function(event) {
-        $(options.promo_selector + ' div:first', element).toggle();
+        $(options.promo_selector + ' div:first', element).show();
+        $(options.promo_selector + ' div:last', element).hide();
         event.preventDefault();
       });
     }, //usePromoCode
