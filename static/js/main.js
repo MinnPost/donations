@@ -897,6 +897,7 @@ global.Payment = Payment;
     'promo_selector' : '.form-item--promo-code',
     'use_promocode_selector' : '#use-promo-code',
     'promocode_selector' : '#promo_code',
+    'calendar_button_selector' : '.addeventatc',
     'billing_selector' : 'fieldset.billing',
     'shipping_selector' : 'fieldset.shipping',
     'credit_card_fieldset' : '.credit-card-group',
@@ -1065,6 +1066,10 @@ global.Payment = Payment;
       if ($(this.options.use_promocode_selector).length > 0) {
         this.usePromoCode(this.element, this.options); // handle promo code field
       } // allow users to enter a promo code on a page
+
+      if ($(this.options.calendar_button_selector).length > 0) {
+        this.addToCalendar(this.element, this.options);
+      } // there is an event details item; allow for an add to calendar button
 
       if ($(this.options.confirm_step_selector).length > 0) {
         this.showNewsletterSettings(this.element, this.options);
@@ -1606,6 +1611,10 @@ global.Payment = Payment;
         event.preventDefault();
       });
     }, //usePromoCode
+
+    addToCalendar: function(element, options) {
+      $(options.calendar_button_selector).style('display', 'inline-block');
+    }, // addToCalendar
 
     checkMinnpostAccountExists: function(element, options, email) {     
       var user = {

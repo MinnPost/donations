@@ -21,6 +21,10 @@
 .tickets .calculated-amount::before {
 	content: '$';
 }
+.addeventatc {
+	display: none;
+	margin-top: $half-space;
+}
 
 .form-item--promo-code .code-result {
 	&.error {
@@ -32,7 +36,7 @@
 }
 
 .event-details {
-	> div {
+	.summary, .date, .location {
 		border-bottom: 1px solid $base-border-color;
 		margin: $half-space 0;
 		padding: $half-space 0;
