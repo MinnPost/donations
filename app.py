@@ -147,14 +147,27 @@ def minnpost_event_form():
         campaign = request.args.get('campaign')
     else:
         campaign = ''
+
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
     else:
         customer_id = ''
+
     if request.args.get('promo_code'):
         promo_code = request.args.get('promo_code')
     else:
         promo_code = ''
+
+    if request.args.get('opp_type'):
+        opp_type = request.args.get('opp_type')
+    else:
+        opp_type = 'Sales'
+
+    if request.args.get('opp_subtype'):
+        opp_subtype = request.args.get('opp_subtype')
+    else:
+        opp_subtype = 'Sales: Tickets'
+
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
     else:
@@ -475,6 +488,10 @@ def charge_ajax():
                 else:
                     fair_market_value = ''
 
+                extra_values['fair_market_value'] = fair_market_value
+
+            elif request.form['opp_type'] == 'Sales':
+                fair_market_value = amount # fair market value is the thing they bought
                 extra_values['fair_market_value'] = fair_market_value
 
         if 'subtype' in request.form:
