@@ -181,7 +181,7 @@ def minnpost_event_form():
     else:
         email = ''
     if request.args.get('quantity'):
-        quantity = request.args.get('quantity')
+        quantity = int(request.args.get('quantity'))
     else:
         quantity = 1
 
