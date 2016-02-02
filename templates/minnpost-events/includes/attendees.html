@@ -1,6 +1,6 @@
 <section class="panel panel--form" id="panel--attendees">
 	<h1>Attendees</h1>
-	<p>You are purchasing <span class="quantity"> {{ quantity }}</span> tickets. Please tell us about the people who will be attending this event.</p>
+	<p>You are purchasing <span class="quantity"> {{ quantity }}</span> ticket{% if quantity != 1 %}s{% endif %}. Please tell us about the people who will be attending this event.</p>
 	{% for _ in range(0, quantity) %}
 		<fieldset class="attendee">
 			<div class="form-item form-item--name">
