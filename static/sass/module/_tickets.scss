@@ -63,6 +63,10 @@
 	}
 }
 
+.attendee .form-item {
+	margin-bottom: 0;
+}
+
 @media screen and (min-width: $large-screen) {
 	#panel--tickets .ticket-select {
 		margin: 0.5em 0 0 0;

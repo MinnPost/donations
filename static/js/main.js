@@ -1613,7 +1613,7 @@ global.Payment = Payment;
     }, //usePromoCode
 
     addToCalendar: function(element, options) {
-      $(options.calendar_button_selector).style('display', 'inline-block');
+      $(options.calendar_button_selector).css('display', 'inline-block');
     }, // addToCalendar
 
     checkMinnpostAccountExists: function(element, options, email) {     
