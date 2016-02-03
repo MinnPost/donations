@@ -1,13 +1,8 @@
 <section class="panel panel--form" id="panel--pay">
   <!-- this should always change with the previous tab amount -->
-
-  <fieldset class="amount">
-    <h3>Donate $<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency }}</span></h1>
-    <ul class="actions actions--edit-amount clear-block">
-      <li><a href="https://www.minnpost.com/support/" id="edit_url">Edit</a></li>
-      <li><label><input type="checkbox" value="1" id="edit-pay-fees" name="pay_fees"> Cover MinnPost's credit card fees</label></li>
-    </ul>
-  </fieldset>
+  
+  <h1>Payment</h1>
+  <p>You are purchasing <span class="quantity">{{ quantity }}</span> ticket{% if quantity != 1 %}s{% endif %}{% if additional_donation %}, and adding an additional donation of $<span class="additional_donation">{{ additional_donation }},{% endif %} for a total of <strong>$<span class="calculated-amount">{{ amount }}</span></strong>. Please enter your billing information.</p>
 
   <fieldset class="payment">
 
@@ -57,48 +52,6 @@
         <input type="text" name="billing_country" id="edit-billing-country" data-geo-value="country">
       </div>
 
-      <div class="form-item-group form-item--geocode">
-        <div class="form-item" id="useforshipping-wrapper">
-          <label class="option" for="useforshipping">
-          <input type="checkbox" name="useforshipping" id="useforshipping" value="1"  checked="checked"  class="form-checkbox" /> Use this address for shipping</label>
-        </div>
-      </div>
-
-    </fieldset>
-
-    <fieldset class="shipping" data-geo="data-geo">
-
-      <div class="form-item-group form-item--shipping-name form-item--geocode">
-        <div class="form-item form-item--shipping-name">
-          <label for="edit-shipping-name">Ship To (if different): </label>
-          <input type="text" name="shipping_name" id="edit-shipping-name">
-        </div>
-      </div>
-
-      <div class="form-item form-item--nojs form-item--street">
-        <label for="edit-shipping-street">Shipping Street Address: </label>
-        <input type="text" name="shipping_street" id="edit-shipping-street" data-geo-value="address">
-      </div>
-
-      <div class="form-item form-item--nojs form-item--city">
-        <label for="edit-shipping-city">Shipping City: </label>
-        <input type="text" name="shipping_city" id="edit-shipping-city" data-geo-value="city">
-      </div>
-
-      <div class="form-item form-item--nojs form-item--state">
-        <label for="edit-shipping-state">Shipping State: </label>
-        <input type="text" name="shipping_state" id="edit-shipping-state" data-geo-value="state">
-      </div>
-
-      <div class="form-item form-item--nojs form-item--zip">
-        <label for="edit-shipping-zip">Shipping Zip Code: </label>
-        <input type="tel" name="shipping_zip" id="edit-shipping-zip" data-geo-value="zip">
-      </div>
-
-      <div class="form-item form-item--nojs form-item--country">
-        <label for="edit-shipping-country">Shipping Country: </label>
-        <input type="text" name="shipping_country" id="edit-shipping-country" data-geo-value="country">
-      </div>
     </fieldset>
 
     <div class="form-item form-item--email-address">
@@ -131,7 +84,7 @@
     </fieldset>
     
 
-    <button type="submit" class="btn btn--submit give" autocomplete="off">Place this Donation</button>
+    <button type="submit" class="btn btn--submit give" autocomplete="off">Complete Purchase</button>
 
   </fieldset>
 
