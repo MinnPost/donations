@@ -67,7 +67,8 @@
     'calculated_amount_selector' : '.calculated-amount',
     'quantity_selector' : '#quantity',
     'single_unit_price_attribute' : 'unit-price',
-    'additional_amount_selector' : '#additional_donation',
+    'additional_amount_field' : '#additional_donation',
+    'additional_amount_selector' : '.additional_donation',
     'promo_selector' : '.form-item--promo-code',
     'use_promocode_selector' : '#use-promo-code',
     'promocode_selector' : '#promo_code',
@@ -720,13 +721,14 @@
 
       quantity = $(options.quantity_selector).val();
       amount = quantity * single_unit_price;
-      if ($(options.additional_amount_selector).val() > 0) {
-        amount += parseFloat($(options.additional_amount_selector).val());
+      if ($(options.additional_amount_field).val() > 0) {
+        $(options.additional_amount_selector).text(parseFloat($(options.additional_amount_field).val()));
+        amount += parseFloat($(options.additional_amount_field).val());
       }
       $(options.calculated_amount_selector).text(amount);
       //});
 
-      $( options.quantity_selector + ', ' + options.additional_amount_selector ).change(function() {
+      $( options.quantity_selector + ', ' + options.additional_amount_field ).change(function() {
         that.calculateAmount(element, options, valid_code, single_unit_price, false);
       });
 
