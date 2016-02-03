@@ -1,6 +1,11 @@
 {% extends "minnpost-events/layout.html" %}
 
 {% block content %}
+
+<div class="wrapper">
+  <img src="https://givalike.org/Client-Content/366066/EarthJournalEvent.png" alt="" />
+</div>
+
 <section class="progress progress--donation">
   <div class="wrapper">
     <ol>
@@ -14,6 +19,7 @@
 
 <main>
   <div class="wrapper support--forms">
+
     <form action="/minnpost-event-confirm/" method="post" class="support support--donate" id="donate">
       {{ form.csrf_token }}
 

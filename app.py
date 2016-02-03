@@ -180,10 +180,15 @@ def minnpost_event_form():
         email = request.args.get('email')
     else:
         email = ''
+    if request.args.get('additional_donation'):
+        additional_donation = int(request.args.get('additional_donation'))
+    else:
+        additional_donation = ''
     if request.args.get('quantity'):
         quantity = int(request.args.get('quantity'))
     else:
         quantity = 1
+    # possible we should create sf contacts for each attendee who is submitted
 
     single_unit_price = EVENT_SINGLE_UNIT_PRICE
     if promo_code == event_promo_code:
@@ -191,7 +196,8 @@ def minnpost_event_form():
     starting_amount = format(quantity * single_unit_price)
 
     return render_template('minnpost-events/form.html', form=form, campaign=campaign, customer_id=customer_id,
-        first_name = first_name,last_name = last_name, email=email, promo_code=promo_code, event_promo_code=event_promo_code,
+        first_name = first_name,last_name = last_name, email=email,
+        promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,
         quantity=quantity, single_unit_price = single_unit_price, starting_amount = starting_amount,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
@@ -253,7 +259,7 @@ def minnroast_sponsorship_form():
     else:
         email = ''
     if request.args.get('additional_donation'):
-        additional_donation = request.args.get('additional_donation')
+        additional_donation = int(request.args.get('additional_donation'))
     else:
         additional_donation = ''
     return render_template('minnroast-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
@@ -592,6 +598,27 @@ def confirm():
 # this is a minnpost url
 @app.route('/minnroast-sponsorship-confirm/', methods=['POST'])
 def minnroast_sponsorship_confirm():
+
+    form = ConfirmForm(request.form)
+    #pprint('Request: {}'.format(request))
+    amount = float(request.form['amount'])
+    amount_formatted = format(amount, ',.2f')
+
+    flask_id = session['flask_id']
+    sf_type = session['sf_type']
+
+    if flask_id:
+        #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
+        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        return render_template('minnroast-sponsorship/finish.html', amount=amount_formatted, session=session)
+    else:
+        message = "there was an issue saving your preferences, but your donation was successful"
+        return render_template('error.html', message=message)
+
+
+# this is a minnpost url
+@app.route('/minnroast-event-confirm/', methods=['POST'])
+def minnroast_event_confirm():
 
     form = ConfirmForm(request.form)
     #pprint('Request: {}'.format(request))
