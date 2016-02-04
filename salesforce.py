@@ -304,6 +304,14 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         fair_market_value = ''
 
     try:
+        if extra_values['quantity'] != '':
+            quantity = extra_values['quantity']
+        else:
+            quantity = ''
+    except:
+        quantity = ''
+
+    try:
         if form['opp_type'] != '':
             type__c = form['opp_type']
         else:
@@ -591,6 +599,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Donor_ZIP__c': billing_zip,
             'Donor_country__c': billing_country,
             'Email_to_notify__c': inhonorormemory_email,
+            'gweb__Eventbrite_Ticket_Quantity__c': quantity,
             'Fair_market_value__c': fair_market_value,
             'Include_amount_in_notification__c': inhonorormemory_include_amount,
             'Flask_Transaction_ID__c': flask_id,
@@ -906,6 +915,17 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
             additional_donation = ''
     except:
         additional_donation = ''
+
+    try:
+        if extra_values['attendees'] != None:
+            attendees = extra_values['attendees']
+        else:
+            attendees = ''
+    except:
+        attendees = ''
+
+    print('attendees in salesforce')
+    print(attendees)
 
     # TODO: test this:
     #if installments != 'None':
