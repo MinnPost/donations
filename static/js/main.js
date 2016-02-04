@@ -891,10 +891,13 @@ global.Payment = Payment;
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.form-item--password',
     'calculated_amount_selector' : '.calculated-amount',
-    'quantity_selector' : '#quantity',
+    'quantity_field' : '#quantity',
+    'quantity_selector' : '.quantity',
+    'item_selector': '.purchase-item',
     'single_unit_price_attribute' : 'unit-price',
     'additional_amount_field' : '#additional_donation',
     'additional_amount_selector' : '.additional_donation',
+    'has_additional_text_selector' : '.has_additional',
     'promo_selector' : '.form-item--promo-code',
     'use_promocode_selector' : '#use-promo-code',
     'promocode_selector' : '#promo_code',
@@ -1529,10 +1532,12 @@ global.Payment = Payment;
       });
     }, // allowMinnpostAccount
 
-    calculateAmount: function(element, options, valid_code, single_unit_ajax, changed) {
+    calculateAmount: function(element, options, valid_code, single_unit_ajax, quantity, changed) {
       var that = this;
-      var quantity = $(options.quantity_selector).val();
-      var single_unit_price = $(options.quantity_selector).data(options.single_unit_price_attribute);
+      var quantity = $(options.quantity_field).val();
+      $(options.quantity_selector).text(quantity);
+      //console.log('quantity is ' + quantity);
+      var single_unit_price = $(options.quantity_field).data(options.single_unit_price_attribute);
       var amount = quantity * single_unit_price;
       $('.code-result').remove();
       //var use_promo = false;
@@ -1545,17 +1550,34 @@ global.Payment = Payment;
         $('.apply-promo-code').after('<p class="code-result error">This code is incorrect. Try again.</p>');
       }
 
-      quantity = $(options.quantity_selector).val();
+      quantity = $(options.quantity_field).val();
       amount = quantity * single_unit_price;
       if ($(options.additional_amount_field).val() > 0) {
+        $(options.has_additional_text_selector).html($(options.has_additional_text_selector).data('text'));
         $(options.additional_amount_selector).text(parseFloat($(options.additional_amount_field).val()));
         amount += parseFloat($(options.additional_amount_field).val());
+        
+      } else {
+        $(options.has_additional_text_selector).html('');
       }
       $(options.calculated_amount_selector).text(amount);
       //});
 
-      $( options.quantity_selector + ', ' + options.additional_amount_field ).change(function() {
-        that.calculateAmount(element, options, valid_code, single_unit_price, false);
+      $( options.quantity_field + ', ' + options.additional_amount_field ).change(function() {
+        quantity = $(options.quantity_field).val();
+        var attendees = '';
+        var attendee = $('.attendees > fieldset:first').html();
+        for (i = 1; i <= quantity; i++) {
+          attendees += '<fieldset class="attendee">' + attendee.replace(/_1/g, '_' + i) + '</fieldset>';
+          console.log('make some attendees');
+        }
+        $('.attendees').html(attendees);
+        if (quantity != 1) {
+          $(options.item_selector).text($(options.item_selector).data('plural'));
+        } else {
+          $(options.item_selector).text($(options.item_selector).data('single'));
+        }
+        that.calculateAmount(element, options, valid_code, single_unit_price, quantity, false);
       });
 
       if ($(this.options.promocode_selector).length > 0) {
@@ -1574,7 +1596,7 @@ global.Payment = Payment;
               url: '/event-check-promo/',
               data: data
             }).done(function( data ) {
-              that.calculateAmount(element, options, data.success, data.single_unit_price, true);
+              that.calculateAmount(element, options, data.success, data.single_unit_price, quantity, true);
             });
           }
 
