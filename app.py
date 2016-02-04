@@ -499,6 +499,16 @@ def charge_ajax():
             elif request.form['opp_type'] == 'Sales':
                 fair_market_value = amount # fair market value is the thing they bought
                 extra_values['fair_market_value'] = fair_market_value
+                quantity = float(request.form['quantity'])
+                attendees = []
+                if quantity > 1:
+                    for x in xrange(quantity):
+                        attendee = {'name' : request.form['attendee_name_' + x], 'email' : request.form['attendee_email_' + x]}
+                        attendees.append(attendee)
+                elif quantity == 1:
+                    attendee = {'name' : request.form['attendee_name_1'], 'email' : request.form['attendee_email_1']}
+                    attendees.append(attendee)
+                extra_values['attendees'] = attendees
 
         if 'subtype' in request.form:
             session['opp_subtype'] = request.form['opp_subtype']
@@ -510,6 +520,9 @@ def charge_ajax():
                 session['additional_donation'] = format(additional_donation, ',.2f')
             else:
                 session['additional_donation'] = ''
+
+        if 'quantity' in request.form:
+            session['quantity'] = float(request.form['quantity'])
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
