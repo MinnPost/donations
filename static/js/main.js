@@ -1569,7 +1569,6 @@ global.Payment = Payment;
         var attendee = $('.attendees > fieldset:first').html();
         for (i = 1; i <= quantity; i++) {
           attendees += '<fieldset class="attendee">' + attendee.replace(/_1/g, '_' + i) + '</fieldset>';
-          console.log('make some attendees');
         }
         $('.attendees').html(attendees);
         if (quantity != 1) {
