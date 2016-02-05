@@ -503,13 +503,14 @@ def charge_ajax():
 
             elif request.form['opp_type'] == 'Sales':                
                 quantity = int(request.form['quantity'])
-                single_unit_fair_market_value = EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE
-                fair_market_value = quantity * single_unit_fair_market_value                
+                single_unit_fair_market_value = int(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
+                fair_market_value = quantity * single_unit_fair_market_value
                 extra_values['fair_market_value'] = fair_market_value
                 attendees = []
                 if quantity > 1:
                     for x in range(quantity):
-                        attendee = {'name' : request.form['attendee_name_' + str(x)], 'email' : request.form['attendee_email_' + str(x)]}
+                        attendee_id = x + 1
+                        attendee = {'name' : request.form['attendee_name_' + str(attendee_id)], 'email' : request.form['attendee_email_' + str(attendee_id)]}
                         attendees.append(attendee)
                 elif quantity == 1:
                     attendee = {'name' : request.form['attendee_name_1'], 'email' : request.form['attendee_email_1']}
