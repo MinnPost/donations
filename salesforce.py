@@ -579,10 +579,6 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             attendees = ''
     except:
         attendees = ''
-    
-    print('attendees for salesforce')
-    #print(opportunity_attendees)
-    print(attendees)
 
     opportunity = {
             'AccountId': '{}'.format(contact['AccountId']),
@@ -637,8 +633,8 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
             }
-    print('opportunity')
-    print(opportunity)
+    #print('opportunity')
+    #print(opportunity)
     return opportunity
 
 
@@ -1035,8 +1031,6 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         msg = '*{}* pledged *${}*'.format(name, amount)
         print(msg)
         notify_slack(msg)
-        print('extra values')
-        print(extra_values)
         response = add_opportunity(form=form, customer=customer, extra_values=extra_values)
     else:
         print("----Recurring payment...")
