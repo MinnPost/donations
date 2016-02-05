@@ -193,6 +193,8 @@ def minnpost_event_form():
     # possible we should create sf contacts for each attendee who is submitted
 
     single_unit_price = EVENT_SINGLE_UNIT_PRICE
+    single_unit_fair_market_value = EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE
+    #print('total fair market value is {}'.format(quantity * single_unit_fair_market_value))
     if promo_code == event_promo_code:
         single_unit_price = EVENT_DISCOUNT_SINGLE_UNIT_PRICE
     starting_amount = format(quantity * single_unit_price)
@@ -499,14 +501,15 @@ def charge_ajax():
 
                 extra_values['fair_market_value'] = fair_market_value
 
-            elif request.form['opp_type'] == 'Sales':
-                fair_market_value = amount # fair market value is the thing they bought
+            elif request.form['opp_type'] == 'Sales':                
+                quantity = int(request.form['quantity'])
+                single_unit_fair_market_value = EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE
+                fair_market_value = quantity * single_unit_fair_market_value                
                 extra_values['fair_market_value'] = fair_market_value
-                quantity = float(request.form['quantity'])
                 attendees = []
                 if quantity > 1:
-                    for x in xrange(quantity):
-                        attendee = {'name' : request.form['attendee_name_' + x], 'email' : request.form['attendee_email_' + x]}
+                    for x in range(quantity):
+                        attendee = {'name' : request.form['attendee_name_' + str(x)], 'email' : request.form['attendee_email_' + str(x)]}
                         attendees.append(attendee)
                 elif quantity == 1:
                     attendee = {'name' : request.form['attendee_name_1'], 'email' : request.form['attendee_email_1']}

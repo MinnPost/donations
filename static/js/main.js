@@ -1561,7 +1561,7 @@ global.Payment = Payment;
         $(options.has_additional_text_selector).html('');
       }
       $(options.calculated_amount_selector).text(amount);
-      $(options.original_amount_selector).val(amount);
+      $(options.original_amount_selector).val(quantity * single_unit_price);
       //});
 
       $( options.quantity_field + ', ' + options.additional_amount_field ).change(function() {
