@@ -506,16 +506,21 @@ def charge_ajax():
                 single_unit_fair_market_value = int(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
                 fair_market_value = quantity * single_unit_fair_market_value
                 extra_values['fair_market_value'] = fair_market_value
-                attendees = []
+                #attendees = []
+                opportunity_attendees = ''
                 if quantity > 1:
                     for x in range(quantity):
                         attendee_id = x + 1
-                        attendee = {'name' : request.form['attendee_name_' + str(attendee_id)], 'email' : request.form['attendee_email_' + str(attendee_id)]}
-                        attendees.append(attendee)
+                        opportunity_attendees += request.form['attendee_name_' + str(attendee_id)] + ': ' + request.form['attendee_email_' + str(attendee_id)] + ';'
+
+                        #attendee = {'name' : request.form['attendee_name_' + str(attendee_id)], 'email' : request.form['attendee_email_' + str(attendee_id)]}
+                        #attendees.append(attendee)
                 elif quantity == 1:
-                    attendee = {'name' : request.form['attendee_name_1'], 'email' : request.form['attendee_email_1']}
-                    attendees.append(attendee)
-                extra_values['attendees'] = attendees
+                    opportunity_attendees += request.form['attendee_name_1'] + ': ' + request.form['attendee_email_1'] + ';'
+                    #attendee = {'name' : request.form['attendee_name_1'], 'email' : request.form['attendee_email_1']}
+                    #attendees.append(attendee)
+                #extra_values['attendees'] = attendees
+                extra_values['attendees'] = opportunity_attendees
 
         if 'subtype' in request.form:
             session['opp_subtype'] = request.form['opp_subtype']
@@ -529,7 +534,7 @@ def charge_ajax():
                 session['additional_donation'] = ''
 
         if 'quantity' in request.form:
-            quantity = float(request.form['quantity'])
+            quantity = int(request.form['quantity'])
             extra_values['quantity'] = quantity
             session['quantity'] = quantity
 

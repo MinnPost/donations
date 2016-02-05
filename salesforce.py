@@ -572,21 +572,17 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     except:
         additional_donation = ''
 
-    opportunity_attendees = ''
     try:
-        if extra_values['attendees'] != None:
+        if extra_values['attendees'] != '':
             attendees = extra_values['attendees']
-            for attendee in attendees:
-                opportunity_attendees += attendee.name + ': ' + attendee.email + ';'
         else:
             attendees = ''
     except:
         attendees = ''
-
-    print('attendees to put in salesforce')
-    print(attendees)
+    
     print('attendees for salesforce')
-    print(opportunity_attendees)
+    #print(opportunity_attendees)
+    print(attendees)
 
     opportunity = {
             'AccountId': '{}'.format(contact['AccountId']),
@@ -615,7 +611,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Donor_ZIP__c': billing_zip,
             'Donor_country__c': billing_country,
             'Email_to_notify__c': inhonorormemory_email,
-            'Event_Attendees__c': opportunity_attendees,
+            'Event_Attendees__c': attendees,
             'gweb__Eventbrite_Ticket_Quantity__c': quantity,
             'Fair_market_value__c': fair_market_value,
             'Include_amount_in_notification__c': inhonorormemory_include_amount,
@@ -1039,6 +1035,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         msg = '*{}* pledged *${}*'.format(name, amount)
         print(msg)
         notify_slack(msg)
+        print('extra values')
+        print(extra_values)
         response = add_opportunity(form=form, customer=customer, extra_values=extra_values)
     else:
         print("----Recurring payment...")
