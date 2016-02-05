@@ -572,6 +572,22 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     except:
         additional_donation = ''
 
+    opportunity_attendees = ''
+    try:
+        if extra_values['attendees'] != None:
+            attendees = extra_values['attendees']
+            for attendee in attendees:
+                opportunity_attendees += attendee.name + ': ' + attendee.email + ';'
+        else:
+            attendees = ''
+    except:
+        attendees = ''
+
+    print('attendees to put in salesforce')
+    print(attendees)
+    print('attendees for salesforce')
+    print(opportunity_attendees)
+
     opportunity = {
             'AccountId': '{}'.format(contact['AccountId']),
             'Amount': '{}'.format(amount),
@@ -599,6 +615,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Donor_ZIP__c': billing_zip,
             'Donor_country__c': billing_country,
             'Email_to_notify__c': inhonorormemory_email,
+            'Event_Attendees__c': opportunity_attendees,
             'gweb__Eventbrite_Ticket_Quantity__c': quantity,
             'Fair_market_value__c': fair_market_value,
             'Include_amount_in_notification__c': inhonorormemory_include_amount,
@@ -624,8 +641,8 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
             }
-    #print('opportunity')
-    #print(opportunity)
+    print('opportunity')
+    print(opportunity)
     return opportunity
 
 
@@ -915,17 +932,6 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
             additional_donation = ''
     except:
         additional_donation = ''
-
-    try:
-        if extra_values['attendees'] != None:
-            attendees = extra_values['attendees']
-        else:
-            attendees = ''
-    except:
-        attendees = ''
-
-    print('attendees in salesforce')
-    print(attendees)
 
     # TODO: test this:
     #if installments != 'None':
