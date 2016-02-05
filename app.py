@@ -196,6 +196,7 @@ def minnpost_event_form():
     starting_amount = format(quantity * single_unit_price)
 
     return render_template('minnpost-events/form.html', form=form, campaign=campaign, customer_id=customer_id,
+        opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,
         quantity=quantity, single_unit_price = single_unit_price, starting_amount = starting_amount,
