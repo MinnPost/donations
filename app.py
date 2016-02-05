@@ -632,7 +632,7 @@ def minnroast_sponsorship_confirm():
 
 
 # this is a minnpost url
-@app.route('/minnroast-event-confirm/', methods=['POST'])
+@app.route('/minnpost-event-confirm/', methods=['POST'])
 def minnroast_event_confirm():
 
     form = ConfirmForm(request.form)

@@ -545,7 +545,7 @@
           that.options.amount = upsold;
           $(options.level_amount_selector, element).text(upsold);
           $(options.full_amount_selector, element).text(upsold);
-          $('#amount').val(upsold);
+          $(options.original_amount_selector, element).val(upsold);
           $(this).remove();
           event.stopPropagation();
           event.preventDefault();
@@ -735,6 +735,7 @@
         $(options.has_additional_text_selector).html('');
       }
       $(options.calculated_amount_selector).text(amount);
+      $(options.original_amount_selector).val(amount);
       //});
 
       $( options.quantity_field + ', ' + options.additional_amount_field ).change(function() {
