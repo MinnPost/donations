@@ -31,6 +31,7 @@ from config import OPBEAT_SECRET_TOKEN
 from config import EVENT_SINGLE_UNIT_PRICE
 from config import EVENT_DISCOUNT_SINGLE_UNIT_PRICE
 from config import EVENT_PROMO_CODE
+from config import EVENT_CAMPAIGN_ID
 from salesforce import add_customer_and_charge
 #from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
@@ -146,7 +147,7 @@ def minnpost_event_form():
     if request.args.get('campaign'):
         campaign = request.args.get('campaign')
     else:
-        campaign = ''
+        campaign = EVENT_CAMPAIGN_ID
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
@@ -641,13 +642,15 @@ def minnroast_event_confirm():
     amount = float(request.form['amount'])
     amount_formatted = format(amount, ',.2f')
 
+    quantity = float(request.form['quantity'])
+
     flask_id = session['flask_id']
     sf_type = session['sf_type']
 
     if flask_id:
         #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnroast-sponsorship/finish.html', amount=amount_formatted, session=session)
+        return render_template('minnpost-events/finish.html', amount=amount_formatted, session=session)
     else:
         message = "there was an issue saving your preferences, but your donation was successful"
         return render_template('error.html', message=message)
