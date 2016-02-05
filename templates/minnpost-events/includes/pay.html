@@ -2,7 +2,7 @@
   <!-- this should always change with the previous tab amount -->
   
   <h1>Payment</h1>
-  <p>You are purchasing <span class="quantity">{{ quantity }}</span> ticket{% if quantity != 1 %}s{% endif %}{% if additional_donation %}, and adding an additional donation of $<span class="additional_donation">{{ additional_donation }}</span>,{% endif %} for a total of <strong>$<span class="calculated-amount">{{ amount }}</span></strong>. Please enter your billing information.</p>
+  <p>You are purchasing <span class="quantity">{{ quantity }}</span> <span class="purchase-item" data-single="ticket" data-plural="tickets">ticket</span>{% if quantity != 1 %}s{% endif %}<span class="has_additional" data-text=", and adding an additional donation of $<span class='additional_donation'>{{ additional_donation }}</span>,"></span>{% if additional_donation %}, and adding an additional donation of $<span class="additional_donation">{{ additional_donation }}</span>,{% endif %} for a total of <strong>$<span class="calculated-amount">{{ amount }}</span></strong>. Please enter your billing information.</p>
 
   <fieldset class="payment">
 

@@ -4,7 +4,7 @@
 			<h1>Tickets</h1>
 			<p>You can purchase up to five tickets. Select your quantity, and don't forget to use your promo code if you are a MinnPost member.</p>
 			<div class="form-item form-item--ticket-quantity">
-		      <input type="number" id="quantity" name="quantity" min="1" required value="{{ quantity }}" data-unit-price="{{ single_unit_price }}">
+		      <input type="number" id="quantity" name="quantity" min="1" required value="{{ quantity }}" data-unit-price="{{ single_unit_price }}" autocomplete="off">
 		      <!--<label for="quantity">Quantity</label>-->
 		      <span class="calculated-amount">{{ starting_amount }}</span>
 		    </div>
