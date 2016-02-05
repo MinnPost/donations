@@ -138,7 +138,7 @@ def minnpost_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
-# used at support.minnpost.com/give
+# used at support.minnpost.com/event-register
 @app.route('/event-register/')
 def minnpost_event_form():
     form = MinnPostForm()
