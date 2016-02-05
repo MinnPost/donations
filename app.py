@@ -30,6 +30,7 @@ from config import OPBEAT_APP_ID
 from config import OPBEAT_SECRET_TOKEN
 from config import EVENT_SINGLE_UNIT_PRICE
 from config import EVENT_DISCOUNT_SINGLE_UNIT_PRICE
+from config import EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE
 from config import EVENT_PROMO_CODE
 from config import EVENT_CAMPAIGN_ID
 from salesforce import add_customer_and_charge
