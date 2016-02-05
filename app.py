@@ -220,6 +220,55 @@ def event_check_promo():
     ret_data = {"success": success, "single_unit_price": single_unit_price}
     return jsonify(ret_data)
 
+# used at support.minnpost.com/minnpost-advertising
+@app.route('/minnpost-advertising/')
+def minnpost_advertising_form():
+    form = MinnPostForm()
+
+    now = datetime.now()
+    year = now.year
+
+    if request.args.get('campaign'):
+        campaign = request.args.get('campaign')
+    else:
+        campaign = ''
+
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    else:
+        customer_id = ''
+
+    if request.args.get('opp_type'):
+        opp_type = request.args.get('opp_type')
+    else:
+        opp_type = 'Sales'
+
+    if request.args.get('opp_subtype'):
+        opp_subtype = request.args.get('opp_subtype')
+    else:
+        opp_subtype = 'Sales: Advertising'
+
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    else:
+        first_name = ''
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    else:
+        last_name = ''
+    if request.args.get('email'):
+        email = request.args.get('email')
+    else:
+        email = ''
+    if request.args.get('additional_donation'):
+        additional_donation = int(request.args.get('additional_donation'))
+    else:
+        additional_donation = ''
+    return render_template('minnpost-advertising.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
+        opp_type = opp_type, opp_subtype = opp_subtype,
+        first_name = first_name,last_name = last_name, email=email,
+        additional_donation = additional_donation,
+        key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # used at support.minnpost.com/minnroast-sponsorship
 @app.route('/minnroast-sponsorship/')
@@ -618,6 +667,25 @@ def confirm():
         #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('finish.html', session=session)
+    else:
+        message = "there was an issue saving your preferences, but your donation was successful"
+        return render_template('error.html', message=message)
+
+# this is a minnpost url
+@app.route('/minnpost-advertising-confirm/', methods=['POST'])
+def minnpost_advertising_confirm():
+
+    form = ConfirmForm(request.form)
+    #pprint('Request: {}'.format(request))
+    amount = float(request.form['amount'])
+    amount_formatted = format(amount, ',.2f')
+
+    flask_id = session['flask_id']
+    sf_type = session['sf_type']
+
+    if flask_id:
+        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        return render_template('minnpost-advertising/finish.html', amount=amount_formatted, session=session)
     else:
         message = "there was an issue saving your preferences, but your donation was successful"
         return render_template('error.html', message=message)

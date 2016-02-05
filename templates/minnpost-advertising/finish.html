@@ -1,0 +1,16 @@
+{% extends "minnpost-advertising/layout.html" %}
+
+{% block content %}
+
+<main>
+  <div class="wrapper support--forms">
+
+    <section id="panel--confirmation" class="panel panel--form">
+  	 <h1>Thank you for advertising with MinnPost</h1>
+  	 <p>Thank you for sponsoring MinnRoast 2016 at the ${{ amount }} level{% if session['additional_donation'] != '' %} and for your additional ${{ session['additional_donation'] }} donation{% endif %}. We're looking forward to this year's show!</p>
+  	 <p>Check your email for your payment confirmation and more details regarding your MinnRoast sponsorship.</p>
+    </section>
+
+  </div>
+</main>
+{% endblock %}
