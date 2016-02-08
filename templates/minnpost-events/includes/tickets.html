@@ -8,11 +8,6 @@
 		      <!--<label for="quantity">Quantity</label>-->
 		      <span class="calculated-amount">{{ starting_amount }}</span>
 		    </div>
-			<div class="form-item form-item--additional-donation">
-		      <label for="additional_donation">Additional Donation (optional): </label>
-		      <div class="input-prepend">$
-		      <input type="number" id="additional_donation" name="additional_donation" min="0" value="{{ additional_donation }}"></div>
-		    </div>
 		    <div class="form-item form-item--promo-code">
 				<div class="button-group">
 					<label for="promo_code">Member Promo Code: </label>
@@ -29,6 +24,11 @@
 				</div>
 				{% endif %}
 			</div>
+			<div class="form-item form-item--additional-donation">
+		      <label for="additional_donation">Additional Donation (optional): </label>
+		      <div class="input-prepend">$
+		      <input type="number" id="additional_donation" name="additional_donation" min="0" value="{{ additional_donation }}"></div>
+		    </div>
 		</fieldset>
 
 		{% include 'minnpost-events/includes/event-details.html' %}

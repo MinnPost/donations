@@ -15,16 +15,6 @@
       <label for="last_name" class="required">Last name: </label>
       <input type="text" id="last_name" name="last_name" required value="{{ last_name }}">
     </div>
-    
-    <div class="form-item form-item--display-name">
-      <div>
-        <label for="display_as">Display as (in our year-end report): </label>
-        <input type="text" id="display_as" name="display_as">
-      </div>
-      <div>
-        <label class="additional-option"><input type="checkbox" name="anonymous" id="edit-anonymous" value="1"> Make this donation anonymously</label>
-      </div>
-    </div>
 
     <fieldset class="billing" data-geo="data-geo">
       <div class="form-item form-item--nojs form-item--street">
@@ -82,7 +72,22 @@
         </div>
       </div>
     </fieldset>
-    
+
+    {% if additional_donation %}
+    <fieldset class="acknowledgement">
+      <legend><h4>Acknowlegement</h4></legend>
+      <p>This purchase contains a donation, so it will be listed in our annual report. If you'd like to be listed in a different way than your payment information above, please enter it below.</p>
+      <div class="form-item form-item--display-name">
+        <div>
+          <label for="display_as">Acknowlege Donation As:</label>
+          <input type="text" id="display_as" name="display_as">
+        </div>
+        <div>
+          <label class="additional-option"><input type="checkbox" name="anonymous" id="edit-anonymous" value="1"> Make this donation anonymously</label>
+        </div>
+      </div>
+    </fieldset>
+    {% endif %}
 
     <button type="submit" class="btn btn--submit give" autocomplete="off">Complete Purchase</button>
 
