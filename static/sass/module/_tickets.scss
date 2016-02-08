@@ -67,8 +67,12 @@
 	margin-bottom: 0;
 }
 
+.ticket-confirm .confirm p:first-of-type {
+	margin: $milli-space 0;
+}
+
 @media screen and (min-width: $large-screen) {
-	#panel--tickets .ticket-select {
+	#panel--tickets .ticket-select, #panel--confirmation .ticket-confirm {
 		margin: 0.5em 0 0 0;
 		.form-item--promo-code:last-child {
 			margin-bottom: 0;
