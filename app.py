@@ -228,6 +228,21 @@ def minnpost_advertising_form():
     now = datetime.now()
     year = now.year
 
+    if request.args.get('amount'):
+        amount = float(request.args.get('amount'))
+        if (amount).is_integer():
+            amount_formatted = int(request.args.get('amount'))
+        else:
+            amount_formatted = format(amount, ',.2f')
+    else:
+        amount = ''
+        amount_formatted = ''
+
+    if request.args.get('invoice'):
+        invoice = request.args.get('invoice')
+    else:
+        invoice = ''
+
     if request.args.get('campaign'):
         campaign = request.args.get('campaign')
     else:
@@ -248,6 +263,11 @@ def minnpost_advertising_form():
     else:
         opp_subtype = 'Sales: Advertising'
 
+    if request.args.get('organization'):
+        organization = request.args.get('organization')
+    else:
+        organization = ''
+
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
     else:
@@ -260,14 +280,10 @@ def minnpost_advertising_form():
         email = request.args.get('email')
     else:
         email = ''
-    if request.args.get('additional_donation'):
-        additional_donation = int(request.args.get('additional_donation'))
-    else:
-        additional_donation = ''
-    return render_template('minnpost-advertising.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
+
+    return render_template('minnpost-advertising.html', form=form, amount=amount_formatted, invoice=invoice, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
-        first_name = first_name,last_name = last_name, email=email,
-        additional_donation = additional_donation,
+        organization=organization, first_name = first_name,last_name = last_name, email=email,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # used at support.minnpost.com/minnroast-sponsorship

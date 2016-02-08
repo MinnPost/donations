@@ -76,6 +76,10 @@
 	margin: $milli-space 0;
 }
 
+.acknowledgement h4 {
+	margin-bottom: $quarter-space;
+}
+
 @media screen and (min-width: $large-screen) {
 	#panel--tickets .ticket-select, #panel--confirmation .ticket-confirm {
 		/*margin: 0.5em 0 0 0;*/
