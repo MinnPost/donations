@@ -21,10 +21,14 @@
   <div class="wrapper support--forms">
 
     <section id="panel--confirmation" class="panel panel--form">
-  	 <h1>Thank you for purchasing event tickets</h1>
-  	 <p>Thank you for purchasing {{ session['quantity'] }} ticket{% if session['quantity'] != 1 %}s{% endif %}{% if session['additional_donation'] != '' %}, and for your additional ${{ session['additional_donation'] }} donation{% endif %}. We look forward to seeing you!</p>
-  	 <p>Check your email for your payment confirmation and more details regarding this event.</p>
+      <div class="ticket-confirm">
+        <h1>Thank you for purchasing event tickets</h1>
+        <p>Thank you for purchasing {{ session['quantity'] }} ticket{% if session['quantity'] != 1 %}s{% endif %}{% if session['additional_donation'] != '' %}, and for your additional ${{ session['additional_donation'] }} donation{% endif %}. We look forward to seeing you!</p>
+        <p>Check your email for your payment confirmation and more details regarding this event.</p>
+      </div>
     </section>
+
+    {% include 'minnpost-events/includes/event-details.html' %}
 
   </div>
 </main>

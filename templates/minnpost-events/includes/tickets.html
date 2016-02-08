@@ -31,37 +31,8 @@
 			</div>
 		</fieldset>
 
-		<fieldset class="event-details vevent">
-			<h1>Event Details</h1>
-			<div class="summary">
-  				<h4>MinnPost Earth Journal Event</h4>
-  				<h2>Pollinators in Peril</h2>
-				<h3>Featuring Marla Spivak, Director of the U's Bee Lab</h3>
-  			</div>
-			<div class="date">
-				<h3><strong>Tuesday, March 9</strong></h3>
-				<p>7:00pm - 9:00pm</p>
-			</div>
-			<div class="location">
-				<h3><strong>Hell's Kitchen</strong></h3>
-				<p>80 S 9th Street, Minneapolis, MN 55402 (<a href="https://www.google.com/maps/place/Hell's+Kitchen/@44.9746098,-93.2747867,17z/data=!3m1!4b1!4m2!3m1!1s0x52b332970f3ac4a5:0x483914bd7d198918" target="_blank">map</a>)</p>
-			</div>
+		{% include 'minnpost-events/includes/event-details.html' %}
 
-			<div title="Add to Calendar" class="addeventatc">
-			    Add to Calendar
-			    <span class="start">03/09/2016 09:00 PM</span>
-			    <span class="end">03/09/2016 11:00 PM</span>
-			    <span class="timezone">America/Chicago</span>
-			    <span class="title">MinnPost Earth Journal Event: Pollinators in Peril</span>
-			    <span class="description">Featuring Marla Spivak, Director of the U's Bee Lab</span>
-			    <span class="location">Hell's Kitchen 80 S 9th Street, Minneapolis, MN 55402</span>
-			    <span class="organizer">MinnPost</span>
-			    <span class="organizer_email">members@minnpost.com</span>
-			    <span class="all_day_event">false</span>
-			    <span class="date_format">MM/DD/YYYY</span>
-			</div>
-
-		</fieldset>
 	</div>
 	<a href="/event-register/?step=panel--attendees" class="btn btn--next">Add Attendees</a>
 </section>
