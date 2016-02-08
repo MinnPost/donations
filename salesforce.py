@@ -630,7 +630,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Shipping_address_country__c': shipping_street,
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
             'Stripe_Customer_Id__c': customer.id,    
-            'Ticket_count__c': ticket_count,        
+            'Ticket_count__c': quantity,        
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
             }
