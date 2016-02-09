@@ -567,29 +567,35 @@ def charge_ajax():
 
                 extra_values['fair_market_value'] = fair_market_value
 
-            elif request.form['opp_type'] == 'Sales':                
-                quantity = int(request.form['quantity'])
+            elif request.form['opp_type'] == 'Sales':
+                if 'quantity' in request.form:              
+                    quantity = int(request.form['quantity'])
+                    #attendees = []
+                    opportunity_attendees = ''
+                    if quantity > 1:
+                        for x in range(quantity):
+                            attendee_id = x + 1
+                            opportunity_attendees += request.form['attendee_name_' + str(attendee_id)] + ': ' + request.form['attendee_email_' + str(attendee_id)] + ';'
+
+                            #attendee = {'name' : request.form['attendee_name_' + str(attendee_id)], 'email' : request.form['attendee_email_' + str(attendee_id)]}
+                            #attendees.append(attendee)
+                    elif quantity == 1:
+                        opportunity_attendees += request.form['attendee_name_1'] + ': ' + request.form['attendee_email_1'] + ';'
+                        #attendee = {'name' : request.form['attendee_name_1'], 'email' : request.form['attendee_email_1']}
+                        #attendees.append(attendee)
+                    #extra_values['attendees'] = attendees
+                    extra_values['attendees'] = opportunity_attendees
+
+        if 'opp_subtype' in request.form:
+            opp_subtype = request.form['opp_subtype']
+            session['opp_subtype'] = opp_subtype
+            if opp_subtype == 'Sales: Tickets':
                 single_unit_fair_market_value = int(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
                 fair_market_value = quantity * single_unit_fair_market_value
-                extra_values['fair_market_value'] = fair_market_value
-                #attendees = []
-                opportunity_attendees = ''
-                if quantity > 1:
-                    for x in range(quantity):
-                        attendee_id = x + 1
-                        opportunity_attendees += request.form['attendee_name_' + str(attendee_id)] + ': ' + request.form['attendee_email_' + str(attendee_id)] + ';'
-
-                        #attendee = {'name' : request.form['attendee_name_' + str(attendee_id)], 'email' : request.form['attendee_email_' + str(attendee_id)]}
-                        #attendees.append(attendee)
-                elif quantity == 1:
-                    opportunity_attendees += request.form['attendee_name_1'] + ': ' + request.form['attendee_email_1'] + ';'
-                    #attendee = {'name' : request.form['attendee_name_1'], 'email' : request.form['attendee_email_1']}
-                    #attendees.append(attendee)
-                #extra_values['attendees'] = attendees
-                extra_values['attendees'] = opportunity_attendees
-
-        if 'subtype' in request.form:
-            session['opp_subtype'] = request.form['opp_subtype']
+            elif opp_subtype == 'Sales: Advertising':
+                fair_market_value = amount
+                extra_values['invoice'] = request.form['invoice']
+            extra_values['fair_market_value'] = fair_market_value
 
         if 'additional_donation' in request.form:
             if request.form['additional_donation'] != '':
@@ -598,11 +604,15 @@ def charge_ajax():
                 session['additional_donation'] = format(additional_donation, ',.2f')
             else:
                 session['additional_donation'] = ''
+        else:
+            session['additional_donation'] = ''
 
         if 'quantity' in request.form:
             quantity = int(request.form['quantity'])
             extra_values['quantity'] = quantity
             session['quantity'] = quantity
+        else:
+            session['quantity'] = ''
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)

@@ -304,6 +304,14 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         fair_market_value = ''
 
     try:
+        if extra_values['invoice'] != '':
+            invoice = extra_values['invoice']
+        else:
+            invoice = ''
+    except:
+        invoice = ''
+
+    try:
         if extra_values['quantity'] != '':
             quantity = extra_values['quantity']
         else:
@@ -618,6 +626,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Member_benefit_request_Swag__c': swag,
             'Member_benefit_request_Other_benefits__c': swag_other_benefits,
             'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
+            'MinnPost_Invoice__c': invoice,
             'Opportunity_Subtype__c': subtype,
             'Payment_Page_Full_URL__c': full_url,
             'Payment_Type__c': 'Stripe',
