@@ -33,6 +33,7 @@ from config import EVENT_DISCOUNT_SINGLE_UNIT_PRICE
 from config import EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE
 from config import EVENT_PROMO_CODE
 from config import EVENT_CAMPAIGN_ID
+from config import ADVERTISING_CAMPAIGN_ID
 from salesforce import add_customer_and_charge
 #from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
@@ -246,7 +247,7 @@ def minnpost_advertising_form():
     if request.args.get('campaign'):
         campaign = request.args.get('campaign')
     else:
-        campaign = ''
+        campaign = ADVERTISING_CAMPAIGN_ID
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
