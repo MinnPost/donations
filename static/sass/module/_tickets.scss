@@ -72,10 +72,12 @@
 	}
 }
 
+.attendee {
+	padding: $half-space;
+}
 .attendee:nth-child(even) {
 	border-bottom: 1px solid $gray-lightest;
 	background: lighten($gray-lightest, 10);
-	padding: $half-space;
 }
 .attendee .form-item {
 	margin-bottom: 0;

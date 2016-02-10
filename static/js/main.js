@@ -1065,7 +1065,7 @@ global.Payment = Payment;
       }
 
       if ($(this.options.calculated_amount_selector).length > 0) {
-        this.calculateAmount(this.element, this.options, {success: false}); //
+        this.calculateAmount(this.element, this.options, ''); //
       } // calculate amount based on quantity
 
       if ($(this.options.use_promocode_selector).length > 0) {
@@ -1533,7 +1533,7 @@ global.Payment = Payment;
       });
     }, // allowMinnpostAccount
 
-    populateAttendees: function(element, options, quantity) {
+    populateAttendees: function(quantity) {
       var attendees = '';
       var attendee = $('.attendees > fieldset:first').html();
       for (i = 1; i <= quantity; i++) {
@@ -1544,15 +1544,24 @@ global.Payment = Payment;
 
     displayAmount: function(element, options, single_unit_price, quantity, additional_amount, valid_code) {
       var amount = single_unit_price * parseInt(quantity, 10);
-      console.log('additional is ' + additional_amount);
       if (additional_amount === '') {
         additional_amount = 0;
       } else {
         amount += parseInt(additional_amount, 10);
+        $(options.has_additional_text_selector).html($(options.has_additional_text_selector).data('text'));
+        $(options.additional_amount_selector).text(parseFloat($(options.additional_amount_field).val()));
       }
 
       $(options.calculated_amount_selector).text(amount); // this is the preview text
       $(options.original_amount_selector).val(quantity * single_unit_price); // this is the amount field
+      $(options.quantity_selector).text(quantity); // everywhere there's a quantity
+
+      if (quantity == 1) {
+        $('.attendee-title').text($('.attendee-title').data('single'));
+      } else {
+        $('.attendee-title').text($('.attendee-title').data('plural'));
+      }
+
       $('.code-result').remove();
       if (valid_code === true) {
         $('.apply-promo-code').after('<p class="code-result success">Your member discount code was successfully added.</p>');
@@ -1568,6 +1577,7 @@ global.Payment = Payment;
       //console.log('start. set variables and plain text, and remove code result.');
       var that = this;
       var quantity = $(options.quantity_field).val();
+
       var single_unit_price = $(options.quantity_field).data(options.single_unit_price_attribute);
       var additional_amount = $(options.additional_amount_field).val();
       if (data.success === true) {
