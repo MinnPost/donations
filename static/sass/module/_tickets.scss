@@ -1,21 +1,30 @@
+.tickets .form-item {
+	margin: $half-space 0;
+}
+
 .form-item--ticket-quantity {
 	margin: $quarter-space 0;
 	font-size: 2em;
+	font-size: 1.25em;
+	
 	#quantity {
-		width: auto;
 		display: inline-block;
-		border: 1px solid $base-border-color;
-	    padding: 0.35em 0;
+		/*border: 1px solid $base-border-color;
+	    padding: 0.35em 0;*/
 	    width: 3em;
-	    font-size: $h3-size;
+	    /*font-size: $h3-size;
 	    font-family: NimbusSanNovConD-Bol,Helvetica,Arial,Geneva,sans-serif;
 	    text-align: center;
-    	vertical-align: top;
+    	vertical-align: top;*/
 	}
 	label {
 		width: auto;
 		display: inline-block;
 		margin: $half-space 0 0 $half-space;
+		margin: 0;
+	}
+	span.unit-price {
+		color: $gray-light;
 	}
 }
 .tickets .calculated-amount::before {
@@ -81,6 +90,9 @@
 }
 
 @media screen and (min-width: $large-screen) {
+	.form-item--additional-donation {
+		max-width: 66%;
+	}
 	#panel--tickets .ticket-select, #panel--confirmation .ticket-confirm {
 		/*margin: 0.5em 0 0 0;*/
 		.form-item--promo-code:last-child {

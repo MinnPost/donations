@@ -23,13 +23,23 @@ fieldset.payment {
 .form-item {
   margin-bottom: $h3-space;
   .input-prepend {
+    position: relative;
+    .prefix {
+      display: inline-block;
+      position: absolute;
+      left: $quarter-space;
+      top: 0.4em;
+      color: $gray-light;
+
+    }
     input {
       display: inline-block;
-      width: 47%;
+      text-indent: $half-space;
+      //width: 100%;
     }
   }
   .button-group {
-    margin-bottom: 0.25em;
+    margin-bottom: $quarter-space;
     clear: both;
     input {
       width: 50%;

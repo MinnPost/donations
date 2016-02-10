@@ -11,10 +11,9 @@ button, a.btn, input[type="submit"] {
   font-family: $helvetica;
   font-size: $base-font-size;
   line-height: 1;
-  padding: $milli-space $h5-space;
+  padding: 0.65em $h5-space;
   text-decoration: none;
   user-select: none;
-  vertical-align: middle;
   white-space: nowrap;
   // maybe test this later
   //text-align: center;
