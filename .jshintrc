@@ -23,6 +23,8 @@
       "History": true,
       "google": false,
       "_gaq": false,
-      "_ga": false
+      "_ga": false,
+      "Payment": false,
+      "Stripe": false
   }
 }
