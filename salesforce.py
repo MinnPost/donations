@@ -312,6 +312,14 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         invoice = ''
 
     try:
+        if extra_values['organization'] != '':
+            organization = extra_values['organization']
+        else:
+            organization = ''
+    except:
+        organization = ''
+
+    try:
         if extra_values['quantity'] != '':
             quantity = extra_values['quantity']
         else:
@@ -606,6 +614,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Type': type__c,
             'Anonymous__c': anonymous,
             'Credited_as__c': credited_as,
+            'Client_Organization__c': organization,
             'Donor_first_name__c': first_name,
             'Donor_last_name__c': last_name,
             'Donor_e_mail__c': email,

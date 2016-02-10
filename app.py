@@ -595,6 +595,7 @@ def charge_ajax():
             elif opp_subtype == 'Sales: Advertising':
                 fair_market_value = amount
                 extra_values['invoice'] = request.form['invoice']
+                extra_values['organization'] = request.form['organization']
             extra_values['fair_market_value'] = fair_market_value
 
         if 'additional_donation' in request.form:
