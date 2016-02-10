@@ -21,6 +21,7 @@
     'minnpost_root' : 'https://www.minnpost.com',
     'donate_form_selector': '#donate',
     'review_step_selector' : '#panel--review',
+    'attendees_step_selector' : '#panel--attendees',
     'donate_step_selector' : '#panel--pay',
     'confirm_form_selector' : '#confirm',
     'confirm_step_selector' : '#panel--confirmation',
@@ -156,7 +157,7 @@
       } else {
         this.options.amount = amount;
       }
-      this.options.original_amount = parseInt($(this.options.original_amount_selector, this.element).val());
+      this.options.original_amount = parseInt($(this.options.original_amount_selector, this.element).val(), 10);
       this.options.frequency = parseFloat($(this.options.frequency_selector, this.element).attr('data-year-freq'));
       var recurring = $(this.options.recurring_selector, this.element).val();
       if (typeof recurring !== 'undefined') {
@@ -167,7 +168,7 @@
       
       this.options.new_amount = (this.options.original_amount + this.options.fixed_fee) / (1 - this.options.processing_percent);
       this.options.processing_fee = this.options.new_amount - this.options.original_amount;
-      this.options.processing_fee = (Math.round(parseFloat(this.options.processing_fee)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2)
+      this.options.processing_fee = (Math.round(parseFloat(this.options.processing_fee)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
       this.options.processing_fee_text = this.options.processing_fee;
       
       this.options.upsell_amount = parseFloat($(this.options.upsell_amount_selector, this.element).text());
@@ -181,7 +182,7 @@
       Stripe.setPublishableKey(this.options.stripe_publishable_key);
 
       // use a referrer for edit link if we have one
-      if (document.referrer != '') {
+      if (document.referrer !== '') {
         $('#edit_url').prop('href', document.referrer);
       }
 
@@ -238,7 +239,7 @@
       }
 
       if ($(this.options.calculated_amount_selector).length > 0) {
-        this.calculateAmount(this.element, this.options, false); //
+        this.calculateAmount(this.element, this.options, {success: false}); //
       } // calculate amount based on quantity
 
       if ($(this.options.use_promocode_selector).length > 0) {
@@ -313,7 +314,7 @@
           var name = object.types[0];
           $.each(object.types, function(index, name) {
             address[name] = object.long_name;
-            address[name + "_short"] = object.short_name;
+            address[name + '_short'] = object.short_name;
           });
         });
                 var fieldset = $(selector).closest('fieldset[data-geo="data-geo"]');
@@ -351,7 +352,7 @@
         $('.panel').show();
       }
       // activate the tabs
-      if ($('.progress--donation li .active').length == 0) {
+      if ($('.progress--donation li .active').length === 0) {
         $('#' + active).fadeIn();
         $('.progress--donation li.' + active + ' a').addClass('active');
       } else {
@@ -706,52 +707,68 @@
       });
     }, // allowMinnpostAccount
 
-    calculateAmount: function(element, options, valid_code, single_unit_ajax, quantity, changed) {
-      var that = this;
-      var quantity = $(options.quantity_field).val();
-      $(options.quantity_selector).text(quantity);
-      //console.log('quantity is ' + quantity);
-      var single_unit_price = $(options.quantity_field).data(options.single_unit_price_attribute);
-      var amount = quantity * single_unit_price;
-      $('.code-result').remove();
-      //var use_promo = false;
+    populateAttendees: function(element, options, quantity) {
+      var attendees = '';
+      var attendee = $('.attendees > fieldset:first').html();
+      for (i = 1; i <= quantity; i++) {
+        attendees += '<fieldset class="attendee">' + attendee.replace(/_1/g, '_' + i) + '</fieldset>';
+      }
+      $('.attendees').html(attendees);
+    },
 
-      if (valid_code == true) {
-        single_unit_price = single_unit_ajax;
+    displayAmount: function(element, options, single_unit_price, quantity, additional_amount, valid_code) {
+      var amount = single_unit_price * parseInt(quantity, 10);
+      console.log('additional is ' + additional_amount);
+      if (additional_amount === '') {
+        additional_amount = 0;
+      } else {
+        amount += parseInt(additional_amount, 10);
+      }
+
+      $(options.calculated_amount_selector).text(amount); // this is the preview text
+      $(options.original_amount_selector).val(quantity * single_unit_price); // this is the amount field
+      $('.code-result').remove();
+      if (valid_code === true) {
         $('.apply-promo-code').after('<p class="code-result success">Your member discount code was successfully added.</p>');
+        $('.show-' + options.single_unit_price_attribute).text(single_unit_price);
         $('.apply-promo-code').text('Applied').addClass('btn--disabled');
-      } else if (changed == true && valid_code == false) {
+      } else if (valid_code === false) {
         $('.apply-promo-code').after('<p class="code-result error">This code is incorrect. Try again.</p>');
       }
 
-      quantity = $(options.quantity_field).val();
-      amount = quantity * single_unit_price;
-      if ($(options.additional_amount_field).val() > 0) {
-        $(options.has_additional_text_selector).html($(options.has_additional_text_selector).data('text'));
-        $(options.additional_amount_selector).text(parseFloat($(options.additional_amount_field).val()));
-        amount += parseFloat($(options.additional_amount_field).val());
-        
-      } else {
-        $(options.has_additional_text_selector).html('');
-      }
-      $(options.calculated_amount_selector).text(amount);
-      $(options.original_amount_selector).val(quantity * single_unit_price);
-      //});
+    },
 
-      $( options.quantity_field + ', ' + options.additional_amount_field ).change(function() {
+    calculateAmount: function(element, options, data) {
+      //console.log('start. set variables and plain text, and remove code result.');
+      var that = this;
+      var quantity = $(options.quantity_field).val();
+      var single_unit_price = $(options.quantity_field).data(options.single_unit_price_attribute);
+      var additional_amount = $(options.additional_amount_field).val();
+      if (data.success === true) {
+        single_unit_price = data.single_unit_price;
+      }
+      that.displayAmount(element, options, single_unit_price, quantity, additional_amount, data.success);
+
+      $(options.quantity_field + ', ' + options.additional_amount_field).change(function() { // the quantity or additional amount changed
         quantity = $(options.quantity_field).val();
-        var attendees = '';
-        var attendee = $('.attendees > fieldset:first').html();
-        for (i = 1; i <= quantity; i++) {
-          attendees += '<fieldset class="attendee">' + attendee.replace(/_1/g, '_' + i) + '</fieldset>';
-        }
-        $('.attendees').html(attendees);
+        additional_amount = $(options.additional_amount_field).val();
         if (quantity != 1) {
           $(options.item_selector).text($(options.item_selector).data('plural'));
         } else {
           $(options.item_selector).text($(options.item_selector).data('single'));
         }
-        that.calculateAmount(element, options, valid_code, single_unit_price, quantity, false);
+
+        that.displayAmount(element, options, single_unit_price, quantity, additional_amount);
+        
+      });
+
+      var attendees = '';
+      $(options.attendees_step_selector).find('.btn').click(function() {
+        attendees = that.populateAttendees(quantity);
+      });
+
+      $('.progress--donation .panel--attendees').find('a').click(function() {
+        attendees = that.populateAttendees(quantity);
       });
 
       if ($(this.options.promocode_selector).length > 0) {
@@ -759,9 +776,7 @@
         $('.apply-promo-code').click(function(event) {
           var code = $(options.promocode_selector, element).val();
           //use_promo = that.checkPromoCode(code);
-          //that.calculateAmount(element, options, valid_code);
           event.preventDefault();
-          if (changed != true) {
             var data = {
               promo_code: code
             };
@@ -770,10 +785,9 @@
               url: '/event-check-promo/',
               data: data
             }).done(function( data ) {
-              that.calculateAmount(element, options, data.success, data.single_unit_price, quantity, true);
+              that.calculateAmount(element, options, data);
+              //that.displayAmount(element, options, data.single_unit_price, quantity, additional_amount, data.success);
             });
-          }
-
         });
       }
 

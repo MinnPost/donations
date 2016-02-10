@@ -4,9 +4,10 @@
 			<h1>Tickets</h1>
 			<p>You can purchase up to five tickets. Select your quantity, and don't forget to use your promo code if you are a MinnPost member.</p>
 			<div class="form-item form-item--ticket-quantity">
-		      <input type="number" id="quantity" name="quantity" min="1" required value="{{ quantity }}" data-unit-price="{{ single_unit_price }}" autocomplete="off">
+				<label for="quantity" class="required">Quantity:</label>
+		      	<input type="number" id="quantity" name="quantity" min="1" required value="{{ quantity }}" data-unit-price="{{ single_unit_price }}" autocomplete="off">
+		      	<span class="unit-price">x $<span class="show-unit-price">{{ single_unit_price }}</span> per ticket</span>
 		      <!--<label for="quantity">Quantity</label>-->
-		      <span class="calculated-amount">{{ starting_amount }}</span>
 		    </div>
 		    <div class="form-item form-item--promo-code">
 				<div class="button-group">
@@ -26,8 +27,13 @@
 			</div>
 			<div class="form-item form-item--additional-donation">
 		      <label for="additional_donation">Additional Donation (optional): </label>
-		      <div class="input-prepend">$
-		      <input type="number" id="additional_donation" name="additional_donation" min="0" value="{{ additional_donation }}"></div>
+		      <div class="input-prepend">
+		      	<span class="prefix">$</span>
+		      	<input type="number" id="additional_donation" name="additional_donation" min="0" value="{{ additional_donation }}">
+		      </div>
+		    </div>
+		    <div class="form-item preview" style="font-size: 2em; margin: 0;">
+		    	<span>Total: </span><span class="calculated-amount">{{ starting_amount }}</span>
 		    </div>
 		</fieldset>
 
