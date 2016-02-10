@@ -6,7 +6,10 @@
   <fieldset class="clear-block">
     <div class="form-item form-item--amount">
       <label for="amount" class="required">Amount: </label>
-      <input type="number" id="amount" name="amount" value="{{ amount }}" min="1" required>
+      <div class="input-prepend">
+        <span class="prefix">$</span>
+        <input type="number" id="amount" name="amount" value="{{ amount }}" min="1" required>
+      </div>
     </div>
     <div class="form-item form-item--invoice">
       <label for="invoice" class="required">Invoice #: </label>
