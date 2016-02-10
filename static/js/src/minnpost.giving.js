@@ -779,7 +779,7 @@
       });
 
       var attendees = '';
-      $(options.attendees_step_selector).find('.btn').click(function() {
+      $(options.review_step_selector).find('.btn').click(function() {
         attendees = that.populateAttendees(quantity);
       });
 
