@@ -720,8 +720,14 @@
       var amount = single_unit_price * parseInt(quantity, 10);
       if (additional_amount === '') {
         additional_amount = 0;
+        $(options.create_mp_selector).parent().hide();
       } else {
         amount += parseInt(additional_amount, 10);
+        levelcheck = {original_amount: additional_amount, frequency: 1, levels: options.levels};
+        level = this.checkLevel(element, levelcheck, 'num');
+        if (level >= 2) {
+          $(options.create_mp_selector).parent().show();
+        }
         $(options.has_additional_text_selector).html($(options.has_additional_text_selector).data('text'));
         $(options.additional_amount_selector).text(parseFloat($(options.additional_amount_field).val()));
       }
