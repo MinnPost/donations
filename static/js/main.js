@@ -1166,8 +1166,15 @@ global.Payment = Payment;
       var title = 'MinnPost | Support Us | ';
       var page = $('.progress--donation li.' + active).text();
       var next = $('.progress--donation li.' + active).next().text();
-      var step = $('.progress--donation li').index('.' + active) + 1;
+      var step = $('.progress--donation li.' + active).index() + 1;
       var next_step = step + 1;
+
+      if ($(this.options.confirm_step_selector).length > 0) {
+        active = this.options.confirm;
+        $('.progress--donation li.' + active + ' span').addClass('active');
+        step = $('.progress--donation li').length + 1;
+      }
+
       document.title = title + page;
       this.analyticsTrackingStep(step, title);
 
@@ -1198,7 +1205,6 @@ global.Payment = Payment;
     }, // paymentPanels
 
     analyticsTrackingStep: function(step, title) {
-      console.log('send some stuff');
       var level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
       var levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
       var amount = $(this.options.original_amount_selector).val();
@@ -1215,17 +1221,19 @@ global.Payment = Payment;
         'quantity': 1
       });
 
-      if (step == 1 || step == 2) {
+      if (step === 1 || step === 2 || step === 4) { // wonder if this will work for step 4
+        console.log('add a checkout action. step is ' + step);
         ga('ec:setAction','checkout', {
           'step': step,            // A value of 1 indicates first checkout step.Value of 2 indicates second checkout step
         });
-      } else if (step == 3) {
+      } else if (step === 3) {
+        console.log('add a purchase action. step is ' + step);
         ga('ec:setAction', 'purchase',{
           'id': opp_id, // Transaction id - Type: string
           'affiliation': 'MinnPost', // Store name - Type: string
           'revenue': amount, // Total Revenue - Type: numeric
         });
-      } // need something for step 4. maybe an event
+      }
 
       ga('set', {
         page: window.location.pathname,
