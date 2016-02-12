@@ -48,7 +48,6 @@ class Log(object):
 
 def process_charges(query, log):
 
-    print(query)
     sf = SalesforceConnection()
 
     response = sf.query(query)
@@ -58,7 +57,6 @@ def process_charges(query, log):
         len(response)))
 
     for item in response:
-        # print (item)
         amount = amount_to_charge(item)
         try:
             log.it("---- Charging ${} to {} ({})".format(amount / 100,
@@ -105,25 +103,35 @@ def process_charges(query, log):
 
         except stripe.error.InvalidRequestError as e:
             log.it("Error: {}".format(e))
-            #continue
-
-            # charge was unsuccessful
             update = {
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
-        # print ('Charge: {}'.format(charge))
-        # TODO: check for success
-        # TODO: catch other errors
+            continue
+        except Exception as e:
+            log.it("Error: {}".format(e))
+            update = {
+                'StageName': 'Closed Lost',
+                'Stripe_Error_Message__c': "Error: {}".format(e)
+                }
+            continue
+        if charge.status != 'succeeded':
+            log.it("Error: Charge failed. Check Stripe logs.")
+            update = {
+                'StageName': 'Closed Lost',
+                'Stripe_Error_Message__c': "Error: Unknown. Check logs"
+                }
+            continue
+        update = {
+                'Stripe_Transaction_Id__c': charge.id,
+                'Stripe_Card__c': charge.source.id,
+                'StageName': 'Closed Won',
+                }
 
-        # print ("Charge id: {}".format(charge.id))
-        
         path = item['attributes']['url']
         url = '{}{}'.format(sf.instance_url, path)
-        # print (url)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         # TODO: check 'errors' and 'success' too
-        # print (resp)
         if resp.status_code == 204:
             log.it("ok")
         else:
@@ -162,9 +170,8 @@ def charge_cards():
     # Circle transactions are different from the others. The Close Dates for a
     # given Circle donation are all identical. That's so that the gift can be
     # recognized all at once on the donor wall. So we use another field to
-    # determine when the card is actually charged:
-    # Giving_Circle_Expected_Giving_Date__c. So we process charges separately
-    # for Circles.
+    # determine when the card is actually charged: Expected_Giving_Date__c.
+    # So we process charges separately for Circles.
     #
 
     # log.it('---Processing Circle charges...')
@@ -173,8 +180,8 @@ def charge_cards():
     #     SELECT Amount, Name, Stripe_Customer_Id__c, Description,
     #         Stripe_Agreed_to_pay_fees__c
     #     FROM Opportunity
-    #     WHERE Giving_Circle_Expected_Giving_Date__c <= {}
-    #     AND Giving_Circle_Expected_Giving_Date__c >= {}
+    #     WHERE Expected_Giving_Date__c <= {}
+    #     AND Expected_Giving_Date__c >= {}
     #     AND StageName = 'Pledged'
     #     AND Stripe_Customer_Id__c != ''
     #     AND Type = 'Giving Circle'
