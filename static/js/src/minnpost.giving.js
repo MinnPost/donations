@@ -340,10 +340,10 @@
       var title = 'MinnPost | Support Us | ';
       var page = $('.progress--donation li.' + active).text();
       var next = $('.progress--donation li.' + active).next().text();
-      var step = $('.progress--donation li .active').parent().index() + 1;
+      var step = $('.progress--donation li').index('.' + active) + 1;
       var next_step = step + 1;
       document.title = title + page;
-      this.analyticsTrackingStep(step);
+      this.analyticsTrackingStep(step, title);
 
       // make some tabs for form
       if (usetabs === true) {
@@ -371,8 +371,8 @@
       });
     }, // paymentPanels
 
-    analyticsTrackingStep: function(step) {
-
+    analyticsTrackingStep: function(step, title) {
+      console.log('send some stuff');
       var level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
       var levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
       var amount = $(this.options.original_amount_selector).val();
@@ -400,6 +400,12 @@
           'revenue': amount, // Total Revenue - Type: numeric
         });
       } // need something for step 4. maybe an event
+
+      ga('set', {
+        page: window.location.pathname,
+        title: title
+      });
+      ga('send', 'pageview', window.location.pathname);
 
     }, // analyticsTrackingStep
 
@@ -1006,8 +1012,6 @@
                     }
 
                   } else {
-                    //console.dir(response);
-                    //that.analyticsTrackingStep('charged');
                     supportform.get(0).submit(); // continue submitting the form
                   }
                 })
