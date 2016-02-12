@@ -340,7 +340,7 @@
       var title = 'MinnPost | Support Us | ';
       var page = $('.progress--donation li.' + active).text();
       var next = $('.progress--donation li.' + active).next().text();
-      var step = $('.progress--donation li').index('.' + active) + 1;
+      var step = $('.progress--donation li.' + active).index() + 1;
       var next_step = step + 1;
       document.title = title + page;
       this.analyticsTrackingStep(step, title);
