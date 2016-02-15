@@ -85,7 +85,7 @@
     'cc_cvv_selector' : '#cc-cvc',
     'payment_button_selector' : '#submit',
     'confirm_button_selector' : '#finish',
-    'opp_id_selector' : '#opp_id',
+    'opp_id_selector' : '#flask_id',
     'recurring_selector' : '#recurring',
     'newsletter_group_selector' : '[name="newsletters"]',
     'message_group_selector' : '[name="messages"]',
@@ -341,6 +341,7 @@
       var page = $('.progress--donation li.' + active).text();
       var next = $('.progress--donation li.' + active).next().text();
       var step = $('.progress--donation li.' + active).index() + 1;
+      var opp_id = $(this.options.opp_id_selector).val();
       var next_step = step + 1;
 
       if ($(this.options.confirm_step_selector).length > 0) {

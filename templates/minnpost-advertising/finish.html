@@ -4,11 +4,14 @@
 
 <main>
   <div class="wrapper support--forms">
-
-    <section id="panel--confirmation" class="panel panel--form">
-  	 <h1>Thank you for advertising with MinnPost</h1>
-  	 <p>Thank you for your ${{ amount }} payment. Check your email for your payment confirmation.</p>
-    </section>
+  	<form>
+		<input type="hidden" name="flask_id" id="flask_id" value="{{ session['flask_id'] }}">
+		<input type="hidden" name="sf_type" id="sf_type" value="{{ session['sf_type'] }}">
+	    <section id="panel--confirmation" class="panel panel--form">
+	  	 <h1>Thank you for advertising with MinnPost</h1>
+	  	 <p>Thank you for your ${{ amount }} payment. Check your email for your payment confirmation.</p>
+	    </section>
+	</form>
 
   </div>
 </main>
