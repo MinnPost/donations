@@ -85,7 +85,7 @@
     'cc_cvv_selector' : '#cc-cvc',
     'payment_button_selector' : '#submit',
     'confirm_button_selector' : '#finish',
-    'opp_id_selector' : '#opp_id',
+    'opp_id_selector' : '#flask_id',
     'recurring_selector' : '#recurring',
     'newsletter_group_selector' : '[name="newsletters"]',
     'message_group_selector' : '[name="messages"]',
@@ -340,10 +340,35 @@
       var title = 'MinnPost | Support Us | ';
       var page = $('.progress--donation li.' + active).text();
       var next = $('.progress--donation li.' + active).next().text();
-      var step = $('.progress--donation li .active').parent().index() + 1;
+      var step = $('.progress--donation li.' + active).index() + 1;
+      var nav_item_count = $('.progress--donation li').length;
+      var opp_id = $(this.options.opp_id_selector).val();
       var next_step = step + 1;
+
+      // this is the last visible step
+      if ($(this.options.confirm_step_selector).length > 0) {
+        active = this.options.confirm;
+        $('.progress--donation li.' + active + ' span').addClass('active');
+        step = $('.progress--donation li.' + active).index() + 1;
+        // there is a continuation of the main form on this page. there is a button to click
+        // this means there is another step
+        if ($(this.options.confirm_button_selector).length > 0) {
+          nav_item_count += 1;
+        }
+      }
+
+      if (step === nav_item_count - 1 && $(this.options.opp_id_selector).length > 0) {
+        //console.log('this is a payment step but there is a step after it');
+        step = 'purchase';
+      } else if (step === nav_item_count && $(this.options.opp_id_selector).length > 0) {
+        //console.log('this is a payment step and there is no step after it');
+        step = 'purchase';
+      } else if (step === nav_item_count && $(this.options.opp_id_selector).length === 0) {
+        //console.log('this is a post-finish step. it does not have an id');
+      }
+
       document.title = title + page;
-      this.analyticsTrackingStep(step);
+      this.analyticsTrackingStep(step, title);
 
       // make some tabs for form
       if (usetabs === true) {
@@ -371,8 +396,7 @@
       });
     }, // paymentPanels
 
-    analyticsTrackingStep: function(step) {
-
+    analyticsTrackingStep: function(step, title) {
       var level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
       var levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
       var amount = $(this.options.original_amount_selector).val();
@@ -389,17 +413,24 @@
         'quantity': 1
       });
 
-      if (step == 1 || step == 2) {
-        ga('ec:setAction','checkout', {
-          'step': step,            // A value of 1 indicates first checkout step.Value of 2 indicates second checkout step
-        });
-      } else if (step == 3) {
+      if (step === 'purchase') {
+        //console.log('add a purchase action. step is ' + step);
         ga('ec:setAction', 'purchase',{
           'id': opp_id, // Transaction id - Type: string
           'affiliation': 'MinnPost', // Store name - Type: string
           'revenue': amount, // Total Revenue - Type: numeric
         });
-      } // need something for step 4. maybe an event
+      } else {
+        ga('ec:setAction','checkout', {
+          'step': step,            // A value of 1 indicates first checkout step.Value of 2 indicates second checkout step
+        });
+      }
+
+      ga('set', {
+        page: window.location.pathname,
+        title: title
+      });
+      ga('send', 'pageview', window.location.pathname);
 
     }, // analyticsTrackingStep
 
@@ -1006,8 +1037,6 @@
                     }
 
                   } else {
-                    //console.dir(response);
-                    //that.analyticsTrackingStep('charged');
                     supportform.get(0).submit(); // continue submitting the form
                   }
                 })
