@@ -107,21 +107,21 @@ def process_charges(query, log):
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
-            continue
+            #continue
         except Exception as e:
             log.it("Error: {}".format(e))
             update = {
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
-            continue
+            #continue
         if charge.status != 'succeeded':
             log.it("Error: Charge failed. Check Stripe logs.")
             update = {
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: Unknown. Check logs"
                 }
-            continue
+            #continue
         update = {
                 'Stripe_Transaction_Id__c': charge.id,
                 'Stripe_Card__c': charge.source.id,
