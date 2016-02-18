@@ -93,7 +93,7 @@ def minnpost_form():
     if request.args.get('amount'):
         amount = float(request.args.get('amount'))
         if (amount).is_integer():
-            amount_formatted = int(request.args.get('amount'))
+            amount_formatted = int(amount)
         else:
             amount_formatted = format(amount, ',.2f')
     else:
