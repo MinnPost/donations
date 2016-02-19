@@ -59,7 +59,7 @@ def process_charges(query, log):
     for item in response:
         amount = amount_to_charge(item)
         try:
-            log.it("---- Charging ${} to {} ({})".format(amount / 100,
+            log.it('---- Charging ${} to {} ({})'.format(amount / 100,
                 item['Stripe_Customer_ID__c'],
                 item['Name']))
 
@@ -80,9 +80,15 @@ def process_charges(query, log):
 
         except stripe.error.CardError as e:
             # look for decline code:
-            print('Unable to extract decline code')
-            log.it("Error: {}".format(e))
-            # continue
+            #print('Unable to extract decline code')
+            error = e.json_body['error']
+            log.it('Error: The card has been declined:')
+            log.it('\tStatus: {}'.format(e.http_status))
+            log.it('\tType: {}'.format(error.get('type', '')))
+            log.it('\tCode: {}'.format(error.get('code', '')))
+            log.it('\tParam: {}'.format(error.get('param', '')))
+            log.it('\tMessage: {}'.format(error.get('message', '')))
+            log.it('\tDecline code: {}'.format(error.get('decline_code', '')))
 
             # charge was unsuccessful
             update = {
@@ -90,27 +96,29 @@ def process_charges(query, log):
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
 
+            continue
+
         except stripe.error.InvalidRequestError as e:
             log.it("Error: {}".format(e))
             update = {
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
-            #continue
+            continue
         except Exception as e:
             log.it("Error: {}".format(e))
             update = {
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
-            #continue
+            continue
         if charge.status != 'succeeded':
             log.it("Error: Charge failed. Check Stripe logs.")
             update = {
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: Unknown. Check logs"
                 }
-            #continue
+            continue
         # charge was successful
         update = {
             'Stripe_Transaction_Id__c': charge.id,
