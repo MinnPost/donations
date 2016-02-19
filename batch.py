@@ -103,9 +103,9 @@ def process_charges(query, log):
 
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             if resp.status_code == 204:
-                log.it("ok")
+                log.it('salesforce updated')
             else:
-                log.it("error because status code was not 204")
+                log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
 
             continue
@@ -118,9 +118,9 @@ def process_charges(query, log):
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             if resp.status_code == 204:
-                log.it("ok")
+                log.it('salesforce updated')
             else:
-                log.it("error because status code was not 204")
+                log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
 
             continue
@@ -132,9 +132,9 @@ def process_charges(query, log):
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             if resp.status_code == 204:
-                log.it("ok")
+                log.it('salesforce updated')
             else:
-                log.it("error because status code was not 204")
+                log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
 
             continue
@@ -146,11 +146,11 @@ def process_charges(query, log):
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             if resp.status_code == 204:
-                log.it("ok")
+                log.it('salesforce updated')
             else:
-                log.it("error because status code was not 204")
+                log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
-                
+
             continue
         # charge was successful
         update = {
@@ -165,9 +165,9 @@ def process_charges(query, log):
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         # TODO: check 'errors' and 'success' too
         if resp.status_code == 204:
-            log.it("ok")
+            log.it('salesforce updated')
         else:
-            log.it("error because status code was not 204")
+            log.it('error updating salesforce because status code was not 204')
             raise Exception('error')
 
 
