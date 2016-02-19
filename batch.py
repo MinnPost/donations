@@ -83,16 +83,6 @@ def process_charges(query, log):
                     shipping=shipping_details
                     )
 
-            # charge was successful
-            update = {
-                'Stripe_Transaction_Id__c': charge.id,
-                'Stripe_Card__c': charge.source.id,
-                'Card_type__c': charge.source.brand,
-                'Card_expiration_date__c': str(charge.source.exp_month) + ' / ' + str(charge.source.exp_year),
-                'Card_acct_last_4__c': charge.source.last4,
-                'StageName': 'Closed Won',
-                }
-
         except stripe.error.CardError as e:
             # look for decline code:
             #print('Unable to extract decline code')
@@ -111,7 +101,14 @@ def process_charges(query, log):
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
 
-            #continue
+            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+            if resp.status_code == 204:
+                log.it("ok")
+            else:
+                log.it("error because status code was not 204")
+                raise Exception('error')
+
+            continue
 
         except stripe.error.InvalidRequestError as e:
             log.it("Error: {}".format(e))
@@ -119,21 +116,51 @@ def process_charges(query, log):
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
-            #continue
+            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+            if resp.status_code == 204:
+                log.it("ok")
+            else:
+                log.it("error because status code was not 204")
+                raise Exception('error')
+
+            continue
         except Exception as e:
             log.it("Error: {}".format(e))
             update = {
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
-            #continue
+            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+            if resp.status_code == 204:
+                log.it("ok")
+            else:
+                log.it("error because status code was not 204")
+                raise Exception('error')
+
+            continue
         if charge.status != 'succeeded':
             log.it("Error: Charge failed. Check Stripe logs.")
             update = {
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: Unknown. Check logs"
                 }
-            #continue
+            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+            if resp.status_code == 204:
+                log.it("ok")
+            else:
+                log.it("error because status code was not 204")
+                raise Exception('error')
+                
+            continue
+        # charge was successful
+        update = {
+            'Stripe_Transaction_Id__c': charge.id,
+            'Stripe_Card__c': charge.source.id,
+            'Card_type__c': charge.source.brand,
+            'Card_expiration_date__c': str(charge.source.exp_month) + ' / ' + str(charge.source.exp_year),
+            'Card_acct_last_4__c': charge.source.last4,
+            'StageName': 'Closed Won',
+            }
 
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         # TODO: check 'errors' and 'success' too
