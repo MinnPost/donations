@@ -58,6 +58,11 @@ def process_charges(query, log):
 
     for item in response:
         amount = amount_to_charge(item)
+
+        # salesforce connect
+        path = item['attributes']['url']
+        url = '{}{}'.format(sf.instance_url, path)
+
         try:
             log.it('---- Charging ${} to {} ({})'.format(amount / 100,
                 item['Stripe_Customer_ID__c'],
@@ -78,6 +83,16 @@ def process_charges(query, log):
                     shipping=shipping_details
                     )
 
+            # charge was successful
+            update = {
+                'Stripe_Transaction_Id__c': charge.id,
+                'Stripe_Card__c': charge.source.id,
+                'Card_type__c': charge.source.brand,
+                'Card_expiration_date__c': str(charge.source.exp_month) + ' / ' + str(charge.source.exp_year),
+                'Card_acct_last_4__c': charge.source.last4,
+                'StageName': 'Closed Won',
+                }
+
         except stripe.error.CardError as e:
             # look for decline code:
             #print('Unable to extract decline code')
@@ -96,7 +111,7 @@ def process_charges(query, log):
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
 
-            continue
+            #continue
 
         except stripe.error.InvalidRequestError as e:
             log.it("Error: {}".format(e))
@@ -104,33 +119,22 @@ def process_charges(query, log):
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
-            continue
+            #continue
         except Exception as e:
             log.it("Error: {}".format(e))
             update = {
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
-            continue
+            #continue
         if charge.status != 'succeeded':
             log.it("Error: Charge failed. Check Stripe logs.")
             update = {
                 'StageName': 'Closed Lost',
                 'Stripe_Error_Message__c': "Error: Unknown. Check logs"
                 }
-            continue
-        # charge was successful
-        update = {
-            'Stripe_Transaction_Id__c': charge.id,
-            'Stripe_Card__c': charge.source.id,
-            'Card_type__c': charge.source.brand,
-            'Card_expiration_date__c': str(charge.source.exp_month) + ' / ' + str(charge.source.exp_year),
-            'Card_acct_last_4__c': charge.source.last4,
-            'StageName': 'Closed Won',
-            }
+            #continue
 
-        path = item['attributes']['url']
-        url = '{}{}'.format(sf.instance_url, path)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         # TODO: check 'errors' and 'success' too
         if resp.status_code == 204:
