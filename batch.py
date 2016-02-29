@@ -70,7 +70,10 @@ def process_charges(query, log):
 
             if item['Shipping_address_name__c'] != '':
                 shipping_address = {'line1' : item['Shipping_address_street__c'], 'city' : item['Shipping_address_city__c'], 'state' : item['Shipping_address_state__c'], 'postal_code' : item['Shipping_address_ZIP__c'], 'country' : item['Shipping_address_country__c']}
-                shipping_details = {'name' : item['Shipping_address_name__c'], 'address' : shipping_address}
+                if shipping_address != '':
+                    shipping_details = {'name' : item['Shipping_address_name__c'], 'address' : shipping_address}
+                else:
+                    shipping_details = NULL
             else:
                 shipping_details = NULL
 
