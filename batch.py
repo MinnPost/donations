@@ -100,7 +100,7 @@ def process_charges(query, log):
 
             # charge was unsuccessful
             update = {
-                'StageName': 'Closed Lost',
+                'StageName': 'Failed',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
 
@@ -116,7 +116,7 @@ def process_charges(query, log):
         except stripe.error.InvalidRequestError as e:
             log.it("Error: {}".format(e))
             update = {
-                'StageName': 'Closed Lost',
+                'StageName': 'Failed',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
@@ -130,7 +130,7 @@ def process_charges(query, log):
         except Exception as e:
             log.it("Error: {}".format(e))
             update = {
-                'StageName': 'Closed Lost',
+                'StageName': 'Failed',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
@@ -144,7 +144,7 @@ def process_charges(query, log):
         if charge.status != 'succeeded':
             log.it("Error: Charge failed. Check Stripe logs.")
             update = {
-                'StageName': 'Closed Lost',
+                'StageName': 'Failed',
                 'Stripe_Error_Message__c': "Error: Unknown. Check logs"
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
