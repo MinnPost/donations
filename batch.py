@@ -73,9 +73,9 @@ def process_charges(query, log):
                 if shipping_address.get('line1'):
                     shipping_details = {'name' : item['Shipping_address_name__c'], 'address' : shipping_address}
                 else:
-                    shipping_details = NULL
+                    shipping_details = None
             else:
-                shipping_details = NULL
+                shipping_details = None
 
             charge = stripe.Charge.create(
                     customer=item['Stripe_Customer_ID__c'],
