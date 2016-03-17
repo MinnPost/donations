@@ -34,12 +34,12 @@
     </fieldset>
     <fieldset class="benefits">
       <h2 class="level level--{{ level.levelint }}">MinnPost <span class="level-name">{{ level.level.title() }}</span></h2>  <!-- load server-side from parsing querystring -->
-      <p><span class="swag swag--2">Choose your thank you gift below.</span> You can <span class="swag swag--2">also</span> <a href="https://www.minnpost.com/support/member-benefits/?level={{ level.level }}" class="review-benefits">review all MinnPost <span class="level-name">{{ level.level.title() }}</span> benefits</a>.</p>  <!-- load server-side from parsing querystring -->
-      <label class="swag swag--2"><input type="radio" name="swag" value="mug" id="swag-mug"> <div><img src="/static/img/mug.png" alt="Coffee Mug"></div></label>
-      <label class="swag swag--2"><input type="radio" name="swag" value="water bottle" id="swag-bottle"> <div><img src="/static/img/waterbottle.png" alt="Water Bottle"></div></label>
-      <label class="swag swag--2"><input type="radio" name="swag" value="None" id="swag-no"> <div>Give entire amount to MinnPost</div></label>
-      <p class="swag swag--separate swag--2">Also, <strong>MinnPost Gold and Platinum</strong> members are entitled to a 1-year subscription to The Atlantic. This offer is available each year that you qualify. More information is available in <a href="/static/documents/atlantic-subscription-details.pdf" target="_blank">this document</a>.</p>
-      <fieldset class="swag swag--2">
+      <p><span class="swag swag--{{ main_swag_minimum_level }}">Choose your thank you gift below.</span> You can <span class="swag swag--{{ main_swag_minimum_level }}">also</span> <a href="https://www.minnpost.com/support/member-benefits/?level={{ level.level }}" class="review-benefits">review all MinnPost <span class="level-name">{{ level.level.title() }}</span> benefits</a>.</p>  <!-- load server-side from parsing querystring -->
+      <label class="swag swag--{{ main_swag_minimum_level }}"><input type="radio" name="swag" value="mug" id="swag-mug"> <div><img src="/static/img/mug.png" alt="Coffee Mug"></div></label>
+      <label class="swag swag--{{ main_swag_minimum_level }}"><input type="radio" name="swag" value="water bottle" id="swag-bottle"> <div><img src="/static/img/waterbottle.png" alt="Water Bottle"></div></label>
+      <label class="swag swag--{{ main_swag_minimum_level }}"><input type="radio" name="swag" value="None" id="swag-no"> <div>Give entire amount to MinnPost</div></label>
+      <p class="swag swag--separate swag--{{ separate_swag_minimum_level }}">Also, <strong>MinnPost Gold and Platinum</strong> members are entitled to a 1-year subscription to The Atlantic. This offer is available each year that you qualify. More information is available in <a href="/static/documents/atlantic-subscription-details.pdf" target="_blank">this document</a>.</p>
+      <fieldset class="swag swag--{{ separate_swag_minimum_level }}">
         <label><input type="radio" value="new" id="atlantic_new" name="swag_atlanticsubscription" class="swag--shipping"> Start a new subscription</label>
         <label><input type="radio" value="existing" id="atlantic_existing" name="swag_atlanticsubscription" class="swag--shipping"> Extend an existing subscription</label>
         <div class="form-item form-item--atlantic_id" >

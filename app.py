@@ -34,6 +34,8 @@ from config import EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE
 from config import EVENT_PROMO_CODE
 from config import EVENT_CAMPAIGN_ID
 from config import ADVERTISING_CAMPAIGN_ID
+from config import SEPARATE_SWAG_MINIMUM_LEVEL
+from config import MAIN_SWAG_MINIMUM_LEVEL
 from salesforce import add_customer_and_charge
 #from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
@@ -55,6 +57,8 @@ app.default_campaign_recurring = DEFAULT_CAMPAIGN_RECURRING
 app.minnroast_campaign_id = MINNROAST_CAMPAIGN_ID
 app.show_upsell = SHOW_UPSELL
 app.allow_donation_notification = ALLOW_DONATION_NOTIFICATION
+app.separate_swag_minimum_level = SEPARATE_SWAG_MINIMUM_LEVEL
+app.main_swag_minimum_level = MAIN_SWAG_MINIMUM_LEVEL
 
 #app.wsgi_app = SassMiddleware(app.wsgi_app, {
 #        'app': ('static/sass', 'static/css', 'static/css')
@@ -136,6 +140,8 @@ def minnpost_form():
         level=level,
         first_name = first_name,last_name = last_name, email=email,
         show_upsell = app.show_upsell, allow_donation_notification = app.allow_donation_notification,
+        separate_swag_minimum_level = app.separate_swag_minimum_level,
+        main_swag_minimum_level = app.main_swag_minimum_level,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
