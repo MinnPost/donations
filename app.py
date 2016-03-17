@@ -457,15 +457,23 @@ def charge():
     form = MinnPostForm(request.form)
     #pprint('Request: {}'.format(request))
 
-    email_is_valid = validate_email(request.form['stripeEmail'])
+    customer_email = request.form['stripeEmail']
+    customer_first = request.form['first_name']
+    customer_last = request.form['last_name']
+
+    email_is_valid = validate_email(customer_email)
 
     if email_is_valid:
         customer = stripe.Customer.create(
                 email=request.form['stripeEmail'],
                 card=request.form['stripeToken']
         )
+        print('Create Stripe customer {} {} {}'.format(customer_email,
+            customer_first, customer_last))
     else:
         message = "There was an issue saving your email address."
+        print('Error saving customer {} {} {}; showed error'.format(customer_email,
+            customer_first, customer_last))
         return render_template('error.html', message=message)
 
     if form.validate():
@@ -526,16 +534,20 @@ def charge_ajax():
                     email=email,
                     card=request.form['stripeToken']
             )
+            print('Create Stripe customer {} {} {}'.format(email, first_name, last_name))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
+            print('Stripe returned an error before creating customer: {} {} {}'.format(email, first_name, last_name))
             return jsonify(body)
     elif customer_id is not None and customer_id != '': # this is an existing customer
         customer = stripe.Customer.retrieve(customer_id)
         customer.card=request.form['stripeToken']
         customer.email = email
         customer.save()
+        print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
     else: # the email was invalid
         message = "There was an issue saving your email address."
+        print('Error saving customer {} {} {}; showed error'.format(email, first_name, last_name))
         return render_template('error.html', message=message)
 
     if form.validate():
@@ -623,13 +635,16 @@ def charge_ajax():
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
+        print('Done with contact and opportunity {} {} {}'.format(email, first_name, last_name))
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
         #body = transaction.id
         #return jsonify(body)
     else:
-        print('form did not validate: error below')
+        print('donate form did not validate: error below')
         print(form.errors)
         message = "There was an issue saving your donation information."
+        print('Form validation errors: {}'.format(form.errors))
+        print('Did not validate form of customer {} {} {}'.format(email, first_name, last_name))
         return render_template('error.html', message=message)
 
 
@@ -671,9 +686,13 @@ def thanks():
     email_is_valid = validate_email(email)
 
     if form.validate():
+        print('Done with stripe processing {} {} {}'.format(email, first_name, last_name))
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
     else:
+        print('ajax result donate form did not validate: error below')
+        print(form.errors)
         message = "There was an issue saving your donation information."
+        print('Error with stripe processing {} {} {}'.format(email, first_name, last_name))
         return render_template('error.html', message=message)
 
 
@@ -702,7 +721,10 @@ def confirm():
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('finish.html', session=session)
     else:
+        print('post-donate form did not validate: error below')
+        print(form.errors)
         message = "there was an issue saving your preferences, but your donation was successful"
+        print('Error with post-donation preferences {} {}'.format(sf_type, flask_id))
         return render_template('error.html', message=message)
 
 # this is a minnpost url
@@ -721,7 +743,10 @@ def minnpost_advertising_confirm():
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('minnpost-advertising/finish.html', amount=amount_formatted, session=session)
     else:
-        message = "there was an issue saving your preferences, but your donation was successful"
+        print('post-advertising form did not validate: error below')
+        print(form.errors)
+        message = "there was an issue with this form"
+        print('Error with post-advertising form {} {}'.format(sf_type, flask_id))
         return render_template('error.html', message=message)
 
 # this is a minnpost url
@@ -741,7 +766,10 @@ def minnroast_sponsorship_confirm():
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('minnroast-sponsorship/finish.html', amount=amount_formatted, session=session)
     else:
-        message = "there was an issue saving your preferences, but your donation was successful"
+        print('post-sponsorship form did not validate: error below')
+        print(form.errors)
+        message = "there was an issue with this form"
+        print('Error with post-sponsorship form {} {}'.format(sf_type, flask_id))
         return render_template('error.html', message=message)
 
 
@@ -764,7 +792,10 @@ def minnroast_event_confirm():
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('minnpost-events/finish.html', amount=amount_formatted, session=session)
     else:
-        message = "there was an issue saving your preferences, but your donation was successful"
+        print('post-event form did not validate: error below')
+        print(form.errors)
+        message = "there was an issue with this form"
+        print('Error with post-event form {} {}'.format(sf_type, flask_id))
         return render_template('error.html', message=message)
 
     

@@ -927,6 +927,8 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     except:
         pay_fees = False
 
+    # texas is using type__c = 'Recurring Donation'
+    # I feel like we had a pattern of using Donation here, but do not know why
     try:
         if form['opp_type'] != '':
             type__c = form['opp_type']
@@ -1028,9 +1030,9 @@ def add_recurring_donation(form=None, customer=None, extra_values=None):
 @celery.task(name='salesforce.add_customer_and_charge')
 def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_values=None):
     """
-    Add a contact and their donation into SF. This is done in the background
-    because there are a lot of API calls and there's no point in making the
-    payer wait for them.
+    Add a contact and their donation into SF. 
+    Texas does this in the background, but MinnPost does not since our donation form has a couple of stages
+    and we want to show the user what has happened.
     """
     amount = form['amount']
     name = '{} {}'.format(form['first_name'], form['last_name'])
