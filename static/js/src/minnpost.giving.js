@@ -943,6 +943,7 @@
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
         // validate and submit the form
+        $('.check-field, .card-instruction').remove();
         var valid = true;
         if (typeof Payment !== 'undefined') {
           var exp = Payment.fns.cardExpiryVal($(options.cc_exp_selector, element).val());
@@ -950,7 +951,7 @@
           var valid_exp = Payment.fns.validateCardExpiry(exp.month, exp.year);
           var valid_cvv = Payment.fns.validateCardCVC($(options.cc_cvv_selector, element).val(), options.cardType);
           if (valid_cc === false || valid_exp === false || valid_cvv === false) {
-            that.debug('cc ' + valid_cc + ' exp ' + valid_exp + ' cvv ' + valid_cvv);
+            //that.debug('cc ' + valid_cc + ' exp ' + valid_exp + ' cvv ' + valid_cvv);
             valid = false;
             $(options.cc_num_selector, element).parent().addClass('error');
             if (valid_cc === false) {
@@ -990,7 +991,7 @@
             if (response.error) {
               // Show the errors on the form
               supportform.find('.payment-errors').text(response.error.message);
-              supportform.find('button').removeProp('disabled');
+              supportform.find('button').prop('disabled', false);
               supportform.find('button').text(options.button_text);
             } else {
               // response contains id and card, which contains additional card details
@@ -1014,8 +1015,26 @@
                   if (typeof response.error !== 'undefined') {
                     // do not submit. there is an error.
                     supportform.find('.payment-errors').text(response.error.message);
-                    supportform.find('button').removeProp('disabled');
+                    supportform.find('button').prop('disabled', false);
                     supportform.find('button').text(options.button_text);
+
+                    if (response.error == 'first_name') {
+                     $(options.firstname_field_selector, element).addClass('error');
+                     $(options.firstname_field_selector, element).prev().addClass('error');
+                     $(options.firstname_field_selector, element).after('<span class="check-field invalid">' + response.message + '</span>');
+                    }
+
+                    if (response.error == 'last_name') {
+                     $(options.lastname_field_selector, element).addClass('error');
+                     $(options.lastname_field_selector, element).prev().addClass('error');
+                     $(options.lastname_field_selector, element).after('<span class="check-field invalid">' + response.message + '</span>');
+                    }
+
+                    if (response.error == 'email') {
+                     $(options.email_field_selector, element).addClass('error');
+                     $(options.email_field_selector, element).prev().addClass('error');
+                     $(options.email_field_selector, element).after('<span class="check-field invalid">' + response.message + '</span>');
+                    }
 
                     // add some error messages and styles
                     if (response.error.code == 'invalid_number' || response.error.code == 'incorrect_number' || response.error.code == 'card_declined' || response.error.code == 'processing_error') {
@@ -1042,7 +1061,7 @@
                 })
                 .error(function(response) {
                   supportform.find('.payment-errors').text(response.error.message);
-                  supportform.find('button').removeProp('disabled');
+                  supportform.find('button').prop('disabled', false);
                   supportform.find('button').text(options.button_text);
                 });
               //},500);
