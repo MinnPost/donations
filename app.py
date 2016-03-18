@@ -546,9 +546,9 @@ def charge_ajax():
         customer.save()
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
     else: # the email was invalid
-        message = "There was an issue saving your email address."
         print('Error saving customer {} {} {}; showed error'.format(email, first_name, last_name))
-        return render_template('error.html', message=message)
+        body = {'error' : 'email', 'message' : 'Please enter a valid email address; {} is not valid.'.format(email)}
+        return jsonify(body)
 
     if form.validate():
         # add a row to the heroku database so we can track it
@@ -642,10 +642,20 @@ def charge_ajax():
     else:
         print('donate form did not validate: error below')
         print(form.errors)
-        message = "There was an issue saving your donation information."
+
+        if form.errors['first_name'] is not None and form.errors['first_name'] != '':
+            body = {'error' : 'first_name', 'message' : form.errors['first_name']}
+            return jsonify(body)
+
+        if form.errors['last_name'] is not None and form.errors['last_name'] != '':
+            body = {'error' : 'last_name', 'message' : form.errors['last_name']}
+            return jsonify(body)
+
         print('Form validation errors: {}'.format(form.errors))
         print('Did not validate form of customer {} {} {}'.format(email, first_name, last_name))
-        return render_template('error.html', message=message)
+        #return render_template('error.html', message=message)
+        body = {'error' : 'full', 'message' : 'We were unable to process your donation. Please try again.'}
+        return jsonify(body)
 
 
 # this is a minnpost url. it gets called after successful response from stripe

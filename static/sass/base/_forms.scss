@@ -296,12 +296,25 @@ textarea {
   }
 }
 
-.card-instruction {
+.card-instruction, .check-field {
   font-size: 80%;
   color: $gray-dark;
 
   &.invalid {
     color: $minnpost-red-error;
+  }
+
+  /*&.valid {
+    color: $valid;
+  }*/
+}
+
+.check-field {
+
+  &.invalid {
+    display: block;
+    margin-top: -$quarter-space;
+    margin-bottom: $base-spacing;
   }
 
   /*&.valid {
