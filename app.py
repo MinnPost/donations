@@ -537,7 +537,7 @@ def charge_ajax():
             print('Create Stripe customer {} {} {}'.format(email, first_name, last_name))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
-            print('Stripe returned an error before creating customer: {} {} {}'.format(email, first_name, last_name))
+            print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
             return jsonify(body)
     elif customer_id is not None and customer_id != '': # this is an existing customer
         customer = stripe.Customer.retrieve(customer_id)
