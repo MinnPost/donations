@@ -465,6 +465,9 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         except:
             shipping_country = ''
 
+    if shipping_name == '' and shipping_address != '':
+        shipping_name = first_name + ' ' + last_name
+
     try:
         flask_id = form['flask_id']
     except:
@@ -809,6 +812,9 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
             shipping_country = form['shipping_country']
         except:
             shipping_country = ''
+
+    if shipping_name == '' and shipping_address != '':
+        shipping_name = first_name + ' ' + last_name
 
     try:
         flask_id = form['flask_id']
