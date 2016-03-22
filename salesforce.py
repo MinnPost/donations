@@ -465,7 +465,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         except:
             shipping_country = ''
 
-    if shipping_name == '' and shipping_address != '':
+    if shipping_name == '' and shipping_street != '':
         shipping_name = first_name + ' ' + last_name
 
     try:
@@ -813,7 +813,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         except:
             shipping_country = ''
 
-    if shipping_name == '' and shipping_address != '':
+    if shipping_name == '' and shipping_street != '':
         shipping_name = first_name + ' ' + last_name
 
     try:
