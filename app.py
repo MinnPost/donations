@@ -534,7 +534,7 @@ def charge_ajax():
                     email=email,
                     card=request.form['stripeToken']
             )
-            print('Create Stripe customer {} {} {}'.format(email, first_name, last_name))
+            print('Create Stripe customer {} {} {} and charge amount {}'.format(email, first_name, last_name, amount_formatted))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
             print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
@@ -635,7 +635,7 @@ def charge_ajax():
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
-        print('Done with contact and opportunity {} {} {}'.format(email, first_name, last_name))
+        print('Done with contact and opportunity {} {} {} for amount {}'.format(email, first_name, last_name, amount_formatted))
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
         #body = transaction.id
         #return jsonify(body)
@@ -696,7 +696,7 @@ def thanks():
     email_is_valid = validate_email(email)
 
     if form.validate():
-        print('Done with stripe processing {} {} {}'.format(email, first_name, last_name))
+        print('Done with stripe processing {} {} {} for amount {}'.format(email, first_name, last_name, amount_formatted))
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
     else:
         print('ajax result donate form did not validate: error below')
