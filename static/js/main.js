@@ -1877,7 +1877,7 @@ global.Payment = Payment;
                       }
                     }
 
-                    if (typeof response.errors[0].field !== 'undefined') {
+                    if (typeof response.errors[0] !== 'undefined') {
                       var field = response.errors[0].field + '_field_selector';
                       $('html, body').animate({
                         scrollTop: $(options[field], element).parent().offset().top
