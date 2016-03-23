@@ -884,8 +884,8 @@ global.Payment = Payment;
     'use_for_shipping_selector' : '#useforshipping',
     'email_field_selector' : '#edit-email',
     'password_field_selector' : '#password',
-    'firstname_field_selector' : '#first_name',
-    'lastname_field_selector' : '#last_name',
+    'first_name_field_selector' : '#first_name',
+    'last_name_field_selector' : '#last_name',
     'account_city_selector' : '#billing_city_geocode',
     'account_state_selector' : '#billing_state_geocode',
     'account_zip_selector' : '#billing_zip_geocode',
@@ -1770,6 +1770,7 @@ global.Payment = Payment;
         event.preventDefault();
         // validate and submit the form
         $('.check-field, .card-instruction').remove();
+        $('input, label', element).removeClass('error');
         var valid = true;
         if (typeof Payment !== 'undefined') {
           var exp = Payment.fns.cardExpiryVal($(options.cc_exp_selector, element).val());
@@ -1814,9 +1815,8 @@ global.Payment = Payment;
           var stripeResponseHandler = function(status, response) {
             var supportform = $(options.donate_form_selector);
 
-            if (response.error) {
+            if (response.errors) {
               // Show the errors on the form
-              supportform.find('.payment-errors').text(response.error.message);
               supportform.find('button').prop('disabled', false);
               supportform.find('button').text(options.button_text);
             } else {
@@ -1838,47 +1838,50 @@ global.Payment = Payment;
                   type: 'POST'
                 })
                 .done(function(response) {
-                  if (typeof response.error !== 'undefined') {
+                  if (typeof response.errors !== 'undefined') {
                     // do not submit. there is an error.
-                    supportform.find('.payment-errors').text(response.error.message);
                     supportform.find('button').prop('disabled', false);
                     supportform.find('button').text(options.button_text);
 
-                    if (response.error == 'first_name') {
-                     $(options.firstname_field_selector, element).addClass('error');
-                     $(options.firstname_field_selector, element).prev().addClass('error');
-                     $(options.firstname_field_selector, element).after('<span class="check-field invalid">' + response.message + '</span>');
-                    }
-
-                    if (response.error == 'last_name') {
-                     $(options.lastname_field_selector, element).addClass('error');
-                     $(options.lastname_field_selector, element).prev().addClass('error');
-                     $(options.lastname_field_selector, element).after('<span class="check-field invalid">' + response.message + '</span>');
-                    }
-
-                    if (response.error == 'email') {
-                     $(options.email_field_selector, element).addClass('error');
-                     $(options.email_field_selector, element).prev().addClass('error');
-                     $(options.email_field_selector, element).after('<span class="check-field invalid">' + response.message + '</span>');
-                    }
-
                     // add some error messages and styles
-                    if (response.error.code == 'invalid_number' || response.error.code == 'incorrect_number' || response.error.code == 'card_declined' || response.error.code == 'processing_error') {
-                      $(options.cc_num_selector, element).addClass('error');
-                      $(options.cc_num_selector, element).prev().addClass('error');
-                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.error.message + '</span>');
+                    $.each(response.errors, function( index, error ) {
+                      var field = error.field + '_field_selector';
+                      var message = '';
+                      if (typeof error.message === 'string') {
+                        message = error.message;
+                      } else {
+                        message = error.message[0];
+                      }
+                      $(options[field], element).addClass('error');
+                      $(options[field], element).prev().addClass('error');
+                      $(options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+                    });
+
+                    if (typeof response.errors.error !== 'undefined') {
+                      if (response.errors.error.code == 'invalid_number' || response.errors.error.code == 'incorrect_number' || response.errors.error.code == 'card_declined' || response.errors.error.code == 'processing_error') {
+                        $(options.cc_num_selector, element).addClass('error');
+                        $(options.cc_num_selector, element).prev().addClass('error');
+                        $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
+                      }
+
+                      if (response.errors.error.code == 'invalid_expiry_month' || response.errors.error.code == 'invalid_expiry_year' || response.errors.error.code == 'expired_card') {
+                        $(options.cc_exp_selector, element).addClass('error');
+                        $(options.cc_exp_selector, element).prev().addClass('error');
+                        $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
+                      }
+
+                      if (response.errors.error.code == 'invalid_cvc' || response.errors.error.code == 'incorrect_cvc') {
+                        $(options.cc_cvv_selector, element).addClass('error');
+                        $(options.cc_cvv_selector, element).prev().addClass('error');
+                        $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
+                      }
                     }
 
-                    if (response.error.code == 'invalid_expiry_month' || response.error.code == 'invalid_expiry_year' || response.error.code == 'expired_card') {
-                      $(options.cc_exp_selector, element).addClass('error');
-                      $(options.cc_exp_selector, element).prev().addClass('error');
-                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.error.message + '</span>');
-                    }
-
-                    if (response.error.code == 'invalid_cvc' || response.error.code == 'incorrect_cvc') {
-                      $(options.cc_cvv_selector, element).addClass('error');
-                      $(options.cc_cvv_selector, element).prev().addClass('error');
-                      $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.error.message + '</span>');
+                    if (typeof response.errors[0].field !== 'undefined') {
+                      var field = response.errors[0].field + '_field_selector';
+                      $('html, body').animate({
+                        scrollTop: $(options[field], element).parent().offset().top
+                      }, 2000);
                     }
 
                   } else {
@@ -1886,7 +1889,6 @@ global.Payment = Payment;
                   }
                 })
                 .error(function(response) {
-                  supportform.find('.payment-errors').text(response.error.message);
                   supportform.find('button').prop('disabled', false);
                   supportform.find('button').text(options.button_text);
                 });
@@ -1936,8 +1938,8 @@ global.Payment = Payment;
           if (options.create_account === true) {
             var user = {
               email: $(options.email_field_selector, element).val(),
-              first: $(options.firstname_field_selector, element).val(),
-              last: $(options.lastname_field_selector, element).val(),
+              first: $(options.first_name_field_selector, element).val(),
+              last: $(options.last_name_field_selector, element).val(),
               password: $(options.password_field_selector, element).val(),
               city: $(options.account_city_selector, element).val(),
               state: $(options.account_state_selector, element).val(),
@@ -2028,8 +2030,8 @@ global.Payment = Payment;
           var post_data = {
             minnpost_mailchimp_js_form_action: 'newsletter_subscribe',
             minnpost_mailchimp_email: $(options.email_field_selector, element).val(),
-            minnpost_mailchimp_firstname: $(options.firstname_field_selector, element).val(),
-            minnpost_mailchimp_lastname: $(options.lastname_field_selector, element).val(),
+            minnpost_mailchimp_firstname: $(options.first_name_field_selector, element).val(),
+            minnpost_mailchimp_lastname: $(options.last_name_field_selector, element).val(),
             minnpost_mailchimp_groups: {},
             minnpost_mailchimp_periodic: {}
           };
