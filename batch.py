@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import json
+import redis
 
 #from flask import jsonify
 
@@ -15,6 +16,7 @@ from salesforce import SalesforceConnection
 from config import STRIPE_KEYS
 from config import ACCOUNTING_MAIL_RECIPIENT
 from config import TIMEZONE
+from config import REDIS_URL
 
 zone = timezone(TIMEZONE)
 
@@ -88,7 +90,6 @@ def process_charges(query, log):
 
         except stripe.error.CardError as e:
             # look for decline code:
-            #print('Unable to extract decline code')
             error = e.json_body['error']
             log.it('Error: The card has been declined:')
             log.it('\tStatus: {}'.format(e.http_status))
@@ -98,7 +99,7 @@ def process_charges(query, log):
             log.it('\tMessage: {}'.format(error.get('message', '')))
             log.it('\tDecline code: {}'.format(error.get('decline_code', '')))
 
-            # charge was unsuccessful
+            # charge was unsuccessful - change its salesforce status to Failed and store the error message
             update = {
                 'StageName': 'Failed',
                 'Stripe_Error_Message__c': "Error: {}".format(e)
@@ -106,7 +107,7 @@ def process_charges(query, log):
 
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             if resp.status_code == 204:
-                log.it('salesforce updated')
+                log.it('salesforce updated - charge failed')
             else:
                 log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
@@ -121,7 +122,7 @@ def process_charges(query, log):
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             if resp.status_code == 204:
-                log.it('salesforce updated')
+                log.it('salesforce updated - charge failed')
             else:
                 log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
@@ -135,7 +136,7 @@ def process_charges(query, log):
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             if resp.status_code == 204:
-                log.it('salesforce updated')
+                log.it('salesforce updated - charge failed')
             else:
                 log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
@@ -149,7 +150,7 @@ def process_charges(query, log):
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             if resp.status_code == 204:
-                log.it('salesforce updated')
+                log.it('salesforce updated - charge failed')
             else:
                 log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
@@ -168,14 +169,42 @@ def process_charges(query, log):
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         # TODO: check 'errors' and 'success' too
         if resp.status_code == 204:
-            log.it('salesforce updated')
+            log.it('salesforce updated - charge succeeded')
         else:
             log.it('error updating salesforce because status code was not 204')
             raise Exception('error')
 
 
+class AlreadyExecuting(Exception):
+    """
+    Here to show when more than one job of the same type is running.
+    """
+    pass
+
+
+class Lock(object):
+    """
+    Claim an exclusive lock. Using Redis.
+    """
+
+    def __init__(self, key):
+        self.key = key
+        self.connection = redis.from_url(REDIS_URL)
+
+    def acquire(self):
+        if self.connection.get(self.key):
+            raise AlreadyExecuting
+        self.connection.setex(name=self.key, value='bar', time=1200)
+
+    def release(self):
+        self.connection.delete(self.key)
+
+
 @celery.task()
 def charge_cards():
+
+    lock = Lock(key='charge-cards-lock')
+    lock.acquire()
 
     log = Log()
 
@@ -225,6 +254,7 @@ def charge_cards():
     # process_charges(query, log)
     # log.send()
 
+    lock.release()
 
 if __name__ == '__main__':
     charge_cards()

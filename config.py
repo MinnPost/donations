@@ -35,6 +35,8 @@ CELERYBEAT_SCHEDULE = {
             # texas 'schedule': crontab(minute='0', hour=BATCH_HOURS)
             },
         }
+REDIS_URL = os.getenv('REDIS_URL')
+
 ######
 # SMTP
 #
