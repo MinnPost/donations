@@ -933,16 +933,17 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     except:
         pay_fees = False
 
+    # remove type__c field because it is no longer in salesforce
     # texas is using type__c = 'Recurring Donation'
     # I feel like we had a pattern of using Donation here, but do not know why
-    try:
-        if form['opp_type'] != '':
-            type__c = form['opp_type']
-        else:
-            type__c = 'Donation'
-    except:
-        type__c = 'Donation'
-
+    #try:
+    #    if form['opp_type'] != '':
+    #        type__c = form['opp_type']
+    #    else:
+    #        type__c = 'Donation'
+    #except:
+    #    type__c = 'Donation'
+    #
     try:
         if extra_values['additional_donation'] != None:
             additional_donation = extra_values['additional_donation']
@@ -1010,7 +1011,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'Stripe_Customer_Id__c': customer.id,
         'Stripe_Description__c': '{}'.format(form['description']),
         #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
-        'Type__c': type__c,
+        #'Type__c': type__c,
     }
     #pprint(recurring_donation)   # TODO: rm
     return recurring_donation
