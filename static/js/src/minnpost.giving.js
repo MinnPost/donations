@@ -1083,9 +1083,12 @@
             full_name = $('#first_name').val() + ' ' + $('#last_name').val();
           }
 
-          var street = $('#full_address').val();
-          if ($('input[name="billing_street_geocode"]').val() != '') {
-            street = $('input[name="billing_street_geocode"]').val();
+          var street = 'None';
+          if ($('input[name="full_address"]').val() != '') {
+            street = $('#full_address').val();
+            if ($('input[name="billing_street_geocode"]').val() != '') {
+              street = $('input[name="billing_street_geocode"]').val();
+            }
           }
 
           var city = 'None';
