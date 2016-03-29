@@ -14,6 +14,7 @@ def check_response(response=None, expected_status=200):
     except:
         print ('unable to parse response (this is probably okay)')
     if code != expected_status:
+        print (response)
         print (content)
         raise Exception('Expected {} but got {}'.format(expected_status, code))
     return True
