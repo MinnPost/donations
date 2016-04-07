@@ -382,16 +382,6 @@ def minnroast_pledge_form():
     else:
         pledge = ''
 
-    #if request.args.get('opp_type'):
-    #    opp_type = request.args.get('opp_type')
-    #else:
-    #    opp_type = 'Sponsorship'
-
-    #if request.args.get('opp_subtype'):
-    #    opp_subtype = request.args.get('opp_subtype')
-    #else:
-    #    opp_subtype = 'Sponsorship: Event (individual)'
-
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
     else:
@@ -882,7 +872,7 @@ def minnroast_pledge_confirm():
     if flask_id:
         #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnroast-pledge/finish.html', amount=amount_formatted, session=session)
+        return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session)
     else:
         print('post-pledge form did not validate: error below')
         print(form.errors)
