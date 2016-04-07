@@ -370,7 +370,7 @@ def minnroast_pledge_form():
     if request.args.get('campaign'):
         campaign = request.args.get('campaign')
     else:
-        campaign = MINNROAST_CAMPAIGN_ID
+        campaign = ''
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
