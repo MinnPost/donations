@@ -413,12 +413,14 @@ def minnroast_pledge_form():
     heading = '${} Donation'.format(amount_formatted)
     summary = 'Please pay your pledge'
 
+    button = 'Place this Donation'
+
     description = 'MinnRoast Pledge'
     allow_additional = False
 
     return render_template('minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, pledge=pledge, heading=heading,
-        description=description, summary=summary, allow_additional=allow_additional,
+        description=description, summary=summary, allow_additional=allow_additional, button=button,
         form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
