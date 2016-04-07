@@ -400,8 +400,8 @@ def minnroast_pledge_form():
         additional_donation = ''
 
     title = 'MinnPost | MinnRoast Pledge'
-    heading = '${} Donation'.format(amount_formatted)
-    summary = 'Please pay your pledge'
+    heading = '${} Donation for Election Coverage'.format(amount_formatted)
+    summary = 'Thank you for supporting our election coverage at MinnRoast. Please enter your information below to fulfill your pledge. If you have any questions, contact Claire Radomski at <a href="mailto:cradomski@minnpost.com">cradomski@minnpost.com</a>.'
 
     button = 'Place this Donation'
 
