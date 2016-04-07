@@ -26,6 +26,7 @@ class MinnPostForm(Form):
     amount = HiddenField(u'Amount')
     campaign = HiddenField(u'Campaign')
     recurring = HiddenField(u'Frequency')
+    pledge = HiddenField(u'Pledge ID')
     pay_fees = BooleanField(u'Agree to pay fees')
 
     in_honor_name = StringField(u'In Honor Of...')

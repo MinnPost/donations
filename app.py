@@ -346,6 +346,86 @@ def minnroast_sponsorship_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
+# used at support.minnpost.com/minnroast-pledge
+@app.route('/minnroast-pledge/')
+def minnroast_pledge_form():
+    form = MinnPostForm()
+
+    confirm_url = '/minnroast-pledge-confirm/'
+    redirect_url = 'minnroast-pledge-thanks'
+
+    now = datetime.now()
+    year = now.year
+
+    if request.args.get('amount'):
+        amount = float(request.args.get('amount'))
+        if (amount).is_integer():
+            amount_formatted = int(amount)
+        else:
+            amount_formatted = format(amount, ',.2f')
+    else:
+        message = "The page you requested can't be found."
+        return render_template('error.html', message=message)
+
+    if request.args.get('campaign'):
+        campaign = request.args.get('campaign')
+    else:
+        campaign = MINNROAST_CAMPAIGN_ID
+
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    else:
+        customer_id = ''
+
+    if request.args.get('pledge'):
+        pledge = request.args.get('pledge')
+    else:
+        pledge = ''
+
+    #if request.args.get('opp_type'):
+    #    opp_type = request.args.get('opp_type')
+    #else:
+    #    opp_type = 'Sponsorship'
+
+    #if request.args.get('opp_subtype'):
+    #    opp_subtype = request.args.get('opp_subtype')
+    #else:
+    #    opp_subtype = 'Sponsorship: Event (individual)'
+
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    else:
+        first_name = ''
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    else:
+        last_name = ''
+    if request.args.get('email'):
+        email = request.args.get('email')
+    else:
+        email = ''
+    if request.args.get('additional_donation'):
+        additional_donation = int(request.args.get('additional_donation'))
+    else:
+        additional_donation = ''
+
+    title = 'MinnPost | MinnRoast Pledge'
+    heading = '${} Donation'.format(amount_formatted)
+    summary = 'Please pay your pledge'
+
+    description = 'MinnRoast Pledge'
+    allow_additional = False
+
+    return render_template('minnpost-minimal-form.html',
+        title=title, confirm_url=confirm_url, redirect_url=redirect_url, pledge=pledge, heading=heading,
+        description=description, summary=summary, allow_additional=allow_additional,
+        form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
+        #opp_type = opp_type, opp_subtype = opp_subtype,
+        first_name = first_name,last_name = last_name, email=email,
+        additional_donation = additional_donation,
+        key=app.config['STRIPE_KEYS']['publishable_key'])
+
+
 # this is a texas url
 @app.route('/memberform/')
 def member_form():
@@ -782,6 +862,30 @@ def minnroast_sponsorship_confirm():
         print(form.errors)
         message = "there was an issue with this form"
         print('Error with post-sponsorship form {} {}'.format(sf_type, flask_id))
+        return render_template('error.html', message=message)
+
+
+# this is a minnpost url
+@app.route('/minnroast-pledge-confirm/', methods=['POST'])
+def minnroast_pledge_confirm():
+
+    form = ConfirmForm(request.form)
+    #pprint('Request: {}'.format(request))
+    amount = float(request.form['amount'])
+    amount_formatted = format(amount, ',.2f')
+
+    flask_id = session['flask_id']
+    sf_type = session['sf_type']
+
+    if flask_id:
+        #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
+        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        return render_template('minnroast-pledge/finish.html', amount=amount_formatted, session=session)
+    else:
+        print('post-pledge form did not validate: error below')
+        print(form.errors)
+        message = "there was an issue with this form"
+        print('Error with post-pledge form {} {}'.format(sf_type, flask_id))
         return render_template('error.html', message=message)
 
 
