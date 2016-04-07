@@ -296,6 +296,14 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         campaign = DEFAULT_CAMPAIGN_ONETIME
 
     try:
+        if form['pledge'] != '':
+            pledge = form['pledge']
+        else:
+            pledge = ''
+    except:
+        pledge = ''
+
+    try:
         if extra_values['fair_market_value'] != '':
             fair_market_value = extra_values['fair_market_value']
         else:
@@ -639,6 +647,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Member_benefit_request_Other_benefits__c': swag_other_benefits,
             'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
             'MinnPost_Invoice__c': invoice,
+            'MRpledge_com_ID__c': pledge,
             'Opportunity_Subtype__c': subtype,
             'Payment_Page_Full_URL__c': full_url,
             'Payment_Type__c': 'Stripe',
