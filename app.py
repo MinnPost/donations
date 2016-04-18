@@ -442,7 +442,7 @@ def minnroast_pledge_form():
     allow_additional = False
 
     return render_template('minnpost-minimal-form.html',
-        title=title, confirm_url=confirm_url, redirect_url=redirect_url, pledge=pledge, heading=heading,
+        title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, pledge=pledge, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
         form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
         #opp_type = opp_type, opp_subtype = opp_subtype,
@@ -606,6 +606,7 @@ def charge_ajax():
 
     amount = float(request.form['amount'])
     customer_id = request.form['customer_id']
+    opp_id = request.form['opp_id']
 
     if (amount).is_integer():
         amount_formatted = int(request.form['amount'])
