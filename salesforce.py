@@ -682,14 +682,13 @@ def add_opportunity(form=None, customer=None, extra_values=None, charge=None):
 
     return response
 
-def get_opportunity(opp_id):
+def get_opportunity(opp_id=None, form=None):
         """
         Return an opportunity. Return an error if it does not exist, but try to log stuff.
         """
 
         exists = True
-
-        response = _find_opportunity(opp_id=opp_id)
+        response = _find_opportunity(opp_id=opp_id, form=form) # form is if we are updating it also
 
         # if the response is empty then there is no opportunity for this ID
         if len(response) < 1:
@@ -699,9 +698,10 @@ def get_opportunity(opp_id):
         return exists, response[0]
 
 
-def _find_opportunity(opp_id=None):
+def _find_opportunity(opp_id=None, form=None):
     """
     Given an ID, return the Opportunity matching it.
+    If there is form data, update it also.
     """
 
     query = """
@@ -713,13 +713,27 @@ def _find_opportunity(opp_id=None):
             """.format(opp_id)
 
     sf = SalesforceConnection()
-    response = sf.query(query)
+    opportunity = sf.query(query)
 
-    #print("----Load opportunity from URL...")
-    #print(response)
-    #print('opportunity should have printed')
+    if form is not None:
+        print ("----Opportunity form data present, update the record")
 
-    return response
+        update = {
+            'Description': form['description'],
+            'StageName': 'Pledged',
+            'Donor_first_name__c': form['first_name'],
+            'Donor_last_name__c': form['last_name'],
+            'Donor_e_mail__c': form['email'],
+            'Flask_Transaction_ID__c': flask_id,
+            'Stripe_Customer_Id__c': form['customer_id']
+        }
+        path = '/services/data/v35.0/sobjects/Opportunity/{}'.format(form['opp_id'])
+        url = '{}{}'.format(sf.instance_url, path)
+        resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+        check_response(response=resp, expected_status=204)
+        return True
+    else:
+        return opportunity
 
 
 def _format_recurring_donation(contact=None, form=None, customer=None, extra_values=None):
@@ -1110,7 +1124,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         if 'opp_id' not in form:
             response = add_opportunity(form=form, customer=customer, extra_values=extra_values)
         else:
-            response = get_opportunity(form=form)
+            response = get_opportunity(opp_id=form['opp_id'], form=form)
     else:
         print("----Recurring payment...")
         msg = '*{}* pledged *${}* [recurring]'.format(name, amount)
