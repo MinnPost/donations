@@ -1107,7 +1107,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         msg = '*{}* pledged *${}*'.format(name, amount)
         print(msg)
         notify_slack(msg)
-        if not form['opp_id']:
+        if 'opp_id' not in form:
             response = add_opportunity(form=form, customer=customer, extra_values=extra_values)
         else:
             response = get_opportunity(form=form)
