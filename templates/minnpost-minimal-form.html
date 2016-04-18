@@ -13,6 +13,9 @@
       {% endif %}
       <input type="hidden" name="recurring" id="recurring" value="one-time">
       <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
+      {% if opp_id != '' %}
+      <input type="hidden" name="opp_id" id="opp_id" value="{{ opp_id }}">
+      {% endif %}
       <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
       <input type="hidden" name="pledge" id="pledge" value="{{ pledge }}">
       <input type="hidden" name="description" id="description" value="{{ description }}">
