@@ -373,8 +373,10 @@ def minnroast_pledge_form():
 
         except:
             opp_id = ''
+            opportunity = []
     else:
         opp_id = ''
+        opportunity = []
 
         if request.args.get('amount'):
             amount = float(request.args.get('amount'))
@@ -392,33 +394,33 @@ def minnroast_pledge_form():
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
-    elif opportunity['Stripe_Customer_ID__c']:
+    elif 'Stripe_Customer_ID__c' in opportunity and opportunity['Stripe_Customer_ID__c'] is not None:
         customer_id = opportunity['Stripe_Customer_ID__c']
     else:
         customer_id = ''
 
     if request.args.get('pledge'):
         pledge = request.args.get('pledge')
-    elif opportunity['MRpledge_com_ID__c']:
+    elif 'MRpledge_com_ID__c' in opportunity and opportunity['MRpledge_com_ID__c'] is not None:
         pledge = opportunity['MRpledge_com_ID__c']
     else:
         pledge = ''
 
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
-    elif opportunity['Donor_first_name__c']:
+    elif 'Donor_first_name__c' in opportunity and opportunity['Donor_first_name__c'] is not None:
         first_name = opportunity['Donor_first_name__c']
     else:
         first_name = ''
     if request.args.get('lastname'):
         last_name = request.args.get('lastname')
-    elif opportunity['Donor_last_name__c']:
+    elif 'Donor_last_name__c' in opportunity and opportunity['Donor_last_name__c'] is not None:
         last_name = opportunity['Donor_last_name__c']
     else:
         last_name = ''
     if request.args.get('email'):
         email = request.args.get('email')
-    elif opportunity['Donor_e_mail__c']:
+    elif 'Donor_e_mail__c' in opportunity and opportunity['Donor_e_mail__c'] is not None:
         email = opportunity['Donor_e_mail__c']
     else:
         email = ''
