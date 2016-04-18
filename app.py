@@ -606,7 +606,8 @@ def charge_ajax():
 
     amount = float(request.form['amount'])
     customer_id = request.form['customer_id']
-    opp_id = request.form['opp_id']
+    if 'opp_id' in form:
+        opp_id = request.form['opp_id']
 
     if (amount).is_integer():
         amount_formatted = int(request.form['amount'])
