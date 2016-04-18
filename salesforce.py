@@ -724,7 +724,7 @@ def _find_opportunity(opp_id=None, form=None):
             'Donor_first_name__c': form['first_name'],
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
-            'Flask_Transaction_ID__c': flask_id,
+            'Flask_Transaction_ID__c': form['flask_id'],
             'Stripe_Customer_Id__c': form['customer_id']
         }
         path = '/services/data/v35.0/sobjects/Opportunity/{}'.format(form['opp_id'])
