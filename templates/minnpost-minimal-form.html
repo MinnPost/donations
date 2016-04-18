@@ -8,7 +8,9 @@
     <form action="{{ confirm_url }}" method="post" class="support support--donate" id="donate">
       {{ form.csrf_token }}
 
+      {% if amount != '' %}
       <input type="hidden" name="amount" id="amount" value="{{ amount }}">
+      {% endif %}
       <input type="hidden" name="recurring" id="recurring" value="one-time">
       <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
       <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">

@@ -37,6 +37,7 @@ from config import ADVERTISING_CAMPAIGN_ID
 from config import SEPARATE_SWAG_MINIMUM_LEVEL
 from config import MAIN_SWAG_MINIMUM_LEVEL
 from salesforce import add_customer_and_charge
+from salesforce import get_opportunity
 #from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
 from app_celery import make_celery
@@ -357,41 +358,68 @@ def minnroast_pledge_form():
     now = datetime.now()
     year = now.year
 
-    if request.args.get('amount'):
-        amount = float(request.args.get('amount'))
-        if (amount).is_integer():
-            amount_formatted = int(amount)
-        else:
-            amount_formatted = format(amount, ',.2f')
-    else:
-        message = "The page you requested can't be found."
-        return render_template('error.html', message=message)
+    if request.args.get('opportunity'):
+        opp_id = request.args.get('opportunity')
+        try:
+            result = get_opportunity(opp_id)
+            opportunity = result[1]
 
-    if request.args.get('campaign'):
-        campaign = request.args.get('campaign')
+            amount = opportunity['Amount']
+            if (amount).is_integer():
+                amount_formatted = int(amount)
+            else:
+                amount_formatted = format(amount, ',.2f')
+            campaign = opportunity['CampaignId']
+
+        except:
+            opp_id = ''
     else:
-        campaign = ''
+        opp_id = ''
+
+        if request.args.get('amount'):
+            amount = float(request.args.get('amount'))
+            if (amount).is_integer():
+                amount_formatted = int(amount)
+            else:
+                amount_formatted = format(amount, ',.2f')
+        else:
+            amount_formatted = ''
+
+        if request.args.get('campaign'):
+            campaign = request.args.get('campaign')
+        else:
+            campaign = ''
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
+    elif opportunity['Stripe_Customer_ID__c']:
+        customer_id = opportunity['Stripe_Customer_ID__c']
     else:
         customer_id = ''
 
     if request.args.get('pledge'):
         pledge = request.args.get('pledge')
+    elif opportunity['MRpledge_com_ID__c']:
+        pledge = opportunity['MRpledge_com_ID__c']
     else:
         pledge = ''
 
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
+    elif opportunity['Donor_first_name__c']:
+        first_name = opportunity['Donor_first_name__c']
     else:
         first_name = ''
     if request.args.get('lastname'):
         last_name = request.args.get('lastname')
+    elif opportunity['Donor_last_name__c']:
+        last_name = opportunity['Donor_last_name__c']
     else:
         last_name = ''
     if request.args.get('email'):
         email = request.args.get('email')
+    elif opportunity['Donor_e_mail__c']:
+        email = opportunity['Donor_e_mail__c']
     else:
         email = ''
     if request.args.get('additional_donation'):
@@ -400,7 +428,10 @@ def minnroast_pledge_form():
         additional_donation = ''
 
     title = 'MinnPost | MinnRoast Pledge'
-    heading = '${} Donation for Election Coverage'.format(amount_formatted)
+    if amount_formatted != '':
+        heading = '${} Donation for Election Coverage'.format(amount_formatted)
+    else:
+        heading = 'Donation for Election Coverage'
     summary = 'Thank you for supporting our election coverage at MinnRoast. Please enter your information below to fulfill your pledge. If you have any questions, contact Claire Radomski at <a href="mailto:cradomski@minnpost.com">cradomski@minnpost.com</a>.'
 
     button = 'Place this Donation'

@@ -682,6 +682,45 @@ def add_opportunity(form=None, customer=None, extra_values=None, charge=None):
 
     return response
 
+def get_opportunity(opp_id):
+        """
+        Return an opportunity. Return an error if it does not exist, but try to log stuff.
+        """
+
+        exists = True
+
+        response = _find_opportunity(opp_id=opp_id)
+
+        # if the response is empty then there is no opportunity for this ID
+        if len(response) < 1:
+            exists = False
+            print('Error: this opportunity does not exist')
+
+        return exists, response[0]
+
+
+def _find_opportunity(opp_id=None):
+    """
+    Given an ID, return the Opportunity matching it.
+    """
+
+    query = """
+            SELECT Id, Amount, Campaignid, Description, StageName, Type, MRpledge_com_ID__c,
+            Donor_first_name__c, Donor_last_name__c, Donor_e_mail__c,
+            Stripe_Customer_Id__c
+            FROM Opportunity
+            WHERE Id='{0}'
+            """.format(opp_id)
+
+    sf = SalesforceConnection()
+    response = sf.query(query)
+
+    #print("----Load opportunity from URL...")
+    #print(response)
+    #print('opportunity should have printed')
+
+    return response
+
 
 def _format_recurring_donation(contact=None, form=None, customer=None, extra_values=None):
     """
@@ -1068,7 +1107,10 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         msg = '*{}* pledged *${}*'.format(name, amount)
         print(msg)
         notify_slack(msg)
-        response = add_opportunity(form=form, customer=customer, extra_values=extra_values)
+        if not form['opp_id']:
+            response = add_opportunity(form=form, customer=customer, extra_values=extra_values)
+        else:
+            response = get_opportunity(form=form)
     else:
         print("----Recurring payment...")
         msg = '*{}* pledged *${}* [recurring]'.format(name, amount)
