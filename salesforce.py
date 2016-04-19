@@ -776,8 +776,11 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
+            'Reason_for_Gift__c': form['reason_for_supporting'],
+            'Reason_for_gift_shareable__c': form['reason_shareable'],
             'Stripe_Customer_Id__c': customer.id
         }
+        print(update)
         path = '/services/data/v35.0/sobjects/Opportunity/{}'.format(form['opp_id'])
         url = '{}{}'.format(sf.instance_url, path)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
