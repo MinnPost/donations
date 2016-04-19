@@ -906,7 +906,7 @@ def minnroast_pledge_confirm():
     sf_type = session['sf_type']
 
     print('flask id is {} and now update'.format(flask_id))
-    print(form)
+    print(request.form)
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
