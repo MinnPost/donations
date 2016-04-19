@@ -1260,7 +1260,10 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
     #print('---Updating this {} ---'.format(object_name))
 
     try:
-        reason_for_supporting = form['reason_for_supporting']
+        if form['reason_for_supporting'] != '':
+            reason_for_supporting = form['reason_for_supporting']
+        else:
+            reason_for_supporting = ''
     except:
         reason_for_supporting = ''
 
@@ -1299,6 +1302,13 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
         feedback_messages = True
     else:
         feedback_messages = False
+
+
+    print('reason stuff')
+    print(reason_for_supporting)
+    print(reason_for_supporting_shareable)
+    print('right above')
+
 
     with app.app_context():
         # get the salesforce id from the local database where the flask id matches
