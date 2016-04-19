@@ -695,6 +695,8 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             exists = False
             print('Error: this opportunity does not exist')
 
+        print(response)
+
         return exists, response[0]
 
 
@@ -1184,8 +1186,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         response = add_recurring_donation(form=form, customer=customer, extra_values=extra_values)
 
     if not response['errors']:
-        print('update the database')
-        print(response)
+        #print('update the database')
+        #print(response)
 
         with app.app_context():
             # add the salesforce id to the local database where the flask id matches
