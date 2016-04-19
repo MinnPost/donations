@@ -1187,7 +1187,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         notify_slack(msg)
         response = add_recurring_donation(form=form, customer=customer, extra_values=extra_values)
 
-    if not response['errors']:
+    if 'errors' is not in response:
         #print('update the database')
         #print(response)
 
