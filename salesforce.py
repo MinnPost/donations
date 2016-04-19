@@ -689,6 +689,7 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
 
         exists = True
         response = _find_opportunity(opp_id=opp_id, customer=customer, form=form) # form is if we are updating it also
+        response = response[0]
 
         # if the response is empty then there is no opportunity for this ID
         if response is None:
