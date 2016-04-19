@@ -906,7 +906,7 @@ def minnroast_pledge_confirm():
 
     if flask_id:
         print('Update the donation')
-        print(form)
+        print(request.form)
         print('updated')
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session)
