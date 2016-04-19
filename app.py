@@ -362,7 +362,7 @@ def minnroast_pledge_form():
         opp_id = request.args.get('opportunity')
         try:
             result = get_opportunity(opp_id)
-            opportunity = result[1]
+            opportunity = result[0]
 
             amount = opportunity['Amount']
             if (amount).is_integer():
