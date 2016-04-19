@@ -1184,8 +1184,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         response = add_recurring_donation(form=form, customer=customer, extra_values=extra_values)
 
     if not response['errors']:
-        #print('update the database')
-        #print(response)
+        print('update the database')
+        print(response)
 
         with app.app_context():
             # add the salesforce id to the local database where the flask id matches
@@ -1258,6 +1258,8 @@ def add_tw_customer_and_charge(form=None, customer=None):
 def update_donation_object(self, object_name=None, flask_id=None, form=None):
     print ("----Update opportunity...")
     #print('---Updating this {} ---'.format(object_name))
+    print('update the flask id {}'.format(flask_id))
+    print(form)
 
     try:
         reason_for_supporting = form['reason_for_supporting']
