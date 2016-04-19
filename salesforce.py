@@ -785,7 +785,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
         url = '{}{}'.format(sf.instance_url, path)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         check_response(response=resp, expected_status=204)
-        return resp
+        return opportunity
     else:
         return opportunity
 
