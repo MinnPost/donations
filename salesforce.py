@@ -695,6 +695,7 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             exists = False
             print('Error: this opportunity does not exist')
 
+        print('get existing opportunity')
         print(response)
 
         return exists, response[0]
@@ -1260,8 +1261,8 @@ def add_tw_customer_and_charge(form=None, customer=None):
 def update_donation_object(self, object_name=None, flask_id=None, form=None):
     print ("----Update opportunity...")
     #print('---Updating this {} ---'.format(object_name))
-    print('update the flask id {}'.format(flask_id))
-    print(form)
+    #print('update the flask id {}'.format(flask_id))
+    #print(form)
 
     try:
         reason_for_supporting = form['reason_for_supporting']
@@ -1309,8 +1310,9 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
         #print('flask id')
         #print(flask_id)
         transaction = Transaction.query.filter(Transaction.id==flask_id,Transaction.sf_id!='NULL').first()
+        print(transaction)
         if transaction is not None:
-            print('transaction has been added to salesforce. get its local id and update it in salesforce.')
+            print('transaction has been added to salesforce. get its sf id ({}) and update it in salesforce.'.format(transaction.sf_id))
             #if transaction.sf_id != 'NULL':
             sf_id = transaction.sf_id
             #print('sf id?')
