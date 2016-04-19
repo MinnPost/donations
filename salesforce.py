@@ -1181,9 +1181,11 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
             response = add_opportunity(form=form, customer=customer, extra_values=extra_values)
         else:
             response = get_opportunity(opp_id=form['opp_id'], customer=customer, form=form, extra_values=extra_values)
-            print('response is')
-            print(response)
-            print('end response')
+        
+        print('response is')
+        print(response)
+        print('end response')
+        
     else:
         print("----Recurring payment...")
         msg = '*{}* pledged *${}* [recurring]'.format(name, amount)
