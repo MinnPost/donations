@@ -671,6 +671,7 @@ def charge_ajax():
         # print(transaction.id)
         flask_id = str(transaction.id)
         session['flask_id'] = flask_id
+        print('session flask id is {}'.format(session['flask_id']))
         if frequency == 'one-time':
             session['sf_type'] = 'Opportunity'
         else:
@@ -903,6 +904,9 @@ def minnroast_pledge_confirm():
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
+
+    print('flask id is {} and now update'.format(flask_id))
+    print(form)
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
