@@ -687,18 +687,18 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         Return an opportunity. Return an error if it does not exist, but try to log stuff.
         """
 
-        exists = True
-        response = _find_opportunity(opp_id=opp_id, customer=customer, form=form) # form is if we are updating it also
-        response = response[0]
+        result = _find_opportunity(opp_id=opp_id, customer=customer, form=form) # form is if we are updating it also
+        opportunity = result[0]
+        response = {'opportunity':opportunity, 'id': '00656000002iUqzAAE', 'success': True}
 
         # if the response is empty then there is no opportunity for this ID
         if response is None:
-            exists = False
             print('Error: this opportunity does not exist')
             response['errors'] = 'We were unable to find your pledge.'
+            response['success'] = False
 
-        print('get existing opportunity')
-        print(response)
+#        print('get existing opportunity')
+#        print(response)
 
         return response
 
@@ -1185,7 +1185,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         print('response is')
         print(response)
         print('end response')
-        
+
     else:
         print("----Recurring payment...")
         msg = '*{}* pledged *${}* [recurring]'.format(name, amount)
