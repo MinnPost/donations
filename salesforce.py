@@ -694,11 +694,12 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         if response is None:
             exists = False
             print('Error: this opportunity does not exist')
+            response['errors'] = 'We were unable to find your pledge.'
 
         print('get existing opportunity')
         print(response)
 
-        return exists, response[0]
+        return response
 
 
 def _find_opportunity(opp_id=None, customer=None, form=None):
