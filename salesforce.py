@@ -1182,9 +1182,9 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         else:
             response = get_opportunity(opp_id=form['opp_id'], customer=customer, form=form, extra_values=extra_values)
         
-        print('response is')
-        print(response)
-        print('end response')
+        #print('response is')
+        #print(response)
+        #print('end response')
 
     else:
         print("----Recurring payment...")
@@ -1192,6 +1192,9 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         print(msg)
         notify_slack(msg)
         response = add_recurring_donation(form=form, customer=customer, extra_values=extra_values)
+
+    print('1')
+    print(response)
 
     if 'errors' not in response:
         #print('update the database')
@@ -1339,6 +1342,9 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
             """.format(object_name, sf_id)
 
         response = sf.query(query)
+
+        print('2')
+        print(response)
 
         update = {
             'Reason_for_Gift__c': reason_for_supporting,
