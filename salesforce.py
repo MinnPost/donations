@@ -1328,7 +1328,28 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
             #print('sf id?')
             #print(sf_id)
         else:
-            print('no sf id here yet. delay and try again.')
+            print('no sf id here yet. see if we can update it. then delay and try again.')
+
+            query = """
+                    SELECT Id
+                    FROM Opportunity
+                    WHERE Flask_Transaction_ID__c='{0}'
+                    """.format(flask_id)
+
+            sf = SalesforceConnection()
+            opportunity = sf.query(query)
+
+            with app.app_context():
+                # add the salesforce id to the local database where the flask id matches
+                transaction = Transaction.query.get(flask_id)
+                # print(flask_id)
+                # print(transaction)
+                # transaction = db.session.query(Transaction).get(flask_id)
+                print('add the sf id {} to the transaction'.format(opportunity['Id']))
+                transaction.sf_id = opportunity['Id']
+                db.session.commit()
+                print('committed the db')
+
             raise self.retry(countdown=300)
 
         sf = SalesforceConnection()
