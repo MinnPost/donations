@@ -1328,7 +1328,7 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
             #print('sf id?')
             #print(sf_id)
         else:
-            print('no sf id here yet. see if we can update it. then delay and try again.')
+            print('no sf id here for {}. see if we can update it. then delay and try again.'.format(flask_id))
 
             query = """
                     SELECT Id
@@ -1348,7 +1348,7 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
             # print(flask_id)
             # print(transaction)
             # transaction = db.session.query(Transaction).get(flask_id)
-            print('add the sf id {} to the transaction'.format(opportunity[0]['Id']))
+            print('add the sf id {} to the transaction'.format(opportunity['id']))
             existing_transaction.sf_id = opportunity[0]['Id']
             db.session.commit()
             print('committed the db')
