@@ -1193,8 +1193,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         notify_slack(msg)
         response = add_recurring_donation(form=form, customer=customer, extra_values=extra_values)
 
-    print('1')
-    print(response)
+    #print('1')
+    #print(response)
 
     if not response['errors']:
         #print('update the database')
@@ -1206,7 +1206,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
             # print(flask_id)
             # print(transaction)
             # transaction = db.session.query(Transaction).get(flask_id)
-            print('add the sf id to the transaction')
+            print('add the sf id {} to the transaction with flask ID {}'.format(response['id'], flask_id))
             transaction.sf_id = response['id']
             db.session.commit()
             # print('committed the db')
@@ -1343,8 +1343,8 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
 
         response = sf.query(query)
 
-        print('2')
-        print(response)
+        #print('2')
+        #print(response)
 
         update = {
             'Reason_for_Gift__c': reason_for_supporting,
