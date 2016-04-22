@@ -1345,8 +1345,8 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
                 # print(flask_id)
                 # print(transaction)
                 # transaction = db.session.query(Transaction).get(flask_id)
-                print('add the sf id {} to the transaction'.format(opportunity['Id']))
-                transaction.sf_id = opportunity['Id']
+                print('add the sf id {} to the transaction'.format(opportunity[0]['Id']))
+                transaction.sf_id = opportunity[0]['Id']
                 db.session.commit()
                 print('committed the db')
 
