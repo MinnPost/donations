@@ -689,7 +689,7 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
 
         result = _find_opportunity(opp_id=opp_id, customer=customer, form=form) # form is if we are updating it also
         opportunity = result[0]
-        response = {'opportunity':opportunity, 'id': '00656000002iUqzAAE', 'success': True}
+        response = {'opportunity':opportunity, 'id': '00656000002iUqzAAE', 'success': True, 'errors' : []}
 
         # if the response is empty then there is no opportunity for this ID
         if response is None:
@@ -1196,7 +1196,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
     print('1')
     print(response)
 
-    if 'errors' not in response:
+    if not response['errors']:
         #print('update the database')
         #print(response)
 
@@ -1328,31 +1328,7 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
             #print('sf id?')
             #print(sf_id)
         else:
-            print('no sf id here for {}. see if we can update it. then delay and try again.'.format(flask_id))
-
-            query = """
-                    SELECT Id
-                    FROM Opportunity
-                    WHERE Flask_Transaction_ID__c='{0}'
-                    """.format(flask_id)
-
-            sf = SalesforceConnection()
-            opportunity = sf.query(query)
-
-            print('opportunity is')
-            print(opportunity)
-
-            #with app.app_context():
-                # add the salesforce id to the local database where the flask id matches
-            existing_transaction = Transaction.query.get(flask_id)
-            # print(flask_id)
-            # print(transaction)
-            # transaction = db.session.query(Transaction).get(flask_id)
-            print('add the sf id {} to the transaction'.format(opportunity['id']))
-            existing_transaction.sf_id = opportunity[0]['Id']
-            db.session.commit()
-            print('committed the db')
-
+            print('no sf id here yet. delay and try again.')
             raise self.retry(countdown=300)
 
         sf = SalesforceConnection()
