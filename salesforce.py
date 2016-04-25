@@ -1357,6 +1357,9 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
             }
 
         path = response[0]['attributes']['url']
+        print('error happening here with response url which should be {}'.format(path))
+        print(response)
+        print('response printed above')
         url = '{}{}'.format(sf.instance_url, path)
         #print (url)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
