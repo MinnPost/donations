@@ -610,7 +610,7 @@ def charge_ajax():
         opp_id = request.form['opp_id']
 
     if (amount).is_integer():
-        amount_formatted = int(request.form['amount'])
+        amount_formatted = float(request.form['amount'])
     else:
         amount_formatted = format(amount, ',.2f')
 
@@ -721,7 +721,7 @@ def charge_ajax():
             opp_subtype = request.form['opp_subtype']
             session['opp_subtype'] = opp_subtype
             if opp_subtype == 'Sales: Tickets':
-                single_unit_fair_market_value = int(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
+                single_unit_fair_market_value = float(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
                 fair_market_value = quantity * single_unit_fair_market_value
             elif opp_subtype == 'Sales: Advertising':
                 fair_market_value = amount
@@ -779,7 +779,7 @@ def thanks():
     customer_id = request.form['customer_id']
 
     if (amount).is_integer():
-        amount_formatted = int(request.form['amount'])
+        amount_formatted = float(request.form['amount'])
     else:
         amount_formatted = format(amount, ',.2f')
 
