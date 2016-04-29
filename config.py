@@ -88,6 +88,15 @@ STRIPE_KEYS = {
     'publishable_key': os.getenv('PUBLISHABLE_KEY')
 }
 
+########
+# Plaid (for ACH)
+#
+
+PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')
+PLAID_SECRET = os.getenv('PLAID_SECRET')
+PLAID_PUBLIC_KEY = os.getenv('PLAID_PUBLIC_KEY')
+PLAID_ENVIRONMENT = os.getenv('PLAID_ENVIRONMENT')
+
 ############
 # Postgres
 #

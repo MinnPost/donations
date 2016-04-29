@@ -36,6 +36,10 @@ from config import EVENT_CAMPAIGN_ID
 from config import ADVERTISING_CAMPAIGN_ID
 from config import SEPARATE_SWAG_MINIMUM_LEVEL
 from config import MAIN_SWAG_MINIMUM_LEVEL
+from config import PLAID_CLIENT_ID
+from config import PLAID_SECRET
+from config import PLAID_PUBLIC_KEY
+from config import PLAID_ENVIRONMENT
 from salesforce import add_customer_and_charge
 from salesforce import get_opportunity
 #from salesforce import add_tw_customer_and_charge
