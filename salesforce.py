@@ -1389,29 +1389,29 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
 
         response = sf.query(query)
 
-        #print('2')
-        #print(response)
+        if response:
+            path = response[0]['attributes']['url']
+            url = '{}{}'.format(sf.instance_url, path)
+            #print (url)
 
-        update = {
-            'Reason_for_Gift__c': reason_for_supporting,
-            'Reason_for_gift_shareable__c': reason_for_supporting_shareable,
-            'Daily_newsletter_sign_up__c': daily_newsletter,
-            'Greater_MN_newsletter__c': greater_mn_newsletter,
-            'Sunday_Review_newsletter__c': sunday_review_newsletter,
-            'Event_member_benefit_messages__c': event_messages,
-            'Input_feedback_messages__c': feedback_messages
-            }
-
-        path = response[0]['attributes']['url']
-        print('error happening here with response url which should be {}'.format(path))
-        print(response)
-        print('response printed above')
-        url = '{}{}'.format(sf.instance_url, path)
-        #print (url)
-        resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
-        # TODO: check 'errors' and 'success' too
-        #print (resp)
-        if resp.status_code == 204:
-            return True
+            update = {
+                'Reason_for_Gift__c': reason_for_supporting,
+                'Reason_for_gift_shareable__c': reason_for_supporting_shareable,
+                'Daily_newsletter_sign_up__c': daily_newsletter,
+                'Greater_MN_newsletter__c': greater_mn_newsletter,
+                'Sunday_Review_newsletter__c': sunday_review_newsletter,
+                'Event_member_benefit_messages__c': event_messages,
+                'Input_feedback_messages__c': feedback_messages
+                }
+            
+            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+            # TODO: check 'errors' and 'success' too
+            #print (resp)
+            if resp.status_code == 204:
+                return True
+            else:
+                raise Exception('problem')
         else:
-            raise Exception('problem')
+            print('Error: No response; response url should be {}'.format(path))
+            print(response)
+        
