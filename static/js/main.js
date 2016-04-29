@@ -844,6 +844,9 @@ global.Payment = Payment;
     'debug' : false, // this can be set to true on page level options
     'tabs' : true, // are we doing the tab thing
     'stripe_publishable_key' : '',
+    'plaid_env' : '',
+    'plaid_public_key' : '',
+    'plaid_link' : '#authorize-ach',
     'minnpost_root' : 'https://www.minnpost.com',
     'donate_form_selector': '#donate',
     'review_step_selector' : '#panel--review',
@@ -1061,6 +1064,7 @@ global.Payment = Payment;
         this.shippingAddress(this.element, this.options); // shipping address
         this.allowMinnpostAccount(this.element, this.options, false); // option for creating minnpost account
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
+        this.achFields(this.element, this.options); // do stuff for ach payments, if applicable to the form
         this.validateAndSubmit(this.element, this.options); // validate and submit the form
       }
 
@@ -1762,6 +1766,42 @@ global.Payment = Payment;
         });*/
       }
     }, // creditCardFields
+
+    achFields: function(element, options) {
+      if (options.plaid_env != '' && options.key != '') {
+        var linkHandler = Plaid.create({
+          selectAccount: true,
+          env: this.options.plaid_env,
+          clientName: 'MinnPost Stripe',
+          key: this.options.plaid_public_key,
+          product: 'auth',
+          onLoad: function() {
+            // The Link module finished loading.
+          },
+          onSuccess: function(public_token, metadata) {
+            // The onSuccess function is called when the user has successfully
+            // authenticated and selected an account to use.
+            //
+            // When called, you will send the public_token and the selected
+            // account ID, metadata.account_id, to your backend app server.
+            //
+            // sendDataToBackendServer({
+            //   public_token: public_token,
+            //   account_id: metadata.account_id
+            // });
+            console.log('Public Token: ' + public_token);
+            console.log('Customer-selected account ID: ' + metadata.account_id);
+          },
+          onExit: function() {
+            // The user exited the Link flow.
+          },
+        });
+        $(options.plaid_link, element).click(function(event) {
+          event.preventDefault();
+          linkHandler.open();
+        });
+      }
+    }, // achFields
 
     validateAndSubmit: function(element, options) {
       var that = this;
