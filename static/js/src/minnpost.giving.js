@@ -1026,9 +1026,16 @@
                       } else {
                         message = error.message[0];
                       }
-                      $(options[field], element).addClass('error');
-                      $(options[field], element).prev().addClass('error');
-                      $(options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+                      if ($(field).length > 0) {
+                        $(options[field], element).addClass('error');
+                        $(options[field], element).prev().addClass('error');
+                        $(options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+                      }
+
+                      if (error.field == 'csrf_token') {
+                        $('button.give').before('<p class="error">Sorry, this form had a back-end error and was unable to complete your donation. Please <a href="#" onclick="location.reload(); return false;">reload the page</a> and try again (we will preserve as much of your information as possible).</p>')
+                      }
+
                     });
 
                     if (typeof response.errors.error !== 'undefined') {
@@ -1053,9 +1060,11 @@
 
                     if (typeof response.errors[0] !== 'undefined') {
                       var field = response.errors[0].field + '_field_selector';
-                      $('html, body').animate({
-                        scrollTop: $(options[field], element).parent().offset().top
-                      }, 2000);
+                      if ($(field).length > 0) {
+                        $('html, body').animate({
+                          scrollTop: $(options[field], element).parent().offset().top
+                        }, 2000);
+                      }
                     }
 
                   } else {

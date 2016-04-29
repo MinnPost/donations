@@ -18,6 +18,10 @@ fieldset.amount {
 }
 fieldset.payment {
   padding-top: 0;
+  p.error {
+    margin-top: -$base-spacing;
+    font-size: $small-size;
+  }
 }
 
 .form-item {
