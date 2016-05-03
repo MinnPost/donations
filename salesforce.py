@@ -1412,6 +1412,5 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
             else:
                 raise Exception('problem')
         else:
-            print('Error: No response; response url should be {}'.format(path))
-            print(response)
+            print('Error: No response from Salesforce query {}'.format(query))
         
