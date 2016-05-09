@@ -36,8 +36,6 @@ from config import EVENT_CAMPAIGN_ID
 from config import ADVERTISING_CAMPAIGN_ID
 from config import SEPARATE_SWAG_MINIMUM_LEVEL
 from config import MAIN_SWAG_MINIMUM_LEVEL
-from config import PLAID_CLIENT_ID
-from config import PLAID_SECRET
 from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
 from salesforce import add_customer_and_charge
@@ -45,6 +43,8 @@ from salesforce import get_opportunity
 #from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
 from app_celery import make_celery
+
+from plaid import get_bank_token
 
 import batch
 
@@ -296,6 +296,7 @@ def minnpost_advertising_form():
     return render_template('minnpost-advertising.html', form=form, amount=amount_formatted, invoice=invoice, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         organization=organization, first_name = first_name,last_name = last_name, email=email,
+        plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # used at support.minnpost.com/minnroast-sponsorship
@@ -599,6 +600,58 @@ def charge():
         return render_template('error.html', message=message)
 
 
+## this is a minnpost url. use this when sending a request to plaid
+## if successful, this returns the access token and bank account token for stripe from plaid
+@app.route('/plaid_token/', methods=['POST'])
+def plaid_token():
+
+    form = MinnPostForm(request.form)
+    public_token = request.form['public_token']
+    account_id = request.form['account_id']
+
+    result = get_bank_token(public_token, account_id)
+
+    if 'stripe_bank_account_token' in result:
+        response = result
+    else:
+        response = {'error' : 'We were unable to connect to your account. Please try again.'}
+    
+    return jsonify(response)
+
+    '''
+    customer_id = request.form['customer_id']
+    email = request.form['email']
+
+    email_is_valid = validate_email(email)
+
+    if email_is_valid and customer_id is '': # this is a new customer
+        try:
+            customer = stripe.Customer.create(
+                    email=email,
+                    source=result['stripe_bank_account_token']
+            )
+            print('Create Stripe ACH customer for email {}'.format(email))
+        except Exception as e:
+            body = e.json_body
+            print('Stripe returned an error before creating customer: {} {}'.format(email, e.json_body))
+            return jsonify(errors=body)
+    else: # the email was invalid
+        print('Error saving customer {}; showed error'.format(email))        
+        body = []
+        if email != '':
+            message = 'Please enter a valid email address; {} is not valid.'.format(email)
+        else:
+            message = 'Your email address is required'
+        body.append({'field': 'email', 'message': message})
+        return jsonify(errors=body)
+
+    #print(result)
+    
+
+    return result
+    '''
+
+
 ## this is a minnpost url. when submitting a charge, start with ajax, then submit to the /thanks or whatever other url
 @app.route('/charge_ajax/', methods=['POST'])
 def charge_ajax():
@@ -641,9 +694,17 @@ def charge_ajax():
 
     if email_is_valid and customer_id is '': # this is a new customer
         try:
-            customer = stripe.Customer.create(
+            if 'stripeToken' in request.form:
+            #if request.form['stripeToken'] != '':
+                customer = stripe.Customer.create(
+                        email=email,
+                        card=request.form['stripeToken']
+                )
+            elif 'bankToken' in request.form:
+            #elif request.form['bankToken'] != '':
+                customer = stripe.Customer.create(
                     email=email,
-                    card=request.form['stripeToken']
+                    source=request.form['bankToken']
             )
             print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
@@ -652,7 +713,12 @@ def charge_ajax():
             return jsonify(errors=body)
     elif customer_id is not None and customer_id != '': # this is an existing customer
         customer = stripe.Customer.retrieve(customer_id)
-        customer.card=request.form['stripeToken']
+        #if request.form['stripeToken'] != '':
+        if 'stripeToken' in request.form:
+            customer.card = request.form['stripeToken']
+        #elif request.form['bankToken'] != '':
+        elif 'bankToken' in request.form:
+            customer.source = request.form['bankToken']
         customer.email = email
         customer.save()
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))

@@ -2,6 +2,19 @@
 
 }
 
+.two-radios {
+	background: $gray-lightest;
+	border-radius: $base-border-radius;
+	margin-bottom: 0.5em;
+	> label {
+      padding: $half-space $base-spacing 0 $base-spacing;
+    }
+	> label:last-child {
+      padding-top: 0;
+      padding-bottom: $half-space;
+    }
+}
+
 @media screen and (min-width: $large-screen) {
 	.support--summary, .support--confirm, .support--post-confirm {
 		@include row();
@@ -11,4 +24,14 @@
 			padding: 0;
 		}
 	}
+	.two-radios {
+	    @include row();
+	    > label {
+	      @include span-columns(6);
+	    }
+	    > label:last-child {
+	      text-align: right;
+	      padding: $half-space $base-spacing 0 $base-spacing;
+	    }
+	  }
 }

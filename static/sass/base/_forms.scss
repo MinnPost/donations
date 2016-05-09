@@ -152,7 +152,12 @@ textarea {
 
 }
 
-.credit-card-group {
+.payment .payment-method-group {
+
+  .error {
+    margin-top: 0;
+    color: $minnpost-red-error;
+  }
 
   .card-group div {
     float: left;
@@ -172,6 +177,13 @@ textarea {
     }
   }
 
+}
+
+.js .payment-method-group .payment-method {
+  display: none;
+}
+.js .payment-method-group .payment-method.active {
+  display: block;
 }
 
 .form-item--credit-card {

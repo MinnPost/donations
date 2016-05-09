@@ -82,7 +82,9 @@
     'calendar_button_selector' : '.addeventatc',
     'billing_selector' : 'fieldset.billing',
     'shipping_selector' : 'fieldset.shipping',
-    'credit_card_fieldset' : '.credit-card-group',
+    'credit_card_fieldset' : '.payment-method-group',
+    'choose_payment' : '#choose-payment-method',
+    'payment_method_selector' : '.payment-method',
     'cc_num_selector' : '#cc-number',
     'cc_exp_selector' : '#cc-exp',
     'cc_cvv_selector' : '#cc-cvc',
@@ -915,6 +917,28 @@
     }, // checkMinnpostAccountExists
 
     creditCardFields: function(element, options) {
+
+      if ($(options.choose_payment).length > 0) {      
+        if ($(options.choose_payment + ' input').is(':checked')) {
+          var checked = $(options.choose_payment + ' input:checked').attr('id');
+          $(options.payment_method_selector).removeClass('active');
+          $(options.payment_method_selector + '.' + checked).addClass('active');
+          $(options.payment_method_selector + ':not(.active) label').removeClass('required');
+          $(options.payment_method_selector + ':not(.active) input').prop('required', false);
+          $(options.payment_method_selector + '.active label').addClass('required');
+          $(options.payment_method_selector + '.active input').prop('required', true);
+        }
+
+        $(options.choose_payment + ' input').change(function (event) {
+          $(options.payment_method_selector).removeClass('active');
+          $(options.payment_method_selector + '.' + this.id).addClass('active');
+          $(options.payment_method_selector + ':not(.active) label').removeClass('required');
+          $(options.payment_method_selector + ':not(.active) input').prop('required', false);
+          $(options.payment_method_selector + '.active label').addClass('required');
+          $(options.payment_method_selector + '.active input').prop('required', true);
+        });
+      }
+
       if (typeof Payment !== 'undefined') {
         // format values
         Payment.formatCardNumber($(options.cc_num_selector, element));
@@ -945,9 +969,9 @@
       if (options.plaid_env != '' && options.key != '') {
         var linkHandler = Plaid.create({
           selectAccount: true,
-          env: this.options.plaid_env,
+          env: options.plaid_env,
           clientName: 'MinnPost',
-          key: this.options.plaid_public_key,
+          key: options.plaid_public_key,
           product: 'auth',
           onLoad: function() {
             // The Link module finished loading.
@@ -963,8 +987,42 @@
             //   public_token: public_token,
             //   account_id: metadata.account_id
             // });
-            console.log('Public Token: ' + public_token);
-            console.log('Customer-selected account ID: ' + metadata.account_id);
+
+            //console.log('Public Token: ' + public_token);
+            //console.log('Customer-selected account ID: ' + metadata.account_id);
+
+            var supportform = $(options.donate_form_selector);
+
+            // response contains id and card, which contains additional card details
+            // Insert the data into the form so it gets submitted to the server
+            supportform.append($('<input type=\"hidden\" name=\"public_token\" />').val(public_token));
+            supportform.append($('<input type=\"hidden\" name=\"account_id\" />').val(metadata.account_id));
+
+            // get the account validated by ajax
+            $.ajax({
+              url:'/plaid_token/',
+              cache: false,
+              data: $(supportform).serialize(),
+              type: 'POST'
+            })
+            .done(function(response) {
+              if (typeof response.error !== 'undefined') {
+                // there is an error.
+                $(options.plaid_link).parent().after('<p class="error">' + response.error + '</p>')
+              } else {
+                //console.log('print response here');
+                //console.dir(response);
+                $(options.donate_form_selector).prepend('<input type="hidden" id="bankToken" name="bankToken" value="' + response.stripe_bank_account_token + '" />');
+                $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
+                // add the field(s) we need to the form for submitting
+              }
+            })
+            .error(function(response) {
+              $(options.plaid_link).parent().after('<p class="error">' + response.error + '</p>')
+            });
+
+
+            
           },
           onExit: function() {
             // The user exited the Link flow.
@@ -972,6 +1030,7 @@
         });
         $(options.plaid_link, element).click(function(event) {
           event.preventDefault();
+          $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
           linkHandler.open();
         });
       }
@@ -986,7 +1045,14 @@
         $('.check-field, .card-instruction').remove();
         $('input, label', element).removeClass('error');
         var valid = true;
-        if (typeof Payment !== 'undefined') {
+        var payment_method = 'card';
+        if ($(options.choose_payment).length > 0) {
+          payment_method = $(options.choose_payment + ' input:checked').val();
+        }
+        $(options.choose_payment + ' input').change(function() {
+          $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
+        });
+        if (typeof Payment !== 'undefined' && payment_method !== 'ach') {
           var exp = Payment.fns.cardExpiryVal($(options.cc_exp_selector, element).val());
           var valid_cc = Payment.fns.validateCardNumber($(options.cc_num_selector, element).val());
           var valid_exp = Payment.fns.validateCardExpiry(exp.month, exp.year);
@@ -1019,6 +1085,11 @@
             $(options.cc_exp_selector, element).removeClass('error');
             $(options.cc_cvv_selector, element).removeClass('error');
           }
+        } else if (payment_method === 'ach') {
+          if ($('input[name="bankToken"]').length === 0) {
+            valid = false;
+            $(options.payment_method_selector).prepend('<p class="error">You are required to enter credit card information, or to authorize MinnPost to charge your bank account, to make a payment.</p>');
+          }
         }
 
         if (valid === true) {
@@ -1027,6 +1098,7 @@
           var supportform = $(options.donate_form_selector);
 
           var stripeResponseHandler = function(status, response) {
+            that.debug('trying to get stripe response');
             var supportform = $(options.donate_form_selector);
 
             if (response.errors) {
@@ -1034,13 +1106,18 @@
               supportform.find('button').prop('disabled', false);
               supportform.find('button').text(options.button_text);
             } else {
-              // response contains id and card, which contains additional card details
-              var token = response.id;
-              // Insert the token into the form so it gets submitted to the server
-              if ($('input[name="stripeToken"]').length > 0) {
-                $('input[name="stripeToken"]').val(token);
+
+              if ($('input[name="bankToken"]').length === 0) {
+                // response contains id and card, which contains additional card details
+                var token = response.id;
+                // Insert the token into the form so it gets submitted to the server
+                if ($('input[name="stripeToken"]').length > 0) {
+                  $('input[name="stripeToken"]').val(token);
+                } else {
+                  supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));  
+                }
               } else {
-                supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));  
+                that.debug('we have a bank token');
               }
 
               // get the card validated first by ajax
@@ -1188,21 +1265,27 @@
             });
           }
 
-          // finally, get a token from stripe, and try to charge it
-          Stripe.card.createToken({
-              number: $('#cc-number').val(),
-              cvc: $('#cc-cvc').val(),
-              exp: $('#cc-exp').val(),
-              name: full_name,
-              address_line1: street,
-              address_city: city,
-              address_state: state,
-              address_zip: zip,
-              address_country: country,
-            }, stripeResponseHandler);
+          if ($('input[name="bankToken"]').length == 0) {
+            // finally, get a token from stripe, and try to charge it if it is not ach
+            Stripe.card.createToken({
+                number: $(options.cc_num_selector).val(),
+                cvc: $(options.cc_cvv_selector).val(),
+                exp: $(options.cc_exp_selector).val(),
+                name: full_name,
+                address_line1: street,
+                address_city: city,
+                address_state: state,
+                address_zip: zip,
+                address_country: country,
+              }, stripeResponseHandler);
+          } else {
+            var ach = stripeResponseHandler('success', $('#bankToken').val());
+          }
           //return true;
 
-        } // valid = true
+        } else { // valid = true
+          that.debug('this is invalid');
+        }
 
       });
       //return false;

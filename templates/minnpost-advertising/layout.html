@@ -100,6 +100,7 @@
 
   <script src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
   <script src="https://js.stripe.com/v2/"></script>
+  <script src="https://cdn.plaid.com/link/stable/link-initialize.js"></script>
   <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>
 
   <script>
@@ -109,6 +110,8 @@
     $('.support--forms').minnpost_giving({
       'stripe_publishable_key' : '{{key}}',
       'tabs' : false,
+      'plaid_env' : '{{plaid_env}}',
+      'plaid_public_key' : '{{plaid_public_key}}',
     });
   });
   </script>
