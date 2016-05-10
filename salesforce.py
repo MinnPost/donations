@@ -136,6 +136,9 @@ class SalesforceConnection(object):
             payload = {'q': query}
         r = requests.get(url, headers=self.headers, params=payload)
         check_response(r)
+        print('query is below')
+        print(query)
+        print('end query')
         response = json.loads(r.text)
         # recursively get the rest of the records:
         if response['done'] is False:
