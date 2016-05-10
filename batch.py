@@ -60,10 +60,6 @@ def process_charges(query, log):
 
     for item in response:
 
-        print('show the item here')
-        print(item)
-        print('item is above')
-
         amount = amount_to_charge(item)
 
         # salesforce connect
@@ -96,6 +92,10 @@ def process_charges(query, log):
             else:
                 log.it('---- Checking transaction {} for status update.'.format(item['Stripe_Transaction_Id__c']))
                 charge = stripe.Charge.retrieve(item['Stripe_Transaction_Id__c'])
+
+                print('charge is here')
+                print(charge)
+                print('charge is above')
 
         except stripe.error.CardError as e:
             # look for decline code:
@@ -198,10 +198,6 @@ def process_charges(query, log):
                 #'Stripe_Bank_Account__c': charge.source.id,
                 'StageName': 'Closed Won'
                 }
-
-        print('update query below')
-        print(update)
-        print('finished update query')
 
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         # TODO: check 'errors' and 'success' too
