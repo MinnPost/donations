@@ -144,7 +144,6 @@ def process_charges(query, log):
             else:
                 log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
-
             continue
 
         if charge.status != 'succeeded' and charge.status != 'pending':
@@ -159,8 +158,8 @@ def process_charges(query, log):
             else:
                 log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
-
             continue
+
         if charge.status == 'pending':
             log.it("ACH charge pending. Check daily to see if it processes.")
             update = {
@@ -168,6 +167,14 @@ def process_charges(query, log):
                 'Stripe_Bank_Account__c': charge.source.id,
                 'StageName': 'ACH Pending',
                 }
+            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+            if resp.status_code == 204:
+                log.it('salesforce updated - charge is ach pending')
+            else:
+                log.it('error updating salesforce because status code was not 204')
+                raise Exception('error')
+            continue
+
         # charge was successful
         if charge.source.object != 'bank_account':
             update = {
@@ -180,8 +187,8 @@ def process_charges(query, log):
                 }
         else:
             update = {
-                'Stripe_Transaction_Id__c': charge.id,
-                'Stripe_Bank_Account__c': charge.source.id,
+                #'Stripe_Transaction_Id__c': charge.id,
+                #'Stripe_Bank_Account__c': charge.source.id,
                 'StageName': 'Closed Won'
                 }
 
