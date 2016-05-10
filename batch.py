@@ -251,7 +251,7 @@ def charge_cards():
     log.it('---Processing regular charges...')
 
     query = """
-        SELECT Amount, Name, Stripe_Customer_Id__c, Description, StageName, 
+        SELECT Amount, Name, Stripe_Customer_Id__c, Description, StageName, Stripe_Transaction_ID__c,
             Stripe_Agreed_to_pay_fees__c, Referring_page__c, Shipping_address_name__c, Shipping_address_street__c,
             Shipping_address_city__c, Shipping_address_state__c, Shipping_address_ZIP__c, Shipping_address_country__c
         FROM Opportunity
