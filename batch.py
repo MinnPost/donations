@@ -143,9 +143,9 @@ def process_charges(query, log):
                     log.it('error updating salesforce because status code was not 204')
                     raise Exception('error')
                 continue
-        elif item['StageName'] == 'ACH Pending':
-            log.it('---- Checking transaction {} for status update.'.format(item['Stripe_Transaction_Id__c']))
-            charge = stripe.Charge.retrieve(item['Stripe_Transaction_Id__c'])
+        else:
+            log.it('---- Checking transaction {} for status update.'.format(item['Stripe_Transaction_ID__c']))
+            charge = stripe.Charge.retrieve(item['Stripe_Transaction_ID__c'])
 
             print('charge is here')
             print(charge)
@@ -251,7 +251,7 @@ def charge_cards():
     log.it('---Processing regular charges...')
 
     query = """
-        SELECT Amount, Name, Stripe_Customer_Id__c, Description, StageName, Stripe_Transaction_ID__c,
+        SELECT Amount, Name, Stripe_Customer_Id__c, Description, StageName, 
             Stripe_Agreed_to_pay_fees__c, Referring_page__c, Shipping_address_name__c, Shipping_address_street__c,
             Shipping_address_city__c, Shipping_address_state__c, Shipping_address_ZIP__c, Shipping_address_country__c
         FROM Opportunity
