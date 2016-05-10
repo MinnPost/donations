@@ -66,8 +66,9 @@ def process_charges(query, log):
         path = item['attributes']['url']
         url = '{}{}'.format(sf.instance_url, path)
 
-        try:
-            if item['StageName'] == 'Pledged':
+        if item['StageName'] == 'Pledged':
+            try:
+            
                 log.it('---- Charging ${} to {} ({})'.format(amount / 100,
                     item['Stripe_Customer_ID__c'],
                     item['Name']))
@@ -89,67 +90,66 @@ def process_charges(query, log):
                         metadata={'source': item['Referring_page__c']},
                         shipping=shipping_details
                         )
-            else:
-                log.it('---- Checking transaction {} for status update.'.format(item['Stripe_Transaction_Id__c']))
-                charge = stripe.Charge.retrieve(item['Stripe_Transaction_Id__c'])
+            except stripe.error.CardError as e:
+                # look for decline code:
+                error = e.json_body['error']
+                log.it('Error: The card has been declined:')
+                log.it('\tStatus: {}'.format(e.http_status))
+                log.it('\tType: {}'.format(error.get('type', '')))
+                log.it('\tCode: {}'.format(error.get('code', '')))
+                log.it('\tParam: {}'.format(error.get('param', '')))
+                log.it('\tMessage: {}'.format(error.get('message', '')))
+                log.it('\tDecline code: {}'.format(error.get('decline_code', '')))
 
-                print('charge is here')
-                print(charge)
-                print('charge is above')
+                # charge was unsuccessful - change its salesforce status to Failed and store the error message
+                update = {
+                    'StageName': 'Failed',
+                    'Stripe_Error_Message__c': "Error: {}".format(e)
+                    }
 
-        except stripe.error.CardError as e:
-            # look for decline code:
-            error = e.json_body['error']
-            log.it('Error: The card has been declined:')
-            log.it('\tStatus: {}'.format(e.http_status))
-            log.it('\tType: {}'.format(error.get('type', '')))
-            log.it('\tCode: {}'.format(error.get('code', '')))
-            log.it('\tParam: {}'.format(error.get('param', '')))
-            log.it('\tMessage: {}'.format(error.get('message', '')))
-            log.it('\tDecline code: {}'.format(error.get('decline_code', '')))
+                resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+                if resp.status_code == 204:
+                    log.it('salesforce updated - charge failed')
+                else:
+                    log.it('error updating salesforce because status code was not 204')
+                    raise Exception('error')
 
-            # charge was unsuccessful - change its salesforce status to Failed and store the error message
-            update = {
-                'StageName': 'Failed',
-                'Stripe_Error_Message__c': "Error: {}".format(e)
-                }
+                continue
 
-            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
-            if resp.status_code == 204:
-                log.it('salesforce updated - charge failed')
-            else:
-                log.it('error updating salesforce because status code was not 204')
-                raise Exception('error')
+            except stripe.error.InvalidRequestError as e:
+                log.it("Error: {}".format(e))
+                update = {
+                    'StageName': 'Failed',
+                    'Stripe_Error_Message__c': "Error: {}".format(e)
+                    }
+                resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+                if resp.status_code == 204:
+                    log.it('salesforce updated with invalidrequesterror - charge failed')
+                else:
+                    log.it('error updating salesforce because status code was not 204')
+                    raise Exception('error')
 
-            continue
+                continue
+            except Exception as e:
+                log.it("Error: {}".format(e))
+                update = {
+                    'StageName': 'Failed',
+                    'Stripe_Error_Message__c': "Error: {}".format(e)
+                    }
+                resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+                if resp.status_code == 204:
+                    log.it('salesforce updated with generic exception - charge failed')
+                else:
+                    log.it('error updating salesforce because status code was not 204')
+                    raise Exception('error')
+                continue
+        else:
+            log.it('---- Checking transaction {} for status update.'.format(item['Stripe_Transaction_Id__c']))
+            charge = stripe.Charge.retrieve(item['Stripe_Transaction_Id__c'])
 
-        except stripe.error.InvalidRequestError as e:
-            log.it("Error: {}".format(e))
-            update = {
-                'StageName': 'Failed',
-                'Stripe_Error_Message__c': "Error: {}".format(e)
-                }
-            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
-            if resp.status_code == 204:
-                log.it('salesforce updated with invalidrequesterror - charge failed')
-            else:
-                log.it('error updating salesforce because status code was not 204')
-                raise Exception('error')
-
-            continue
-        except Exception as e:
-            log.it("Error: {}".format(e))
-            update = {
-                'StageName': 'Failed',
-                'Stripe_Error_Message__c': "Error: {}".format(e)
-                }
-            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
-            if resp.status_code == 204:
-                log.it('salesforce updated with generic exception - charge failed')
-            else:
-                log.it('error updating salesforce because status code was not 204')
-                raise Exception('error')
-            continue
+            print('charge is here')
+            print(charge)
+            print('charge is above')
 
         if charge.status != 'succeeded' and charge.status != 'pending':
             log.it("Error: Charge failed. Check Stripe logs.")
