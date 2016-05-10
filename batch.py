@@ -131,7 +131,7 @@ def process_charges(query, log):
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             if resp.status_code == 204:
-                log.it('salesforce updated - charge failed')
+                log.it('salesforce updated with invalidrequesterror - charge failed')
             else:
                 log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
@@ -145,7 +145,7 @@ def process_charges(query, log):
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             if resp.status_code == 204:
-                log.it('salesforce updated - charge failed')
+                log.it('salesforce updated with generic exception - charge failed')
             else:
                 log.it('error updating salesforce because status code was not 204')
                 raise Exception('error')
@@ -182,6 +182,7 @@ def process_charges(query, log):
 
         # charge was successful
         if charge.source.object != 'bank_account':
+            print('update with no bank account')
             update = {
                 'Stripe_Transaction_Id__c': charge.id,
                 'Stripe_Card__c': charge.source.id,
@@ -191,11 +192,16 @@ def process_charges(query, log):
                 'StageName': 'Closed Won',
                 }
         else:
+            print('update bank account')
             update = {
                 #'Stripe_Transaction_Id__c': charge.id,
                 #'Stripe_Bank_Account__c': charge.source.id,
                 'StageName': 'Closed Won'
                 }
+
+        print('update query below')
+        print(update)
+        print('finished update query')
 
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         # TODO: check 'errors' and 'success' too
