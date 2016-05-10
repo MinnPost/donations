@@ -66,27 +66,31 @@ def process_charges(query, log):
         url = '{}{}'.format(sf.instance_url, path)
 
         try:
-            log.it('---- Charging ${} to {} ({})'.format(amount / 100,
-                item['Stripe_Customer_ID__c'],
-                item['Name']))
+            if item['StageName'] != 'ACH Pending':
+                log.it('---- Charging ${} to {} ({})'.format(amount / 100,
+                    item['Stripe_Customer_ID__c'],
+                    item['Name']))
 
-            if item['Shipping_address_name__c'] != '':
-                shipping_address = {'line1' : item['Shipping_address_street__c'], 'city' : item['Shipping_address_city__c'], 'state' : item['Shipping_address_state__c'], 'postal_code' : item['Shipping_address_ZIP__c'], 'country' : item['Shipping_address_country__c']}
-                if shipping_address.get('line1'):
-                    shipping_details = {'name' : item['Shipping_address_name__c'], 'address' : shipping_address}
+                if item['Shipping_address_name__c'] != '':
+                    shipping_address = {'line1' : item['Shipping_address_street__c'], 'city' : item['Shipping_address_city__c'], 'state' : item['Shipping_address_state__c'], 'postal_code' : item['Shipping_address_ZIP__c'], 'country' : item['Shipping_address_country__c']}
+                    if shipping_address.get('line1'):
+                        shipping_details = {'name' : item['Shipping_address_name__c'], 'address' : shipping_address}
+                    else:
+                        shipping_details = None
                 else:
                     shipping_details = None
-            else:
-                shipping_details = None
 
-            charge = stripe.Charge.create(
-                    customer=item['Stripe_Customer_ID__c'],
-                    amount=amount,
-                    currency='usd',
-                    description=item['Description'],
-                    metadata={'source': item['Referring_page__c']},
-                    shipping=shipping_details
-                    )
+                charge = stripe.Charge.create(
+                        customer=item['Stripe_Customer_ID__c'],
+                        amount=amount,
+                        currency='usd',
+                        description=item['Description'],
+                        metadata={'source': item['Referring_page__c']},
+                        shipping=shipping_details
+                        )
+            else:
+                log.it('---- Checking transaction {} for status update.'.format(item['Stripe_Transaction_Id__c']))
+                charge = stripe.Charge.retrieve(item['Stripe_Transaction_Id__c'])
 
         except stripe.error.CardError as e:
             # look for decline code:
@@ -142,7 +146,8 @@ def process_charges(query, log):
                 raise Exception('error')
 
             continue
-        if charge.status != 'succeeded':
+
+        if charge.status != 'succeeded' and charge.status != 'pending':
             log.it("Error: Charge failed. Check Stripe logs.")
             update = {
                 'StageName': 'Failed',
@@ -156,15 +161,27 @@ def process_charges(query, log):
                 raise Exception('error')
 
             continue
+        if charge.status == 'pending'
+            log.it("ACH charge pending. Check daily to see if it processes.")
+            update = {
+                'Stripe_Transaction_Id__c': charge.id,
+                'Stripe_Bank_Account__c': charge.source.id,
+                'StageName': 'ACH Pending',
+                }
         # charge was successful
-        update = {
-            'Stripe_Transaction_Id__c': charge.id,
-            'Stripe_Card__c': charge.source.id,
-            'Card_type__c': charge.source.brand,
-            'Card_expiration_date__c': str(charge.source.exp_month) + ' / ' + str(charge.source.exp_year),
-            'Card_acct_last_4__c': charge.source.last4,
-            'StageName': 'Closed Won',
-            }
+        if charge.source.object != 'bank_account':
+            update = {
+                'Stripe_Transaction_Id__c': charge.id,
+                'Stripe_Card__c': charge.source.id,
+                'Card_type__c': charge.source.brand,
+                'Card_expiration_date__c': str(charge.source.exp_month) + ' / ' + str(charge.source.exp_year),
+                'Card_acct_last_4__c': charge.source.last4,
+                'StageName': 'Closed Won',
+                }
+        else:
+            update = {
+                'StageName': 'Closed Won'
+                }
 
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         # TODO: check 'errors' and 'success' too
@@ -255,6 +272,38 @@ def charge_cards():
     # log.send()
 
     lock.release()
+
+
+@celery.task()
+def update_ach_charges():
+
+    lock = Lock(key='update-ach-charges-lock')
+    lock.acquire()
+
+    log = Log()
+
+    log.it('---Starting batch job...')
+
+    #three_days_ago = (datetime.now(tz=zone) - timedelta(
+    #    days=3)).strftime('%Y-%m-%d')
+    #today = datetime.now(tz=zone).strftime('%Y-%m-%d')
+
+    ach_pending_status = 'ACH Pending'
+
+    # regular (non Circle) pledges:
+    log.it('---Checking for status changes on ACH charges...')
+
+    query = """
+        SELECT Amount, Stripe_Transaction_ID__c, StageName, Stripe_Customer_Id__c
+        FROM Opportunity
+        WHERE StageName = {}
+        AND Stripe_Customer_Id__c != ''
+        """.format(ach_pending_status)
+
+    process_charges(query, log)
+
+    lock.release()
+
 
 if __name__ == '__main__':
     charge_cards()

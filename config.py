@@ -29,10 +29,14 @@ CELERY_ALWAYS_EAGER = bool_env('CELERY_ALWAYS_EAGER')
 # for texas this is deprecated:
 CHARGE_MINUTES_FREQUENCY = int(os.getenv('CHARGE_MINUTES_FREQUENCY', 1440))
 CELERYBEAT_SCHEDULE = {
-        'every-day': {
+        'every-five-minutes': {
             'task': 'batch.charge_cards',
             'schedule': timedelta(minutes=CHARGE_MINUTES_FREQUENCY)
             # texas 'schedule': crontab(minute='0', hour=BATCH_HOURS)
+            },
+        'every-day': {
+            'task': 'batch.update_ach_charges',
+            'schedule': timedelta(minutes=5) # make this happen daily
             },
         }
 REDIS_URL = os.getenv('REDIS_URL')
