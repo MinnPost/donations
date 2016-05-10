@@ -161,7 +161,7 @@ def process_charges(query, log):
                 raise Exception('error')
 
             continue
-        if charge.status == 'pending'
+        if charge.status == 'pending':
             log.it("ACH charge pending. Check daily to see if it processes.")
             update = {
                 'Stripe_Transaction_Id__c': charge.id,
