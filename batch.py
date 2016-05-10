@@ -303,7 +303,9 @@ def update_ach_charges():
     log.it('---Checking for status changes on ACH charges...')
 
     query = """
-        SELECT Amount, Stripe_Transaction_ID__c, StageName, Stripe_Customer_Id__c
+        SELECT Stripe_Transaction_ID__c, Amount, Name, Stripe_Customer_Id__c, Description, StageName, 
+            Stripe_Agreed_to_pay_fees__c, Referring_page__c, Shipping_address_name__c, Shipping_address_street__c,
+            Shipping_address_city__c, Shipping_address_state__c, Shipping_address_ZIP__c, Shipping_address_country__c
         FROM Opportunity
         WHERE StageName = 'ACH Pending'
         AND Stripe_Customer_Id__c != ''
