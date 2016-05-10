@@ -315,7 +315,7 @@ def update_ach_charges():
             Shipping_address_city__c, Shipping_address_state__c, Shipping_address_ZIP__c, Shipping_address_country__c
         FROM Opportunity
         WHERE StageName = 'ACH Pending'
-        AND Stripe_Customer_Id__c != ''
+        AND Stripe_Customer_Id__c != '' AND Stripe_Transaction_ID__c != ''
         """
 
     try:
