@@ -180,6 +180,8 @@ def process_charges(query, log):
                 }
         else:
             update = {
+                'Stripe_Transaction_Id__c': charge.id,
+                'Stripe_Bank_Account__c': charge.source.id,
                 'StageName': 'Closed Won'
                 }
 
