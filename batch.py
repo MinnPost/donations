@@ -254,7 +254,10 @@ def charge_cards():
         AND Stripe_Customer_Id__c != ''
         """.format(today, three_days_ago)
 
-    process_charges(query, log)
+    try:
+        process_charges(query, log)
+    finally:
+        lock.release()
 
     #
     # Circle transactions are different from the others. The Close Dates for a
@@ -279,9 +282,7 @@ def charge_cards():
 
     # process_charges(query, log)
     # log.send()
-
-    lock.release()
-
+    
 
 @celery.task()
 def update_ach_charges():
@@ -309,9 +310,10 @@ def update_ach_charges():
         AND Stripe_Customer_Id__c != ''
         """.format(ach_pending_status)
 
-    process_charges(query, log)
-
-    lock.release()
+    try:
+        process_charges(query, log)
+    finally:
+        lock.release()
 
 
 if __name__ == '__main__':
