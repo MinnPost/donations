@@ -59,6 +59,11 @@ def process_charges(query, log):
         len(response)))
 
     for item in response:
+
+        print('show the item here')
+        print(item)
+        print('item is above')
+
         amount = amount_to_charge(item)
 
         # salesforce connect
