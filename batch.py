@@ -66,7 +66,7 @@ def process_charges(query, log):
         url = '{}{}'.format(sf.instance_url, path)
 
         try:
-            if item['StageName'] != 'ACH Pending':
+            if item['StageName'] == 'Pledged':
                 log.it('---- Charging ${} to {} ({})'.format(amount / 100,
                     item['Stripe_Customer_ID__c'],
                     item['Name']))
@@ -235,7 +235,7 @@ def charge_cards():
     log.it('---Processing regular charges...')
 
     query = """
-        SELECT Amount, Name, Stripe_Customer_Id__c, Description,
+        SELECT Amount, Name, Stripe_Customer_Id__c, Description, StageName, 
             Stripe_Agreed_to_pay_fees__c, Referring_page__c, Shipping_address_name__c, Shipping_address_street__c,
             Shipping_address_city__c, Shipping_address_state__c, Shipping_address_ZIP__c, Shipping_address_country__c
         FROM Opportunity
