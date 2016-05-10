@@ -282,7 +282,7 @@ def charge_cards():
 
     # process_charges(query, log)
     # log.send()
-    
+
 
 @celery.task()
 def update_ach_charges():
@@ -298,7 +298,6 @@ def update_ach_charges():
     #    days=3)).strftime('%Y-%m-%d')
     #today = datetime.now(tz=zone).strftime('%Y-%m-%d')
 
-    ach_pending_status = 'ACH Pending'
 
     # regular (non Circle) pledges:
     log.it('---Checking for status changes on ACH charges...')
@@ -306,9 +305,9 @@ def update_ach_charges():
     query = """
         SELECT Amount, Stripe_Transaction_ID__c, StageName, Stripe_Customer_Id__c
         FROM Opportunity
-        WHERE StageName = {}
+        WHERE StageName = 'ACH Pending'
         AND Stripe_Customer_Id__c != ''
-        """.format(ach_pending_status)
+        """
 
     try:
         process_charges(query, log)
