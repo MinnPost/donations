@@ -147,9 +147,6 @@ def process_charges(query, log):
             log.it('---- Checking transaction {} for status update.'.format(item['Stripe_Transaction_ID__c']))
             charge = stripe.Charge.retrieve(item['Stripe_Transaction_ID__c'])
 
-            print('charge is here')
-            print(charge)
-            print('charge is above')
 
         if charge.status != 'succeeded' and charge.status != 'pending':
             log.it("Error: Charge failed. Check Stripe logs.")
@@ -182,7 +179,6 @@ def process_charges(query, log):
 
         # charge was successful
         if charge.source.object != 'bank_account':
-            print('update with no bank account')
             update = {
                 'Stripe_Transaction_Id__c': charge.id,
                 'Stripe_Card__c': charge.source.id,
@@ -192,7 +188,6 @@ def process_charges(query, log):
                 'StageName': 'Closed Won',
                 }
         else:
-            print('update bank account')
             update = {
                 #'Stripe_Transaction_Id__c': charge.id,
                 #'Stripe_Bank_Account__c': charge.source.id,

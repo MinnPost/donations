@@ -36,7 +36,7 @@ CELERYBEAT_SCHEDULE = {
             },
         'every-day': {
             'task': 'batch.update_ach_charges',
-            'schedule': timedelta(minutes=5) # make this happen daily
+            'schedule': timedelta(minutes=1440) # make this happen daily
             },
         }
 REDIS_URL = os.getenv('REDIS_URL')
