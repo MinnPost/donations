@@ -618,39 +618,6 @@ def plaid_token():
     
     return jsonify(response)
 
-    '''
-    customer_id = request.form['customer_id']
-    email = request.form['email']
-
-    email_is_valid = validate_email(email)
-
-    if email_is_valid and customer_id is '': # this is a new customer
-        try:
-            customer = stripe.Customer.create(
-                    email=email,
-                    source=result['stripe_bank_account_token']
-            )
-            print('Create Stripe ACH customer for email {}'.format(email))
-        except Exception as e:
-            body = e.json_body
-            print('Stripe returned an error before creating customer: {} {}'.format(email, e.json_body))
-            return jsonify(errors=body)
-    else: # the email was invalid
-        print('Error saving customer {}; showed error'.format(email))        
-        body = []
-        if email != '':
-            message = 'Please enter a valid email address; {} is not valid.'.format(email)
-        else:
-            message = 'Your email address is required'
-        body.append({'field': 'email', 'message': message})
-        return jsonify(errors=body)
-
-    #print(result)
-    
-
-    return result
-    '''
-
 
 ## this is a minnpost url. when submitting a charge, start with ajax, then submit to the /thanks or whatever other url
 @app.route('/charge_ajax/', methods=['POST'])
