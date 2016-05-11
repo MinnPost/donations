@@ -678,12 +678,14 @@ def charge_ajax():
             return jsonify(errors=body)
     elif customer_id is not None and customer_id != '': # this is an existing customer
         customer = stripe.Customer.retrieve(customer_id)
-        if 'stripeToken' in request.form:
-            customer.source = request.form['stripeToken']
-        elif 'bankToken' in request.form:
-            customer.source = request.form['bankToken']
         customer.email = email
         customer.save()
+        if 'stripeToken' in request.form:
+            #customer.source = request.form['stripeToken']
+            customer.sources.create(source=request.form['stripeToken'])
+        elif 'bankToken' in request.form:
+            #customer.source = request.form['bankToken']
+            customer.sources.create(source=request.form['bankToken'])
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
     else: # the email was invalid
         print('Error saving customer {} {} {}; showed error'.format(email, first_name, last_name))        
