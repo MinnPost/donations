@@ -98,11 +98,27 @@ def process_charges(query, log):
                 # currently this just loads the token. not going to work.
 
                 if item['Stripe_Card__c'] != '':
-                    charge_args['source'] = item['Stripe_Card__c']
+                    #charge_args['source'] = item['Stripe_Card__c']
+                    charge_source = item['Stripe_Card__c']
                 elif item['Stripe_Bank_Account__c'] != '':
-                    charge_args['source'] = item['Stripe_Bank_Account__c']
+                    #charge_args['source'] = item['Stripe_Bank_Account__c']
+                    charge_source = item['Stripe_Bank_Account__c']
+                else:
+                    charge_source = None
 
-                charge = stripe.Charge.create(charge_args)
+                #charge = stripe.Charge.create(charge_args)
+
+                charge = stripe.Charge.create(
+                    customer=item['Stripe_Customer_ID__c'],
+                    amount=amount,
+                    currency='usd',
+                    description=item['Description'],
+                    metadata={'source': item['Referring_page__c']},
+                    shipping=shipping_details,
+                    source=charge_source
+                )
+
+
 
             except stripe.error.CardError as e:
                 # look for decline code:
