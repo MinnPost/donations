@@ -675,9 +675,7 @@ def charge_ajax():
                     email=email,
                     source=request.form['bankToken']
                 )
-                print('created ach customer')
                 stripe_bank_account = customer.default_source
-                print('stripe bank account is {}'.format(stripe_bank_account))
             print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
@@ -724,8 +722,10 @@ def charge_ajax():
 
         # if we have a new source for an existing customer, add it to extra valeus
         if stripe_card:
+            print('there is a card')
             extra_values['stripe_card'] = stripe_card
         elif stripe_bank_account:
+            print('there is a bank account')
             extra_values['stripe_bank_account'] = stripe_bank_account
 
         # if we specify opportunity type and/or subtype, put it in the session
