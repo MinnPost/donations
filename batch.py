@@ -82,20 +82,24 @@ def process_charges(query, log):
                 else:
                     shipping_details = None
 
-                data = customer=item['Stripe_Customer_ID__c'],
-                        amount=amount,
-                        currency='usd',
-                        description=item['Description'],
-                        metadata={'source': item['Referring_page__c']},
-                        shipping=shipping_details
+                data = {
+                    'customer': item['Stripe_Customer_ID__c'],
+                    'amount': amount,
+                    'currency': 'usd',
+                    'description': item['Description'],
+                    'metadata': {
+                        'source': item['Referring_page__c']
+                    },
+                    'shipping': shipping_details
+                }
 
                 # if we know the source from the opportunity, use it
                 # otherwise it will use the default on the Stripe customer
-                
+
                 if item['Stripe_Card__c'] != '':
-                    data.source = item['Stripe_Card__c']
+                    data['source'] = item['Stripe_Card__c']
                 elif item['Stripe_Bank_Account__c'] != '':
-                    data.source = item['Stripe_Bank_Account__c']
+                    data['source'] = item['Stripe_Bank_Account__c']
 
                 charge = stripe.Charge.create(data)
 
