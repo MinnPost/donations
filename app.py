@@ -691,9 +691,11 @@ def charge_ajax():
         # this does not change the default payment method.
         # todo: build a checkbox or something that lets users indicate that we should update their default method
         if 'stripeToken' in request.form:
-            stripe_card = customer.sources.create(source=request.form['stripeToken'])
+            card = customer.sources.create(source=request.form['stripeToken'])
+            stripe_card = card.id
         elif 'bankToken' in request.form:
-            stripe_bank_account = customer.sources.create(source=request.form['bankToken'])
+            bank_account = customer.sources.create(source=request.form['bankToken'])
+            stripe_bank_account = bank_account.id
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
     else: # the email was invalid
         print('Error saving customer {} {} {}; showed error'.format(email, first_name, last_name))        
