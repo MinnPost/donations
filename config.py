@@ -28,6 +28,7 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 CELERY_ALWAYS_EAGER = bool_env('CELERY_ALWAYS_EAGER')
 # for texas this is deprecated:
 CHARGE_MINUTES_FREQUENCY = int(os.getenv('CHARGE_MINUTES_FREQUENCY', 1440))
+ACH_MINUTES_FREQUENCY = int(os.getenv('ACH_MINUTES_FREQUENCY', 1440))
 CELERYBEAT_SCHEDULE = {
         'every-five-minutes': {
             'task': 'batch.charge_cards',
@@ -36,7 +37,7 @@ CELERYBEAT_SCHEDULE = {
             },
         'every-day': {
             'task': 'batch.update_ach_charges',
-            'schedule': timedelta(minutes=1440) # make this happen daily
+            'schedule': timedelta(minutes=ACH_MINUTES_FREQUENCY)
             },
         }
 REDIS_URL = os.getenv('REDIS_URL')
