@@ -218,7 +218,8 @@ def minnpost_event_form():
         quantity=quantity, single_unit_price = single_unit_price, starting_amount = starting_amount,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
-
+# used to validate event promo codes to assign users discount
+# called by ajax
 @app.route('/event-check-promo/', methods=['POST'])
 def event_check_promo():
     promo_code = EVENT_PROMO_CODE
@@ -660,11 +661,12 @@ def charge_ajax():
     email_is_valid = validate_email(email)
 
     if email_is_valid and customer_id is '': # this is a new customer
+    # if it is a new customer, assume they only have one payment method and it should be the default
         try:
             if 'stripeToken' in request.form:
                 customer = stripe.Customer.create(
                         email=email,
-                        card=request.form['stripeToken']
+                        card=request.form['stripeToken'] 
                 )
             elif 'bankToken' in request.form:
                 customer = stripe.Customer.create(
@@ -680,11 +682,12 @@ def charge_ajax():
         customer = stripe.Customer.retrieve(customer_id)
         customer.email = email
         customer.save()
+        # since this is an existing customer, add the current payment method to the list.
+        # this does not change the default payment method.
+        # todo: build a checkbox or something that lets users indicate that we should update their default method
         if 'stripeToken' in request.form:
-            #customer.source = request.form['stripeToken']
             customer.sources.create(source=request.form['stripeToken'])
         elif 'bankToken' in request.form:
-            #customer.source = request.form['bankToken']
             customer.sources.create(source=request.form['bankToken'])
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
     else: # the email was invalid
