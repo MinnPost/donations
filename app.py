@@ -660,6 +660,9 @@ def charge_ajax():
     last_name = request.form['last_name']
     email_is_valid = validate_email(email)
 
+    stripe_card = ''
+    stripe_bank_account = ''
+
     if email_is_valid and customer_id is '': # this is a new customer
     # if it is a new customer, assume they only have one payment method and it should be the default
         try:
@@ -721,10 +724,10 @@ def charge_ajax():
         extra_values = {}
 
         # if we have a new source for an existing customer, add it to extra valeus
-        if stripe_card:
+        if stripe_card != '':
             print('there is a card')
             extra_values['stripe_card'] = stripe_card
-        elif stripe_bank_account:
+        elif stripe_bank_account != '':
             print('there is a bank account')
             extra_values['stripe_bank_account'] = stripe_bank_account
 
