@@ -95,11 +95,14 @@ def process_charges(query, log):
 
                 # if we know the source from the opportunity, use it
                 # otherwise it will use the default on the Stripe customer
+                # currently this just loads the token. not going to work.
 
                 if item['Stripe_Card__c'] != '':
                     data['source'] = item['Stripe_Card__c']
                 elif item['Stripe_Bank_Account__c'] != '':
                     data['source'] = item['Stripe_Bank_Account__c']
+
+                print('the current source id is {}'.format(data['source']))
 
                 charge = stripe.Charge.create(data)
 
