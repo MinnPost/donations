@@ -675,7 +675,7 @@ def charge_ajax():
                     source=request.form['bankToken']
                 )
                 stripe_bank_account = customer.default_source
-                print('new customer: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
+            print('new customer: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
             print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
@@ -692,7 +692,7 @@ def charge_ajax():
             stripe_card = customer.sources.create(source=request.form['stripeToken'])
         elif 'bankToken' in request.form:
             stripe_bank_account = customer.sources.create(source=request.form['bankToken'])
-            print('existing customer: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
+        print('existing customer: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
     else: # the email was invalid
         print('Error saving customer {} {} {}; showed error'.format(email, first_name, last_name))        
