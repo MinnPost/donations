@@ -343,8 +343,6 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         stripe_bank_account = ''
 
-    print('opportunity: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
-
     try:
         if form['campaign'] != '':
             campaign = form['campaign']
@@ -862,12 +860,12 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     amount = form['amount']
 
     # payment method for this recurring donation
-    if 'stripeToken' in form:
-        stripe_card = form['stripeToken'] 
+    if 'stripe_card' in extra_values:
+        stripe_card = extra_values['stripe_card'] 
     else:
         stripe_card = ''
-    if 'bankToken' in form:
-        stripe_bank_account = form['bankToken']
+    if 'stripe_bank_account' in extra_values:
+        stripe_bank_account = form['stripe_bank_account']
     else:
         stripe_bank_account = ''
 
