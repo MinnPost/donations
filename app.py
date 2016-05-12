@@ -635,9 +635,9 @@ def charge_ajax():
         opp_id = request.form['opp_id']
 
     #if (amount).is_integer():
-    amount_formatted = float(request.form['amount'])
+    #    amount_formatted = float(request.form['amount'])
     #else:
-    #    amount_formatted = format(amount, ',.2f')
+    amount_formatted = format(amount, ',.2f')
 
     frequency = request.form['recurring']
     if frequency is None:
