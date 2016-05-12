@@ -635,7 +635,7 @@ def charge_ajax():
         opp_id = request.form['opp_id']
 
     if (amount).is_integer():
-        amount_formatted = float(request.form['amount'])
+        amount_formatted = format(float(request.form['amount']), ',.2f')
     else:
         amount_formatted = format(amount, ',.2f')
 
