@@ -668,10 +668,12 @@ def charge_ajax():
                         email=email,
                         card=request.form['stripeToken'] 
                 )
+                stripe_card = customer.default_source
             elif 'bankToken' in request.form:
                 customer = stripe.Customer.create(
                     email=email,
                     source=request.form['bankToken']
+                stripe_bank_account = customer.default_source
             )
             print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
@@ -686,9 +688,9 @@ def charge_ajax():
         # this does not change the default payment method.
         # todo: build a checkbox or something that lets users indicate that we should update their default method
         if 'stripeToken' in request.form:
-            customer.sources.create(source=request.form['stripeToken'])
+            stripe_card = customer.sources.create(source=request.form['stripeToken'])
         elif 'bankToken' in request.form:
-            customer.sources.create(source=request.form['bankToken'])
+            stripe_bank_account = customer.sources.create(source=request.form['bankToken'])
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
     else: # the email was invalid
         print('Error saving customer {} {} {}; showed error'.format(email, first_name, last_name))        
@@ -716,6 +718,13 @@ def charge_ajax():
             session['sf_type'] = 'npe03__Recurring_Donation__c'
 
         extra_values = {}
+
+        # if we have a new source for an existing customer, add it to extra valeus
+        if stripe_card:
+            extra_values['stripe_card'] = stripe_card
+        elif stripe_bank_account:
+            extra_values['stripe_bank_account'] = stripe_bank_account
+
         # if we specify opportunity type and/or subtype, put it in the session
         if 'opp_type' in request.form:
             session['opp_type'] = request.form['opp_type']

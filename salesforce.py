@@ -334,12 +334,12 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     amount = form['amount']
 
     # payment method for this opportunity
-    if 'stripeToken' in form:
-        stripe_card = form['stripeToken'] 
+    if 'stripe_card' in extra_values:
+        stripe_card = extra_values['stripe_card'] 
     else:
         stripe_card = ''
-    if 'bankToken' in form:
-        stripe_bank_account = form['bankToken']
+    if 'stripe_bank_account' in extra_values:
+        stripe_bank_account = form['stripe_bank_account']
     else:
         stripe_bank_account = ''
 
