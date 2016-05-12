@@ -96,6 +96,8 @@ def process_charges(query, log):
                 # if we know the source from the opportunity, use it
                 # otherwise it will use the default on the Stripe customer
                 # currently this just loads the token. not going to work.
+                print('show the item')
+                print(item)
 
                 if item['Stripe_Card__c'] != '':
                     data['source'] = item['Stripe_Card__c']
