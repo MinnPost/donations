@@ -339,7 +339,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         stripe_card = ''
     if 'stripe_bank_account' in extra_values:
-        stripe_bank_account = form['stripe_bank_account']
+        stripe_bank_account = extra_values['stripe_bank_account']
     else:
         stripe_bank_account = ''
 
@@ -867,7 +867,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     else:
         stripe_card = ''
     if 'stripe_bank_account' in extra_values:
-        stripe_bank_account = form['stripe_bank_account']
+        stripe_bank_account = extra_values['stripe_bank_account']
     else:
         stripe_bank_account = ''
 
