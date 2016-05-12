@@ -670,11 +670,12 @@ def charge_ajax():
                 )
                 stripe_card = customer.default_source
             elif 'bankToken' in request.form:
+                print('try to create ach customer')
                 customer = stripe.Customer.create(
                     email=email,
                     source=request.form['bankToken']
                 )
-                print('create ach customer')
+                print('created ach customer')
                 stripe_bank_account = customer.default_source
                 print('stripe bank account is {}'.format(stripe_bank_account))
             print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
