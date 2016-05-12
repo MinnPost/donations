@@ -936,6 +936,7 @@
           $(options.payment_method_selector + ':not(.active) input').prop('required', false);
           $(options.payment_method_selector + '.active label').addClass('required');
           $(options.payment_method_selector + '.active input').prop('required', true);
+          $('#bankToken').remove();
         });
       }
 
