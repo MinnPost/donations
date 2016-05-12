@@ -82,14 +82,23 @@ def process_charges(query, log):
                 else:
                     shipping_details = None
 
-                charge = stripe.Charge.create(
-                        customer=item['Stripe_Customer_ID__c'],
+                data = customer=item['Stripe_Customer_ID__c'],
                         amount=amount,
                         currency='usd',
                         description=item['Description'],
                         metadata={'source': item['Referring_page__c']},
                         shipping=shipping_details
-                        )
+
+                # if we know the source from the opportunity, use it
+                # otherwise it will use the default on the Stripe customer
+                
+                if item['Stripe_Card__c'] != '':
+                    data.source = item['Stripe_Card__c']
+                elif item['Stripe_Bank_Account__c'] != '':
+                    data.source = item['Stripe_Bank_Account__c']
+
+                charge = stripe.Charge.create(data)
+
             except stripe.error.CardError as e:
                 # look for decline code:
                 error = e.json_body['error']
@@ -166,7 +175,7 @@ def process_charges(query, log):
             log.it("ACH charge pending. Check daily to see if it processes.")
             update = {
                 'Stripe_Transaction_Id__c': charge.id,
-                'Stripe_Bank_Account__c': charge.source.id,
+                #'Stripe_Bank_Account__c': charge.source.id,
                 'StageName': 'ACH Pending',
                 }
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
@@ -181,7 +190,7 @@ def process_charges(query, log):
         if charge.source.object != 'bank_account':
             update = {
                 'Stripe_Transaction_Id__c': charge.id,
-                'Stripe_Card__c': charge.source.id,
+                #'Stripe_Card__c': charge.source.id,
                 'Card_type__c': charge.source.brand,
                 'Card_expiration_date__c': str(charge.source.exp_month) + ' / ' + str(charge.source.exp_year),
                 'Card_acct_last_4__c': charge.source.last4,
