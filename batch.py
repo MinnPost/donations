@@ -82,7 +82,7 @@ def process_charges(query, log):
                 else:
                     shipping_details = None
 
-                data = {
+                charge_args = {
                     'customer': item['Stripe_Customer_ID__c'],
                     'amount': amount,
                     'currency': 'usd',
@@ -98,11 +98,11 @@ def process_charges(query, log):
                 # currently this just loads the token. not going to work.
 
                 if item['Stripe_Card__c'] != '':
-                    data['source'] = item['Stripe_Card__c']
+                    charge_args['source'] = item['Stripe_Card__c']
                 elif item['Stripe_Bank_Account__c'] != '':
-                    data['source'] = item['Stripe_Bank_Account__c']
+                    charge_args['source'] = item['Stripe_Bank_Account__c']
 
-                charge = stripe.Charge.create(data)
+                charge = stripe.Charge.create(charge_args)
 
             except stripe.error.CardError as e:
                 # look for decline code:
