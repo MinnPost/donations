@@ -343,7 +343,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         stripe_bank_account = ''
 
-    #print('opportunity: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
+    print('opportunity: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
 
     try:
         if form['campaign'] != '':
@@ -737,8 +737,6 @@ def add_opportunity(form=None, customer=None, extra_values=None, charge=None):
     opportunity = _format_opportunity(contact=contact, form=form,
             customer=customer, extra_values=extra_values)
     path = '/services/data/v35.0/sobjects/Opportunity'
-    print('opportunity is')
-    print(opportunity)
     response = sf.post(path=path, data=opportunity)
     send_multiple_account_warning()
 
