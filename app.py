@@ -825,10 +825,11 @@ def thanks():
     amount = float(request.form['amount'])
     customer_id = request.form['customer_id']
 
-    if (amount).is_integer():
-        amount_formatted = float(request.form['amount'])
-    else:
-        amount_formatted = format(amount, ',.2f')
+    #if (amount).is_integer():
+    #    amount_formatted = float(request.form['amount'])
+    #else:
+    #    amount_formatted = format(amount, ',.2f')
+    amount_formatted = format(amount, ',.2f')
 
     frequency = request.form['recurring']
     if frequency is None:
