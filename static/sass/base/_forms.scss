@@ -152,7 +152,7 @@ textarea {
 
 }
 
-.payment .payment-method-group {
+.payment .payment-method-group, .payment .credit-card-group {
 
   .error {
     margin-top: 0;
@@ -186,6 +186,8 @@ textarea {
   display: block;
 }
 
+// this whole group only does the thing that tries to combine all the fields
+// not confident that it is usable, currently
 .form-item--credit-card {
   .credit-card-group {
     margin-bottom: 0;
