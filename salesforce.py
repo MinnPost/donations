@@ -343,7 +343,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         stripe_bank_account = ''
 
-    print('opportunity: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
+    #print('opportunity: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
 
     try:
         if form['campaign'] != '':
