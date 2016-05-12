@@ -96,15 +96,11 @@ def process_charges(query, log):
                 # if we know the source from the opportunity, use it
                 # otherwise it will use the default on the Stripe customer
                 # currently this just loads the token. not going to work.
-                print('show the item')
-                print(item)
 
                 if item['Stripe_Card__c'] != '':
                     data['source'] = item['Stripe_Card__c']
                 elif item['Stripe_Bank_Account__c'] != '':
                     data['source'] = item['Stripe_Bank_Account__c']
-
-                print('the current source id is {}'.format(data['source']))
 
                 charge = stripe.Charge.create(data)
 
@@ -264,7 +260,7 @@ def charge_cards():
     log.it('---Processing regular charges...')
 
     query = """
-        SELECT Amount, Name, Stripe_Customer_Id__c, Description, StageName, 
+        SELECT Amount, Name, Stripe_Customer_Id__c, Description, StageName, Stripe_Card__c, Stripe_Bank_Account__c,
             Stripe_Agreed_to_pay_fees__c, Referring_page__c, Shipping_address_name__c, Shipping_address_street__c,
             Shipping_address_city__c, Shipping_address_state__c, Shipping_address_ZIP__c, Shipping_address_country__c
         FROM Opportunity
@@ -278,30 +274,6 @@ def charge_cards():
         process_charges(query, log)
     finally:
         lock.release()
-
-    #
-    # Circle transactions are different from the others. The Close Dates for a
-    # given Circle donation are all identical. That's so that the gift can be
-    # recognized all at once on the donor wall. So we use another field to
-    # determine when the card is actually charged: Expected_Giving_Date__c.
-    # So we process charges separately for Circles.
-    #
-
-    # log.it('---Processing Circle charges...')
-
-    # query = """
-    #     SELECT Amount, Name, Stripe_Customer_Id__c, Description,
-    #         Stripe_Agreed_to_pay_fees__c
-    #     FROM Opportunity
-    #     WHERE Expected_Giving_Date__c <= {}
-    #     AND Expected_Giving_Date__c >= {}
-    #     AND StageName = 'Pledged'
-    #     AND Stripe_Customer_Id__c != ''
-    #     AND Type = 'Giving Circle'
-    #     """.format(today, three_days_ago)
-
-    # process_charges(query, log)
-    # log.send()
 
 
 @celery.task()
@@ -323,7 +295,7 @@ def update_ach_charges():
     log.it('---Checking for status changes on ACH charges...')
 
     query = """
-        SELECT Stripe_Transaction_ID__c, Amount, Name, Stripe_Customer_Id__c, Description, StageName, 
+        SELECT Stripe_Transaction_ID__c, Amount, Name, Stripe_Customer_Id__c, Description, StageName, Stripe_Card__c, Stripe_Bank_Account__c,
             Stripe_Agreed_to_pay_fees__c, Referring_page__c, Shipping_address_name__c, Shipping_address_street__c,
             Shipping_address_city__c, Shipping_address_state__c, Shipping_address_ZIP__c, Shipping_address_country__c
         FROM Opportunity
