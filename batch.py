@@ -82,24 +82,13 @@ def process_charges(query, log):
                 else:
                     shipping_details = None
 
-                charge_args = {
-                    'customer': item['Stripe_Customer_ID__c'],
-                    'amount': amount,
-                    'currency': 'usd',
-                    'description': item['Description'],
-                    'metadata': {
-                        'source': item['Referring_page__c']
-                    },
-                    'shipping': shipping_details
-                }
-
                 # if we know the source from the opportunity, use it
                 # otherwise it will use the default on the Stripe customer
                 # currently this just loads the token. not going to work.
 
                 if item['Stripe_Card__c'] != '':
                     charge_source = item['Stripe_Card__c']
-                    print('there is a card')
+                    print('there is a card and it is {} so that is what to look for.' . item['Stripe_Card__c'])
                 elif item['Stripe_Bank_Account__c'] != '':
                     charge_source = item['Stripe_Bank_Account__c']
                     print('there is a bank')
