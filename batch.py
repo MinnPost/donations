@@ -86,10 +86,10 @@ def process_charges(query, log):
                 # otherwise it will use the default on the Stripe customer
                 # currently this just loads the token. not going to work.
 
-                if item['Stripe_Card__c'] != '':
+                if item['Stripe_Card__c'] is not None:
                     charge_source = item['Stripe_Card__c']
                     print('there is a card and it is {} so that is what to look for.' .format(item['Stripe_Card__c']))
-                elif item['Stripe_Bank_Account__c'] != '':
+                elif item['Stripe_Bank_Account__c'] is not None:
                     charge_source = item['Stripe_Bank_Account__c']
                     print('there is a bank')
                 else:
