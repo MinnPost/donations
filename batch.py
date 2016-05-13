@@ -98,13 +98,14 @@ def process_charges(query, log):
                 # currently this just loads the token. not going to work.
 
                 if item['Stripe_Card__c'] != '':
-                    #charge_args['source'] = item['Stripe_Card__c']
                     charge_source = item['Stripe_Card__c']
+                    print('there is a card')
                 elif item['Stripe_Bank_Account__c'] != '':
-                    #charge_args['source'] = item['Stripe_Bank_Account__c']
                     charge_source = item['Stripe_Bank_Account__c']
+                    print('there is a bank')
                 else:
                     charge_source = None
+                    print('there is no charge')
 
                 #charge = stripe.Charge.create(charge_args)
 
