@@ -1174,6 +1174,12 @@
                         $(options.cc_cvv_selector, element).prev().addClass('error');
                         $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
                       }
+
+                      if (response.errors.error.type == 'invalid_request_error') {
+                        //$(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
+                        $('button.give').before('<p class="error">' + response.errors.error.message + '</p>')
+                      }
+
                     }
 
                     if (typeof response.errors[0] !== 'undefined') {
