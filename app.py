@@ -696,14 +696,10 @@ def charge_ajax():
         # todo: build a checkbox or something that lets users indicate that we should update their default method
         try:
             if 'stripeToken' in request.form:
-                print('add a new card')
                 card = customer.sources.create(source=request.form['stripeToken'])
                 stripe_card = card.id
             elif 'bankToken' in request.form:
-                print('create new bank account with token {}'.format(request.form['bankToken']))
                 bank_account = customer.sources.create(source=request.form['bankToken'])
-                print('bank account here')
-                print(bank_account);
                 stripe_bank_account = bank_account.id
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
