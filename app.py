@@ -683,6 +683,10 @@ def charge_ajax():
             body = e.json_body
             print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
             return jsonify(errors=body)
+        except Exception as e:
+            body = e.json_body
+            print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
     elif customer_id is not None and customer_id != '': # this is an existing customer
         customer = stripe.Customer.retrieve(customer_id)
         customer.email = email
@@ -690,16 +694,25 @@ def charge_ajax():
         # since this is an existing customer, add the current payment method to the list.
         # this does not change the default payment method.
         # todo: build a checkbox or something that lets users indicate that we should update their default method
-        if 'stripeToken' in request.form:
-            print('add a new card')
-            card = customer.sources.create(source=request.form['stripeToken'])
-            stripe_card = card.id
-        elif 'bankToken' in request.form:
-            print('create new bank account with token {}'.format(request.form['bankToken']))
-            bank_account = customer.sources.create(source=request.form['bankToken'])
-            print('bank account here')
-            print(bank_account);
-            stripe_bank_account = bank_account.id
+        try:
+            if 'stripeToken' in request.form:
+                print('add a new card')
+                card = customer.sources.create(source=request.form['stripeToken'])
+                stripe_card = card.id
+            elif 'bankToken' in request.form:
+                print('create new bank account with token {}'.format(request.form['bankToken']))
+                bank_account = customer.sources.create(source=request.form['bankToken'])
+                print('bank account here')
+                print(bank_account);
+                stripe_bank_account = bank_account.id
+        except stripe.error.CardError as e: # stripe returned an error on the credit card
+            body = e.json_body
+            print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except Exception as e:
+            body = e.json_body
+            print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
     else: # the email was invalid
         print('Error saving customer {} {} {}; showed error'.format(email, first_name, last_name))        
