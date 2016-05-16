@@ -701,6 +701,11 @@ def charge_ajax():
             elif 'bankToken' in request.form:
                 bank_account = customer.sources.create(source=request.form['bankToken'])
                 stripe_bank_account = bank_account.id
+        except stripe.error.InvalidRequestError as e: # stripe returned a bank account error
+            body = e.json_body
+            err = body['error']
+            print('stripe error is {}'.format(err))
+            return jsonify(errors=body)
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
             print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
