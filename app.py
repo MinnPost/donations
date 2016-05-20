@@ -704,15 +704,13 @@ def charge_ajax():
         except stripe.error.InvalidRequestError as e: # stripe returned a bank account error
             body = e.json_body
             error = body['error']
-            print(error)
             if error['message'] == 'A bank account with that routing number and account number already exists for this customer.':
                 # use the account they already have, since it is identical
-                print('identical account here')
                 sources = customer.sources
                 for source in sources:
                     if source.object == 'bank_account':
-                        print('Use the customer bank account. it is {}'.format(source.id))
                         stripe_bank_account = source.id
+                        print('reuse the bank account already on the Stripe customer')
             else:
                 print('Stripe error is {}'.format(error))
                 return jsonify(errors=body)
