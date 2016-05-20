@@ -702,11 +702,10 @@ def charge_ajax():
                 bank_account = customer.sources.create(source=request.form['bankToken'])
                 stripe_bank_account = bank_account.id
         except stripe.error.InvalidRequestError as e: # stripe returned a bank account error
-            print('invalid requets error')
             body = e.json_body
             error = body['error']
             print(error)
-            if error.message == 'A bank account with that routing number and account number already exists for this customer.':
+            if error['message'] == 'A bank account with that routing number and account number already exists for this customer.':
                 # use the account they already have, since it is identical
                 print('identical account here')
                 sources = customer.sources
