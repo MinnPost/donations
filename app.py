@@ -709,7 +709,7 @@ def charge_ajax():
                 sources = customer.sources
                 for source in sources:
                     if source.object == 'bank_account':
-                        stripe_bank_account = 
+                        stripe_bank_account = source.id
             else:
                 print('Stripe error is {}'.format(error))
                 return jsonify(errors=body)
