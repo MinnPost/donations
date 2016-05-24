@@ -591,6 +591,7 @@ def charge():
         add_customer_and_charge.delay(form=request.form, customer=customer)
         if not result['errors']:
             #print(result['id'])
+            print('customer added')
         else:
             print('result has errors')
             print(result)
