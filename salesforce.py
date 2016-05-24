@@ -1278,7 +1278,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
             # print(flask_id)
             # print(transaction)
             # transaction = db.session.query(Transaction).get(flask_id)
-            print('add the sf id {} to the transaction with flask ID {}'.format(response['id'], flask_id))
+            #print('add the sf id {} to the transaction with flask ID {}'.format(response['id'], flask_id))
             transaction.sf_id = response['id']
             db.session.commit()
             # print('committed the db')
@@ -1392,9 +1392,9 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
         #print('flask id')
         #print(flask_id)
         transaction = Transaction.query.filter(Transaction.id==flask_id,Transaction.sf_id!='NULL').first()
-        print('Retrieve transaction with flask ID {} and a non-null Salesforce ID'.format(flask_id))
+        #print('Retrieve transaction with flask ID {} and a non-null Salesforce ID'.format(flask_id))
         if transaction is not None:
-            print('transaction has been added to salesforce. get its sf id ({}) and update it in salesforce.'.format(transaction.sf_id))
+            #print('transaction has been added to salesforce. get its sf id ({}) and update it in salesforce.'.format(transaction.sf_id))
             #if transaction.sf_id != 'NULL':
             sf_id = transaction.sf_id
             #print('sf id?')

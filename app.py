@@ -590,7 +590,7 @@ def charge():
     if form.validate():
         add_customer_and_charge.delay(form=request.form, customer=customer)
         if not result['errors']:
-            print(result['id'])
+            #print(result['id'])
         else:
             print('result has errors')
             print(result)
@@ -710,7 +710,7 @@ def charge_ajax():
                 for source in sources:
                     if source.object == 'bank_account':
                         stripe_bank_account = source.id
-                        print('reuse the bank account already on the Stripe customer')
+                        #print('reuse the bank account already on the Stripe customer')
             else:
                 print('Stripe error is {}'.format(error))
                 return jsonify(errors=body)
@@ -742,7 +742,7 @@ def charge_ajax():
         # print(transaction.id)
         flask_id = str(transaction.id)
         session['flask_id'] = flask_id
-        print('session flask id is {}'.format(session['flask_id']))
+        #print('session flask id is {}'.format(session['flask_id']))
         if frequency == 'one-time':
             session['sf_type'] = 'Opportunity'
         else:
@@ -984,8 +984,8 @@ def minnroast_pledge_confirm():
     flask_id = session['flask_id']
     sf_type = session['sf_type']
 
-    print('flask id is {} and now update'.format(flask_id))
-    print(request.form)
+    #print('flask id is {} and now update'.format(flask_id))
+    #print(request.form)
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
