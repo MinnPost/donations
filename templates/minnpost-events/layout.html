@@ -106,7 +106,9 @@
       'stripe_publishable_key' : '{{key}}',
       'review_step_selector' : '#panel--tickets',
       'active' : 'panel--tickets',
-      'level-amount-selector' : '.calculated-amount',
+      'level-amount-selector' : '.calculated-amount',{% if show_ach == True %}
+      'plaid_env' : '{{plaid_env}}',
+      'plaid_public_key' : '{{plaid_public_key}}',{% endif %}
     });
   });
   </script>

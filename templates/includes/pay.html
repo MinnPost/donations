@@ -112,22 +112,7 @@
       <input type="password" name="password" id="password" maxlength="128">
     </div>
 
-    <fieldset class="credit-card-group">
-      <div class="form-item" id="cc-number-wrapper">
-        <label for="cc-number" class="required">Credit Card Number: </label>
-        <input type="tel" maxlength="128" data-stripe="number" id="cc-number" size="60" value="" autocomplete="cc-number" placeholder="1234 5678 9012 3456" required />
-      </div>
-      <div class="card-group clear-block">
-        <div class="form-item" id="cc-exp-wrapper">
-          <label for="cc-exp" class="required">Expiration Date: </label>
-          <input type="tel" maxlength="128" data-stripe="expiry" id="cc-exp" size="60" value="" autocomplete="cc-exp" placeholder="** / **" required />
-        </div>
-        <div class="form-item" id="cc-cvc-wrapper">
-          <label for="cc-cvc" class="required">CVC Number: </label>
-          <input type="tel" maxlength="128" data-stripe="cvc" id="cc-cvc" size="60" value="" autocomplete="off" placeholder="***" required />
-        </div>
-      </div>
-    </fieldset>
+    {% include 'includes/card-or-ach.html' %}
 
     <button type="submit" class="btn btn--submit give" autocomplete="off">Place this Donation</button>
 

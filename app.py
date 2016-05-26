@@ -112,6 +112,14 @@ def minnpost_form():
         campaign = request.args.get('campaign')
     else:
         campaign = ''
+    if request.args.get('show_ach'):
+        show_ach = request.args.get('show_ach')
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = False
     frequency = request.args.get('frequency')
     if frequency is None:
         frequency = 'one-time'
@@ -147,6 +155,7 @@ def minnpost_form():
         show_upsell = app.show_upsell, allow_donation_notification = app.allow_donation_notification,
         separate_swag_minimum_level = app.separate_swag_minimum_level,
         main_swag_minimum_level = app.main_swag_minimum_level,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
@@ -161,6 +170,15 @@ def minnpost_event_form():
         campaign = request.args.get('campaign')
     else:
         campaign = EVENT_CAMPAIGN_ID
+
+    if request.args.get('show_ach'):
+        show_ach = request.args.get('show_ach')
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = False
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
@@ -216,6 +234,7 @@ def minnpost_event_form():
         first_name = first_name,last_name = last_name, email=email,
         promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,
         quantity=quantity, single_unit_price = single_unit_price, starting_amount = starting_amount,
+        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # used to validate event promo codes to assign users discount
@@ -261,6 +280,15 @@ def minnpost_advertising_form():
     else:
         campaign = ADVERTISING_CAMPAIGN_ID
 
+    if request.args.get('show_ach'):
+        show_ach = request.args.get('show_ach')
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = False
+
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
     else:
@@ -297,7 +325,7 @@ def minnpost_advertising_form():
     return render_template('minnpost-advertising.html', form=form, amount=amount_formatted, invoice=invoice, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         organization=organization, first_name = first_name,last_name = last_name, email=email,
-        plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # used at support.minnpost.com/minnroast-sponsorship
@@ -314,6 +342,15 @@ def minnroast_sponsorship_form():
         campaign = request.args.get('campaign')
     else:
         campaign = MINNROAST_CAMPAIGN_ID
+
+    if request.args.get('show_ach'):
+        show_ach = request.args.get('show_ach')
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = False
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
@@ -350,6 +387,7 @@ def minnroast_sponsorship_form():
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
@@ -397,6 +435,15 @@ def minnroast_pledge_form():
             campaign = request.args.get('campaign')
         else:
             campaign = ''
+
+    if request.args.get('show_ach'):
+        show_ach = request.args.get('show_ach')
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = False
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
@@ -454,6 +501,7 @@ def minnroast_pledge_form():
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
