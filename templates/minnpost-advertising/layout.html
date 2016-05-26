@@ -100,7 +100,7 @@
 
   <script src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
   <script src="https://js.stripe.com/v2/"></script>
-  <script src="https://cdn.plaid.com/link/stable/link-initialize.js"></script>
+  {% if show_ach == True %}<script src="https://cdn.plaid.com/link/stable/link-initialize.js"></script>{% endif %}
   <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>
 
   <script>
