@@ -58,7 +58,7 @@ def amount_to_charge(entry):
     Stripe wants the amount to charge in cents. So we multiply by 100 and
     return that.
     """
-    amount = int(entry['Amount'])
+    amount = float(entry['Amount'])
     if entry['Stripe_Agreed_to_pay_fees__c']:
 
         processing_percent = 0.029
