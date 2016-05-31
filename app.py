@@ -213,7 +213,7 @@ def minnpost_event_form():
     else:
         email = ''
     if request.args.get('additional_donation'):
-        additional_donation = int(request.args.get('additional_donation'))
+        additional_donation = float(request.args.get('additional_donation'))
     else:
         additional_donation = ''
     if request.args.get('quantity'):
@@ -380,7 +380,7 @@ def minnroast_sponsorship_form():
     else:
         email = ''
     if request.args.get('additional_donation'):
-        additional_donation = int(request.args.get('additional_donation'))
+        additional_donation = float(request.args.get('additional_donation'))
     else:
         additional_donation = ''
     return render_template('minnroast-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
@@ -408,7 +408,7 @@ def minnroast_pledge_form():
             result = get_opportunity(opp_id)
             opportunity = result['opportunity']
 
-            amount = opportunity['Amount']
+            amount = float(opportunity['Amount'])
             if (amount).is_integer():
                 amount_formatted = int(amount)
             else:
@@ -478,7 +478,7 @@ def minnroast_pledge_form():
     else:
         email = ''
     if request.args.get('additional_donation'):
-        additional_donation = int(request.args.get('additional_donation'))
+        additional_donation = float(request.args.get('additional_donation'))
     else:
         additional_donation = ''
 
