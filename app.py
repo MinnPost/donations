@@ -664,6 +664,8 @@ def plaid_token():
     if 'stripe_bank_account_token' in result:
         response = result
     else:
+        print('error: no Stripe token was returned. see error below.')
+        print(result)
         response = {'error' : 'We were unable to connect to your account. Please try again.'}
     
     return jsonify(response)
