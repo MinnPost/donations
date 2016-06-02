@@ -658,16 +658,18 @@ def plaid_token():
     form = MinnPostForm(request.form)
     public_token = request.form['public_token']
     account_id = request.form['account_id']
-
+    print('start to get the token')
     result = get_bank_token(public_token, account_id)
-
+    print('we got a result. here it is.')
+    print(result)
     if 'stripe_bank_account_token' in result:
+        print('there is a stripe token here. print result')
         response = result
     else:
         print('error: no Stripe token was returned. see error below.')
         print(result)
         response = {'error' : 'We were unable to connect to your account. Please try again.'}
-    
+    print('jsonify the response now and return it')
     return jsonify(response)
 
 
