@@ -22,7 +22,7 @@ def get_bank_token(public_token=None, account_id=None):
     """
     url = 'https://{}.plaid.com/{}'.format(PLAID_ENVIRONMENT, 'exchange_token')
 
-    print('url is {}. now make request with public token {}'.format(url))
+    print('url is {}. now make request with public token {}'.format(url, public_token))
 
     request = {'client_id' : PLAID_CLIENT_ID, 'secret' : PLAID_SECRET, 'public_token' : public_token, 'account_id' : account_id}
     print('created the request')
