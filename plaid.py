@@ -32,13 +32,7 @@ def get_bank_token(public_token=None, account_id=None):
     print('url is {}. now make request with public token {}'.format(url, public_token))
 
     request = {'client_id' : PLAID_CLIENT_ID, 'secret' : PLAID_SECRET, 'public_token' : public_token, 'account_id' : account_id}
-    print('created the request')
     resp = requests.post(url, request)
-    print('response below')
-    print(resp)
     response = json.loads(resp.text)
-    print('load it with json')
-    print(response)
-    print('now return it')
     check_response(response=resp, expected_status=200)
     return response
