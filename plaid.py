@@ -21,13 +21,9 @@ def get_bank_token(public_token=None, account_id=None):
     Call the Plaid API to get a bank account
     """
 
-    # production url is api not production
-    if PLAID_ENVIRONMENT == 'production':
-        subdomain = 'api'
-    else:
-        subdomain = PLAID_ENVIRONMENT
-
-    url = 'https://{}.plaid.com/{}'.format(subdomain, 'exchange_token')
+    # production url is api not production of course
+    env = {'tartan': 'tartan', 'production': 'api'}
+    url = 'https://{}.plaid.com/{}'.format(env[PLAID_ENVIRONMENT], 'exchange_token')
 
     print('url is {}. now make request with public token {}'.format(url, public_token))
 
