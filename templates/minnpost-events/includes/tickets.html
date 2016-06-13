@@ -2,29 +2,12 @@
 	<div class="ticket-select">
 		<fieldset class="tickets">
 			<h1>Tickets</h1>
-			<p>You can purchase up to five tickets. Select your quantity, and don't forget to use your promo code if you are a MinnPost member.</p>
 			<div class="form-item form-item--ticket-quantity">
 				<label for="quantity" class="required">Quantity:</label>
 		      	<input type="number" id="quantity" name="quantity" min="1" required value="{{ quantity }}" data-unit-price="{{ single_unit_price }}" autocomplete="off">
 		      	<span class="unit-price">x $<span class="show-unit-price">{{ single_unit_price }}</span> per ticket</span>
 		      <!--<label for="quantity">Quantity</label>-->
 		    </div>
-		    <div class="form-item form-item--promo-code">
-				<div class="button-group">
-					<label for="promo_code">Member Promo Code: </label>
-					<input type="text" id="promo_code" name="promo_code" value="{{ promo_code }}">
-					{% if promo_code == event_promo_code %}
-						<a href="#" class="btn btn--action btn--disabled apply-promo-code">Applied</a>
-					{% else %}
-						<a href="#" class="btn btn--action apply-promo-code">Apply</a>
-					{% endif %}
-				</div>
-				{% if promo_code != event_promo_code %}
-				<div>
-					<label class="additional-option">MinnPost member? <span>Use promo code <input type="checkbox" name="use-promo-code" id="use-promo-code" value="1"></span>.</label>
-				</div>
-				{% endif %}
-			</div>
 			<div class="form-item form-item--additional-donation">
 		      <label for="additional_donation">Additional Donation (optional): </label>
 		      <div class="input-prepend">
