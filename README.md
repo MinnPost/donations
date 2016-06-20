@@ -11,6 +11,7 @@ MinnPost's version has a few important differences:
 - Some of our requests are synchronous where the original's are asynchronous
 - Our tests are very out of date; we don't know Python well at all
 - We have several different environment variables
+- We store each transaction in a Postgres row, and we pass the ID to Salesforce. This is so we can track the post-transaction form (newsletter signups, reasons for giving) without putting that into the more important payment flow.
 
 Getting Started
 ---------------
