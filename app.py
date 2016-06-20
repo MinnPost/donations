@@ -112,14 +112,7 @@ def minnpost_form():
         campaign = request.args.get('campaign')
     else:
         campaign = ''
-    if request.args.get('show_ach'):
-        show_ach = request.args.get('show_ach')
-        if show_ach == 'true':
-            show_ach = True
-        else:
-            show_ach = False
-    else:
-        show_ach = False
+    show_ach = True
     frequency = request.args.get('frequency')
     if frequency is None:
         frequency = 'one-time'
