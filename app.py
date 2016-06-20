@@ -112,7 +112,15 @@ def minnpost_form():
         campaign = request.args.get('campaign')
     else:
         campaign = ''
-    show_ach = True
+    if request.args.get('show_ach'):
+        show_ach = request.args.get('show_ach')
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = False
+    #show_ach = True
     frequency = request.args.get('frequency')
     if frequency is None:
         frequency = 'one-time'
@@ -273,14 +281,7 @@ def minnpost_advertising_form():
     else:
         campaign = ADVERTISING_CAMPAIGN_ID
 
-    if request.args.get('show_ach'):
-        show_ach = request.args.get('show_ach')
-        if show_ach == 'true':
-            show_ach = True
-        else:
-            show_ach = False
-    else:
-        show_ach = False
+    show_ach = True
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
