@@ -337,14 +337,7 @@ def minnroast_sponsorship_form():
     else:
         campaign = MINNROAST_CAMPAIGN_ID
 
-    if request.args.get('show_ach'):
-        show_ach = request.args.get('show_ach')
-        if show_ach == 'true':
-            show_ach = True
-        else:
-            show_ach = False
-    else:
-        show_ach = False
+    show_ach = True
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
