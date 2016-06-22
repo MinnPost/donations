@@ -84,21 +84,19 @@ def process_charges(query, log):
 
                 # if we know the source from the opportunity, use it
                 # otherwise it will use the default on the Stripe customer
+                # currently this just loads the token. not going to work.
 
                 if item['Stripe_Card__c'] is not None:
                     charge_source = item['Stripe_Card__c']
-                    customer = None
                 elif item['Stripe_Bank_Account__c'] is not None:
                     charge_source = item['Stripe_Bank_Account__c']
-                    customer = None
                 else:
                     charge_source = None
-                    customer = item['Stripe_Customer_ID__c']
 
                 #charge = stripe.Charge.create(charge_args)
 
                 charge = stripe.Charge.create(
-                    customer=customer,
+                    customer=item['Stripe_Customer_ID__c'],
                     amount=amount,
                     currency='usd',
                     description=item['Description'],
