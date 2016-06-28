@@ -8,6 +8,10 @@
     "name": "Jonathan Stegall",
     "url": "http://jonathanstegall.com"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/minnpost/salesforce-stripe.git"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=0.12.0"

@@ -752,15 +752,15 @@ def charge_ajax():
                 return jsonify(errors=body)
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
-            print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
+            print('Stripe returned an error before updating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
             return jsonify(errors=body)
         except Exception as e:
             body = e.json_body
-            print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
+            print('Stripe returned an error before updating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
             return jsonify(errors=body)
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
     else: # the email was invalid
-        print('Error saving customer {} {} {}; showed error'.format(email, first_name, last_name))        
+        print('Error saving update for customer {} {} {}; showed error'.format(email, first_name, last_name))        
         body = []
         if email != '':
             message = 'Please enter a valid email address; {} is not valid.'.format(email)
