@@ -1863,11 +1863,34 @@ global.Payment = Payment;
       }
     }, // achFields
 
+    hasHtml5Validation: function(element, options) {
+      //console.log('value is ' + typeof document.createElement('input').checkValidity === 'function');
+      return typeof document.createElement('input').checkValidity === 'function';
+    },
+
     validateAndSubmit: function(element, options) {
       var that = this;
       $(this.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
+
+        // do some fallback stuff for non-html5 browsers
+        if (that.hasHtml5Validation(element, options)) {
+            if (!this.checkValidity()) {
+              $(this).addClass('invalid');
+              $('html, body').animate({
+                scrollTop: $(this).find('input:invalid').parent().offset().top
+              }, 2000);
+              //console.log('top is ' + );
+              $(this).find('input:invalid').parent().addClass('error');
+              //$('#status').html('invalid');
+            } else {
+              $(this).removeClass('invalid');
+              $(this).find('input:invalid').parent().removeClass('error');
+              //$('#status').html('submitted');
+            }
+        }
+
         // validate and submit the form
         $('.check-field, .card-instruction').remove();
         $('input, label', element).removeClass('error');

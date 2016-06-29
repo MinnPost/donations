@@ -152,6 +152,17 @@ textarea {
 
 }
 
+.invalid input:required:invalid,
+.invalid select:required:invalid,
+.invalid textarea:required:invalid {
+  color: $minnpost-red-error;
+  border: 1px solid $minnpost-red-error;
+}
+
+.invalid .error label {
+  color: $minnpost-red-error; 
+}
+
 .payment .payment-method-group, .payment .credit-card-group {
 
   .error {
