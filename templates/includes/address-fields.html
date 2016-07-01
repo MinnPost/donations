@@ -2,31 +2,30 @@
     
   <div class="form-item form-item--street">
     <label for="edit-billing-street" class="required">Street Address: </label>
-    <input type="text" name="billing_street" id="edit-billing-street" required>
+    <input type="text" name="billing_street" id="billing_street" required>
   </div>
 
   <div class="location-group">
     <div class="form-item form-item--city">
       <label for="edit-billing-city" class="required">City: </label>
-      <input type="text" name="billing_city" id="edit-billing-city" required>
+      <input type="text" name="billing_city" id="billing_city" required>
     </div>
 
     <div class="form-item form-item--state">
       <label for="edit-billing-state" class="required">State: </label>
-      <input type="text" name="billing_state" id="edit-billing-state" required>
+      <input type="text" name="billing_state" id="billing_state" required>
     </div>
   </div>
 
-  <div class="location-group">
-    <div class="form-item form-item--zip">
-      <label for="edit-billing-zip" class="required">Zip Code: </label>
-      <input type="tel" name="billing_zip" id="edit-billing-zip" required>
-    </div>
+  <div class="form-item form-item--zip">
+    <label for="edit-billing-zip" class="required">Zip Code: </label>
+    <input type="tel" name="billing_zip" id="edit-billing-zip" required>
+    <div class="caption show-country"><a href="#" id="billing_show_country"><small>Not in the US?</small></a></div>
+  </div>
 
-    <div class="form-item form-item--nojs form-item--country">
-      <label>Country: </label>
-      <input type="text" name="billing_country" id="edit-billing-country">
-    </div>
+  <div class="form-item form-item--nojs form-item--country">
+    <label>Country: </label>
+    <input type="text" name="billing_country" id="billing_country">
   </div>
 
   {% if shipping == True %}
@@ -46,35 +45,36 @@
   <div class="form-item-group form-item--shipping-name">
     <div class="form-item form-item--shipping-name">
       <label for="edit-shipping-name">Ship To (if different): </label>
-      <input type="text" name="shipping_name" id="edit-shipping-name">
+      <input type="text" name="shipping_name" id="shipping_name">
     </div>
   </div>
 
   <div class="form-item form-item--street">
     <label for="edit-shipping-street">Shipping Street Address: </label>
-    <input type="text" name="shipping_street" id="edit-shipping-street" data-geo-value="address">
+    <input type="text" name="shipping_street" id="shipping_street">
   </div>
 
   <div class="city-state">
     <div class="form-item form-item--city">
       <label for="edit-shipping-city">Shipping City: </label>
-      <input type="text" name="shipping_city" id="edit-shipping-city" data-geo-value="city">
+      <input type="text" name="shipping_city" id="shipping_city">
     </div>
 
     <div class="form-item form-item--state">
       <label for="edit-shipping-state">Shipping State: </label>
-      <input type="text" name="shipping_state" id="edit-shipping-state" data-geo-value="state">
+      <input type="text" name="shipping_state" id="shipping_state">
     </div>
   </div>
 
   <div class="form-item form-item--zip">
     <label for="edit-shipping-zip">Shipping Zip Code: </label>
-    <input type="tel" name="shipping_zip" id="edit-shipping-zip" data-geo-value="zip">
+    <input type="tel" name="shipping_zip" id="shipping_zip">
+    <div class="caption show-shipping-country"><a href="#" id="shipping_show_country"><small>Not in the US?</small></a></div>
   </div>
 
   <div class="form-item form-item--nojs form-item--shipping-country">
     <label for="edit-shipping-country">Shipping Country: </label>
-    <input type="text" name="shipping_country" id="edit-shipping-country" data-geo-value="country">
+    <input type="text" name="shipping_country" id="shipping_country">
   </div>
 
 </fieldset>
