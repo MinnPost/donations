@@ -56,6 +56,10 @@
     'notify_selector' : '.notify_someone',
     'notify_field_selector' : '.form-item--notify',
     'anonymous_selector' : '#edit-anonymous',
+    'show_billing_country_selector' : '#billing_show_country',
+    'billing_country_selector' : '.form-item--country',
+    'show_shipping_country_selector' : '#shipping_show_country',
+    'shipping_country_selector' : '.form-item--shipping-country',
     //'needs_shipping_selector' : '.swag--shipping',
     'shipping_address_selector' : '.form-item--shipping-address',
     'use_for_shipping_selector' : '#useforshipping',
@@ -237,6 +241,7 @@
       
       if ($(this.options.donate_step_selector).length > 0) {
         this.donateAnonymously(this.element, this.options); // anonymous
+        this.outsideUnitedStates(this.element, this.options); // outside US
         this.shippingAddress(this.element, this.options); // shipping address
         this.allowMinnpostAccount(this.element, this.options, false); // option for creating minnpost account
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
@@ -660,6 +665,19 @@
       });
 
     }, // swag
+
+    outsideUnitedStates: function(element, options) {
+      $(options.show_billing_country_selector).click(function() {
+        $(options.billing_country_selector).show();
+        $(this).parent().hide();
+        return false;
+      });
+      $(options.show_shipping_country_selector).click(function() {
+        $(options.shipping_country_selector).show();
+        $(this).parent().hide();
+        return false;
+      });
+    }, // outsideUnitedStates
 
     shippingAddress: function(element, options) {
       var that = this;
