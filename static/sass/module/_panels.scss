@@ -131,7 +131,7 @@
 }
 
 @media screen and (min-width: $large-screen) {
-	fieldset.payment .city-state {
+	fieldset.payment .location-group {
 		@include row();
 		> div {
 		  @include span-columns(6);
