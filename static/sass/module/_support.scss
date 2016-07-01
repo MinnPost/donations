@@ -13,6 +13,9 @@
       padding-top: 0;
       padding-bottom: $half-space;
     }
+	&.form-item input {
+		margin: 0;
+	}
 }
 
 @media screen and (min-width: $large-screen) {

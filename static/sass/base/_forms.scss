@@ -25,7 +25,10 @@ fieldset.payment {
 }
 
 .form-item {
-  margin-bottom: $h3-space;
+  
+  input:last-child {
+    margin-bottom: $h4-space;
+  }
   .input-prepend {
     position: relative;
     .prefix {
