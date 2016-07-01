@@ -27,33 +27,7 @@
       </div>
     </div>
 
-    <fieldset class="billing" data-geo="data-geo">
-      <div class="form-item form-item--nojs form-item--street">
-        <label>Billing Street Address: </label>
-        <input type="text" name="billing_street" id="edit-billing-street" data-geo-value="address">
-      </div>
-
-      <div class="form-item form-item--nojs form-item--city">
-        <label>Billing City: </label>
-        <input type="text" name="billing_city" id="edit-billing-city" data-geo-value="city">
-      </div>
-
-      <div class="form-item form-item--nojs form-item--state">
-        <label>Billing State: </label>
-        <input type="text" name="billing_state" id="edit-billing-state" data-geo-value="state">
-      </div>
-
-      <div class="form-item form-item--nojs form-item--zip">
-        <label>Billing Zip Code: </label>
-        <input type="tel" name="billing_zip" id="edit-billing-zip" data-geo-value="zip">
-      </div>
-
-      <div class="form-item form-item--nojs form-item--country">
-        <label>Billing Country: </label>
-        <input type="text" name="billing_country" id="edit-billing-country" data-geo-value="country">
-      </div>
-
-    </fieldset>
+    {% include 'includes/address-fields.html' %}
     
     {% include '/includes/card-or-ach.html' %}
 

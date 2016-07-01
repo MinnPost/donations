@@ -22,28 +22,7 @@
       <input type="email" id="edit-email" name="email" required value="{{ email }}">
     </div>
 
-    <fieldset class="billing">
-      <div class="form-item form-item--nojs form-item--street">
-        <label class="required">Billing Street Address: </label>
-        <input type="text" name="billing_street" id="edit-billing-street" required>
-      </div>
-
-      <div class="form-item form-item--nojs form-item--city">
-        <label class="required">Billing City: </label>
-        <input type="text" name="billing_city" id="edit-billing-city" required>
-      </div>
-
-      <div class="form-item form-item--nojs form-item--state">
-        <label class="required">Billing State: </label>
-        <input type="text" name="billing_state" id="edit-billing-state" required>
-      </div>
-
-      <div class="form-item form-item--nojs form-item--zip">
-        <label class="required">Billing Zip Code: </label>
-        <input type="tel" name="billing_zip" id="edit-billing-zip" required>
-      </div>
-
-    </fieldset>
+    {% include 'includes/address-fields.html' %}
     
     {% include '/includes/card-or-ach.html' %}
 
