@@ -123,3 +123,9 @@ picture {
   margin: 0;
   max-width: 100%;
 }
+
+div.caption {
+  margin-top: -$half-space;
+  margin-bottom: $h4-size;
+  font-family: $heading-font-family;
+}
