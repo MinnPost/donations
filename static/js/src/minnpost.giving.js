@@ -67,9 +67,9 @@
     'password_field_selector' : '#password',
     'first_name_field_selector' : '#first_name',
     'last_name_field_selector' : '#last_name',
-    'account_city_selector' : '#billing_city_geocode',
-    'account_state_selector' : '#billing_state_geocode',
-    'account_zip_selector' : '#billing_zip_geocode',
+    'account_city_selector' : '#billing_city',
+    'account_state_selector' : '#billing_state',
+    'account_zip_selector' : '#billing_zip',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.form-item--password',
     'calculated_amount_selector' : '.calculated-amount',
@@ -208,22 +208,6 @@
 
       // call functions
 
-      // geocomplete addresses if library loaded successfully
-      if (typeof google !== 'undefined' && google.hasOwnProperty('maps') && $('fieldset[data-geo="data-geo"]').length > 0) {
-        // add combined address fields for geocomplete
-        $('> div', this.options.billing_selector).not('.form-item--geocode').hide();
-        $('> div', this.options.shipping_selector).not('.form-item--geocode').hide();
-        $(this.options.billing_selector, this.element).prepend('<div class="form-item form-item--billing-address form-item--geocode"><label for="full_address" class="required">Billing Address: </label><input type="text" autocapitalize="off" autocorrect="off" name="full_address" id="full_address" class="geocomplete form-text" required placeholder=""></div>');
-        this.getFullAddress($('#full_address'));
-        if ($(this.options.shipping_selector).length > 0) {
-          $(this.options.shipping_selector, this.element).append('<div class="form-item form-item--shipping-address form-item--geocode"><label for="full_shipping_address">Shipping Address: </label><input type="text" autocapitalize="off" autocorrect="off" name="full_shipping_address" id="full_shipping_address" class="geocomplete form-text" placeholder=""></div>');
-          this.getFullAddress($('#full_shipping_address'));
-        }
-      } else {
-        $('> div', this.options.billing_selector).not('.form-item--geocode').show();
-        $('> div', this.options.shipping_selector).not('.form-item--geocode').show();
-      }
-
       this.paymentPanels(query_panel); // tabs
 
       if ($(this.options.pay_cc_processing_selector).length > 0) {
@@ -313,37 +297,6 @@
       }
       return b;
     }, // getQueryStrings
-
-    getFullAddress: function(selector) {
-      var that = this;
-      var autocomplete = new google.maps.places.Autocomplete(selector[0], {});
-            google.maps.event.addListener(autocomplete, 'place_changed', function() {
-                var place = autocomplete.getPlace();
-                var address = {};
-        // Create a simplified version of the address components.
-        $.each(place.address_components, function(index, object){
-          var name = object.types[0];
-          $.each(object.types, function(index, name) {
-            address[name] = object.long_name;
-            address[name + '_short'] = object.short_name;
-          });
-        });
-                var fieldset = $(selector).closest('fieldset[data-geo="data-geo"]');
-                var prefix = $(fieldset).prop('class');
-                /*$(fieldset).append('<input type="hidden" name="' + prefix + '_street" value="' + address.street_number + ' ' + address.route_short + '" />');
-                $(fieldset).append('<input type="hidden" name="' + prefix + '_city" value="' + address.locality + '" />');
-                $(fieldset).append('<input type="hidden" name="' + prefix + '_state" value="' + address.administrative_area_level_1_short + '" />');
-                $(fieldset).append('<input type="hidden" name="' + prefix + '_zip" value="' + address.postal_code + '" />');
-                $(fieldset).append('<input type="hidden" name="' + prefix + '_country" value="' + address.country_short + '" />');*/
-                //$(fieldset).find('input[data-geo-value="address"]').val(address.street_number + ' ' + address.route_short);
-
-                $('#' + prefix + '_street_geocode').val(address.street_number + ' ' + address.route_short);
-                $('#' + prefix + '_city_geocode').val(address.locality);
-                $('#' + prefix + '_state_geocode').val(address.administrative_area_level_1_short);
-                $('#' + prefix + '_zip_geocode').val(address.postal_code);
-                $('#' + prefix + '_country_geocode').val(address.country_short);
-            });
-    }, // getFullAddress
 
     paymentPanels: function(active) {
       var that = this;
@@ -1260,29 +1213,29 @@
           var street = 'None';
           if ($('input[name="full_address"]').val() != '') {
             street = $('#full_address').val();
-            if ($('input[name="billing_street_geocode"]').val() != '') {
-              street = $('input[name="billing_street_geocode"]').val();
+            if ($('input[name="billing_street"]').val() != '') {
+              street = $('input[name="billing_street"]').val();
             }
           }
 
           var city = 'None';
-          if ($('input[name="billing_city_geocode"]').val() != '') {
-            city = $('input[name="billing_city_geocode"]').val();
+          if ($('input[name="billing_city"]').val() != '') {
+            city = $('input[name="billing_city"]').val();
           }
 
           var state = 'None';
-          if ($('input[name="billing_state_geocode"]').val() != '') {
-            state = $('input[name="billing_state_geocode"]').val();
+          if ($('input[name="billing_state"]').val() != '') {
+            state = $('input[name="billing_state"]').val();
           }
 
           var zip = 'None';
-          if ($('input[name="billing_zip_geocode"]').val() != '') {
-            zip = $('input[name="billing_zip_geocode"]').val();
+          if ($('input[name="billing_zip"]').val() != '') {
+            zip = $('input[name="billing_zip"]').val();
           }
 
           var country = 'US';
-          if ($('input[name="billing_country_geocode"]').val() != '') {
-            country = $('input[name="billing_country_geocode"]').val();
+          if ($('input[name="billing_country"]').val() != '') {
+            country = $('input[name="billing_country"]').val();
           }
 
           // 2. create minnpost account if specified
