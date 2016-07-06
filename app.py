@@ -854,10 +854,18 @@ def charge_ajax():
             session['opp_type'] = request.form['opp_type']
 
             if request.form['opp_type'] == 'Sponsorship':
-                if amount == 500:
+                if amount == 300:
                     fair_market_value = 100
+                elif amount == 500:
+                    fair_market_value = 100
+                elif amount = 600:
+                    fair_market_value = 200
+                elif amount = 1200:
+                    fair_market_value = 300
                 elif amount == 1500:
                     fair_market_value = 300
+                elif amount = 2400
+                    fair_market_value = 400
                 elif amount == 3000:
                     fair_market_value = 400
                 elif amount == 5000:
