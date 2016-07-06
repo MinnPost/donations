@@ -1,0 +1,22 @@
+{% extends "anniversary-party-sponsorship/layout.html" %}
+
+{% block content %}
+
+<main>
+  <div class="wrapper support--forms">
+
+  	<img src="/static/img/campaigns/FrankenOrnsteinEmailHeader600.png" alt="MinnPost 9th Anniversary Party" />
+
+  	<form>
+  		<input type="hidden" name="flask_id" id="flask_id" value="{{ session['flask_id'] }}">
+  		<input type="hidden" name="sf_type" id="sf_type" value="{{ session['sf_type'] }}">
+	    <section id="panel--confirmation" class="panel panel--form">
+	  	 <h1>Thank you for sponsoring the MinnPost Anniversary Party</h1>
+	  	 <p>Thank you for sponsoring the MinnPost 2016 Anniversary Party at the ${{ amount }} level{% if session['additional_donation'] != '' %} and for your additional ${{ session['additional_donation'] }} donation{% endif %}. We're looking forward to this year's show!</p>
+	  	 <p>Check your email for your payment confirmation and more details regarding your Anniversary Party sponsorship.</p>
+	    </section>
+	</form>
+
+  </div>
+</main>
+{% endblock %}
