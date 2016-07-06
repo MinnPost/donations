@@ -493,6 +493,61 @@ def minnroast_pledge_form():
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
+# used at support.minnpost.com/anniversary-party-sponsorship
+@app.route('/anniversary-party-sponsorship/')
+def anniversary_party_sponsorship_form():
+    form = MinnPostForm()
+
+    redirect_url = 'anniversary-party-sponsorship-thanks'
+
+    now = datetime.now()
+    year = now.year
+
+    if request.args.get('campaign'):
+        campaign = request.args.get('campaign')
+    else:
+        campaign = ANNIVERSARY_PARTY_CAMPAIGN_ID
+
+    show_ach = True
+
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    else:
+        customer_id = ''
+
+    if request.args.get('opp_type'):
+        opp_type = request.args.get('opp_type')
+    else:
+        opp_type = 'Sponsorship'
+
+    if request.args.get('opp_subtype'):
+        opp_subtype = request.args.get('opp_subtype')
+    else:
+        opp_subtype = 'Sponsorship: Event (individual)'
+
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    else:
+        first_name = ''
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    else:
+        last_name = ''
+    if request.args.get('email'):
+        email = request.args.get('email')
+    else:
+        email = ''
+    if request.args.get('additional_donation'):
+        additional_donation = float(request.args.get('additional_donation'))
+    else:
+        additional_donation = ''
+    return render_template('anniversary-party-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
+        opp_type = opp_type, opp_subtype = opp_subtype,
+        first_name = first_name,last_name = last_name, email=email,
+        additional_donation = additional_donation,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        key=app.config['STRIPE_KEYS']['publishable_key'])
+
 
 # this is a texas url
 #@app.route('/memberform/')
@@ -1035,6 +1090,26 @@ def minnroast_pledge_confirm():
         print('Error with post-pledge form {} {}'.format(sf_type, flask_id))
         return render_template('error.html', message=message)
 
+# this is a minnpost url
+@app.route('/anniversary-party-sponsorship-confirm/', methods=['POST'])
+def anniversary_party_sponsorship_confirm():
+
+    form = ConfirmForm(request.form)
+    amount = float(request.form['amount'])
+    amount_formatted = format(amount, ',.2f')
+
+    flask_id = session['flask_id']
+    sf_type = session['sf_type']
+
+    if flask_id:
+        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        return render_template('anniversary-party-sponsorship/finish.html', amount=amount_formatted, session=session)
+    else:
+        print('post-sponsorship form did not validate: error below')
+        print(form.errors)
+        message = "there was an issue with this form"
+        print('Error with post-sponsorship form {} {}'.format(sf_type, flask_id))
+        return render_template('error.html', message=message)
 
 # this is a minnpost url
 @app.route('/minnpost-event-confirm/', methods=['POST'])
