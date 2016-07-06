@@ -23,6 +23,7 @@ from config import FLASK_SECRET_KEY
 from config import DEFAULT_CAMPAIGN_ONETIME
 from config import DEFAULT_CAMPAIGN_RECURRING
 from config import MINNROAST_CAMPAIGN_ID
+from config import ANNIVERSARY_PARTY_CAMPAIGN_ID
 from config import SHOW_UPSELL
 from config import ALLOW_DONATION_NOTIFICATION
 from config import OPBEAT_ORGANIZATION_ID
@@ -60,6 +61,7 @@ app.secret_key = FLASK_SECRET_KEY
 app.default_campaign_onetime = DEFAULT_CAMPAIGN_ONETIME
 app.default_campaign_recurring = DEFAULT_CAMPAIGN_RECURRING
 app.minnroast_campaign_id = MINNROAST_CAMPAIGN_ID
+app.anniversary_party_campaign_id = ANNIVERSARY_PARTY_CAMPAIGN_ID
 app.show_upsell = SHOW_UPSELL
 app.allow_donation_notification = ALLOW_DONATION_NOTIFICATION
 app.separate_swag_minimum_level = SEPARATE_SWAG_MINIMUM_LEVEL
