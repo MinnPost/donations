@@ -864,7 +864,7 @@ def charge_ajax():
                     fair_market_value = 300
                 elif amount == 1500:
                     fair_market_value = 300
-                elif amount == 2400
+                elif amount == 2400:
                     fair_market_value = 400
                 elif amount == 3000:
                     fair_market_value = 400
