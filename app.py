@@ -473,7 +473,7 @@ def minnpost_recurring_donation_update_form():
     summary = 'Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to update your payment information for your recurring donation. We appreciate your cooperation as we update our system!'
     hide_comments = True
     hide_display = True
-    button = 'Place this Donation'
+    button = 'Update your Donation'
 
     description = 'Recurring Donation Update'
     allow_additional = False
