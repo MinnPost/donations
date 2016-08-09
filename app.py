@@ -1183,6 +1183,32 @@ def minnroast_sponsorship_confirm():
 
 
 # this is a minnpost url
+@app.route('/recurring-donation-update-confirm/', methods=['POST'])
+def minnpost_recurring_donation_update_confirm():
+
+    form = ConfirmForm(request.form)
+    #pprint('Request: {}'.format(request))
+    amount = float(request.form['amount'])
+    amount_formatted = format(amount, ',.2f')
+
+    flask_id = session['flask_id']
+    sf_type = session['sf_type']
+
+    #print('flask id is {} and now update'.format(flask_id))
+    #print(request.form)
+
+    if flask_id:
+        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session)
+    else:
+        print('post-pledge form did not validate: error below')
+        print(form.errors)
+        message = "there was an issue with this form"
+        print('Error with post-update form {} {}'.format(sf_type, flask_id))
+        return render_template('error.html', message=message)
+
+
+# this is a minnpost url
 @app.route('/minnroast-pledge-confirm/', methods=['POST'])
 def minnroast_pledge_confirm():
 
