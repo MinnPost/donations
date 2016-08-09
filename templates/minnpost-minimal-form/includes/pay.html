@@ -17,6 +17,7 @@
       <input type="email" id="edit-email" name="email" required value="{{ email }}">
     </div>
 
+    {% if hide_display != True %}
     <div class="form-item form-item--display-name">
       <div>
         <label for="display_as">Display as (in our year-end report): </label>
@@ -26,16 +27,19 @@
         <label class="additional-option"><input type="checkbox" name="anonymous" id="edit-anonymous" value="1"> Make this donation anonymously</label>
       </div>
     </div>
+    {% endif %}
 
     {% include 'includes/address-fields.html' %}
     
     {% include '/includes/card-or-ach.html' %}
 
+    {% if hide_comments != True %}
     <div class="form-item form-item--comments">
       <label>Comments:
       <textarea id="reason_for_supporting" cols="20" rows="4" name="reason_for_supporting"></textarea></label> <!-- could send to Givalike and/or ajax -->
       <label class="additional-option" id="reason_shareable" for="reason_shareable"><input type="checkbox" checked="checked" name="reason_shareable" id="reason_shareable" value="1"> MinnPost has permission to post this comment on the website. </label>
     </div>
+    {% endif %}
     
 
     <button type="submit" class="btn btn--submit give" autocomplete="off">{{ button }}</button>
