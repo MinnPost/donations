@@ -380,6 +380,115 @@ def minnroast_sponsorship_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
+# used at support.minnpost.com/recurring-donation-update
+@app.route('/recurring-donation-update/')
+def minnpost_recurring_donation_update_form():
+    form = MinnPostForm()
+
+    confirm_url = '/recurring-donation-update-confirm/'
+    redirect_url = 'recurring-donation-update-thanks'
+
+    now = datetime.now()
+    year = now.year
+
+    if request.args.get('opportunity'):
+        opp_id = request.args.get('opportunity')
+        try:
+            result = get_opportunity(opp_id)
+            opportunity = result['opportunity']
+
+            amount = float(opportunity['Amount'])
+            if (amount).is_integer():
+                amount_formatted = int(amount)
+            else:
+                amount_formatted = format(amount, ',.2f')
+            campaign = opportunity['CampaignId']
+
+        except:
+            opp_id = ''
+            opportunity = []
+    else:
+        opp_id = ''
+        opportunity = []
+
+        if request.args.get('amount'):
+            amount = float(request.args.get('amount'))
+            if (amount).is_integer():
+                amount_formatted = int(amount)
+            else:
+                amount_formatted = format(amount, ',.2f')
+        else:
+            amount_formatted = ''
+
+        if request.args.get('campaign'):
+            campaign = request.args.get('campaign')
+        else:
+            campaign = ''
+
+    if request.args.get('show_ach'):
+        show_ach = request.args.get('show_ach')
+        if show_ach == 'false':
+            show_ach = False
+        else:
+            show_ach = True
+    else:
+        show_ach = True
+
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    elif 'Stripe_Customer_ID__c' in opportunity and opportunity['Stripe_Customer_ID__c'] is not None:
+        customer_id = opportunity['Stripe_Customer_ID__c']
+    else:
+        customer_id = ''
+
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    elif 'Donor_first_name__c' in opportunity and opportunity['Donor_first_name__c'] is not None:
+        first_name = opportunity['Donor_first_name__c']
+    else:
+        first_name = ''
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    elif 'Donor_last_name__c' in opportunity and opportunity['Donor_last_name__c'] is not None:
+        last_name = opportunity['Donor_last_name__c']
+    else:
+        last_name = ''
+    if request.args.get('email'):
+        email = request.args.get('email')
+    elif 'Donor_e_mail__c' in opportunity and opportunity['Donor_e_mail__c'] is not None:
+        email = opportunity['Donor_e_mail__c']
+    else:
+        email = ''
+    if request.args.get('additional_donation'):
+        additional_donation = float(request.args.get('additional_donation'))
+    else:
+        additional_donation = ''
+
+    title = 'MinnPost | Recurring Donation Update'
+    #if amount_formatted != '':
+    #    heading = '${} Donation for Election Coverage'.format(amount_formatted)
+    #else:
+        #heading = 'Recurring Donation Update'
+    heading = 'Recurring Donation Update'
+    summary = 'Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to update your payment information for your recurring donation. We appreciate your cooperation as we update our system!'
+    hide_comments = True
+    hide_display = True
+    button = 'Place this Donation'
+
+    description = 'Recurring Donation Update'
+    allow_additional = False
+
+    return render_template('minnpost-minimal-form.html',
+        title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, heading=heading,
+        description=description, summary=summary, allow_additional=allow_additional, button=button,
+        form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
+        #opp_type = opp_type, opp_subtype = opp_subtype,
+        first_name = first_name,last_name = last_name, email=email,
+        additional_donation = additional_donation,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        key=app.config['STRIPE_KEYS']['publishable_key'])
+
+
 # used at support.minnpost.com/minnroast-pledge
 @app.route('/minnroast-pledge/')
 def minnroast_pledge_form():
