@@ -1354,7 +1354,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         msg = '*{}* pledged *${}*'.format(name, amount)
         print(msg)
         notify_slack(msg)
-        if 'opp_id' not in form:
+        if 'opp_id' not in form and 'recurring_id' not in form:
             response = add_opportunity(form=form, customer=customer, extra_values=extra_values)
         elif 'recurring_id' in form:
             response = get_recurring(recurring_id=form['recurring_id'], customer=customer, form=form, extra_values=extra_values)
@@ -1448,7 +1448,7 @@ def add_tw_customer_and_charge(form=None, customer=None):
 @celery.task(name='salesforce.update_donation_object', bind=True, max_retries=None)
 #def update_donation_object(object_name=None, sf_id=None, form=None):
 def update_donation_object(self, object_name=None, flask_id=None, form=None):
-    print ("----Update opportunity...")
+    print ("----Update {}...".format(object_name))
     #print('---Updating this {} ---'.format(object_name))
     #print('update the flask id {}'.format(flask_id))
     #print(form)
