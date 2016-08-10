@@ -877,11 +877,11 @@ def _find_recurring(recurring_id=None, customer=None, form=None):
     """
 
     query = """
-            SELECT SF_Recurring_Donation_ID__c, npe03__Amount__c, npe03__Recurring_Donation_Campaign__c,
+            SELECT Id, SF_Recurring_Donation_ID__c, npe03__Amount__c, npe03__Recurring_Donation_Campaign__c,
             Donor_first_name__c, Donor_last_name__c, Donor_e_mail__c,
             Stripe_Customer_Id__c
             FROM npe03__Recurring_Donation__c
-            WHERE SF_Recurring_Donation_ID__c = '{}'
+            WHERE Id = '{}'
             """.format(recurring_id)
 
     sf = SalesforceConnection()
