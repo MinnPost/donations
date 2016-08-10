@@ -1160,7 +1160,6 @@ def confirm():
     #sf_type = session['sf_type']
 
     if flask_id:
-        #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('finish.html', session=session)
     else:
@@ -1183,7 +1182,8 @@ def minnpost_advertising_confirm():
     sf_type = session['sf_type']
 
     if flask_id:
-        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        # we shouldn't need to run the update donation object here bc no newsletters or whatever
+        #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('minnpost-advertising/finish.html', amount=amount_formatted, session=session)
     else:
         print('post-advertising form did not validate: error below')
@@ -1205,7 +1205,6 @@ def minnroast_sponsorship_confirm():
     sf_type = session['sf_type']
 
     if flask_id:
-        #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('minnroast-sponsorship/finish.html', amount=amount_formatted, session=session)
     else:
@@ -1232,7 +1231,8 @@ def minnpost_recurring_donation_update_confirm():
     #print(request.form)
 
     if flask_id:
-        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        # we shouldn't need to run the update donation object here bc no newsletters or whatever
+        #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session)
     else:
         print('post-pledge form did not validate: error below')
@@ -1303,8 +1303,8 @@ def minnroast_event_confirm():
     sf_type = session['sf_type']
 
     if flask_id:
-        #result = update_donation_object.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
-        result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        # we shouldn't need to run the update donation object here bc no newsletters or whatever
+        #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('minnpost-events/finish.html', amount=amount_formatted, session=session)
     else:
         print('post-event form did not validate: error below')
