@@ -749,7 +749,7 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
 
         result = _find_opportunity(opp_id=opp_id, customer=customer, form=form) # form is if we are updating it also
         opportunity = result[0]
-        response = {'opportunity':opportunity, 'id': '00656000002iUqzAAE', 'success': True, 'errors' : []}
+        response = {'opportunity':opportunity, 'id': opp_id, 'success': True, 'errors' : []}
 
         # if the response is empty then there is no opportunity for this ID
         if response is None:
@@ -759,6 +759,24 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
 
 #        print('get existing opportunity')
 #        print(response)
+
+        return response
+
+
+def get_recurring(recurring_id=None, customer=None, form=None, extra_values=None):
+        """
+        Return an opportunity. Return an error if it does not exist, but try to log stuff.
+        """
+
+        result = _find_recurring(recurring_id=recurring_id, customer=customer, form=form) # form is if we are updating it also
+        recurring = result[0]
+        response = {'recurring':recurring, 'id': recurring_id, 'success': True, 'errors' : []}
+
+        # if the response is empty then there is no opportunity for this ID
+        if response is None:
+            print('Error: this recurring donation does not exist')
+            response['errors'] = 'We were unable to find your recurring donation.'
+            response['success'] = False
 
         return response
 
@@ -850,6 +868,93 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
         return opportunity
     else:
         return opportunity
+
+
+def _find_recurring(recurring_id=None, customer=None, form=None):
+    """
+    Given an ID, return the Recurring Donation matching it.
+    If there is form data, update it also.
+    """
+
+    query = """
+            SELECT SF_Recurring_Donation_ID__c, npe03__Amount__c, npe03__Recurring_Donation_Campaign__c,
+            Donor_first_name__c, Donor_last_name__c, Donor_e_mail__c,
+            Stripe_Customer_Id__c
+            FROM npe03__Recurring_Donation__c
+            WHERE SF_Recurring_Donation_ID__c = '{}'
+            """.format(recurring_id)
+
+    sf = SalesforceConnection()
+    recurring = sf.query(query)
+
+    if form is not None:
+        print ("----Recurring Donation form data present, update the record")
+
+        try:
+            billing_full = form['full_address']
+            try:
+                billing_street = form['billing_street_geocode']
+                if billing_street == '':
+                    billing_street = billing_full
+            except:
+                billing_street = ''
+            try:
+                billing_city = form['billing_city_geocode']
+            except:
+                billing_city = ''
+            try:
+                billing_state = form['billing_state_geocode']
+            except:
+                billing_state = ''
+            try:
+                billing_zip = form['billing_zip_geocode']
+            except:
+                billing_zip = ''
+            try:
+                billing_country = form['billing_country_geocode']
+            except:
+                billing_country = ''
+        except:
+            try:
+                billing_street = form['billing_street']
+            except:
+                billing_street = ''
+            try:
+                billing_city = form['billing_city']
+            except:
+                billing_city = ''
+            try:
+                billing_state = form['billing_state']
+            except:
+                billing_state = ''
+            try:
+                billing_zip = form['billing_zip']
+            except:
+                billing_zip = ''
+            try:
+                billing_country = form['billing_country']
+            except:
+                billing_country = ''
+
+        update = {
+            'Donor_address_line_1__c': billing_street,
+            'Donor_city__c': billing_city,
+            'Donor_state__c': billing_state,
+            'Donor_ZIP__c': billing_zip,
+            'Donor_country__c': billing_country,
+            'Donor_first_name__c': form['first_name'],
+            'Donor_last_name__c': form['last_name'],
+            'Donor_e_mail__c': form['email'],
+            'Flask_Transaction_ID__c': form['flask_id'],
+            'Stripe_Customer_Id__c': customer.id
+        }
+        path = '/services/data/v35.0/sobjects/npe03__Recurring_Donation__c/{}'.format(form['recurring_id'])
+        url = '{}{}'.format(sf.instance_url, path)
+        resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+        check_response(response=resp, expected_status=204)
+        return recurring
+    else:
+        return recurring
 
 
 def _format_recurring_donation(contact=None, form=None, customer=None, extra_values=None):
@@ -1251,6 +1356,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         notify_slack(msg)
         if 'opp_id' not in form:
             response = add_opportunity(form=form, customer=customer, extra_values=extra_values)
+        elif 'recurring_id' in form:
+            response = get_recurring(recurring_id=form['recurring_id'], customer=customer, form=form, extra_values=extra_values)
         else:
             response = get_opportunity(opp_id=form['opp_id'], customer=customer, form=form, extra_values=extra_values)
         

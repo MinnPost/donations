@@ -41,6 +41,7 @@ from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
 from salesforce import add_customer_and_charge
 from salesforce import get_opportunity
+from salesforce import get_recurring
 #from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
 from app_celery import make_celery
@@ -393,6 +394,8 @@ def minnpost_recurring_donation_update_form():
 
     if request.args.get('opportunity'):
         opp_id = request.args.get('opportunity')
+        recurring_id = ''
+        recurring = []
         try:
             result = get_opportunity(opp_id)
             opportunity = result['opportunity']
@@ -406,10 +409,33 @@ def minnpost_recurring_donation_update_form():
 
         except:
             opp_id = ''
+            recurring_id = ''
             opportunity = []
-    else:
+            recurring = []
+    elif request.args.get('recurring'):
+        recurring_id = request.args.get('recurring')
         opp_id = ''
         opportunity = []
+        try:
+            result = get_recurring(recurring_id)
+            recurring = result['recurring']
+            amount = float(recurring['npe03__Amount__c'])
+            if (amount).is_integer():
+                amount_formatted = int(amount)
+            else:
+                amount_formatted = format(amount, ',.2f')
+            campaign = recurring['npe03__Recurring_Donation_Campaign__c']
+
+        except:
+            opp_id = ''
+            recurring_id = ''
+            opportunity = []
+            recurring = []
+    else:
+        opp_id = ''
+        recurring_id = ''
+        opportunity = []
+        recurring = []
 
         if request.args.get('amount'):
             amount = float(request.args.get('amount'))
@@ -438,6 +464,8 @@ def minnpost_recurring_donation_update_form():
         customer_id = request.args.get('customer_id')
     elif 'Stripe_Customer_ID__c' in opportunity and opportunity['Stripe_Customer_ID__c'] is not None:
         customer_id = opportunity['Stripe_Customer_ID__c']
+    elif 'Stripe_Customer_ID__c' in recurring and recurring['Stripe_Customer_ID__c'] is not None:
+        customer_id = recurring['Stripe_Customer_ID__c']
     else:
         customer_id = ''
 
@@ -445,18 +473,24 @@ def minnpost_recurring_donation_update_form():
         first_name = request.args.get('firstname')
     elif 'Donor_first_name__c' in opportunity and opportunity['Donor_first_name__c'] is not None:
         first_name = opportunity['Donor_first_name__c']
+    elif 'Donor_first_name__c' in recurring and recurring['Donor_first_name__c'] is not None:
+        first_name = recurring['Donor_first_name__c']
     else:
         first_name = ''
     if request.args.get('lastname'):
         last_name = request.args.get('lastname')
     elif 'Donor_last_name__c' in opportunity and opportunity['Donor_last_name__c'] is not None:
         last_name = opportunity['Donor_last_name__c']
+    elif 'Donor_last_name__c' in recurring and recurring['Donor_last_name__c'] is not None:
+        last_name = recurring['Donor_last_name__c']
     else:
         last_name = ''
     if request.args.get('email'):
         email = request.args.get('email')
     elif 'Donor_e_mail__c' in opportunity and opportunity['Donor_e_mail__c'] is not None:
         email = opportunity['Donor_e_mail__c']
+    elif 'Donor_e_mail__c' in recurring and recurring['Donor_e_mail__c'] is not None:
+        email = recurring['Donor_e_mail__c']
     else:
         email = ''
     if request.args.get('additional_donation'):
@@ -479,7 +513,7 @@ def minnpost_recurring_donation_update_form():
     allow_additional = False
 
     return render_template('minnpost-minimal-form.html',
-        title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, heading=heading,
+        title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
         form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
         #opp_type = opp_type, opp_subtype = opp_subtype,
