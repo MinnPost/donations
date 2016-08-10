@@ -9,7 +9,7 @@
 
   </div>
 
-  {% if amount == '' %}
+  {% if amount == '' or show_amount_field == True %}
   <fieldset class="clear-block">
     <div class="form-item form-item--amount">
       <label for="amount" class="required">Amount: </label>

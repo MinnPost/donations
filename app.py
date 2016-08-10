@@ -498,6 +498,7 @@ def minnpost_recurring_donation_update_form():
     else:
         additional_donation = ''
 
+    show_amount_field = True
     title = 'MinnPost | Recurring Donation Update'
     #if amount_formatted != '':
     #    heading = '${} Donation for Election Coverage'.format(amount_formatted)
@@ -515,7 +516,7 @@ def minnpost_recurring_donation_update_form():
     return render_template('minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
-        form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
+        form=form, amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
