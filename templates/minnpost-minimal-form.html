@@ -16,6 +16,9 @@
       {% if opp_id != '' %}
       <input type="hidden" name="opp_id" id="opp_id" value="{{ opp_id }}">
       {% endif %}
+      {% if recurring_id != '' %}
+      <input type="hidden" name="recurring_id" id="recurring_id" value="{{ recurring_id }}">
+      {% endif %}
       <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
       <input type="hidden" name="pledge" id="pledge" value="{{ pledge }}">
       <input type="hidden" name="description" id="description" value="{{ description }}">
