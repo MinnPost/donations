@@ -42,6 +42,7 @@ from config import PLAID_ENVIRONMENT
 from salesforce import add_customer_and_charge
 from salesforce import get_opportunity
 from salesforce import get_recurring
+from salesforce import get_campaign
 #from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
 from app_celery import make_celery
@@ -171,9 +172,12 @@ def minnpost_event_form():
     event_promo_code = EVENT_PROMO_CODE
 
     if request.args.get('campaign'):
-        campaign = request.args.get('campaign')
+        campaign_id = request.args.get('campaign')
     else:
-        campaign = EVENT_CAMPAIGN_ID
+        campaign_id = EVENT_CAMPAIGN_ID
+
+    result = get_campaign(campaign_id)
+    campaign = result['campaign']
 
     if request.args.get('show_ach'):
         show_ach = request.args.get('show_ach')
@@ -233,7 +237,7 @@ def minnpost_event_form():
         single_unit_price = EVENT_DISCOUNT_SINGLE_UNIT_PRICE
     starting_amount = format(quantity * single_unit_price)
 
-    return render_template('minnpost-events/form.html', form=form, campaign=campaign, customer_id=customer_id,
+    return render_template('minnpost-events/form.html', form=form, campaign_id=campaign_id, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,

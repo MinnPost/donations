@@ -33,9 +33,19 @@
       <input type="hidden" name="billing_zip_geocode" id="billing_zip_geocode" value="">
       <input type="hidden" name="billing_country_geocode" id="billing_country_geocode" value="">
 
-      {% include 'minnpost-events/includes/tickets.html' %}
-      {% include 'minnpost-events/includes/attendees.html' %}
-      {% include 'minnpost-events/includes/pay.html' %}
+      {% if campaign['On_Sale__c'] == True %}
+        {% if campaign['Sold_out__c'] == True %}
+            {% include 'minnpost-events/includes/sold-out.html' %}
+        {% else %}
+          {% include 'minnpost-events/includes/tickets.html' %}
+          {% include 'minnpost-events/includes/attendees.html' %}
+          {% include 'minnpost-events/includes/pay.html' %}
+        {% endif %}
+      {% elif campaign['Sold_out__c'] == True %}
+        {% include 'minnpost-events/includes/sold-out.html' %}
+      {% else %}
+        {% include 'minnpost-events/includes/not-on-sale.html' %}
+      {% endif %}
 
     </form>
   </div>

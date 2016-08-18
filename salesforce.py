@@ -781,6 +781,25 @@ def get_recurring(recurring_id=None, customer=None, form=None, extra_values=None
         return response
 
 
+def get_campaign(campaign_id=None):
+
+    """
+    Return a campaign. Return an error if it does not exist, but try to log stuff.
+    """
+
+    result = _find_campaign(campaign_id=campaign_id)
+    campaign = result[0]
+    response = {'campaign':campaign, 'id': campaign_id, 'success': True, 'errors' : []}
+
+    # if the response is empty then there is no campaign for this ID
+    if response is None:
+        print('Error: this campaign does not exist')
+        response['errors'] = 'We were unable to find this event.'
+        response['success'] = False
+
+    return response
+
+
 def _find_opportunity(opp_id=None, customer=None, form=None):
     """
     Given an ID, return the Opportunity matching it.
@@ -868,6 +887,24 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
         return opportunity
     else:
         return opportunity
+
+
+def _find_campaign(campaign_id=None):
+    """
+    Given an ID, return the Campaign matching it.
+    If there is form data, update it also.
+    """
+
+    query = """
+            SELECT Id, On_Sale__c, Sold_out__c, Not_on_sale_copy__c, Sold_out_copy__c
+            FROM Campaign
+            WHERE Id='{0}'
+            """.format(campaign_id)
+
+    sf = SalesforceConnection()
+    campaign = sf.query(query)
+
+    return campaign
 
 
 def _find_recurring(recurring_id=None, customer=None, form=None):
