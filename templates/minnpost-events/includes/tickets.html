@@ -8,6 +8,26 @@
 		      	<span class="unit-price">x $<span class="show-unit-price">{{ single_unit_price }}</span> per ticket</span>
 		      <!--<label for="quantity">Quantity</label>-->
 		    </div>
+
+		    {% if use_promo_code == 'True' %}
+		    <div class="form-item form-item--promo-code">
+				<div class="button-group">
+					<label for="promo_code">Member Promo Code: </label>
+					<input type="text" id="promo_code" name="promo_code" value="{{ promo_code }}">
+					{% if promo_code == event_promo_code %}
+						<a href="#" class="btn btn--action btn--disabled apply-promo-code">Applied</a>
+					{% else %}
+						<a href="#" class="btn btn--action apply-promo-code">Apply</a>
+					{% endif %}
+				</div>
+				{% if promo_code != event_promo_code %}
+				<div>
+					<label class="additional-option">MinnPost member? <span>Use promo code <input type="checkbox" name="use-promo-code" id="use-promo-code" value="1"></span>.</label>
+				</div>
+				{% endif %}
+			</div>
+			{% endif %}
+
 			<div class="form-item form-item--additional-donation">
 		      <label for="additional_donation">Additional Donation (optional): </label>
 		      <div class="input-prepend">
@@ -20,7 +40,11 @@
 		    </div>
 		</fieldset>
 
-		{% include 'minnpost-events/includes/event-details.html' %}
+		{% if event %}
+			{% include 'minnpost-events/events/event-details-{}.html'.format(event) %}
+		{% else %}
+			{% include 'minnpost-events/includes/event-details.html' %}
+		{% endif %}
 
 	</div>
 	<a href="/event-register/?step=panel--attendees" class="btn btn--next">Add Attendees</a>

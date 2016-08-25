@@ -29,11 +29,21 @@ from config import ALLOW_DONATION_NOTIFICATION
 from config import OPBEAT_ORGANIZATION_ID
 from config import OPBEAT_APP_ID
 from config import OPBEAT_SECRET_TOKEN
-from config import EVENT_SINGLE_UNIT_PRICE
-from config import EVENT_DISCOUNT_SINGLE_UNIT_PRICE
-from config import EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE
-from config import EVENT_PROMO_CODE
-from config import EVENT_CAMPAIGN_ID
+
+from config import EVENT_1_USE_PROMO_CODE
+from config import EVENT_1_SINGLE_UNIT_PRICE
+from config import EVENT_1_DISCOUNT_SINGLE_UNIT_PRICE
+from config import EVENT_1_SINGLE_UNIT_FAIR_MARKET_VALUE
+from config import EVENT_1_PROMO_CODE
+from config import EVENT_1_CAMPAIGN_ID
+
+from config import EVENT_2_USE_PROMO_CODE
+from config import EVENT_2_SINGLE_UNIT_PRICE
+from config import EVENT_2_DISCOUNT_SINGLE_UNIT_PRICE
+from config import EVENT_2_SINGLE_UNIT_FAIR_MARKET_VALUE
+from config import EVENT_2_PROMO_CODE
+from config import EVENT_2_CAMPAIGN_ID
+
 from config import ADVERTISING_CAMPAIGN_ID
 from config import SEPARATE_SWAG_MINIMUM_LEVEL
 from config import MAIN_SWAG_MINIMUM_LEVEL
@@ -169,12 +179,22 @@ def minnpost_form():
 def minnpost_event_form():
     form = MinnPostForm()
 
-    event_promo_code = EVENT_PROMO_CODE
+    if request.args.get('event'):
+        event = request.args.get('event')
+    else:
+        event = '1'
+
+    if event == '1':
+        event_promo_code = EVENT_1_PROMO_CODE
+        campaign_id = EVENT_1_CAMPAIGN_ID
+        use_promo_code = EVENT_1_USE_PROMO_CODE
+    elif event == '2':
+        event_promo_code = EVENT_2_PROMO_CODE
+        campaign_id = EVENT_2_CAMPAIGN_ID
+        use_promo_code = EVENT_2_USE_PROMO_CODE    
 
     if request.args.get('campaign'):
         campaign_id = request.args.get('campaign')
-    else:
-        campaign_id = EVENT_CAMPAIGN_ID
 
     result = get_campaign(campaign_id)
     campaign = result['campaign']
@@ -230,14 +250,21 @@ def minnpost_event_form():
         quantity = 1
     # possible we should create sf contacts for each attendee who is submitted
 
-    single_unit_price = EVENT_SINGLE_UNIT_PRICE
-    single_unit_fair_market_value = EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE
+    if event == '1':
+        single_unit_price = EVENT_1_SINGLE_UNIT_PRICE
+        single_unit_fair_market_value = EVENT_1_SINGLE_UNIT_FAIR_MARKET_VALUE
+        discount_single_unit_price = EVENT_1_DISCOUNT_SINGLE_UNIT_PRICE
+    elif event == '2':
+        single_unit_price = EVENT_2_SINGLE_UNIT_PRICE
+        single_unit_fair_market_value = EVENT_2_SINGLE_UNIT_FAIR_MARKET_VALUE
+        discount_single_unit_price = EVENT_2_DISCOUNT_SINGLE_UNIT_PRICE
+    
     #print('total fair market value is {}'.format(quantity * single_unit_fair_market_value))
     if promo_code == event_promo_code:
-        single_unit_price = EVENT_DISCOUNT_SINGLE_UNIT_PRICE
+        single_unit_price = discount_single_unit_price
     starting_amount = format(quantity * single_unit_price)
 
-    return render_template('minnpost-events/form.html', form=form, campaign_id=campaign_id, campaign=campaign, customer_id=customer_id,
+    return render_template('minnpost-events/form.html', form=form, event=event, use_promo_code=use_promo_code, campaign_id=campaign_id, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,
@@ -249,14 +276,28 @@ def minnpost_event_form():
 # called by ajax
 @app.route('/event-check-promo/', methods=['POST'])
 def event_check_promo():
-    promo_code = EVENT_PROMO_CODE
+
+    if request.form['event']:
+        event = request.form['event']
+    else:
+        event = '1'
+
+    if event == '1':
+        promo_code = EVENT_1_PROMO_CODE
+        discount_single_unit_price = EVENT_1_DISCOUNT_SINGLE_UNIT_PRICE
+        nodiscount_single_unit_price = EVENT_1_SINGLE_UNIT_PRICE
+    elif event == '2':
+        promo_code = EVENT_2_PROMO_CODE
+        discount_single_unit_price = EVENT_2_DISCOUNT_SINGLE_UNIT_PRICE
+        nodiscount_single_unit_price = EVENT_2_SINGLE_UNIT_PRICE
+    
     sent_promo_code = request.form['promo_code']
     if sent_promo_code == promo_code:
         success = True
-        single_unit_price = EVENT_DISCOUNT_SINGLE_UNIT_PRICE
+        single_unit_price = discount_single_unit_price
     else:
         success = False
-        single_unit_price = EVENT_SINGLE_UNIT_PRICE
+        single_unit_price = nodiscount_single_unit_price
     ret_data = {"success": success, "single_unit_price": single_unit_price}
     return jsonify(ret_data)
 
@@ -1048,7 +1089,18 @@ def charge_ajax():
             opp_subtype = request.form['opp_subtype']
             session['opp_subtype'] = opp_subtype
             if opp_subtype == 'Sales: Tickets':
-                single_unit_fair_market_value = float(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
+
+                if request.form['event']:
+                    event = request.form['event']
+                    if event == '1':
+                        single_unit_fair_market_value = float(EVENT_1_SINGLE_UNIT_FAIR_MARKET_VALUE)
+                    elif event == '2':
+                        single_unit_fair_market_value = float(EVENT_2_SINGLE_UNIT_FAIR_MARKET_VALUE)
+                    else:
+                        single_unit_fair_market_value = float(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
+                else:
+                    event = '1'
+                    single_unit_fair_market_value = float(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
                 fair_market_value = quantity * single_unit_fair_market_value
             elif opp_subtype == 'Sales: Advertising':
                 fair_market_value = amount

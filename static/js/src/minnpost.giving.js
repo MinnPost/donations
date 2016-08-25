@@ -83,6 +83,7 @@
     'promo_selector' : '.form-item--promo-code',
     'use_promocode_selector' : '#use-promo-code',
     'promocode_selector' : '#promo_code',
+    'event_id_selector' : '#event',
     'calendar_button_selector' : '.addeventatc',
     'billing_selector' : 'fieldset.billing',
     'shipping_selector' : 'fieldset.shipping',
@@ -799,10 +800,16 @@
         //$(this.options.promocode_selector).after('');
         $('.apply-promo-code').click(function(event) {
           var code = $(options.promocode_selector, element).val();
+          if ($(options.event_id_selector).length > 0) {
+            var event_id = $(options.event_id_selector, element).val();
+          } else {
+            var event_id = 1;
+          }
           //use_promo = that.checkPromoCode(code);
           event.preventDefault();
             var data = {
-              promo_code: code
+              promo_code: code,
+              event: event_id
             };
             $.ajax({
               method: 'POST',
