@@ -253,7 +253,7 @@ def charge_cards():
 
     log = Log()
 
-    log.it('---Starting batch job...')
+    log.it('---Starting batch card job...')
 
     three_days_ago = (datetime.now(tz=zone) - timedelta(
         days=3)).strftime('%Y-%m-%d')
@@ -287,7 +287,7 @@ def update_ach_charges():
 
     log = Log()
 
-    log.it('---Starting batch job...')
+    log.it('---Starting batch ach job...')
 
     #three_days_ago = (datetime.now(tz=zone) - timedelta(
     #    days=3)).strftime('%Y-%m-%d')
