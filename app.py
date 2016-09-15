@@ -2,7 +2,7 @@ import os
 import sys
 from datetime import datetime
 
-from flask import Flask, render_template, request, session, jsonify, json
+from flask import Flask, render_template, request, session, jsonify, json, send_from_directory
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from core import db
@@ -1370,6 +1370,11 @@ def minnroast_event_confirm():
         print('Error with post-event form {} {}'.format(sf_type, flask_id))
         return render_template('error.html', message=message)
 
+
+# this is for apple pay verification through stripe
+@app.route('/.well-known/apple-developer-merchantid-domain-association')
+def apple_developer_domain_verification():
+    return send_from_directory(app.static_folder, 'apple-developer-merchantid-domain-association');
     
 # initialize
 if __name__ == '__main__':
