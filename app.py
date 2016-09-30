@@ -1356,8 +1356,8 @@ def minnroast_event_confirm():
 
     quantity = float(request.form['quantity'])
 
-    if request.args.get('event'):
-        event = request.args.get('event')
+    if request.form['event']:
+        event = request.form['event']
     else:
         event = '1'
 
