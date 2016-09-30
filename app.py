@@ -1356,13 +1356,18 @@ def minnroast_event_confirm():
 
     quantity = float(request.form['quantity'])
 
+    if request.args.get('event'):
+        event = request.args.get('event')
+    else:
+        event = '1'
+
     flask_id = session['flask_id']
     sf_type = session['sf_type']
 
     if flask_id:
         # we shouldn't need to run the update donation object here bc no newsletters or whatever
         #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnpost-events/finish.html', amount=amount_formatted, session=session)
+        return render_template('minnpost-events/finish.html', amount=amount_formatted, session=session, event=event)
     else:
         print('post-event form did not validate: error below')
         print(form.errors)

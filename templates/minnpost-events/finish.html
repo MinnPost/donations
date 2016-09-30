@@ -29,7 +29,11 @@
             <p>Thank you for purchasing {{ session['quantity'] }} ticket{% if session['quantity'] != 1 %}s{% endif %}{% if session['additional_donation'] != '' %}, and for your additional ${{ session['additional_donation'] }} donation{% endif %}. We look forward to seeing you!</p>
             <p>Check your email for your payment confirmation and more details regarding this event.</p>
           </fieldset>
-          {% include 'minnpost-events/includes/event-details.html' %}
+          {% if event %}
+            {% include 'minnpost-events/events/event-details-{}.html'.format(event) %}
+          {% else %}
+            {% include 'minnpost-events/includes/event-details.html' %}
+          {% endif %}
         </div>
       </section>
     </form>
