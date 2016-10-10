@@ -1846,6 +1846,15 @@ global.Payment = Payment;
       return typeof document.createElement('input').checkValidity === 'function';
     },
 
+    buttonStatus: function(options, button, disabled) {
+      button.prop('disabled', disabled);
+      if (disabled === false) {
+        button.text(options.button_text);
+      } else {
+        button.text('Processing');
+      }
+    },
+
     validateAndSubmit: function(element, options) {
       var that = this;
       $(this.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
@@ -1920,19 +1929,18 @@ global.Payment = Payment;
           }
         }
 
+        var supportform = $(options.donate_form_selector);
+
         if (valid === true) {
-
-          // 1. process donation to stripe          
-          var supportform = $(options.donate_form_selector);
-
+          // 1. process donation to stripe
+          that.buttonStatus(options, supportform.find('button'), true);
           var stripeResponseHandler = function(status, response) {
             that.debug('trying to get stripe response');
             var supportform = $(options.donate_form_selector);
 
             if (response.errors) {
               // Show the errors on the form
-              supportform.find('button').prop('disabled', false);
-              supportform.find('button').text(options.button_text);
+              that.buttonStatus(options, supportform.find('button'), false);
             } else {
 
               if ($('input[name="bankToken"]').length === 0) {
@@ -1959,8 +1967,7 @@ global.Payment = Payment;
                 .done(function(response) {
                   if (typeof response.errors !== 'undefined') {
                     // do not submit. there is an error.
-                    supportform.find('button').prop('disabled', false);
-                    supportform.find('button').text(options.button_text);
+                    that.buttonStatus(options, supportform.find('button'), false);
 
                     // add some error messages and styles
                     $.each(response.errors, function( index, error ) {
@@ -2023,14 +2030,12 @@ global.Payment = Payment;
                   }
                 })
                 .error(function(response) {
-                  supportform.find('button').prop('disabled', false);
-                  supportform.find('button').text(options.button_text);
+                  that.buttonStatus(options, supportform.find('button'), false);
                 });
               //},500);
 
               // Disable the submit button to prevent repeated clicks
-              supportform.find('button').prop('disabled', true);
-              supportform.find('button').text('Processing');
+              that.buttonStatus(options, supportform.find('button'), true);
 
             }
           }; // end stripeResponseHandler          
@@ -2118,7 +2123,7 @@ global.Payment = Payment;
           //return true;
 
         } else { // valid = true
-          that.debug('this is invalid');
+          that.buttonStatus(options, supportform.find('button'), false);
         }
 
       });
