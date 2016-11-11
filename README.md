@@ -1,7 +1,7 @@
 Stripe-Salesforce
 =================
 
-This app is a fork of [https://bitbucket.org/texastribune/salesforce-stripe](https://bitbucket.org/texastribune/salesforce-stripe), created by Texas Tribune for their [donations app](http://support.texastribune.org/).
+This app is a fork of [https://github.com/texastribune/salesforce-stripe](https://github.com/texastribune/salesforce-stripe), created by Texas Tribune for their [donations app](http://support.texastribune.org/). It powers various methods of payment at MinnPost, most commonly with users starting at [https://www.minnpost.com/support/](https://www.minnpost.com/support/), although others start users in this app.
 
 MinnPost's version has a few important differences:
 
