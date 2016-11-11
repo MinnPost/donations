@@ -47,7 +47,7 @@ module.exports = function(grunt) {
         files: [{
             expand: true,        // Enable dynamic expansion.
             cwd: '<%= dir.sass %>/',  // Src matches are relative to this path.
-            src: ['*.scss'],     // Actual pattern(s) to match.
+            src: ['*.scss', '!all.scss'],     // Actual pattern(s) to match.
             dest: '<%= dir.css %>/',  // Destination path prefix.
             ext: '.scss.css',         // Dest filepaths will have this extension.
         }]

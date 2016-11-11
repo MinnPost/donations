@@ -9,3 +9,5 @@ htmlcov
 sfstripe
 celerybeat-schedule
 node_modules
+celerybeat-schedule.db
+celerybeat.pid
