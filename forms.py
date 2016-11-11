@@ -1,4 +1,4 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 
 from wtforms.fields import StringField, HiddenField, BooleanField, DecimalField, TextAreaField, SelectMultipleField
 from wtforms.fields import RadioField, SelectField
@@ -6,7 +6,7 @@ from wtforms import validators
 from wtforms.fields.html5 import EmailField
 
 
-class BaseForm(Form):
+class BaseForm(FlaskForm):
     first_name = StringField(u'First name',
         [validators.required(message="Your first name is required.")])
     last_name = StringField(u'Last name',
@@ -22,7 +22,7 @@ class BaseForm(Form):
     pay_fees_value = HiddenField(u'Pay Fees Value')
 
 
-class MinnPostForm(Form):
+class MinnPostForm(FlaskForm):
     amount = HiddenField(u'Amount')
     campaign = HiddenField(u'Campaign')
     recurring = HiddenField(u'Frequency')
@@ -71,7 +71,7 @@ class MinnPostForm(Form):
     additional_donation = DecimalField(u'Additional Donation', validators=[validators.Optional()])
 
 
-class ConfirmForm(Form):
+class ConfirmForm(FlaskForm):
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(u'Reason Shareable?')
     newsletters = SelectMultipleField(u'Newsletters')
@@ -88,10 +88,10 @@ class DonateForm(BaseForm):
     openended_status = HiddenField(u'Openended Status')
 
 
-class BlastForm(Form):
-    first_name = StringField(u'First',
+class BlastForm(FlaskForm):
+    first_name = StringField(u'First name',
         [validators.required(message="Your first name is required.")])
-    last_name = StringField(u'Last',
+    last_name = StringField(u'Last name',
         [validators.required(message="Your last name is required.")])
     amount_choices = [
         ('349', 'Annual ($349)'),
