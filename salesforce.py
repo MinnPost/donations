@@ -312,7 +312,7 @@ def upsert_customer(customer=None, form=None):
     if form is None:
         raise Exception("Value for 'form' must be specified.")
 
-    update = {'Stripe_Customer_Id__c': customer.id}
+    update = {'Stripe_Customer_Id__c': customer['id']}
     updated_request = update.copy()
     updated_request.update(form.to_dict())
 
