@@ -1388,7 +1388,10 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
 
     if flask_id != None:
-        form = form.to_dict()
+        if type(ele) is not dict:
+            form = form.to_dict()
+        else:
+            print('form is already a dictionary')
         form['flask_id'] = flask_id
 
     if (form['recurring'] == 'one-time'):
