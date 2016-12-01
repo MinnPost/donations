@@ -45,6 +45,7 @@ from config import EVENT_2_PROMO_CODE
 from config import EVENT_2_CAMPAIGN_ID
 
 from config import ADVERTISING_CAMPAIGN_ID
+from config import TOP_SWAG_MINIMUM_LEVEL
 from config import SEPARATE_SWAG_MINIMUM_LEVEL
 from config import MAIN_SWAG_MINIMUM_LEVEL
 from config import PLAID_PUBLIC_KEY
@@ -76,6 +77,7 @@ app.minnroast_campaign_id = MINNROAST_CAMPAIGN_ID
 app.anniversary_party_campaign_id = ANNIVERSARY_PARTY_CAMPAIGN_ID
 app.show_upsell = SHOW_UPSELL
 app.allow_donation_notification = ALLOW_DONATION_NOTIFICATION
+app.top_swag_minimum_level = TOP_SWAG_MINIMUM_LEVEL
 app.separate_swag_minimum_level = SEPARATE_SWAG_MINIMUM_LEVEL
 app.main_swag_minimum_level = MAIN_SWAG_MINIMUM_LEVEL
 
@@ -168,6 +170,7 @@ def minnpost_form():
         level=level,
         first_name = first_name,last_name = last_name, email=email,
         show_upsell = app.show_upsell, allow_donation_notification = app.allow_donation_notification,
+        top_swag_minimum_level = app.top_swag_minimum_level,
         separate_swag_minimum_level = app.separate_swag_minimum_level,
         main_swag_minimum_level = app.main_swag_minimum_level,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
