@@ -316,7 +316,7 @@ def minnpost_advertising_form():
     if request.args.get('amount'):
         amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
         if (amount).is_integer():
-            amount_formatted = int(re.sub('[^\d\.]','',request.args.get('amount')))
+            amount_formatted = int(amount)
         else:
             amount_formatted = format(amount, ',.2f')
     else:
