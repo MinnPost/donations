@@ -314,9 +314,9 @@ def minnpost_advertising_form():
     year = now.year
 
     if request.args.get('amount'):
-        amount = float(request.args.get('amount'))
+        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
         if (amount).is_integer():
-            amount_formatted = int(request.args.get('amount'))
+            amount_formatted = int(re.sub('[^\d\.]','',request.args.get('amount')))
         else:
             amount_formatted = format(amount, ',.2f')
     else:
@@ -487,7 +487,7 @@ def minnpost_pledge_payment():
         recurring = []
 
         if request.args.get('amount'):
-            amount = float(request.args.get('amount'))
+            amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
             if (amount).is_integer():
                 amount_formatted = int(amount)
             else:
@@ -630,7 +630,7 @@ def minnpost_recurring_donation_update_form():
         recurring = []
 
         if request.args.get('amount'):
-            amount = float(request.args.get('amount'))
+            amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
             if (amount).is_integer():
                 amount_formatted = int(amount)
             else:
@@ -748,7 +748,7 @@ def minnroast_pledge_form():
         opportunity = []
 
         if request.args.get('amount'):
-            amount = float(request.args.get('amount'))
+            amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
             if (amount).is_integer():
                 amount_formatted = int(amount)
             else:
