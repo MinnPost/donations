@@ -116,7 +116,7 @@ LOGGING = {
 def minnpost_form():
     form = MinnPostForm()
     if request.args.get('amount'):
-        amount = float(request.args.get('amount'))
+        amount = float(re.sub('[^0123456789\.]','',request.args.get('amount')))
         if (amount).is_integer():
             amount_formatted = int(amount)
         else:
