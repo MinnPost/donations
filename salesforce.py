@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 import json
 import locale
 from pprint import pprint   # TODO: remove
@@ -33,6 +34,8 @@ from check_response import check_response
 zone = timezone(TIMEZONE)
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+
+TWOPLACES = Decimal(10) ** -2       # same as Decimal('0.01')
 
 WARNINGS = dict()
 
@@ -300,6 +303,12 @@ class SalesforceConnection(object):
 
         return created, response[0]
 
+
+# allow for cents to be used in donations without breaking the app
+def _format_amount(number):
+    return str(Decimal(number).quantize(TWOPLACES))
+
+
 # customer already exists in stripe; this is adding it to salesforce
 def upsert_customer(customer=None, form=None):
     """
@@ -336,7 +345,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     """
 
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
-    amount = form['amount']
+    amount = _format_amount(form['amount'])
 
     # payment method for this opportunity
     if 'stripe_card' in extra_values:
@@ -1006,7 +1015,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
 
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
-    amount = form['amount']
+    amount = _format_amount(form['amount'])
 
     # payment method for this recurring donation
     if 'stripe_card' in extra_values:
@@ -1378,7 +1387,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
     Texas does this in the background, but MinnPost does not since our donation form has a couple of stages
     and we want to show the user what has happened.
     """
-    amount = form['amount']
+    amount = _format_amount(form['amount'])
     name = '{} {}'.format(form['first_name'], form['last_name'])
         
     #reason = form['reason']
@@ -1442,7 +1451,7 @@ def _format_blast_rdo(contact=None, form=None, customer=None):
 
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
-    amount = form['amount']
+    amount = _format_amount(form['amount'])
     installments = 0
     open_ended_status = 'Open'
     pprint(form)
