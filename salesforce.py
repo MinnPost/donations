@@ -941,16 +941,16 @@ def _find_report(report_id=None):
     #result = result.text.json
     #result = jsonify(result)
 
-    if result['factMap']:
+    #if result['factMap']:
         #print(result['factMap'])
-        for key,value in result['factMap'].items():
+    #    for key,value in result['factMap'].items():
             #print('array here')
             #print(array)
             #break
-            if value['aggregates']:
-                summary = value['aggregates'][1]['value']
-                print('value is {}'.format(summary))
-                break
+    #        if value['aggregates']:
+    #            summary = value['aggregates'][1]['value']
+    #            print('value is {}'.format(summary))
+    #            break
     #    print('run the report again')
     #else:
     #    print('no fact map')

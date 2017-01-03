@@ -5,7 +5,6 @@ from datetime import datetime
 
 from flask import Flask, render_template, request, session, jsonify, json, send_from_directory
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.cors import CORS, cross_origin
 
 from core import db
 from models import Transaction
@@ -311,7 +310,6 @@ def event_check_promo():
 # get the current state of a campaign by loading the report
 # called by ajax
 @app.route('/campaign-report/')
-@cross_origin()
 def campaign_report():
 
     if request.args.get('report_id'):
@@ -343,7 +341,6 @@ def campaign_report():
             for key,value in report['factMap'].items():
                 if value['aggregates']:
                     value_opportunities = value['aggregates'][1]['value']
-                    print('value is {}'.format(value_opportunities))
                     break
         else:
             value_opportunities = 'no fact map'
@@ -352,7 +349,7 @@ def campaign_report():
         success = False
         value_opportunities = ''
 
-    ret_data = {'success': success, 'value_opportunities': value_opportunities, 'goal': goal, 'percent_complete': '{percent:.2%}'.format(percent=value_opportunities/goal) }
+    ret_data = {'success': success, 'value_opportunities': value_opportunities, 'goal': goal, 'percent_complete': '{percent:.2%}'.format(percent=value_opportunities/goal).rstrip('%') }
     return jsonify(ret_data)
 
 
