@@ -55,6 +55,7 @@ from salesforce import add_customer_and_charge
 from salesforce import get_opportunity
 from salesforce import get_recurring
 from salesforce import get_campaign
+from salesforce import get_report
 #from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
 from app_celery import make_celery
@@ -304,6 +305,54 @@ def event_check_promo():
         single_unit_price = nodiscount_single_unit_price
     ret_data = {"success": success, "single_unit_price": single_unit_price}
     return jsonify(ret_data)
+
+
+# get the current state of a campaign by loading the report
+# called by ajax
+@app.route('/campaign-report/')
+def campaign_report():
+
+    if request.args.get('report_id'):
+        report_id = request.args.get('report_id')
+
+    if request.args.get('campaign_id'):
+        campaign_id = request.args.get('campaign_id')
+    else:
+        campaign_id = ''
+
+    if request.args.get('goal'):
+        goal = request.args.get('goal')
+    else:
+        goal = ''
+        campaign_result = get_campaign(campaign_id)
+        if 'campaign' in campaign_result:
+            campaign = campaign_result['campaign']
+            if campaign != []:
+                goal = campaign['ExpectedRevenue']
+
+    report_result = get_report(report_id)
+    if 'report' in report_result:
+        report = report_result['report']
+    
+    if report != []:
+        success = True
+
+        if 'factMap' in report:
+            for key,value in report['factMap'].items():
+                if value['aggregates']:
+                    value_opportunities = value['aggregates'][1]['value']
+                    print('value is {}'.format(value_opportunities))
+                    break
+        else:
+            value_opportunities = 'no fact map'
+
+    else:
+        success = False
+        value_opportunities = ''
+
+    ret_data = {'success': success, 'value_opportunities': value_opportunities, 'goal': goal, 'percent_complete': '{percent:.2%}'.format(percent=value_opportunities/goal) }
+    return jsonify(ret_data)
+
 
 # used at support.minnpost.com/minnpost-advertising
 @app.route('/minnpost-advertising/')
