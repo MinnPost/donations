@@ -136,7 +136,8 @@ class SalesforceConnection(object):
 
         return None
 
-    def query(self, query, path='/services/data/v35.0/query'):
+
+    def query(self, query, path='/services/data/v{}/query'.format(SALESFORCE['API_VERSION'])):
         """
         Call the Salesforce API to do SOQL queries.
         """
@@ -259,7 +260,7 @@ class SalesforceConnection(object):
 
         print ("----Creating contact...")
         contact = self._format_contact(form=form)
-        path = '/services/data/v35.0/sobjects/Contact'
+        path = '/services/data/v{}/sobjects/Contact'.format(SALESFORCE['API_VERSION'])
         response = self.post(path=path, data=contact)
         contact_id = response['id']
         contact = self._get_contact(contact_id)
@@ -331,7 +332,7 @@ def upsert_customer(customer=None, form=None):
     if not created:
         print ("----Exists, updating")
 
-        path = '/services/data/v35.0/sobjects/Contact/{}'.format(contact['Id'])
+        path = '/services/data/v{}/sobjects/Contact/{}'.format(SALESFORCE['API_VERSION'], contact['Id'])
         url = '{}{}'.format(sf.instance_url, path)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         check_response(response=resp, expected_status=204)
@@ -750,7 +751,7 @@ def add_opportunity(form=None, customer=None, extra_values=None, charge=None):
     _, contact = sf.get_or_create_contact(form)
     opportunity = _format_opportunity(contact=contact, form=form,
             customer=customer, extra_values=extra_values)
-    path = '/services/data/v35.0/sobjects/Opportunity'
+    path = '/services/data/v{}/sobjects/Opportunity'.format(SALESFORCE['API_VERSION'])
     response = sf.post(path=path, data=opportunity)
     send_multiple_account_warning()
 
@@ -894,7 +895,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
             'Flask_Transaction_ID__c': form['flask_id'],
             'Stripe_Customer_Id__c': customer.id
         }
-        path = '/services/data/v35.0/sobjects/Opportunity/{}'.format(form['opp_id'])
+        path = '/services/data/v{}/sobjects/Opportunity/{}'.format(SALESFORCE['API_VERSION'], form['opp_id'])
         url = '{}{}'.format(sf.instance_url, path)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         check_response(response=resp, expected_status=204)
@@ -999,7 +1000,7 @@ def _find_recurring(recurring_id=None, customer=None, form=None):
             'Flask_Transaction_ID__c': form['flask_id'],
             'Stripe_Customer_Id__c': customer.id
         }
-        path = '/services/data/v35.0/sobjects/npe03__Recurring_Donation__c/{}'.format(form['recurring_id'])
+        path = '/services/data/v{}/sobjects/npe03__Recurring_Donation__c/{}'.format(SALESFORCE['API_VERSION'], form['recurring_id'])
         url = '{}{}'.format(sf.instance_url, path)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
         check_response(response=resp, expected_status=204)
@@ -1373,7 +1374,7 @@ def add_recurring_donation(form=None, customer=None, extra_values=None):
     _, contact = sf.get_or_create_contact(form)
     recurring_donation = _format_recurring_donation(contact=contact,
             form=form, customer=customer, extra_values=extra_values)
-    path = '/services/data/v35.0/sobjects/npe03__Recurring_Donation__c'
+    path = '/services/data/v{}/sobjects/npe03__Recurring_Donation__c'.format(SALESFORCE['API_VERSION'])
     response = sf.post(path=path, data=recurring_donation)
     send_multiple_account_warning()
 
@@ -1499,7 +1500,7 @@ def add_blast_subscription(form=None, customer=None, charge=None):
     _, contact = sf.get_or_create_contact(form)
     recurring_donation = _format_blast_rdo(contact=contact,
             form=form, customer=customer)
-    path = '/services/data/v35.0/sobjects/npe03__Recurring_Donation__c'
+    path = '/services/data/v{}/sobjects/npe03__Recurring_Donation__c'.format(SALESFORCE['API_VERSION'])
     response = sf.post(path=path, data=recurring_donation)
     send_multiple_account_warning()
 

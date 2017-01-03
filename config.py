@@ -65,7 +65,8 @@ SALESFORCE = {
     "CLIENT_SECRET": os.getenv('SALESFORCE_CLIENT_SECRET'),
     "USERNAME": os.getenv('SALESFORCE_USERNAME'),
     "PASSWORD": os.getenv('SALESFORCE_PASSWORD'),
-    "HOST": os.getenv("SALESFORCE_HOST")
+    "HOST": os.getenv("SALESFORCE_HOST"),
+    "API_VERSION": os.getenv("SALESFORCE_API_VERSION")
 }
 COMBINED_EMAIL_FIELD = os.getenv('COMBINED_EMAIL_FIELD', 'Consolidated_EMail__c')
 FORM_EMAIL_FIELD = os.getenv('FORM_EMAIL_FIELD', 'email')
