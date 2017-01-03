@@ -911,7 +911,7 @@ def _find_campaign(campaign_id=None):
     """
 
     query = """
-            SELECT Id, On_Sale__c, Sold_out__c, Not_on_sale_copy__c, Sold_out_copy__c
+            SELECT Id, Name, ExpectedRevenue, On_Sale__c, Sold_out__c, Not_on_sale_copy__c, Sold_out_copy__c
             FROM Campaign
             WHERE Id='{0}'
             """.format(campaign_id)
