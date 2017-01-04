@@ -914,6 +914,10 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
             'Flask_Transaction_ID__c': form['flask_id'],
             'Stripe_Customer_Id__c': customer.id
         }
+
+        if 'amount' in form:
+            update['amount'] = _format_amount(form['amount'])
+
         path = '/services/data/v{}/sobjects/Opportunity/{}'.format(SALESFORCE['API_VERSION'], form['opp_id'])
         url = '{}{}'.format(sf.instance_url, path)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
@@ -1068,6 +1072,10 @@ def _find_recurring(recurring_id=None, customer=None, form=None):
             'Flask_Transaction_ID__c': form['flask_id'],
             'Stripe_Customer_Id__c': customer.id
         }
+
+        if 'amount' in form:
+            update['npe03__Amount__c'] = _format_amount(form['amount'])
+        
         path = '/services/data/v{}/sobjects/npe03__Recurring_Donation__c/{}'.format(SALESFORCE['API_VERSION'], form['recurring_id'])
         url = '{}{}'.format(sf.instance_url, path)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
