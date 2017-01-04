@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 
 from flask import Flask, render_template, request, session, jsonify, json, send_from_directory
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 
 from core import db
