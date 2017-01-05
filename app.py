@@ -333,20 +333,21 @@ def campaign_report():
                 goal = campaign['ExpectedRevenue']
 
     report_result = get_report(report_id)
-    if 'report' in report_result:
-        report = report_result['report']
-    
-    if report != []:
-        success = True
 
+    if report_result['report']['attributes']['status'] == 'Success':
+        report = report_result['report']
         if 'factMap' in report:
             for key,value in report['factMap'].items():
                 if value['aggregates']:
+                    success = True
                     value_opportunities = value['aggregates'][1]['value']
                     break
+                else:
+                    success = False
+                    value_opportunities = ''
         else:
-            value_opportunities = 'no fact map'
-
+            success = False
+            value_opportunities = ''
     else:
         success = False
         value_opportunities = ''
