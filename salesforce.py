@@ -784,12 +784,12 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         return response
 
 
-def get_report(report_id=None):
+def get_report(report_id=None, async=True):
         """
         Return a report. Return an error if it does not exist, but try to log stuff.
         """
 
-        result = _find_report(report_id=report_id)
+        result = _find_report(report_id=report_id, async=async)
         report = result
         response = {'report':report, 'id': report_id, 'success': True, 'errors' : []}
 
@@ -934,7 +934,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
 
 
 
-def _find_report(report_id=None):
+def _find_report(report_id=None, async=True):
 
     sf = SalesforceConnection()
 
@@ -942,7 +942,7 @@ def _find_report(report_id=None):
 
     report_url = 'analytics/reports/{}/instances'.format(report_id);
     
-    if not db.exists(report_url):
+    if not db.exists(report_url) or async == False:
         instance = {}
 
         path = '/services/data/v{}/analytics/reports/{}/?includeDetails=true'.format(SALESFORCE['API_VERSION'], report_id)

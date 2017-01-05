@@ -332,7 +332,7 @@ def campaign_report():
             if campaign != []:
                 goal = campaign['ExpectedRevenue']
 
-    report_result = get_report(report_id)
+    report_result = get_report(report_id, True)
 
     if report_result['report']['attributes']['status'] == 'Success':
         report = report_result['report']
