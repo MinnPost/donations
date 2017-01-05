@@ -325,7 +325,7 @@ def campaign_report():
     if request.args.get('goal'):
         goal = request.args.get('goal')
     else:
-        goal = ''
+        goal = 0
         campaign_result = get_campaign(campaign_id)
         if 'campaign' in campaign_result:
             campaign = campaign_result['campaign']
@@ -344,13 +344,16 @@ def campaign_report():
                     break
                 else:
                     success = False
-                    value_opportunities = ''
+                    value_opportunities = 0
         else:
             success = False
-            value_opportunities = ''
+            value_opportunities = 0
     else:
         success = False
-        value_opportunities = ''
+        value_opportunities = 0
+
+    value_opportunities = float(value_opportunities)
+    goal = float(goal)
 
     ret_data = {'success': success, 'value_opportunities': value_opportunities, 'goal': goal, 'percent_complete': '{percent:.2%}'.format(percent=value_opportunities/goal).rstrip('%') }
     return jsonify(ret_data)
