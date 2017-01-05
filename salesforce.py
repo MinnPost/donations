@@ -24,6 +24,7 @@ from config import FORM_EMAIL_FIELD
 from config import DEFAULT_CAMPAIGN_ONETIME
 from config import DEFAULT_CAMPAIGN_RECURRING
 from config import ROOT_URL
+from config import REPORT_RUN_FREQUENCY
 
 from config import CELERY_BROKER_URL
 from config import CELERY_RESULT_BACKEND
@@ -32,6 +33,8 @@ from emails import send_email
 from check_response import check_response
 
 zone = timezone(TIMEZONE)
+
+ttl = REPORT_RUN_FREQUENCY # how often to run the salesforce report anew
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
