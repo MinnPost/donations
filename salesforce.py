@@ -945,6 +945,12 @@ def _find_report(report_id=None):
     if not db.exists(report_url):
         instance = {}
 
+        path = '/services/data/v{}/analytics/reports/{}/?includeDetails=true'.format(SALESFORCE['API_VERSION'], report_id)
+        url = '{}{}'.format(sf.instance_url, path)
+        r = requests.get(url, headers=sf.headers)
+        check_response(r)
+        result = json.loads(r.text)
+
                 instance['last_updated'] = int(time.time())
                 instance['ttl'] = ttl
                 db.hmset(report_url, instance)
