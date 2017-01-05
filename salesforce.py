@@ -962,14 +962,17 @@ def _find_report(report_id=None):
             check_response(r)
             result = json.loads(r.text)
             
+            if 'id' in result:
                 instance['last_updated'] = int(time.time())
                 instance['ttl'] = ttl
+                instance['id'] = result['id']
                 db.hmset(report_url, instance)
                 db.expire(report_url, ttl)
 
     else:
         instance = db.hgetall(report_url)
 
+    path = '/services/data/v{}/{}/{}'.format(SALESFORCE['API_VERSION'], report_url, instance['id'])
     url = '{}{}'.format(sf.instance_url, path)
 
     r = requests.get(url, headers=sf.headers)
