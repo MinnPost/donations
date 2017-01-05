@@ -1,6 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
 import json
+import time
+import redis
 import locale
 from pprint import pprint   # TODO: remove
 
@@ -24,6 +26,7 @@ from config import FORM_EMAIL_FIELD
 from config import DEFAULT_CAMPAIGN_ONETIME
 from config import DEFAULT_CAMPAIGN_RECURRING
 from config import ROOT_URL
+from config import REDIS_URL
 from config import REPORT_RUN_FREQUENCY
 
 from config import CELERY_BROKER_URL
@@ -935,9 +938,28 @@ def _find_report(report_id=None):
 
     sf = SalesforceConnection()
 
+    db = redis.StrictRedis.from_url(REDIS_URL, decode_responses=True)
+
+    report_url = 'analytics/reports/{}/instances'.format(report_id);
+    
+    if not db.exists(report_url):
+        instance = {}
+
+                instance['last_updated'] = int(time.time())
+                instance['ttl'] = ttl
+                db.hmset(report_url, instance)
+                db.expire(report_url, ttl)
+
+    else:
+        instance = db.hgetall(report_url)
+
     url = '{}{}'.format(sf.instance_url, path)
 
     r = requests.get(url, headers=sf.headers)
+    if r.status_code == 404:
+        db.delete(report_url)
+        _find_report(report_id)
+
     check_response(r)
     result = json.loads(r.text)
 
