@@ -951,6 +951,17 @@ def _find_report(report_id=None):
         check_response(r)
         result = json.loads(r.text)
 
+        if 'reportMetadata' in result:
+            path = '/services/data/v{}/{}'.format(SALESFORCE['API_VERSION'], report_url)
+            url = '{}{}'.format(sf.instance_url, path)
+            params = json.dumps(
+                {'reportMetadata': result['reportMetadata']}
+            )
+
+            r = requests.post(url, headers=sf.headers, data=params)
+            check_response(r)
+            result = json.loads(r.text)
+            
                 instance['last_updated'] = int(time.time())
                 instance['ttl'] = ttl
                 db.hmset(report_url, instance)
