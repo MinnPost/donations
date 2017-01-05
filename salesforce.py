@@ -934,46 +934,12 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
 def _find_report(report_id=None):
 
     sf = SalesforceConnection()
-    #/services/data/v38.0/analytics/reports/00OF0000006ZU9eMAG/instances
 
-    path = '/services/data/v{}/analytics/reports/{}/?includeDetails=true'.format(SALESFORCE['API_VERSION'], report_id)
     url = '{}{}'.format(sf.instance_url, path)
 
     r = requests.get(url, headers=sf.headers)
     check_response(r)
     result = json.loads(r.text)
-    #print(result)
-    #report = metadata.text
-    #print(report)
-    #result = result.text.json
-    #result = jsonify(result)
-
-    #if result['factMap']:
-        #print(result['factMap'])
-    #    for key,value in result['factMap'].items():
-            #print('array here')
-            #print(array)
-            #break
-    #        if value['aggregates']:
-    #            summary = value['aggregates'][1]['value']
-    #            print('value is {}'.format(summary))
-    #            break
-    #    print('run the report again')
-    #else:
-    #    print('no fact map')
-    #    print(result.factMap)
-
-    #$params = array('reportMetadata' => $metadata['data']['reportMetadata']);
-
-    #$report = $sfapi->analytics_api(
-    #    'reports',
-    #    $id,
-    #    'instances',
-    #    $params,
-    #    'POST'
-    #);
-
-    #$instance_id = $report['data']['id'];
 
     return result
 
