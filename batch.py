@@ -49,14 +49,14 @@ class Log(object):
 
 
 def process_charges(query, log):
-    print('start the process charges')
-    print(query)
+    #print('start the process charges')
+    #print(query)
     sf = SalesforceConnection()
     print('sf connected')
     response = sf.query(query)
     # TODO: check response code
-    print('we have a respoonse')
-    print(response)
+    #print('we have a respoonse')
+    #print(response)
     log.it('Found {} opportunities available to process.'.format(
         len(response)))
 
