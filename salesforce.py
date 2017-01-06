@@ -954,7 +954,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
         check_response(r)
         result = json.loads(r.text)
 
-        if 'reportMetadata' in result:
+        if 'reportMetadata' in result and result['reportMetadata'] != None:
             path = '/services/data/v{}/{}'.format(SALESFORCE['API_VERSION'], report_url)
             url = '{}{}'.format(sf.instance_url, path)
             params = json.dumps(
@@ -975,7 +975,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
                 print('---Rerun report ID {} because there was no instance ID in the result reportMetadata ---'.format(report_id))
                 _find_report(report_id, True)
         else:
-            print('---Rerun report ID {} because there was no reportMetadata in the result ---'.format(report_id))
+            print('---Rerun report ID {} because there was no reportMetadata in the result or its value is None ---'.format(report_id))
             _find_report(report_id, True)
 
     else:
