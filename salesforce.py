@@ -971,6 +971,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
                 instance['id'] = result['id']
                 db.hmset(report_url, instance)
                 db.expire(report_url, ttl)
+                print('---Report {} has an instance id and it is {}. cache it. ---'.format(report_id, instance['id']))
             else:
                 print('---Rerun report ID {} because there was no instance ID in the result reportMetadata ---'.format(report_id))
                 _find_report(report_id, True)
@@ -981,6 +982,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
 
     else:
         instance = db.hgetall(report_url)
+        print('load cached instance. id is {}'.format(instance['id']))
 
     path = '/services/data/v{}/{}/{}'.format(SALESFORCE['API_VERSION'], report_url, instance['id'])
     url = '{}{}'.format(sf.instance_url, path)
