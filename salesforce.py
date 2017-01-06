@@ -976,6 +976,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
                 _find_report(report_id, True)
         else:
             print('---Rerun report ID {} because there was no reportMetadata in the result or its value is None ---'.format(report_id))
+            print(r.text)
             _find_report(report_id, True)
 
     else:
