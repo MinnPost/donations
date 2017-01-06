@@ -346,9 +346,11 @@ def campaign_report():
                     success = False
                     value_opportunities = 0
         else:
+            print('---No factMap in report {} ---'.format(report_id))
             success = False
             value_opportunities = 0
     else:
+        print('---Status for report {} was not success ---'.format(report_id))
         success = False
         value_opportunities = 0
 

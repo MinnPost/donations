@@ -934,13 +934,16 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
 
 
 
-def _find_report(report_id=None, async=True):
+def _find_report(report_id=None, async=True, clear_cache=False):
 
     sf = SalesforceConnection()
 
     db = redis.StrictRedis.from_url(REDIS_URL, decode_responses=True)
 
     report_url = 'analytics/reports/{}/instances'.format(report_id);
+
+    if clear_cache == True:
+        db.delete(report_url)
     
     if not db.exists(report_url) or async == False:
         instance = {}
@@ -968,6 +971,12 @@ def _find_report(report_id=None, async=True):
                 instance['id'] = result['id']
                 db.hmset(report_url, instance)
                 db.expire(report_url, ttl)
+            else:
+                print('---Rerun report ID {} because there was no instance ID in the result reportMetadata ---'.format(report_id))
+                _find_report(report_id, True)
+        else:
+            print('---Rerun report ID {} because there was no reportMetadata in the result ---'.format(report_id))
+            _find_report(report_id, True)
 
     else:
         instance = db.hgetall(report_url)
@@ -978,7 +987,8 @@ def _find_report(report_id=None, async=True):
     r = requests.get(url, headers=sf.headers)
     if r.status_code == 404:
         db.delete(report_url)
-        _find_report(report_id)
+        print('---Rerun report ID {} and instance ID {} because it had a 404 ---'.format(report_id, instance['id']))
+        _find_report(report_id, True, True)
 
     check_response(r)
     result = json.loads(r.text)
