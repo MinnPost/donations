@@ -350,6 +350,9 @@ def campaign_report():
             print(report)
             success = False
             value_opportunities = 0
+    elif report_result['report']['attributes']['status'] == 'Running':
+        success = 'running'
+        value_opportunities = 0
     else:
         print('---Status for report {} was not success. ---'.format(report_id))
         print(report_result)
