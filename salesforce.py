@@ -28,6 +28,7 @@ from config import DEFAULT_CAMPAIGN_RECURRING
 from config import ROOT_URL
 from config import REDIS_URL
 from config import REPORT_RUN_FREQUENCY
+from config import REPORT_INSTANCE_FALLBACK
 
 from config import CELERY_BROKER_URL
 from config import CELERY_RESULT_BACKEND
@@ -995,6 +996,18 @@ def _find_report(report_id=None, async=True, clear_cache=False):
 
     check_response(r)
     result = json.loads(r.text)
+    if result['attributes']['status'] == 'Success':
+        print('success. cache the result')
+        cached_report = {}
+        cached_report['last_updated'] = int(time.time())
+        cached_report['ttl'] = REPORT_INSTANCE_FALLBACK
+        cached_report['json'] = result
+        db.hmset(report_id + '_' + instance['id'], cached_report)
+        db.expire(report_id + '_' + instance['id'], REPORT_INSTANCE_FALLBACK)
+    else:
+        if db.exists(report_id + '_' + instance['id']):
+            result = db.hgetall(report_id + '_' + instance['id'])
+            print('return the cached instance because the current call is still running')
 
     return result
 
