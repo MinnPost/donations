@@ -1422,6 +1422,12 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     else:
         installment_period = ''
 
+    if 'Id' not in contact:
+        print('Error: no Id is in the contact. The email for this donation is {}.'.format(email))
+        print(contact)
+    if contact == None:
+        print('Error: contact for recurring donation is None. Email is {}'.format(email))
+
     recurring_donation = {
         'Name': '{0} {1} {2} {3}'.format(
             form['first_name'],
