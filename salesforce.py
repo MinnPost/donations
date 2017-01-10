@@ -1005,6 +1005,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
         db.hmset(report_id + '_' + instance['id'], cached_report)
         db.expire(report_id + '_' + instance['id'], REPORT_INSTANCE_FALLBACK)
     else:
+        error_log('check db for report with id {} and instance id {}'.format(report_id, instance['id']))
         if db.exists(report_id + '_' + instance['id']):
             result = db.hgetall(report_id + '_' + instance['id'])
             print('return the cached instance because the current call is still running')
