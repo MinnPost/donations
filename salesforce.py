@@ -972,18 +972,18 @@ def _find_report(report_id=None, async=True, clear_cache=False):
                 instance['id'] = result['id']
                 db.hmset(report_url, instance)
                 db.expire(report_url, ttl)
-                print('---Report {} has an instance id and it is {}. cache it. ---'.format(report_id, instance['id']))
+                #print('---Report {} has an instance id and it is {}. cache it. ---'.format(report_id, instance['id']))
             else:
-                print('---Rerun report ID {} because there was no instance ID in the result reportMetadata ---'.format(report_id))
+                #print('---Rerun report ID {} because there was no instance ID in the result reportMetadata ---'.format(report_id))
                 _find_report(report_id, True)
         else:
-            print('---Rerun report ID {} because there was no reportMetadata in the result or its value is None ---'.format(report_id))
-            print(r.text)
+            #print('---Rerun report ID {} because there was no reportMetadata in the result or its value is None ---'.format(report_id))
+            #print(r.text)
             _find_report(report_id, True)
 
     else:
         instance = db.hgetall(report_url)
-        print('load cached instance. id is {}'.format(instance['id']))
+        #print('load cached instance. id is {}'.format(instance['id']))
 
     path = '/services/data/v{}/{}/{}'.format(SALESFORCE['API_VERSION'], report_url, instance['id'])
     url = '{}{}'.format(sf.instance_url, path)
@@ -997,7 +997,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
     check_response(r)
     result = json.loads(r.text)
     if result['attributes']['status'] == 'Success':
-        print('success. cache the result')
+        #print('success. cache the result')
         cached_report = {}
         cached_report['last_updated'] = int(time.time())
         cached_report['ttl'] = REPORT_INSTANCE_FALLBACK
@@ -1005,11 +1005,12 @@ def _find_report(report_id=None, async=True, clear_cache=False):
         db.hmset(report_id + '_instance_fallback', cached_report)
         db.expire(report_id + '_instance_fallback', REPORT_INSTANCE_FALLBACK)
     else:
-        print('check db for report fallback with id {}'.format(report_id))
+        #print('check db for report fallback with id {}'.format(report_id))
         if db.exists(report_id + '_instance_fallback'):
             cached_result = db.hgetall(report_id + '_instance_fallback')
             result = cached_result['json']
             print('return the cached instance because the current call is still running')
+            print(cached_result)
 
     return result
 
