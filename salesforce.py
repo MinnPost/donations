@@ -1007,7 +1007,8 @@ def _find_report(report_id=None, async=True, clear_cache=False):
     else:
         print('check db for report fallback with id {}'.format(report_id))
         if db.exists(report_id + '_instance_fallback'):
-            result = db.hgetall(report_id + '_instance_fallback')
+            cached_result = db.hgetall(report_id + '_instance_fallback')
+            result = cached_result['json']
             print('return the cached instance because the current call is still running')
 
     return result
