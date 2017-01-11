@@ -990,7 +990,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
 
     r = requests.get(url, headers=sf.headers)
     if r.status_code == 404:
-        print('---Rerun report ID {} and instance ID {} because it had a 404 ---'.format(report_id, instance['id']))
+        #print('---Rerun report ID {} and instance ID {} because it had a 404 ---'.format(report_id, instance['id']))
         db.delete(report_url)
         _find_report(report_id, True, True)
 
