@@ -1002,12 +1002,12 @@ def _find_report(report_id=None, async=True, clear_cache=False):
         cached_report['last_updated'] = int(time.time())
         cached_report['ttl'] = REPORT_INSTANCE_FALLBACK
         cached_report['json'] = result
-        db.hmset(report_id + '_' + instance['id'], cached_report)
-        db.expire(report_id + '_' + instance['id'], REPORT_INSTANCE_FALLBACK)
+        db.hmset(report_id + '_instance_fallback', cached_report)
+        db.expire(report_id + '_instance_fallback', REPORT_INSTANCE_FALLBACK)
     else:
-        print('check db for report with id {} and instance id {}'.format(report_id, instance['id']))
-        if db.exists(report_id + '_' + instance['id']):
-            result = db.hgetall(report_id + '_' + instance['id'])
+        print('check db for report fallback with id {}'.format(report_id))
+        if db.exists(report_id + '_instance_fallback'):
+            result = db.hgetall(report_id + '_instance_fallback')
             print('return the cached instance because the current call is still running')
 
     return result
