@@ -1001,7 +1001,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
         cached_report = {}
         cached_report['last_updated'] = int(time.time())
         cached_report['ttl'] = REPORT_INSTANCE_FALLBACK
-        cached_report['json'] = result
+        cached_report['json'] = r.text
         db.hmset(report_id + '_instance_fallback', cached_report)
         db.expire(report_id + '_instance_fallback', REPORT_INSTANCE_FALLBACK)
     else:
@@ -1010,7 +1010,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
             cached_result = db.hgetall(report_id + '_instance_fallback')
             result = cached_result['json']
             print('return the cached instance because the current call is still running')
-            print(cached_result)
+            print(json.loads(cached_result['json']))
 
     return result
 
