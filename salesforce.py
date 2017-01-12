@@ -1010,7 +1010,7 @@ def _find_report(report_id=None, async=True, clear_cache=False):
             cached_result = db.hgetall(report_id + '_instance_fallback')
             result = cached_result['json']
             print('return the cached instance because the current call is still running')
-            print(json.loads(cached_result['json']))
+            result = json.loads(cached_result['json'])
 
     return result
 
