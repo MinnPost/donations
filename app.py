@@ -332,7 +332,16 @@ def campaign_report():
             if campaign != []:
                 goal = campaign['ExpectedRevenue']
 
-    report_result = get_report(report_id, True)
+    if request.args.get('clear_cache'):
+        clear_cache = request.args.get('clear_cache')
+        if clear_cache == 'false':
+            clear_cache = False
+        else:
+            clear_cache = True
+    else:
+        clear_cache = False
+
+    report_result = get_report(report_id, True, clear_cache)
 
     if report_result['report']['attributes']['status'] == 'Success':
         report = report_result['report']

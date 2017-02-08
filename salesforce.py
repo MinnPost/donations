@@ -785,12 +785,12 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         return response
 
 
-def get_report(report_id=None, async=True):
+def get_report(report_id=None, async=True, clear_cache=False):
         """
         Return a report. Return an error if it does not exist, but try to log stuff.
         """
 
-        result = _find_report(report_id=report_id, async=async)
+        result = _find_report(report_id=report_id, async=async, clear_cache=clear_cache)
         report = result
         response = {'report':report, 'id': report_id, 'success': True, 'errors' : []}
 
