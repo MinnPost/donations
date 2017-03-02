@@ -28,7 +28,9 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 CELERY_ALWAYS_EAGER = bool_env('CELERY_ALWAYS_EAGER')
 # for texas this is deprecated:
 CHARGE_MINUTES_FREQUENCY = int(os.getenv('CHARGE_MINUTES_FREQUENCY', 1440))
+# more of our stuff
 ACH_MINUTES_FREQUENCY = int(os.getenv('ACH_MINUTES_FREQUENCY', 1440))
+SHOW_ACH = os.getenv('SHOW_UPSELL', False)
 CELERYBEAT_SCHEDULE = {
         'every-five-minutes': {
             'task': 'batch.charge_cards',

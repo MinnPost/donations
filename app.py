@@ -52,6 +52,7 @@ from config import SEPARATE_SWAG_MINIMUM_LEVEL
 from config import MAIN_SWAG_MINIMUM_LEVEL
 from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
+from config import SHOW_ACH
 from salesforce import add_customer_and_charge
 from salesforce import get_opportunity
 from salesforce import get_recurring
@@ -138,8 +139,7 @@ def minnpost_form():
         else:
             show_ach = False
     else:
-        show_ach = False
-    #show_ach = True
+        show_ach = SHOW_ACH
     frequency = request.args.get('frequency')
     if frequency is None:
         frequency = 'one-time'
@@ -212,7 +212,7 @@ def minnpost_event_form():
         else:
             show_ach = False
     else:
-        show_ach = False
+        show_ach = SHOW_ACH
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
@@ -835,7 +835,7 @@ def minnroast_pledge_form():
         else:
             show_ach = False
     else:
-        show_ach = False
+        show_ach = SHOW_ACH
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
