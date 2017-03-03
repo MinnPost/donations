@@ -975,10 +975,12 @@ def _find_report(report_id=None, async=True, clear_cache=False):
                 #print('---Report {} has an instance id and it is {}. cache it. ---'.format(report_id, instance['id']))
             else:
                 #print('---Rerun report ID {} because there was no instance ID in the result reportMetadata ---'.format(report_id))
+                print('run the report again. no id.')
                 _find_report(report_id, True)
         else:
             #print('---Rerun report ID {} because there was no reportMetadata in the result or its value is None ---'.format(report_id))
             #print(r.text)
+            print('run the report again. no metadata')
             _find_report(report_id, True)
 
     else:
@@ -1011,6 +1013,8 @@ def _find_report(report_id=None, async=True, clear_cache=False):
             result = cached_result['json']
             print('return the cached instance because the current call is still running')
             result = json.loads(cached_result['json'])
+        else:
+            print('tried to return a cached instance, but it no longer exists')
 
     return result
 
