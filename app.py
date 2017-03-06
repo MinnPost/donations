@@ -348,26 +348,16 @@ def campaign_report():
         if 'factMap' in report:
             for key,value in report['factMap'].items():
                 if value['aggregates']:
-                    print('aggregates exists. print below')
-                    print(value['aggregates'])
-                    print('done with aggregates. continue.')
                     success = True
                     value_opportunities = value['aggregates'][1]['value']
-                    print('finish. value opps below')
-                    print(value_opportunities)
-                    print('end')
                     break
                 else:
                     success = False
                     value_opportunities = 0
         else:
-            print('---No factMap in report {} ---'.format(report_id))
-            print(report)
             success = False
             value_opportunities = 0
     else:
-        print('---Status for report {} was not success. ---'.format(report_id))
-        print(report_result)
         success = False
         value_opportunities = 0
 
