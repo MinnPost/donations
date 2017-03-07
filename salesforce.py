@@ -829,10 +829,10 @@ def get_campaign(campaign_id=None):
     """
 
     result = _find_campaign(campaign_id=campaign_id)
-    campaign = result[0]
     print('result below')
     print(result)
     print('end result')
+    campaign = result[0]
     response = {'campaign':campaign, 'id': campaign_id, 'success': True, 'errors' : []}
 
     # if the response is empty then there is no campaign for this ID
