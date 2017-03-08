@@ -3,6 +3,10 @@ def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_am
     level = ''
     levelnum = ''
     levelint = ''
+    nextlevel = ''
+    nextlevelnum = ''
+    nextlevelint = ''
+    nextlevelmonthlystart = ''
 
     if prior_year_amount != None or coming_year_amount != None or annual_recurring_amount != None:
         if frequency is 'one-time':
@@ -40,10 +44,6 @@ def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_am
         level = 'platinum'
         levelnum = 'four'
         levelint = 4
-        nextlevel = ''
-        nextlevelnum = ''
-        nextlevelint = ''
-        nextlevelmonthlystart = ''
 
     leveldata = {'level': level, 'levelnum': levelnum, 'levelint': levelint, 'nextlevel' : nextlevel, 'nextlevelnum' : nextlevelnum, 'nextlevelint' : nextlevelint, 'nextlevelmonthlystart' : nextlevelmonthlystart}
     return leveldata
