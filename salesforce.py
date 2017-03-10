@@ -829,15 +829,15 @@ def get_campaign(campaign_id=None):
     """
 
     result = _find_campaign(campaign_id=campaign_id)
-    print('result below')
-    print(result)
-    print('end result')
-    campaign = result[0]
-    response = {'campaign':campaign, 'id': campaign_id, 'success': True, 'errors' : []}
+    if result != []:
+        campaign = result[0]
+        response = {'campaign':campaign, 'id': campaign_id, 'success': True, 'errors' : []}
+    else:
+        response = None
 
     # if the response is empty then there is no campaign for this ID
     if response is None:
-        print('Error: this campaign does not exist')
+        print('Error: this campaign, {}, does not exist'.format(campaign_id))
         response['errors'] = 'We were unable to find this event.'
         response['success'] = False
 
