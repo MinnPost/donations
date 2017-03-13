@@ -316,6 +316,8 @@ def campaign_report():
 
     if request.args.get('report_id'):
         report_id = request.args.get('report_id')
+    else:
+        report_id = ''
 
     if request.args.get('campaign_id'):
         campaign_id = request.args.get('campaign_id')
@@ -342,19 +344,23 @@ def campaign_report():
     else:
         clear_cache = False
 
-    report_result = get_report(report_id, True, clear_cache)
+    if report_id != '':
+        report_result = get_report(report_id, True, clear_cache)
 
-    if report_result['report']['attributes']['status'] == 'Success':
-        report = report_result['report']
-        if 'factMap' in report:
-            for key,value in report['factMap'].items():
-                if value['aggregates']:
-                    success = True
-                    value_opportunities = value['aggregates'][1]['value']
-                    break
-                else:
-                    success = False
-                    value_opportunities = 0
+        if report_result['report']['attributes']['status'] == 'Success':
+            report = report_result['report']
+            if 'factMap' in report:
+                for key,value in report['factMap'].items():
+                    if value['aggregates']:
+                        success = True
+                        value_opportunities = value['aggregates'][1]['value']
+                        break
+                    else:
+                        success = False
+                        value_opportunities = 0
+            else:
+                success = False
+                value_opportunities = 0
         else:
             success = False
             value_opportunities = 0
