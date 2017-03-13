@@ -15,6 +15,7 @@ import requests
 from pytz import timezone
 
 from config import SALESFORCE
+from config import SALESFORCE_CONTACT_ADVERTISING_EMAIL
 from config import DONATION_RECORDTYPEID
 from config import TIMEZONE
 from config import ENABLE_SLACK
@@ -296,6 +297,9 @@ class SalesforceConnection(object):
 
         created = False
         email = form[FORM_EMAIL_FIELD]
+
+        if form['opp_subtype'] == 'Sales: Advertising':
+            email = SALESFORCE_CONTACT_ADVERTISING_EMAIL
 
         response = self.find_contact(email=email)
 
