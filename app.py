@@ -326,11 +326,12 @@ def campaign_report():
         goal = request.args.get('goal')
     else:
         goal = 0
-        campaign_result = get_campaign(campaign_id)
-        if 'campaign' in campaign_result:
-            campaign = campaign_result['campaign']
-            if campaign != []:
-                goal = campaign['ExpectedRevenue']
+        if campaign_id != '':
+            campaign_result = get_campaign(campaign_id)
+            if 'campaign' in campaign_result:
+                campaign = campaign_result['campaign']
+                if campaign != []:
+                    goal = campaign['ExpectedRevenue']
 
     if request.args.get('clear_cache'):
         clear_cache = request.args.get('clear_cache')
