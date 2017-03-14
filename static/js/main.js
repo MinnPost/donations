@@ -1771,7 +1771,7 @@ global.Payment = Payment;
     }, // creditCardFields
 
     achFields: function(element, options) {
-      if (options.plaid_env != '' && options.key != '') {
+      if (options.plaid_env != '' && options.key != '' && typeof Plaid !== 'undefined') {
         var linkHandler = Plaid.create({
           selectAccount: true,
           env: options.plaid_env,
@@ -2127,7 +2127,6 @@ global.Payment = Payment;
         }
 
       });
-      //return false;
     }, // validateAndSubmit
 
     showNewsletterSettings: function(element, options) {
