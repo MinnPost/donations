@@ -298,7 +298,7 @@ class SalesforceConnection(object):
         created = False
         email = form[FORM_EMAIL_FIELD]
 
-        if form['opp_subtype'] == 'Sales: Advertising':
+        if form['opp_subtype'] != '' and form['opp_subtype'] == 'Sales: Advertising':
             email = SALESFORCE_CONTACT_ADVERTISING_EMAIL
 
         response = self.find_contact(email=email)
