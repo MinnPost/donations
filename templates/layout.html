@@ -107,7 +107,7 @@
   <!--<![endif]-->
 
   <script src="https://js.stripe.com/v2/"></script>
-  {% if show_ach == True %}<script src="https://cdn.plaid.com/link/stable/link-initialize.js"></script>{% endif %}
+  {% if show_ach == 'True' %}<script src="https://cdn.plaid.com/link/stable/link-initialize.js"></script>{% endif %}
   <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>
 
   <script>
@@ -115,7 +115,7 @@
   $(document).ready(function() {
     // call plugin and pass options if need be
     $('.support--forms').minnpost_giving({
-      'stripe_publishable_key' : '{{key}}',{% if show_ach == True %}
+      'stripe_publishable_key' : '{{key}}',{% if show_ach == 'True' %}
       'plaid_env' : '{{plaid_env}}',
       'plaid_public_key' : '{{plaid_public_key}}',{% endif %}
     });
