@@ -811,14 +811,14 @@ def get_report(report_id=None, async=True, clear_cache=False):
 
 def get_recurring(recurring_id=None, customer=None, form=None, extra_values=None):
         """
-        Return an opportunity. Return an error if it does not exist, but try to log stuff.
+        Return a recurring donation. Return an error if it does not exist, but try to log stuff.
         """
 
         result = _find_recurring(recurring_id=recurring_id, customer=customer, form=form) # form is if we are updating it also
         recurring = result[0]
         response = {'recurring':recurring, 'id': recurring_id, 'success': True, 'errors' : []}
 
-        # if the response is empty then there is no opportunity for this ID
+        # if the response is empty then there is no recurring donation for this ID
         if response is None:
             print('Error: this recurring donation does not exist')
             response['errors'] = 'We were unable to find your recurring donation.'
