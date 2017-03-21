@@ -54,6 +54,7 @@ from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
 from config import SHOW_ACH
 from salesforce import add_customer_and_charge
+from salesforce import update_account
 from salesforce import get_opportunity
 from salesforce import get_recurring
 from salesforce import get_campaign
@@ -1348,6 +1349,8 @@ def charge_ajax():
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
         print('Done with contact and opportunity {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
+        update_account.delay(form=request.form, account{'level'=level})
+        print('updated the account so it has level {}'.format(level))
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
         #body = transaction.id
         #return jsonify(body)

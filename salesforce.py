@@ -352,6 +352,36 @@ def upsert_customer(customer=None, form=None):
     return True
 
 
+# update account in salesforce
+def update_account(form=None, account=None):
+    """
+    Updates the user's account in Salesforce
+    """
+
+    if account is None:
+        raise Exception("Value for 'account' must be specified.")
+    if form is None:
+        raise Exception("Value for 'form' must be specified.")
+
+    update = {'Membership_level_Manual_override__c': account.level}
+    print('account level is {}'.format(account.level))
+    updated_request = update.copy()
+    updated_request.update(form.to_dict())
+
+    sf = SalesforceConnection()
+    created, contact = sf.get_or_create_contact(updated_request)
+
+    if not created:
+        print ("----Exists, updating")
+
+        path = '/services/data/v{}/sobjects/Account/{}'.format(SALESFORCE['API_VERSION'], contact['AccountId'])
+        url = '{}{}'.format(sf.instance_url, path)
+        resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+        check_response(response=resp, expected_status=204)
+
+    return True
+
+
 def _format_opportunity(contact=None, form=None, customer=None, extra_values=None):
     """
     Format an opportunity for insertion.
