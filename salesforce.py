@@ -365,6 +365,7 @@ def update_account(form=None, account=None):
         raise Exception("Value for 'form' must be specified.")
 
     level = account.get('level', '--None--')
+    levelint = account.get('levelint' 0)
 
     if level is not '--None--':
         tomorrow = datetime.now() + timedelta(days=1)
@@ -377,7 +378,7 @@ def update_account(form=None, account=None):
         sf = SalesforceConnection()
         created, contact = sf.get_or_create_contact(updated_request)
 
-        if not created:
+        if not created and levelint > int(contact['Membership_level_number__c']):
             print ("----Account Exists, updating")
 
             path = '/services/data/v{}/sobjects/Account/{}'.format(SALESFORCE['API_VERSION'], contact['AccountId'])
