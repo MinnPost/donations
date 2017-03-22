@@ -367,7 +367,11 @@ def update_account(form=None, account=None):
     level = account.get('level', '--None--')
 
     if level is not '--None--':
-        update = {'Membership_level_Manual_override__c': level}
+        tomorrow = datetime.now(tz=zone) + datetime.timedelta(days=1)
+        tomorrow = tomorrow.strftime('%Y-%m-%d')
+        print('tomorrow is {}'.format(tomorrow))
+
+        update = {'Membership_level_Manual_override__c': level, 'Member_level_manual_override_exp_date__c': tomorrow}
         updated_request = update.copy()
         updated_request.update(form.to_dict())
 
