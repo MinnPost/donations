@@ -364,21 +364,24 @@ def update_account(form=None, account=None):
     if form is None:
         raise Exception("Value for 'form' must be specified.")
 
-    update = {'Membership_level_Manual_override__c': account.level}
-    print('account level is {}'.format(account.level))
-    updated_request = update.copy()
-    updated_request.update(form.to_dict())
+    level = account.get('level', '--None--')
 
-    sf = SalesforceConnection()
-    created, contact = sf.get_or_create_contact(updated_request)
+    if level is not '--None--':
+        update = {'Membership_level_Manual_override__c': level}
+        print('account level is {}'.format(level))
+        updated_request = update.copy()
+        updated_request.update(form.to_dict())
 
-    if not created:
-        print ("----Exists, updating")
+        sf = SalesforceConnection()
+        created, contact = sf.get_or_create_contact(updated_request)
 
-        path = '/services/data/v{}/sobjects/Account/{}'.format(SALESFORCE['API_VERSION'], contact['AccountId'])
-        url = '{}{}'.format(sf.instance_url, path)
-        resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
-        check_response(response=resp, expected_status=204)
+        if not created:
+            print ("----Exists, updating")
+
+            path = '/services/data/v{}/sobjects/Account/{}'.format(SALESFORCE['API_VERSION'], contact['AccountId'])
+            url = '{}{}'.format(sf.instance_url, path)
+            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+            check_response(response=resp, expected_status=204)
 
     return True
 
