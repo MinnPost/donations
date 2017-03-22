@@ -367,7 +367,7 @@ def update_account(form=None, account=None):
     level = account.get('level', '--None--')
 
     if level is not '--None--':
-        tomorrow = datetime.date.now() + datetime.timedelta(days=1)
+        tomorrow = datetime.now() + datetime.timedelta(days=1)
         tomorrow = tomorrow.strftime('%Y-%m-%d')
         print('tomorrow is {}'.format(tomorrow))
 
