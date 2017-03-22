@@ -365,7 +365,7 @@ def update_account(form=None, account=None):
         raise Exception("Value for 'form' must be specified.")
 
     level = account.get('level', '--None--')
-    levelint = account.get('levelint' 0)
+    levelint = account.get('levelint', 0)
 
     if level is not '--None--':
         tomorrow = datetime.now() + timedelta(days=1)
