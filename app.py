@@ -1349,8 +1349,8 @@ def charge_ajax():
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
         print('Done with contact and opportunity {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
-        update_account.delay(form=request.form, account = {'level' : 'MinnPost {}'.format(level.level.title())})
-        print('updated the account so it has level {}'.format(level.level.title()))
+        update_account.delay(form=request.form, account = {'level' : 'MinnPost {}'.format(level.get('level', '--None--').title())})
+        print('updated the account so it has level {}'.format(level.get('level', '--None--').title()))
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
         #body = transaction.id
         #return jsonify(body)
