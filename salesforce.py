@@ -281,7 +281,7 @@ class SalesforceConnection(object):
         """
 
         query = """
-                SELECT AccountId, Id, Stripe_Customer_Id__c
+                SELECT AccountId, Id, Stripe_Customer_Id__c, Membership_level_number__c
                 FROM Contact
                 WHERE {0}
                 LIKE '%{1}%'
