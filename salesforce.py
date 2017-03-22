@@ -369,7 +369,6 @@ def update_account(form=None, account=None):
     if level is not '--None--':
         tomorrow = datetime.now() + timedelta(days=1)
         tomorrow = tomorrow.strftime('%Y-%m-%d')
-        print('tomorrow is {}'.format(tomorrow))
 
         update = {'Membership_level_Manual_override__c': level, 'Member_level_manual_override_exp_date__c': tomorrow}
         updated_request = update.copy()
@@ -379,7 +378,7 @@ def update_account(form=None, account=None):
         created, contact = sf.get_or_create_contact(updated_request)
 
         if not created:
-            print ("----Account ID {} Exists, updating".format(contact['AccountId']))
+            print ("----Account Exists, updating")
 
             path = '/services/data/v{}/sobjects/Account/{}'.format(SALESFORCE['API_VERSION'], contact['AccountId'])
             url = '{}{}'.format(sf.instance_url, path)
