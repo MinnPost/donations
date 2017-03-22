@@ -368,7 +368,6 @@ def update_account(form=None, account=None):
 
     if level is not '--None--':
         update = {'Membership_level_Manual_override__c': level}
-        print('account level is {}'.format(level))
         updated_request = update.copy()
         updated_request.update(form.to_dict())
 
@@ -376,7 +375,7 @@ def update_account(form=None, account=None):
         created, contact = sf.get_or_create_contact(updated_request)
 
         if not created:
-            print ("----Exists, updating")
+            print ("----Account ID {} Exists, updating".format(contact['AccountId']))
 
             path = '/services/data/v{}/sobjects/Account/{}'.format(SALESFORCE['API_VERSION'], contact['AccountId'])
             url = '{}{}'.format(sf.instance_url, path)
