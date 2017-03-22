@@ -353,6 +353,7 @@ def upsert_customer(customer=None, form=None):
 
 
 # update account in salesforce
+@celery.task(name='salesforce.update_account')
 def update_account(form=None, account=None):
     """
     Updates the user's account in Salesforce
