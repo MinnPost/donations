@@ -373,11 +373,12 @@ def campaign_report():
 
     if value_opportunities != 0:
         value_opportunities = float(value_opportunities)
-        percent_complete = '0%'
 
     if goal != 0:
         goal = float(goal)
-        percent_complete = '0%'
+
+    if goal == 0 or value_opportunities == 0:
+        percent_complete = '0.0'
 
     ret_data = {'success': success, 'value_opportunities': value_opportunities, 'goal': goal, 'percent_complete': percent_complete }
     return jsonify(ret_data)
