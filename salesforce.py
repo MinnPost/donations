@@ -280,6 +280,8 @@ class SalesforceConnection(object):
         it. Returns a list with Account and Stripe IDs.
         """
 
+        print('find contact with email {} in the field {}'.format(email, COMBINED_EMAIL_FIELD))
+
         query = """
                 SELECT AccountId, Id, Stripe_Customer_Id__c, Membership_level_number__c
                 FROM Contact
