@@ -381,10 +381,8 @@ def update_account(form=None, account=None):
         email = form.get('email', None)
         contact = sf.find_contact(email=email)
 
-        member_level_number = contact.getattr('Membership_level_number__c', None)
-
-        if member_level_number is not None:
-            if levelint > int(member_level_number):
+        if len(contact) > 0:
+            if levelint > int(contact['Membership_level_number__c']):
                 print ("----Account Exists, updating")
 
                 path = '/services/data/v{}/sobjects/Account/{}'.format(SALESFORCE['API_VERSION'], contact['AccountId'])
@@ -392,7 +390,7 @@ def update_account(form=None, account=None):
                 resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
                 check_response(response=resp, expected_status=204)
         else:
-            print('level is not ready')
+            print('contact is not ready')
             raise self.retry(countdown=600)
 
     return True
