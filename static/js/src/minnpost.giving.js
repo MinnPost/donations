@@ -1362,16 +1362,14 @@
           };
 
           if (typeof newsletter_groups !== 'undefined') {
-            $.each(newsletter_groups, function() {
-              var group = $(this).val();
-              post_data.minnpost_mailchimp_groups[group] = group;
+            $.each(newsletter_groups, function( index, value ) {
+              post_data.minnpost_mailchimp_groups[value] = 1;
             });
           }
 
           if (typeof message_groups !== 'undefined') {
-            $.each(message_groups, function() {
-              var group = $(this).val();
-              post_data.minnpost_mailchimp_periodic[group] = group;
+            $.each(message_groups, function( index, value) {
+              post_data.minnpost_mailchimp_periodic[value] = 1;
             });
           }
 
