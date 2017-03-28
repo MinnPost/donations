@@ -381,9 +381,7 @@ def update_account(form=None, account=None):
         email = form.get('email', None)
         contact = sf.find_contact(email=email)
 
-        print(contact)
-
-        if contact is not None:
+        if contact is not []:
             if levelint > int(contact['Membership_level_number__c']):
                 print ("----Account Exists, updating")
 
@@ -391,6 +389,9 @@ def update_account(form=None, account=None):
                 url = '{}{}'.format(sf.instance_url, path)
                 resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
                 check_response(response=resp, expected_status=204)
+        else:
+            print('contact is []')
+            raise self.retry(countdown=600)
 
     return True
 
