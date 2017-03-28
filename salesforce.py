@@ -381,6 +381,8 @@ def update_account(form=None, account=None):
         email = form.get('email', None)
         contact = sf.find_contact(email=email)
 
+        print(contact)
+
         if contact is not None:
             if levelint > int(contact['Membership_level_number__c']):
                 print ("----Account Exists, updating")
