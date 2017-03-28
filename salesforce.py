@@ -378,9 +378,9 @@ def update_account(form=None, account=None):
         updated_request.update(form.to_dict())
 
         sf = SalesforceConnection()
-        created, contact = sf.get_or_create_contact(updated_request)
+        contact = sf.find_contact(email=form['email'])
 
-        if not created and levelint > int(contact['Membership_level_number__c']):
+        if contact['AccountId'] and levelint > int(contact['Membership_level_number__c']):
             print ("----Account Exists, updating")
 
             path = '/services/data/v{}/sobjects/Account/{}'.format(SALESFORCE['API_VERSION'], contact['AccountId'])
