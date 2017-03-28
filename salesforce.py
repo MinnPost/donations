@@ -381,13 +381,14 @@ def update_account(form=None, account=None):
         email = form.get('email', None)
         contact = sf.find_contact(email=email)
 
-        if contact['AccountId'] and (levelint > int(contact['Membership_level_number__c'])):
-            print ("----Account Exists, updating")
+        if contact is not None:
+            if levelint > int(contact['Membership_level_number__c']):
+                print ("----Account Exists, updating")
 
-            path = '/services/data/v{}/sobjects/Account/{}'.format(SALESFORCE['API_VERSION'], contact['AccountId'])
-            url = '{}{}'.format(sf.instance_url, path)
-            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
-            check_response(response=resp, expected_status=204)
+                path = '/services/data/v{}/sobjects/Account/{}'.format(SALESFORCE['API_VERSION'], contact['AccountId'])
+                url = '{}{}'.format(sf.instance_url, path)
+                resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+                check_response(response=resp, expected_status=204)
 
     return True
 
