@@ -381,7 +381,7 @@ def update_account(form=None, account=None):
         email = form.get('email', None)
         contact = sf.find_contact(email=email)
 
-        member_level_number = contact.get('Membership_level_number__c', None)
+        member_level_number = contact.getattr('Membership_level_number__c', None)
 
         if member_level_number is not None:
             if levelint > int(member_level_number):
