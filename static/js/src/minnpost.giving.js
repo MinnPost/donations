@@ -1318,7 +1318,11 @@
             // user created - show a success message
             $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
             var groups = result.groups;
+            var additional = result.additional;
             $.each(groups, function( index, value ) {
+              $(':checkbox[value="' + value + '"]').prop('checked','true');
+            });
+            $.each(additional, function( index, value ) {
               $(':checkbox[value="' + value + '"]').prop('checked','true');
             });
 
