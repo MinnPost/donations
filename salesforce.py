@@ -379,9 +379,10 @@ def update_account(self, form=None, account=None):
 
         sf = SalesforceConnection()
         email = form.get('email', None)
-        contact = sf.find_contact(email=email)
+        result = sf.find_contact(email=email)
 
-        if len(contact) > 0:
+        if len(result) > 0:
+            contact = result[0]
             if levelint > int(contact['Membership_level_number__c']):
                 print ("----Account Exists, updating")
 
@@ -391,7 +392,7 @@ def update_account(self, form=None, account=None):
                 check_response(response=resp, expected_status=204)
         else:
             print('contact is not ready')
-            raise self.retry(countdown=600)
+            raise self.retry(countdown=300)
 
     return True
 
