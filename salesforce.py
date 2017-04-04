@@ -344,7 +344,7 @@ def upsert_customer(customer=None, form=None):
     created, contact = sf.get_or_create_contact(updated_request)
 
     if not created:
-        print ("----Exists, updating")
+        print ("----Exists, updating contact with id {}".format(contact['Id']))
 
         path = '/services/data/v{}/sobjects/Contact/{}'.format(SALESFORCE['API_VERSION'], contact['Id'])
         url = '{}{}'.format(sf.instance_url, path)
