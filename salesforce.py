@@ -1796,7 +1796,7 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
             if resp.status_code == 204:
                 return True
             else:
-                raise Exception('problem')
+                raise Exception('Error: updating object failed. Status code was {} and query was {}'.format(resp.status_code, query))
         else:
             print('Error: No response from Salesforce query {}'.format(query))
         
