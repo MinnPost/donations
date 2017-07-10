@@ -1737,6 +1737,11 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
     else:
         sunday_review_newsletter = False
 
+    if 'D.C. Memo' in newsletters:
+        dc_memo = True
+    else:
+        dc_memo = False
+
     if 'Events & member benefits' in messages:
         event_messages = True
     else:
@@ -1767,7 +1772,7 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
 
         query = """
             SELECT Reason_for_Gift__c, Reason_for_gift_shareable__c,
-            Daily_newsletter_sign_up__c, Greater_MN_newsletter__c, Sunday_Review_newsletter__c,
+            Daily_newsletter_sign_up__c, Greater_MN_newsletter__c, Sunday_Review_newsletter__c, DC_Memo_sign_up__c,
             Event_member_benefit_messages__c, Input_feedback_messages__c
             FROM {} 
             WHERE Id = '{}'
@@ -1786,6 +1791,7 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
                 'Daily_newsletter_sign_up__c': daily_newsletter,
                 'Greater_MN_newsletter__c': greater_mn_newsletter,
                 'Sunday_Review_newsletter__c': sunday_review_newsletter,
+                'DC_Memo_sign_up__c': dc_memo,
                 'Event_member_benefit_messages__c': event_messages,
                 'Input_feedback_messages__c': feedback_messages
                 }
