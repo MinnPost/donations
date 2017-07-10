@@ -1747,7 +1747,7 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
     else:
         event_messages = False
 
-    if 'Opportunities to give MinnPost input/feedback' in messages:
+    if 'Opportunities to give input/feedback' in messages:
         feedback_messages = True
     else:
         feedback_messages = False
