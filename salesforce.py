@@ -342,6 +342,9 @@ def upsert_customer(customer=None, form=None):
     updated_request = update.copy()
     if type(form) is not dict: # this could be a temporary check
         form = form.to_dict()
+
+    print('form here')
+    print(form)
     updated_request.update(form)
 
     sf = SalesforceConnection()
