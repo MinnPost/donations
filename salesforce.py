@@ -335,17 +335,10 @@ def upsert_customer(customer=None, form=None):
         raise Exception("Value for 'customer' must be specified.")
     if form is None:
         raise Exception("Value for 'form' must be specified.")
-    print('customer is')
-    print(customer)
-    print('customer above')
-    update = {'Stripe_Customer_Id__c': customer['id']}
-    updated_request = update.copy()
-    if type(form) is not dict: # this could be a temporary check
-        form = form.to_dict()
 
-    print('form here')
-    print(form)
-    updated_request.update(form)
+    update = {'Stripe_Customer_Id__c': customer.id}
+    updated_request = update.copy()
+    updated_request.update(form.to_dict())
 
     sf = SalesforceConnection()
     created, contact = sf.get_or_create_contact(updated_request)
@@ -382,9 +375,7 @@ def update_account(self, form=None, account=None):
 
         update = {'Membership_level_Manual_override__c': level, 'Member_level_manual_override_exp_date__c': tomorrow}
         updated_request = update.copy()
-        if type(form) is not dict: # this could be a temporary check
-            form = form.to_dict()
-            updated_request.update(form)
+        updated_request.update(form.to_dict())
 
         sf = SalesforceConnection()
         email = form.get('email', None)
@@ -400,7 +391,8 @@ def update_account(self, form=None, account=None):
                 resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
                 check_response(response=resp, expected_status=204)
         else:
-            print('contact is not ready')
+            print('contact is not ready. result is below')
+            print(result)
             raise self.retry(countdown=300)
 
     return True
@@ -800,7 +792,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
-            'Stripe_Customer_Id__c': customer['id'],    
+            'Stripe_Customer_Id__c': customer.id,    
             'Ticket_count__c': quantity,        
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
@@ -981,7 +973,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
-            'Stripe_Customer_Id__c': customer['id']
+            'Stripe_Customer_Id__c': customer.id
         }
 
         if 'amount' in form:
@@ -1176,7 +1168,7 @@ def _find_recurring(recurring_id=None, customer=None, form=None):
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
-            'Stripe_Customer_Id__c': customer['id']
+            'Stripe_Customer_Id__c': customer.id
         }
 
         if 'amount' in form:
@@ -1543,7 +1535,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'Stripe_Agreed_to_pay_fees__c': pay_fees,
         'Stripe_Bank_Account__c': stripe_bank_account,
         'Stripe_Card__c': stripe_card,
-        'Stripe_Customer_Id__c': customer['id'],
+        'Stripe_Customer_Id__c': customer.id,
         'Stripe_Description__c': '{}'.format(form['description']),
         #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
         #'Type__c': type__c,
@@ -1586,8 +1578,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
 
     if flask_id != None:
-        if type(form) is not dict: # this could be a temporary check
-            form = form.to_dict()
+        form = form.to_dict()
         form['flask_id'] = flask_id
 
     if (form['recurring'] == 'one-time'):
@@ -1666,7 +1657,7 @@ def _format_blast_rdo(contact=None, form=None, customer=None):
                 form['last_name'],
                 now,
                 ),
-            'Stripe_Customer_Id__c': customer['id'],
+            'Stripe_Customer_Id__c': customer.id,
             'Lead_Source__c': 'Stripe',
             'Stripe_Description__c': '{}'.format(form['description']),
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
