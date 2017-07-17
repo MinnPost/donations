@@ -340,7 +340,9 @@ def upsert_customer(customer=None, form=None):
     print('customer above')
     update = {'Stripe_Customer_Id__c': customer['id']}
     updated_request = update.copy()
-    updated_request.update(form.to_dict())
+    if type(form) is not dict: # this could be a temporary check
+        form = form.to_dict()
+    updated_request.update(form)
 
     sf = SalesforceConnection()
     created, contact = sf.get_or_create_contact(updated_request)
@@ -377,7 +379,9 @@ def update_account(self, form=None, account=None):
 
         update = {'Membership_level_Manual_override__c': level, 'Member_level_manual_override_exp_date__c': tomorrow}
         updated_request = update.copy()
-        updated_request.update(form.to_dict())
+        if type(form) is not dict: # this could be a temporary check
+            form = form.to_dict()
+            updated_request.update(form)
 
         sf = SalesforceConnection()
         email = form.get('email', None)
@@ -1579,7 +1583,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
 
     if flask_id != None:
-        form = form.to_dict()
+        if type(form) is not dict: # this could be a temporary check
+            form = form.to_dict()
         form['flask_id'] = flask_id
 
     if (form['recurring'] == 'one-time'):
