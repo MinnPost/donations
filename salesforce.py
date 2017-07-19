@@ -288,7 +288,6 @@ class SalesforceConnection(object):
                 WHERE {0}
                 LIKE '%{1}%'
                 """.format(COMBINED_EMAIL_FIELD, email)
-        print('query is {}'.format(query))
         response = self.query(query)
         return response
 
