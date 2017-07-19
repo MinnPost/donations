@@ -288,6 +288,7 @@ class SalesforceConnection(object):
                 WHERE {0}
                 LIKE '%{1}%'
                 """.format(COMBINED_EMAIL_FIELD, email)
+        print('query is {}'.format(query))
         response = self.query(query)
         return response
 
@@ -391,8 +392,7 @@ def update_account(self, form=None, account=None):
                 resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
                 check_response(response=resp, expected_status=204)
         else:
-            print('contact is not ready. result is below')
-            print(result)
+            print('contact is not ready')
             raise self.retry(countdown=300)
 
     return True
