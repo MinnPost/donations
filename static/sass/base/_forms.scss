@@ -310,7 +310,7 @@ textarea {
     background-image: url('../images/cc-visa.png');
   }
 
-  &.mc { 
+  &.mc, &.mastercard { 
     background-image: url('../images/cc-mc.png');
   }
 
@@ -318,7 +318,7 @@ textarea {
     background-image: url('../images/cc-amex.png');
   }
 
-  &.disc { 
+  &.disc, &.discover { 
     background-image: url('../images/cc-disc.png');
   }
 
