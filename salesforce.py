@@ -819,6 +819,10 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         Return an opportunity. Return an error if it does not exist, but try to log stuff.
         """
 
+        print('extra values below')
+        print(extra_values)
+        print('extra values above')
+
         result = _find_opportunity(opp_id=opp_id, customer=customer, form=form, extra_values=None) # form is if we are updating it also
         opportunity = result[0]
         response = {'opportunity':opportunity, 'id': opp_id, 'success': True, 'errors' : []}
