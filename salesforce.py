@@ -819,7 +819,7 @@ def get_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         Return an opportunity. Return an error if it does not exist, but try to log stuff.
         """
 
-        result = _find_opportunity(opp_id=opp_id, customer=customer, form=form) # form is if we are updating it also
+        result = _find_opportunity(opp_id=opp_id, customer=customer, form=form, extra_values=None) # form is if we are updating it also
         opportunity = result[0]
         response = {'opportunity':opportunity, 'id': opp_id, 'success': True, 'errors' : []}
 
@@ -859,7 +859,7 @@ def get_recurring(recurring_id=None, customer=None, form=None, extra_values=None
         Return a recurring donation. Return an error if it does not exist, but try to log stuff.
         """
 
-        result = _find_recurring(recurring_id=recurring_id, customer=customer, form=form) # form is if we are updating it also
+        result = _find_recurring(recurring_id=recurring_id, customer=customer, form=form, extra_values=None) # form is if we are updating it also
         recurring = result[0]
         response = {'recurring':recurring, 'id': recurring_id, 'success': True, 'errors' : []}
 
@@ -894,7 +894,7 @@ def get_campaign(campaign_id=None):
     return response
 
 
-def _find_opportunity(opp_id=None, customer=None, form=None):
+def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
     """
     Given an ID, return the Opportunity matching it.
     If there is form data, update it also.
@@ -960,6 +960,16 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
             except:
                 billing_country = ''
 
+        # payment method for this opportunity, as stripe returned it
+        if 'stripe_card' in extra_values:
+            stripe_card = extra_values['stripe_card'] 
+        else:
+            stripe_card = ''
+        if 'stripe_bank_account' in extra_values:
+            stripe_bank_account = extra_values['stripe_bank_account']
+        else:
+            stripe_bank_account = ''
+
         update = {
             'Description': form['description'],
             'StageName': 'Pledged',
@@ -972,7 +982,9 @@ def _find_opportunity(opp_id=None, customer=None, form=None):
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
-            'Stripe_Customer_Id__c': customer.id
+            'Stripe_Customer_Id__c': customer.id,
+            'Stripe_Bank_Account__c': stripe_bank_account,
+            'Stripe_Card__c': stripe_card
         }
 
         if 'amount' in form:
@@ -1091,7 +1103,7 @@ def _find_campaign(campaign_id=None):
     return campaign
 
 
-def _find_recurring(recurring_id=None, customer=None, form=None):
+def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=None):
     """
     Given an ID, return the Recurring Donation matching it.
     If there is form data, update it also.
@@ -1157,6 +1169,16 @@ def _find_recurring(recurring_id=None, customer=None, form=None):
             except:
                 billing_country = ''
 
+        # payment method for this recurring donation, as stripe returned it
+        if 'stripe_card' in extra_values:
+            stripe_card = extra_values['stripe_card'] 
+        else:
+            stripe_card = ''
+        if 'stripe_bank_account' in extra_values:
+            stripe_bank_account = extra_values['stripe_bank_account']
+        else:
+            stripe_bank_account = ''
+
         update = {
             'Donor_address_line_1__c': billing_street,
             'Donor_city__c': billing_city,
@@ -1167,7 +1189,9 @@ def _find_recurring(recurring_id=None, customer=None, form=None):
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
-            'Stripe_Customer_Id__c': customer.id
+            'Stripe_Customer_Id__c': customer.id,
+            'Stripe_Bank_Account__c': stripe_bank_account,
+            'Stripe_Card__c': stripe_card
         }
 
         if 'amount' in form:
@@ -1802,7 +1826,7 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
             if resp.status_code == 204:
                 return True
             else:
-                raise Exception('Error: updating object failed. Status code was {} and query was {}'.format(resp.status_code, query))
+                raise Exception('Error: updating object failed. Tried to pass {} to server. Status code was {} and message was {}'.format(update, resp.status_code, resp.text))
         else:
             print('Error: No response from Salesforce query {}'.format(query))
         
