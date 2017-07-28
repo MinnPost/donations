@@ -31,8 +31,10 @@
     'active' : 'panel--review',
     'confirm' : 'panel--confirmation',
     'query' : 'step',
-    'percentage' : 0.029,
+    'percentage' : 0.022,
     'fixed_amount' : 0.3,
+    'amex_percentage': 0.035,
+    'ach_percentage': 0.008,
     'pay_cc_processing_selector' : 'input[id="edit-pay-fees"]',
     'level_amount_selector' : '#panel--review .amount .level-amount',
     'original_amount_selector' : '#amount',
@@ -213,7 +215,7 @@
 
       if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options, reset); // processing fees
-        $(this.options.review_step_selector).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
+        $(this.options.credit_card_fieldset).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
       }
 
       if ($(this.options.review_step_selector).length > 0) {
@@ -399,6 +401,32 @@
 
     }, // analyticsTrackingStep
 
+    calculateFees: function(payment_type) {
+
+      this.options.fixed_fee = parseFloat(this.options.fixed_amount);
+
+      var percentage = this.options.percentage;
+      var fixed_amount = this.options.fixed_amount;
+      var fixed_fee = this.options.fixed_fee;
+
+      if (payment_type === 'amex') {
+        percentage = this.options.amex_percentage;
+        fixed_amount = 0;
+        fixed_fee = 0;
+      } else if (payment_type === 'ach') {
+        percentage = this.options.ach_percentage;
+        fixed_amount = 0;
+        fixed_fee = 0;
+      }
+
+      this.options.processing_percent = parseFloat(percentage);
+      this.options.new_amount = (this.options.original_amount + fixed_fee) / (1 - this.options.processing_percent);
+      this.options.processing_fee = this.options.new_amount - this.options.original_amount;
+      this.options.processing_fee = (Math.round(parseFloat(this.options.processing_fee)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
+      this.options.processing_fee_text = this.options.processing_fee;
+
+    },
+
     creditCardProcessingFees: function(options, reset) {
       var full_amount;
       var that = this;
@@ -417,7 +445,6 @@
         $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
         $('#edit-pay-fees').val(0);
         $('.processing-explain').show();
-        //$('#amount').val(full_amount);
       }
       $('.add-credit-card-processing').click(function(event) {
         $('.amount .level-amount').addClass('full-amount');
@@ -436,7 +463,6 @@
         }
         $('.add-credit-card-processing').toggleClass('remove');
         $(options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
-        //$('#amount').val(parseFloat(full_amount).toFixed(2));
         event.stopPropagation();
         event.preventDefault();
       });
@@ -896,6 +922,8 @@
 
     creditCardFields: function(element, options) {
 
+      var that = this;
+
       if ($(options.choose_payment).length > 0) {      
         if ($(options.choose_payment + ' input').is(':checked')) {
           var checked = $(options.choose_payment + ' input:checked').attr('id');
@@ -931,6 +959,11 @@
           /*if (options.cardType !== null) {            
             $('.card-image').prop('class', 'card-image ' + options.cardType);
           }*/
+          if (options.cardType !== null) {
+            that.calculateFees(options.cardType);
+          }
+          $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
+          $('#edit-pay-fees').val(0);
           $('.card-image').prop('class', 'card-image ' + $('#cc-number').prop('class'));
         });
 
@@ -945,6 +978,7 @@
     }, // creditCardFields
 
     achFields: function(element, options) {
+      var that = this;
       if (options.plaid_env != '' && options.key != '' && typeof Plaid !== 'undefined') {
         var linkHandler = Plaid.create({
           selectAccount: true,
@@ -993,6 +1027,9 @@
                 //console.dir(response);
                 $(options.donate_form_selector).prepend('<input type="hidden" id="bankToken" name="bankToken" value="' + response.stripe_bank_account_token + '" />');
                 $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
+                that.calculateFees('ach'); // calculate the ach fees
+                $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
+                $('#edit-pay-fees').val(0);
                 // add the field(s) we need to the form for submitting
               }
             })
