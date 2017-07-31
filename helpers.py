@@ -69,7 +69,7 @@ def amount_to_charge(entry):
 
         if 'payment_type' in entry:
             print('there is a payment type of {}'.format(entry.payment_type))
-            if entry.payment_type is 'amex':
+            if entry.payment_type is 'American Express':
                 processing_percent = 0.035
                 fixed_fee = 0
             elif entry.payment_type is 'ach':
@@ -78,7 +78,7 @@ def amount_to_charge(entry):
         new_amount = (amount + fixed_fee) / (1 - processing_percent)
         processing_fee = new_amount - amount
         fees = round(processing_fee, 2)
-        print('there is no format type')
+        print('there is no payment type')
 
     else:
         fees = 0

@@ -1180,15 +1180,15 @@ def charge_ajax():
                         card=request.form['stripeToken'] 
                 )
                 stripe_card = customer.default_source
+                if 'brand' in customer.sources.data:
+                    extra_values['payment_type'] = customer.sources.data.brand
             elif 'bankToken' in request.form:
                 customer = stripe.Customer.create(
                     email=email,
                     source=request.form['bankToken']
                 )
                 stripe_bank_account = customer.default_source
-            print('customer below')
-            print(customer)
-            print('customer above')
+                extra_values['payment_type'] = 'ach'
             print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
@@ -1209,9 +1209,9 @@ def charge_ajax():
             if 'stripeToken' in request.form:
                 card = customer.sources.create(source=request.form['stripeToken'])
                 stripe_card = card.id
-                if card.brand is 'American Express':
+                if brand in card:
                     # get fee amount for passing to stripe
-                    entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': 'amex'}
+                    entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': card.brand}
                     amount_plus_fees = amount_to_charge(entry)
                     amount_formatted = format(amount_plus_fees / 100, ',.2f')
             elif 'bankToken' in request.form:
@@ -1414,6 +1414,8 @@ def thanks():
         if pay_fees == '1':
             # get fee amount so the user can see it
             entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
+            if 'payment_type' in extra_values:
+                entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': extra_values['payment_type'] }
             amount_plus_fees = amount_to_charge(entry)
             amount_formatted = format(amount_plus_fees / 100, ',.2f')
 
