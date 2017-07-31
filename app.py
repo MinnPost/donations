@@ -1155,13 +1155,6 @@ def charge_ajax():
     else:
         yearly = 1
     level = checkLevel(amount, frequency, yearly)
-    if 'pay_fees' in request.form:
-        pay_fees = request.form['pay_fees']
-        if pay_fees == '1':
-            # get fee amount to send to stripe; user does not see this
-            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
-            amount_plus_fees = amount_to_charge(entry)
-            amount_formatted = format(amount_plus_fees / 100, ',.2f')
 
     email = request.form['email']
     first_name = request.form['first_name']
@@ -1170,6 +1163,7 @@ def charge_ajax():
 
     stripe_card = ''
     stripe_bank_account = ''
+    payment_type = ''
 
     if email_is_valid and customer_id is '': # this is a new customer
     # if it is a new customer, assume they only have one payment method and it should be the default
@@ -1181,14 +1175,14 @@ def charge_ajax():
                 )
                 stripe_card = customer.default_source
                 if 'brand' in customer.sources.data:
-                    extra_values['payment_type'] = customer.sources.data.brand
+                    payment_type = customer.sources.data.brand
             elif 'bankToken' in request.form:
                 customer = stripe.Customer.create(
                     email=email,
                     source=request.form['bankToken']
                 )
                 stripe_bank_account = customer.default_source
-                extra_values['payment_type'] = 'ach'
+                payment_type = 'ach'
             print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
@@ -1251,6 +1245,14 @@ def charge_ajax():
             message = 'Your email address is required'
         body.append({'field': 'email', 'message': message})
         return jsonify(errors=body)
+
+    if 'pay_fees' in request.form:
+        pay_fees = request.form['pay_fees']
+        if pay_fees == '1':
+            # get fee amount to send to stripe; user does not see this
+            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': payment_type}
+            amount_plus_fees = amount_to_charge(entry)
+            amount_formatted = format(amount_plus_fees / 100, ',.2f')
 
     if form.validate():
         # add a row to the heroku database so we can track it
@@ -1365,7 +1367,7 @@ def charge_ajax():
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
         print('Done with contact and opportunity {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
-        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
+        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, payment_type=payment_type)
         #body = transaction.id
         #return jsonify(body)
     else:
@@ -1413,9 +1415,7 @@ def thanks():
         pay_fees = request.form['pay_fees']
         if pay_fees == '1':
             # get fee amount so the user can see it
-            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
-            if 'payment_type' in extra_values:
-                entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': extra_values['payment_type'] }
+            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': payment_type }
             amount_plus_fees = amount_to_charge(entry)
             amount_formatted = format(amount_plus_fees / 100, ',.2f')
 
