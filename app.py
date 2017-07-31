@@ -1186,6 +1186,9 @@ def charge_ajax():
                     source=request.form['bankToken']
                 )
                 stripe_bank_account = customer.default_source
+            print('customer below')
+            print(customer)
+            print('customer above')
             print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
@@ -1207,7 +1210,7 @@ def charge_ajax():
                 card = customer.sources.create(source=request.form['stripeToken'])
                 stripe_card = card.id
                 if card.brand is 'American Express':
-                    # get fee amount so the user can see it
+                    # get fee amount for passing to stripe
                     entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': 'amex'}
                     amount_plus_fees = amount_to_charge(entry)
                     amount_formatted = format(amount_plus_fees / 100, ',.2f')
@@ -1266,7 +1269,7 @@ def charge_ajax():
 
         extra_values = {}
 
-        # if we have a new source for an existing customer, add it to extra valeus
+        # if we have a new source, add it to extra values
         if stripe_card != '':
             extra_values['stripe_card'] = stripe_card
         elif stripe_bank_account != '':
