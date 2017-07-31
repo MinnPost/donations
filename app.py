@@ -1158,7 +1158,7 @@ def charge_ajax():
     if 'pay_fees' in request.form:
         pay_fees = request.form['pay_fees']
         if pay_fees == '1':
-            # get fee amount so the user can see it
+            # get fee amount to send to stripe; user does not see this
             entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
             amount_plus_fees = amount_to_charge(entry)
             amount_formatted = format(amount_plus_fees / 100, ',.2f')
@@ -1206,9 +1206,17 @@ def charge_ajax():
             if 'stripeToken' in request.form:
                 card = customer.sources.create(source=request.form['stripeToken'])
                 stripe_card = card.id
+                if card.brand is 'American Express':
+                    # get fee amount so the user can see it
+                    entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': 'amex'}
+                    amount_plus_fees = amount_to_charge(entry)
+                    amount_formatted = format(amount_plus_fees / 100, ',.2f')
             elif 'bankToken' in request.form:
                 bank_account = customer.sources.create(source=request.form['bankToken'])
                 stripe_bank_account = bank_account.id
+                entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': 'ach'}
+                amount_plus_fees = amount_to_charge(entry)
+                amount_formatted = format(amount_plus_fees / 100, ',.2f')
         except stripe.error.InvalidRequestError as e: # stripe returned a bank account error
             body = e.json_body
             error = body['error']
