@@ -1175,6 +1175,7 @@ def charge_ajax():
                 )
                 stripe_card = customer.default_source
                 if 'brand' in customer.sources.data:
+                    print('there is a brand here and it is {}'.format(customer.sources.data.brand))
                     payment_type = customer.sources.data.brand
             elif 'bankToken' in request.form:
                 customer = stripe.Customer.create(
