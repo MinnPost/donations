@@ -1984,15 +1984,24 @@ global.Payment = Payment;
               if ($('input[name="bankToken"]').length === 0) {
                 // response contains id and card, which contains additional card details
                 var token = response.id;
-                console.log(response);
                 // Insert the token into the form so it gets submitted to the server
                 if ($('input[name="stripeToken"]').length > 0) {
                   $('input[name="stripeToken"]').val(token);
                 } else {
                   supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));  
                 }
+                if ($('input[name="payment_type"]').length > 0) {
+                  $('input[name="payment_type"]').val(response.card.brand);
+                } else {
+                  supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(response.card.brand));  
+                }
               } else {
-                that.debug('we have a bank token');
+                //that.debug('we have a bank token');
+                if ($('input[name="payment_type"]').length > 0) {
+                  $('input[name="payment_type"]').val('ach');
+                } else {
+                  supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val('ach'));  
+                }
               }
 
               // get the card validated first by ajax
@@ -2065,7 +2074,7 @@ global.Payment = Payment;
                     }
 
                   } else {
-                    //supportform.get(0).submit(); // continue submitting the form
+                    supportform.get(0).submit(); // continue submitting the form
                   }
                 })
                 .error(function(response) {

@@ -1156,6 +1156,14 @@ def charge_ajax():
         yearly = 1
     level = checkLevel(amount, frequency, yearly)
 
+    if 'pay_fees' in request.form:
+        pay_fees = request.form['pay_fees']
+        if pay_fees == '1':
+            # get fee amount to send to stripe; user does not see this
+            if 'payment_type' in request.form:
+                session['payment_type'] = payment_type
+                print('payment type is {}'.format(payment_type))
+
     email = request.form['email']
     first_name = request.form['first_name']
     last_name = request.form['last_name']
@@ -1174,15 +1182,12 @@ def charge_ajax():
                         card=request.form['stripeToken'] 
                 )
                 stripe_card = customer.default_source
-                if 'brand' in customer.sources.data:
-                    payment_type = customer.sources.data.brand
             elif 'bankToken' in request.form:
                 customer = stripe.Customer.create(
                     email=email,
                     source=request.form['bankToken']
                 )
                 stripe_bank_account = customer.default_source
-                payment_type = 'ach'
             print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
@@ -1203,17 +1208,9 @@ def charge_ajax():
             if 'stripeToken' in request.form:
                 card = customer.sources.create(source=request.form['stripeToken'])
                 stripe_card = card.id
-                if brand in card:
-                    # get fee amount for passing to stripe
-                    entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': card.brand}
-                    amount_plus_fees = amount_to_charge(entry)
-                    amount_formatted = format(amount_plus_fees / 100, ',.2f')
             elif 'bankToken' in request.form:
                 bank_account = customer.sources.create(source=request.form['bankToken'])
                 stripe_bank_account = bank_account.id
-                entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': 'ach'}
-                amount_plus_fees = amount_to_charge(entry)
-                amount_formatted = format(amount_plus_fees / 100, ',.2f')
         except stripe.error.InvalidRequestError as e: # stripe returned a bank account error
             body = e.json_body
             error = body['error']
@@ -1245,14 +1242,6 @@ def charge_ajax():
             message = 'Your email address is required'
         body.append({'field': 'email', 'message': message})
         return jsonify(errors=body)
-
-    if 'pay_fees' in request.form:
-        pay_fees = request.form['pay_fees']
-        if pay_fees == '1':
-            # get fee amount to send to stripe; user does not see this
-            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': payment_type}
-            amount_plus_fees = amount_to_charge(entry)
-            amount_formatted = format(amount_plus_fees / 100, ',.2f')
 
     if form.validate():
         # add a row to the heroku database so we can track it
