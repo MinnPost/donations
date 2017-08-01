@@ -1364,10 +1364,14 @@ def charge_ajax():
         else:
             session['quantity'] = ''
 
+        session['payment_type'] = payment_type
+        print('payment type is {}'.format(payment_type))
+
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
         print('Done with contact and opportunity {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
-        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, payment_type=payment_type)
+        # the payment type here won't work because it doesn't get sent to the method, but to the template
+        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
         #body = transaction.id
         #return jsonify(body)
     else:
