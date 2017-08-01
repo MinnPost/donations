@@ -1161,7 +1161,6 @@ def charge_ajax():
         if pay_fees == '1':
             # get fee amount to send to stripe; user does not see this
             if 'payment_type' in request.form:
-                print('store payment type in session as {}'.format(request.form['payment_type']))
                 session['payment_type'] = request.form['payment_type']
 
     email = request.form['email']
