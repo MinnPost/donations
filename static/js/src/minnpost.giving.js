@@ -1107,6 +1107,7 @@
           var valid_cvv = Payment.fns.validateCardCVC($(options.cc_cvv_selector, element).val(), options.cardType);
           if (valid_cc === false || valid_exp === false || valid_cvv === false) {
             //that.debug('cc ' + valid_cc + ' exp ' + valid_exp + ' cvv ' + valid_cvv);
+            // todo: this needs an error message
             valid = false;
             $(options.cc_num_selector, element).parent().addClass('error');
             if (valid_cc === false) {
@@ -1157,6 +1158,7 @@
               if ($('input[name="bankToken"]').length === 0) {
                 // response contains id and card, which contains additional card details
                 var token = response.id;
+                console.log(response);
                 // Insert the token into the form so it gets submitted to the server
                 if ($('input[name="stripeToken"]').length > 0) {
                   $('input[name="stripeToken"]').val(token);
@@ -1237,7 +1239,7 @@
                     }
 
                   } else {
-                    supportform.get(0).submit(); // continue submitting the form
+                    //supportform.get(0).submit(); // continue submitting the form
                   }
                 })
                 .error(function(response) {
