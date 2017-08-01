@@ -1419,7 +1419,7 @@ def thanks():
         pay_fees = request.form['pay_fees']
         if pay_fees == '1':
             # get fee amount so the user can see it
-            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': payment_type }
+            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': session['payment_type'] }
             amount_plus_fees = amount_to_charge(entry)
             amount_formatted = format(amount_plus_fees / 100, ',.2f')
 
