@@ -1224,6 +1224,14 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     else:
         stripe_bank_account = ''
 
+    if 'payment_type' in extra_values:
+        if extra_values['payment_type'] == 'American Express':
+            card_type = 'American Express'
+        else:
+            card_type = ''
+    else:
+        card_type = ''
+
     try:
         if form['campaign'] != '':
             campaign = form['campaign']
@@ -1524,6 +1532,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'npe03__Contact__c': '{}'.format(contact['Id']),
         'Credited_as__c': credited_as,
         'npe03__Date_Established__c': today,
+        'Card_type__c': card_type,
         'Donor_address_line_1__c': billing_street,
         'Donor_city__c': billing_city,
         'Donor_state__c': billing_state,

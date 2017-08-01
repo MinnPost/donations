@@ -1156,12 +1156,14 @@ def charge_ajax():
         yearly = 1
     level = checkLevel(amount, frequency, yearly)
 
+    payment_type = ''
     if 'pay_fees' in request.form:
         pay_fees = request.form['pay_fees']
         if pay_fees == '1':
             # get fee amount to send to stripe; user does not see this
             if 'payment_type' in request.form:
-                session['payment_type'] = request.form['payment_type']
+                payment_type = request.form['payment_type']
+                session['payment_type'] = payment_type
 
     email = request.form['email']
     first_name = request.form['first_name']
@@ -1263,6 +1265,10 @@ def charge_ajax():
             extra_values['stripe_card'] = stripe_card
         elif stripe_bank_account != '':
             extra_values['stripe_bank_account'] = stripe_bank_account
+
+        # if we need to set the payment type before charging, add it to extra values
+        if payment_type != '':
+            extra_values['payment_type'] = payment_type
 
         # if we specify opportunity type and/or subtype, put it in the session
         if 'opp_type' in request.form:

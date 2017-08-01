@@ -67,9 +67,9 @@ def amount_to_charge(entry):
         processing_percent = 0.022
         fixed_fee = 0.3
 
-        if 'payment_type' in entry:
+        if 'payment_type' in entry or 'Card_type__c' in entry:
             #print('there is a payment type of {}'.format(entry['payment_type']))
-            if entry['payment_type'] == 'American Express':
+            if entry['payment_type'] == 'American Express' or entry['Card_type__c'] == 'American Express':
                 processing_percent = 0.035
                 fixed_fee = 0
             elif entry['payment_type'] is 'ach':
