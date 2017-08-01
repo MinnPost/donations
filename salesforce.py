@@ -415,6 +415,14 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         stripe_bank_account = ''
 
+    if 'payment_type' in extra_values:
+        if extra_values['payment_type'] == 'American Express':
+            card_type = 'American Express'
+        else:
+            card_type = ''
+    else:
+        card_type = ''
+
     #print('opportunity: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
 
     try:
@@ -754,6 +762,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'StageName': 'Pledged',
             'Type': type__c,
             'Anonymous__c': anonymous,
+            'Card_type__c': card_type,
             'Credited_as__c': credited_as,
             'Client_Organization__c': organization,
             'Donor_first_name__c': first_name,
@@ -969,6 +978,14 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         else:
             stripe_bank_account = ''
 
+        if 'payment_type' in extra_values:
+            if extra_values['payment_type'] == 'American Express':
+                card_type = 'American Express'
+            else:
+                card_type = ''
+        else:
+            card_type = ''
+
         update = {
             'Description': form['description'],
             'StageName': 'Pledged',
@@ -983,7 +1000,8 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             'Flask_Transaction_ID__c': form['flask_id'],
             'Stripe_Customer_Id__c': customer.id,
             'Stripe_Bank_Account__c': stripe_bank_account,
-            'Stripe_Card__c': stripe_card
+            'Stripe_Card__c': stripe_card,
+            'Card_type__c': card_type
         }
 
         if 'amount' in form:
@@ -1178,6 +1196,14 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
         else:
             stripe_bank_account = ''
 
+        if 'payment_type' in extra_values:
+            if extra_values['payment_type'] == 'American Express':
+                card_type = 'American Express'
+            else:
+                card_type = ''
+        else:
+            card_type = ''
+
         update = {
             'Donor_address_line_1__c': billing_street,
             'Donor_city__c': billing_city,
@@ -1190,7 +1216,8 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
             'Flask_Transaction_ID__c': form['flask_id'],
             'Stripe_Customer_Id__c': customer.id,
             'Stripe_Bank_Account__c': stripe_bank_account,
-            'Stripe_Card__c': stripe_card
+            'Stripe_Card__c': stripe_card,
+            'Card_type__c': card_type
         }
 
         if 'amount' in form:
