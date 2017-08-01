@@ -24,6 +24,10 @@
 		font-family: $helvetica;
 		font-size: $small-size;
 	}
+	.actions--edit-amount {
+		width: auto;
+		float: right;
+	}
 	.honor {
 		position: relative;
 		fieldset {
