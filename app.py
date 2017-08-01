@@ -1183,6 +1183,9 @@ def charge_ajax():
                 )
                 stripe_bank_account = customer.default_source
                 payment_type = 'ach'
+            print('customer source data is below')
+            print(customer.sources.data)
+            print('first payment type is {}'.format(payment_type))
             print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
         except stripe.error.CardError as e: # stripe returned an error on the credit card
             body = e.json_body
