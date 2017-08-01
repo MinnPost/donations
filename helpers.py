@@ -67,11 +67,11 @@ def amount_to_charge(entry):
         processing_percent = 0.022
         fixed_fee = 0.3
 
-        if 'payment_type' in entry or 'Card_type__c' in entry:
+        if 'payment_type' in entry or 'Card_type__c' in entry or 'Stripe_Bank_Account__c' in entry:
             if entry.get('payment_type') == 'American Express' or entry.get('Card_type__c') == 'American Express':
                 processing_percent = 0.035
                 fixed_fee = 0
-            elif entry.get('payment_type') == 'ach':
+            elif entry.get('payment_type') == 'ach' or entry.get('Stripe_Bank_Account__c') is not None:
                 processing_percent = 0.008
                 fixed_fee = 0
         new_amount = (amount + fixed_fee) / (1 - processing_percent)
