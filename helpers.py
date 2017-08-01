@@ -78,7 +78,6 @@ def amount_to_charge(entry):
         new_amount = (amount + fixed_fee) / (1 - processing_percent)
         processing_fee = new_amount - amount
         fees = round(processing_fee, 2)
-        print('there is no payment type')
 
     else:
         fees = 0

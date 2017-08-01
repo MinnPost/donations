@@ -1161,6 +1161,7 @@ def charge_ajax():
         if pay_fees == '1':
             # get fee amount to send to stripe; user does not see this
             if 'payment_type' in request.form:
+                print('store payment type in session as {}'.format(request.form['payment_type']))
                 session['payment_type'] = request.form['payment_type']
 
     email = request.form['email']
@@ -1170,7 +1171,6 @@ def charge_ajax():
 
     stripe_card = ''
     stripe_bank_account = ''
-    payment_type = ''
 
     if email_is_valid and customer_id is '': # this is a new customer
     # if it is a new customer, assume they only have one payment method and it should be the default
@@ -1351,9 +1351,6 @@ def charge_ajax():
             session['quantity'] = quantity
         else:
             session['quantity'] = ''
-
-        session['payment_type'] = payment_type
-        print('payment type is {}'.format(payment_type))
 
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
