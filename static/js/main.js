@@ -1808,6 +1808,7 @@ global.Payment = Payment;
       if (options.plaid_env != '' && options.key != '' && typeof Plaid !== 'undefined') {
         var linkHandler = Plaid.create({
           selectAccount: true,
+          apiVersion: 'v2',
           env: options.plaid_env,
           clientName: 'MinnPost',
           key: options.plaid_public_key,
@@ -1840,7 +1841,7 @@ global.Payment = Payment;
             // get the account validated by ajax
             $.ajax({
               url:'/plaid_token/',
-              cache: false,
+              //cache: false,
               data: $(supportform).serialize(),
               type: 'POST'
             })
@@ -1866,7 +1867,7 @@ global.Payment = Payment;
 
             
           },
-          onExit: function() {
+          onExit: function(err, metadata) {
             // The user exited the Link flow.
           },
         });

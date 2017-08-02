@@ -33,6 +33,7 @@ python-editor==0.5
 pytz==2016.7
 raven==5.8.1
 raven[flask]==5.31.0
+plaid-python==2.0.2
 redis==2.10.5
 requests==2.9.0
 singledispatch==3.4.0.3
