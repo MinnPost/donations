@@ -1228,7 +1228,7 @@ global.Payment = Payment;
     }, // analyticsTrackingStep
 
     calculateFees: function(payment_type) {
-
+      // todo: we need to run this on page load as well, if the card form field has any value in it
       this.options.fixed_fee = parseFloat(this.options.fixed_amount);
 
       var percentage = this.options.percentage;
