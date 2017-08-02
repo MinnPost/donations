@@ -21,6 +21,9 @@ from helpers import checkLevel, amount_to_charge
 
 from flask_sslify import SSLify
 
+from plaid import Client
+from plaid.errors import APIError, ItemError
+
 from config import FLASK_SECRET_KEY
 from config import DEFAULT_CAMPAIGN_ONETIME
 from config import DEFAULT_CAMPAIGN_RECURRING
@@ -50,6 +53,8 @@ from config import ADVERTISING_CAMPAIGN_ID
 from config import TOP_SWAG_MINIMUM_LEVEL
 from config import SEPARATE_SWAG_MINIMUM_LEVEL
 from config import MAIN_SWAG_MINIMUM_LEVEL
+from config import PLAID_CLIENT_ID
+from config import PLAID_SECRET
 from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
 from config import SHOW_ACH
@@ -62,8 +67,6 @@ from salesforce import get_report
 #from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
 from app_celery import make_celery
-
-from plaid import get_bank_token
 
 import batch
 
@@ -1118,10 +1121,14 @@ def plaid_token():
     public_token = request.form['public_token']
     account_id = request.form['account_id']
 
-    result = get_bank_token(public_token, account_id)
+    client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET, public_key=PLAID_PUBLIC_KEY, environment=PLAID_ENVIRONMENT)
+    exchange_token_response = client.Item.public_token.exchange(public_token)
+    access_token = exchange_token_response['access_token']
 
-    if 'stripe_bank_account_token' in result:
-        response = result
+    stripe_response = client.Processor.stripeBankAccountTokenCreate(access_token, account_id)
+
+    if 'stripe_bank_account_token' in stripe_response:
+        response = stripe_response
     else:
         response = {'error' : 'We were unable to connect to your account. Please try again.'}
     
