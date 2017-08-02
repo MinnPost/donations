@@ -1934,7 +1934,6 @@ global.Payment = Payment;
           var valid_cvv = Payment.fns.validateCardCVC($(options.cc_cvv_selector, element).val(), options.cardType);
           if (valid_cc === false || valid_exp === false || valid_cvv === false) {
             //console.log('cc ' + valid_cc + ' exp ' + valid_exp + ' cvv ' + valid_cvv);
-            // todo: this needs an error message
             valid = false;
             //$(options.cc_num_selector, element).parent().addClass('error');
             if (valid_cc === false) {
