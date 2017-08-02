@@ -1107,32 +1107,46 @@
           var valid_exp = Payment.fns.validateCardExpiry(exp.month, exp.year);
           var valid_cvv = Payment.fns.validateCardCVC($(options.cc_cvv_selector, element).val(), options.cardType);
           if (valid_cc === false || valid_exp === false || valid_cvv === false) {
-            //that.debug('cc ' + valid_cc + ' exp ' + valid_exp + ' cvv ' + valid_cvv);
+            //console.log('cc ' + valid_cc + ' exp ' + valid_exp + ' cvv ' + valid_cvv);
             // todo: this needs an error message
             valid = false;
-            $(options.cc_num_selector, element).parent().addClass('error');
+            //$(options.cc_num_selector, element).parent().addClass('error');
             if (valid_cc === false) {
+              $(options.cc_num_selector).after('<p class="card-instruction invalid cc-error">Your credit card number is not valid. Please try again.</p>');
               $(options.cc_num_selector, element).addClass('error');
+              $(options.cc_num_selector, element).parent().addClass('error');
             } else {
               $(options.cc_exp_selector, element).removeClass('error');
               $(options.cc_cvv_selector, element).removeClass('error');
+              $(options.cc_exp_selector, element).parent().removeClass('error');
+              $(options.cc_cvv_selector, element).parent().removeClass('error');
             }
             if (valid_exp === false) {
+              $(options.cc_exp_selector).after('<p class="card-instruction invalid cc-error">Your credit card expiration date is not valid. Please try again.</p>');
               $(options.cc_exp_selector, element).addClass('error');
+              $(options.cc_exp_selector, element).parent().addClass('error');
             } else {
               $(options.cc_num_selector, element).removeClass('error');
               $(options.cc_cvv_selector, element).removeClass('error');
+              $(options.cc_num_selector, element).parent().removeClass('error');
+              $(options.cc_cvv_selector, element).parent().removeClass('error');
             }
             if (valid_cvv === false) {
+              $(options.cc_cvv_selector).after('<p class="card-instruction invalid cc-error">Your credit card CVC number is not valid. Please try again.</p>');
               $(options.cc_cvv_selector, element).addClass('error');
+              $(options.cc_cvv_selector, element).parent().addClass('error');
             } else {
               $(options.cc_num_selector, element).removeClass('error');
               $(options.cc_exp_selector, element).removeClass('error');
+              $(options.cc_num_selector, element).parent().removeClass('error');
+              $(options.cc_exp_selector, element).parent().removeClass('error');
             }
           } else {
             $(options.cc_num_selector, element).parent().removeClass('error');
             $(options.cc_num_selector, element).removeClass('error');
+            $(options.cc_exp_selector, element).parent().removeClass('error');
             $(options.cc_exp_selector, element).removeClass('error');
+            $(options.cc_cvv_selector, element).parent().removeClass('error');
             $(options.cc_cvv_selector, element).removeClass('error');
           }
         } else if (payment_method === 'ach') {

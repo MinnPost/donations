@@ -339,6 +339,10 @@ textarea {
     color: $minnpost-red-error;
   }
 
+  &.cc-error {
+    font-family: $heading-font-family;
+  }
+
   /*&.valid {
     color: $valid;
   }*/
