@@ -1162,13 +1162,15 @@ def charge_ajax():
     else:
         yearly = 1
     level = checkLevel(amount, frequency, yearly)
+
+    payment_type = ''
     if 'pay_fees' in request.form:
         pay_fees = request.form['pay_fees']
         if pay_fees == '1':
-            # get fee amount so the user can see it
-            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
-            amount_plus_fees = amount_to_charge(entry)
-            amount_formatted = format(amount_plus_fees / 100, ',.2f')
+            # get fee amount to send to stripe; user does not see this
+            if 'payment_type' in request.form:
+                payment_type = request.form['payment_type']
+                session['payment_type'] = payment_type
 
     email = request.form['email']
     first_name = request.form['first_name']
@@ -1265,11 +1267,15 @@ def charge_ajax():
 
         extra_values = {}
 
-        # if we have a new source for an existing customer, add it to extra valeus
+        # if we have a new source, add it to extra values
         if stripe_card != '':
             extra_values['stripe_card'] = stripe_card
         elif stripe_bank_account != '':
             extra_values['stripe_bank_account'] = stripe_bank_account
+
+        # if we need to set the payment type before charging, add it to extra values
+        if payment_type != '':
+            extra_values['payment_type'] = payment_type
 
         # if we specify opportunity type and/or subtype, put it in the session
         if 'opp_type' in request.form:
@@ -1361,6 +1367,7 @@ def charge_ajax():
         # this adds the contact and the opportunity to salesforce
         add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
         print('Done with contact and opportunity {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
+        # the payment type here won't work because it doesn't get sent to the method, but to the template
         return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session)
         #body = transaction.id
         #return jsonify(body)
@@ -1409,7 +1416,7 @@ def thanks():
         pay_fees = request.form['pay_fees']
         if pay_fees == '1':
             # get fee amount so the user can see it
-            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees}
+            entry = {'Amount': amount, 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': session['payment_type'] }
             amount_plus_fees = amount_to_charge(entry)
             amount_formatted = format(amount_plus_fees / 100, ',.2f')
 

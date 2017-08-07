@@ -31,8 +31,10 @@
     'active' : 'panel--review',
     'confirm' : 'panel--confirmation',
     'query' : 'step',
-    'percentage' : 0.029,
+    'percentage' : 0.022,
     'fixed_amount' : 0.3,
+    'amex_percentage': 0.035,
+    'ach_percentage': 0.008,
     'pay_cc_processing_selector' : 'input[id="edit-pay-fees"]',
     'level_amount_selector' : '#panel--review .amount .level-amount',
     'original_amount_selector' : '#amount',
@@ -213,7 +215,7 @@
 
       if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options, reset); // processing fees
-        $(this.options.review_step_selector).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
+        $(this.options.credit_card_fieldset).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
       }
 
       if ($(this.options.review_step_selector).length > 0) {
@@ -399,6 +401,32 @@
 
     }, // analyticsTrackingStep
 
+    calculateFees: function(payment_type) {
+      // todo: we need to run this on page load as well, if the card form field has any value in it
+      this.options.fixed_fee = parseFloat(this.options.fixed_amount);
+
+      var percentage = this.options.percentage;
+      var fixed_amount = this.options.fixed_amount;
+      var fixed_fee = this.options.fixed_fee;
+
+      if (payment_type === 'amex') {
+        percentage = this.options.amex_percentage;
+        fixed_amount = 0;
+        fixed_fee = 0;
+      } else if (payment_type === 'ach') {
+        percentage = this.options.ach_percentage;
+        fixed_amount = 0;
+        fixed_fee = 0;
+      }
+
+      this.options.processing_percent = parseFloat(percentage);
+      this.options.new_amount = (this.options.original_amount + fixed_fee) / (1 - this.options.processing_percent);
+      this.options.processing_fee = this.options.new_amount - this.options.original_amount;
+      this.options.processing_fee = (Math.round(parseFloat(this.options.processing_fee)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
+      this.options.processing_fee_text = this.options.processing_fee;
+
+    },
+
     creditCardProcessingFees: function(options, reset) {
       var full_amount;
       var that = this;
@@ -417,7 +445,6 @@
         $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
         $('#edit-pay-fees').val(0);
         $('.processing-explain').show();
-        //$('#amount').val(full_amount);
       }
       $('.add-credit-card-processing').click(function(event) {
         $('.amount .level-amount').addClass('full-amount');
@@ -436,7 +463,6 @@
         }
         $('.add-credit-card-processing').toggleClass('remove');
         $(options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
-        //$('#amount').val(parseFloat(full_amount).toFixed(2));
         event.stopPropagation();
         event.preventDefault();
       });
@@ -896,6 +922,8 @@
 
     creditCardFields: function(element, options) {
 
+      var that = this;
+
       if ($(options.choose_payment).length > 0) {      
         if ($(options.choose_payment + ' input').is(':checked')) {
           var checked = $(options.choose_payment + ' input:checked').attr('id');
@@ -931,6 +959,11 @@
           /*if (options.cardType !== null) {            
             $('.card-image').prop('class', 'card-image ' + options.cardType);
           }*/
+          if (options.cardType !== null) {
+            that.calculateFees(options.cardType);
+          }
+          $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
+          $('#edit-pay-fees').val(0);
           $('.card-image').prop('class', 'card-image ' + $('#cc-number').prop('class'));
         });
 
@@ -945,6 +978,7 @@
     }, // creditCardFields
 
     achFields: function(element, options) {
+      var that = this;
       if (options.plaid_env != '' && options.key != '' && typeof Plaid !== 'undefined') {
         var linkHandler = Plaid.create({
           selectAccount: true,
@@ -994,6 +1028,9 @@
                 //console.dir(response);
                 $(options.donate_form_selector).prepend('<input type="hidden" id="bankToken" name="bankToken" value="' + response.stripe_bank_account_token + '" />');
                 $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
+                that.calculateFees('ach'); // calculate the ach fees
+                $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
+                $('#edit-pay-fees').val(0);
                 // add the field(s) we need to the form for submitting
               }
             })
@@ -1070,31 +1107,45 @@
           var valid_exp = Payment.fns.validateCardExpiry(exp.month, exp.year);
           var valid_cvv = Payment.fns.validateCardCVC($(options.cc_cvv_selector, element).val(), options.cardType);
           if (valid_cc === false || valid_exp === false || valid_cvv === false) {
-            //that.debug('cc ' + valid_cc + ' exp ' + valid_exp + ' cvv ' + valid_cvv);
+            //console.log('cc ' + valid_cc + ' exp ' + valid_exp + ' cvv ' + valid_cvv);
             valid = false;
-            $(options.cc_num_selector, element).parent().addClass('error');
+            //$(options.cc_num_selector, element).parent().addClass('error');
             if (valid_cc === false) {
+              $(options.cc_num_selector).after('<p class="card-instruction invalid cc-error">Your credit card number is not valid. Please try again.</p>');
               $(options.cc_num_selector, element).addClass('error');
+              $(options.cc_num_selector, element).parent().addClass('error');
             } else {
               $(options.cc_exp_selector, element).removeClass('error');
               $(options.cc_cvv_selector, element).removeClass('error');
+              $(options.cc_exp_selector, element).parent().removeClass('error');
+              $(options.cc_cvv_selector, element).parent().removeClass('error');
             }
             if (valid_exp === false) {
+              $(options.cc_exp_selector).after('<p class="card-instruction invalid cc-error">Your credit card expiration date is not valid. Please try again.</p>');
               $(options.cc_exp_selector, element).addClass('error');
+              $(options.cc_exp_selector, element).parent().addClass('error');
             } else {
               $(options.cc_num_selector, element).removeClass('error');
               $(options.cc_cvv_selector, element).removeClass('error');
+              $(options.cc_num_selector, element).parent().removeClass('error');
+              $(options.cc_cvv_selector, element).parent().removeClass('error');
             }
             if (valid_cvv === false) {
+              $(options.cc_cvv_selector).after('<p class="card-instruction invalid cc-error">Your credit card CVC number is not valid. Please try again.</p>');
               $(options.cc_cvv_selector, element).addClass('error');
+              $(options.cc_cvv_selector, element).parent().addClass('error');
             } else {
               $(options.cc_num_selector, element).removeClass('error');
               $(options.cc_exp_selector, element).removeClass('error');
+              $(options.cc_num_selector, element).parent().removeClass('error');
+              $(options.cc_exp_selector, element).parent().removeClass('error');
             }
           } else {
             $(options.cc_num_selector, element).parent().removeClass('error');
             $(options.cc_num_selector, element).removeClass('error');
+            $(options.cc_exp_selector, element).parent().removeClass('error');
             $(options.cc_exp_selector, element).removeClass('error');
+            $(options.cc_cvv_selector, element).parent().removeClass('error');
             $(options.cc_cvv_selector, element).removeClass('error');
           }
         } else if (payment_method === 'ach') {
@@ -1127,8 +1178,18 @@
                 } else {
                   supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));  
                 }
+                if ($('input[name="payment_type"]').length > 0) {
+                  $('input[name="payment_type"]').val(response.card.brand);
+                } else {
+                  supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(response.card.brand));  
+                }
               } else {
-                that.debug('we have a bank token');
+                //that.debug('we have a bank token');
+                if ($('input[name="payment_type"]').length > 0) {
+                  $('input[name="payment_type"]').val('ach');
+                } else {
+                  supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val('ach'));  
+                }
               }
 
               // get the card validated first by ajax

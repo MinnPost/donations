@@ -1,11 +1,10 @@
 <section class="panel panel--form" id="panel--review">
   <div class="support support--summary">
     <fieldset class="amount">
-      <h1>$<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency.title() }}</span> Donation</h1> <!-- load server-side from parsing querystring -->
       <ul class="actions actions--edit-amount clear-block">
         <li><a href="https://www.minnpost.com/support/" id="edit_url">Edit</a></li>
-        <li><label><input type="checkbox" value="1" id="edit-pay-fees" name="pay_fees"> Cover MinnPost's credit card fees</label></li>
       </ul>
+      <h1>$<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency.title() }}</span> Donation</h1> <!-- load server-side from parsing querystring -->
       <fieldset class="honor">
         <p>This donation is <a href="#" class="in-honor">in honor</a> or <a href="#" class="in-memory">in memory</a>...</p>
         <fieldset class="in-honor">

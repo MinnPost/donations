@@ -20,9 +20,13 @@
 		padding-left: 0;
 		font-size: $micro-size;
 	}
-	.honor, .actions--edit-amount {
+	.honor, .actions--edit-amount, .actions--pay-fees {
 		font-family: $helvetica;
 		font-size: $small-size;
+	}
+	.actions--edit-amount {
+		width: auto;
+		float: right;
 	}
 	.honor {
 		position: relative;
@@ -51,7 +55,7 @@
 			}
 		}
 	}
-	.actions--edit-amount {
+	.actions--edit-amount, .actions--pay-fees {
 		line-height: normal;
 		font-size: 55%;
 		margin-bottom: $half-space;
@@ -132,7 +136,7 @@
 		h1 {
 			font-size: $h1-size;
 		}
-		.actions--edit-amount {
+		.actions--edit-amount, .actions--pay-fees {
 			font-size: 80%;
 		}
 	}

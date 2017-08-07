@@ -14,6 +14,9 @@
       <input type="tel" maxlength="128" data-stripe="cvc" id="cc-cvc" size="60" value="" autocomplete="off" placeholder="***" required />
     </div>
   </div>
+  <ul class="actions actions--pay-fees clear-block">
+    <li><label><input type="checkbox" value="1" id="edit-pay-fees" name="pay_fees"> Cover MinnPost's credit card fees</label></li>
+  </ul>
 </fieldset>
 {% else %}
 <fieldset class="payment-method-group">
@@ -43,5 +46,8 @@
       <p><a href="#" id="authorize-ach">Sign in to your bank account</a></p>
     </div>
   </div>
+  <ul class="actions actions--pay-fees clear-block">
+    <li><label><input type="checkbox" value="1" id="edit-pay-fees" name="pay_fees"> Cover MinnPost's credit card fees</label></li>
+  </ul>
 </fieldset>
 {% endif %}

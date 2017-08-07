@@ -191,6 +191,10 @@ textarea {
     }
   }
 
+  .actions--pay-fees {
+    margin-bottom: $h4-space;
+  }
+
 }
 
 .js .payment-method-group .payment-method {
@@ -333,6 +337,10 @@ textarea {
 
   &.invalid {
     color: $minnpost-red-error;
+  }
+
+  &.cc-error {
+    font-family: $heading-font-family;
   }
 
   /*&.valid {
