@@ -1546,7 +1546,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     if 'Id' in contact:
         contact_id = contact['Id']
     else:
-        if 'url' in contact:
+        if 'url' in contact['attributes']:
             contact_id = contact['attributes']['url'].split('Contact/')[1]
             print('Error: no Id was in the contact, so we split it to get the id of {}'.format(contact_id))
         else:
