@@ -361,6 +361,9 @@ def update_account(self, form=None, account=None):
     Updates the user's account in Salesforce
     """
 
+    print('try to update the account. print it below')
+    print(account)
+
     if account is None:
         raise Exception("Value for 'account' must be specified.")
     if form is None:
