@@ -309,8 +309,8 @@ class SalesforceConnection(object):
         # if the response is empty then nothing matched and we
         # have to create a contact:
         if len(response) < 1:
-            print('create a new contact right now. response below')
-            print(response)
+            #print('create a new contact right now. response below')
+            #print(response)
             contact = self.create_contact(form)
             created = True
             return created, contact
@@ -363,8 +363,8 @@ def update_account(self, form=None, account=None):
     Updates the user's account in Salesforce
     """
 
-    print('try to update the account. print it below')
-    print(account)
+    #print('try to update the account. print it below')
+    #print(account)
 
     if account is None:
         raise Exception("Value for 'account' must be specified.")
