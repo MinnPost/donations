@@ -309,6 +309,8 @@ class SalesforceConnection(object):
         # if the response is empty then nothing matched and we
         # have to create a contact:
         if len(response) < 1:
+            print('create a new contact right now. response below')
+            print(response)
             contact = self.create_contact(form)
             created = True
             return created, contact
