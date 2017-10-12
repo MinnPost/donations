@@ -1540,9 +1540,15 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     else:
         installment_period = ''
 
-    if 'Id' not in contact:
-        print('Error: no Id is in the contact. The email for this donation is {}.'.format(email))
-        print(contact)
+    if 'Id' in contact:
+        contact_id = contact['Id']
+    else:
+        if 'url' in contact:
+            contact_id = contact['attributes']['url'].split('Contact/')[1]
+            print('Error: no Id was in the contact, so we split it to get the id of {}'.format(contact_id))
+        else:
+            print('Error: no Id and also no URL is in the contact. The email for this donation is {}.'.format(email))
+            print(contact)
     if contact == None:
         print('Error: contact for recurring donation is None. Email is {}'.format(email))
 
@@ -1556,7 +1562,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'npe03__Amount__c': '{}'.format(amount),
         'Anonymous__c': anonymous,
         'npe03__Recurring_Donation_Campaign__c': '{}'.format(campaign),
-        'npe03__Contact__c': '{}'.format(contact['Id']),
+        'npe03__Contact__c': '{}'.format(contact_id),
         'Credited_as__c': credited_as,
         'npe03__Date_Established__c': today,
         'Card_type__c': card_type,
