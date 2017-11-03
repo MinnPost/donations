@@ -651,11 +651,13 @@
       $(options.swag_selector_choose_multiple, element).find('label, .swag').show();
       var count_checked = $(options.swag_selector_choose_multiple + ' input[name="' + options.swag_choose_multiple_name + '"]:checked').length;
       $('input', options.swag_selector_choose_multiple).change(function() { // if user clicks one of the atlantic radio buttons
-        count_checked = $(options.swag_selector_choose_multiple + ' input[name="' + options.swag_choose_multiple_name + '"]:checked').length;
-        if (maximum_choose === count_checked) {
-          $('input:not(:checked)', options.swag_selector_choose_multiple).attr('disabled',true);
-        } else {
-          $('input:not(:checked)', options.swag_selector_choose_multiple).attr('disabled',false);
+        if ( $(this).prop('type') == 'checkbox') {
+          count_checked = $(options.swag_selector_choose_multiple + ' input[name="' + options.swag_choose_multiple_name + '"]:checked').length;
+          if (maximum_choose === count_checked) {
+            $('input:not(:checked)', options.swag_selector_choose_multiple).attr('disabled',true);
+          } else {
+            $('input:not(:checked)', options.swag_selector_choose_multiple).attr('disabled',false);
+          }
         }
       });
 
