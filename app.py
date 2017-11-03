@@ -162,7 +162,7 @@ def minnpost_form():
     installments = 'None'
     openended_status = 'Open'
     level = checkLevel(amount, frequency, yearly)
-    maximum_choose_multiple_int = app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))]
+    maximum_choose_multiple_int = int(app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))])
     maximum_choose_multiple_level_text = app.maximum_choose_multiple_level_text['{}'.format(level.get('levelint', 0))]
 
     if request.args.get('firstname'):
