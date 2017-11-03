@@ -53,6 +53,8 @@ from config import ADVERTISING_CAMPAIGN_ID
 from config import TOP_SWAG_MINIMUM_LEVEL
 from config import SEPARATE_SWAG_MINIMUM_LEVEL
 from config import MAIN_SWAG_MINIMUM_LEVEL
+from config import MAXIMUM_CHOOSE_MULTIPLE_LEVEL_INT
+from config import MAXIMUM_CHOOSE_MULTIPLE_LEVEL_TEXT
 from config import PLAID_CLIENT_ID
 from config import PLAID_SECRET
 from config import PLAID_PUBLIC_KEY
@@ -88,6 +90,8 @@ app.allow_donation_notification = ALLOW_DONATION_NOTIFICATION
 app.top_swag_minimum_level = TOP_SWAG_MINIMUM_LEVEL
 app.separate_swag_minimum_level = SEPARATE_SWAG_MINIMUM_LEVEL
 app.main_swag_minimum_level = MAIN_SWAG_MINIMUM_LEVEL
+app.maximum_choose_multiple_level_int = MAXIMUM_CHOOSE_MULTIPLE_LEVEL_INT
+app.maximum_choose_multiple_level_text = MAXIMUM_CHOOSE_MULTIPLE_LEVEL_TEXT
 
 #app.wsgi_app = SassMiddleware(app.wsgi_app, {
 #        'app': ('static/sass', 'static/css', 'static/css')
@@ -158,6 +162,9 @@ def minnpost_form():
     installments = 'None'
     openended_status = 'Open'
     level = checkLevel(amount, frequency, yearly)
+    maximum_choose_multiple_int = app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))]
+    maximum_choose_multiple_level_text = app.maximum_choose_multiple_level_text['{}'.format(level.get('levelint', 0))]
+
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
     else:
@@ -180,6 +187,7 @@ def minnpost_form():
         top_swag_minimum_level = app.top_swag_minimum_level,
         separate_swag_minimum_level = app.separate_swag_minimum_level,
         main_swag_minimum_level = app.main_swag_minimum_level,
+        maximum_choose_multiple_int = maximum_choose_multiple_int, maximum_choose_multiple_level_text = maximum_choose_multiple_level_text,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 

@@ -876,6 +876,8 @@ global.Payment = Payment;
     'swag_selector' : '.swag',
     'separate_swag_selector' : 'fieldset.swag--separate',
     'separate_swag_redeem' : '.swag-redeem--separate',
+    'swag_selector_choose_multiple' : '.swag--choose-multiple',
+    'swag_choose_multiple_name' : 'swag_thankyou[]',
     'atlantic_status' : 'input[name="swag_atlanticsubscription"]',
     'atlantic_existing' : '#atlantic_existing',
     'atlantic_selector' : '.form-item--atlantic_id',
@@ -1468,6 +1470,19 @@ global.Payment = Payment;
 
       $(options.atlantic_status, element).change(function() { // if user clicks one of the atlantic radio buttons
         that.swag(element, options, true);
+      });
+
+      var maximum_choose = $(options.swag_selector_choose_multiple, element).data('maximum-choose');
+      $(options.swag_selector_choose_multiple, element).show();
+      $(options.swag_selector_choose_multiple, element).find('label, .swag').show();
+      var count_checked = $(options.swag_selector_choose_multiple + ' input[name="' + options.swag_choose_multiple_name + '"]:checked').length;
+      $('input', options.swag_selector_choose_multiple).change(function() { // if user clicks one of the atlantic radio buttons
+        count_checked = $(options.swag_selector_choose_multiple + ' input[name="' + options.swag_choose_multiple_name + '"]:checked').length;
+        if (maximum_choose === count_checked) {
+          $('input:not(:checked)', options.swag_selector_choose_multiple).attr('disabled',true);
+        } else {
+          $('input:not(:checked)', options.swag_selector_choose_multiple).attr('disabled',false);
+        }
       });
 
     }, // swag
