@@ -61,7 +61,7 @@ from config import PLAID_SECRET
 from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
 from config import SHOW_ACH
-from config import DEFAULT_FREQUENCY
+#from config import DEFAULT_FREQUENCY
 from salesforce import add_customer_and_charge
 from salesforce import update_account
 from salesforce import get_opportunity
