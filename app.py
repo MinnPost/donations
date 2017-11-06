@@ -3,6 +3,8 @@ import sys
 import re
 from datetime import datetime
 
+from num2words import num2words
+
 from flask import Flask, render_template, request, session, jsonify, json, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
@@ -54,12 +56,12 @@ from config import TOP_SWAG_MINIMUM_LEVEL
 from config import SEPARATE_SWAG_MINIMUM_LEVEL
 from config import MAIN_SWAG_MINIMUM_LEVEL
 from config import MAXIMUM_CHOOSE_MULTIPLE_LEVEL_INT
-from config import MAXIMUM_CHOOSE_MULTIPLE_LEVEL_TEXT
 from config import PLAID_CLIENT_ID
 from config import PLAID_SECRET
 from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
 from config import SHOW_ACH
+from config import DEFAULT_FREQUENCY
 from salesforce import add_customer_and_charge
 from salesforce import update_account
 from salesforce import get_opportunity
@@ -91,7 +93,6 @@ app.top_swag_minimum_level = TOP_SWAG_MINIMUM_LEVEL
 app.separate_swag_minimum_level = SEPARATE_SWAG_MINIMUM_LEVEL
 app.main_swag_minimum_level = MAIN_SWAG_MINIMUM_LEVEL
 app.maximum_choose_multiple_level_int = MAXIMUM_CHOOSE_MULTIPLE_LEVEL_INT
-app.maximum_choose_multiple_level_text = MAXIMUM_CHOOSE_MULTIPLE_LEVEL_TEXT
 
 #app.wsgi_app = SassMiddleware(app.wsgi_app, {
 #        'app': ('static/sass', 'static/css', 'static/css')
@@ -163,7 +164,7 @@ def minnpost_form():
     openended_status = 'Open'
     level = checkLevel(amount, frequency, yearly)
     maximum_choose_multiple_int = int(app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))])
-    maximum_choose_multiple_level_text = app.maximum_choose_multiple_level_text['{}'.format(level.get('levelint', 0))]
+    maximum_choose_multiple_level_text = num2words(int(app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))]))
 
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')

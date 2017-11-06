@@ -27,6 +27,7 @@ Jinja2==2.8
 kombu==3.0.30
 Mako==1.0.3
 MarkupSafe==0.23
+num2words==0.5.5
 opbeat==3.1.4
 psycopg2==2.6
 python-editor==0.5
