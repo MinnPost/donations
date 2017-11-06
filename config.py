@@ -31,6 +31,7 @@ CHARGE_MINUTES_FREQUENCY = int(os.getenv('CHARGE_MINUTES_FREQUENCY', 1440))
 # more of our stuff
 ACH_MINUTES_FREQUENCY = int(os.getenv('ACH_MINUTES_FREQUENCY', 1440))
 SHOW_ACH = os.getenv('SHOW_ACH', False)
+SHOW_THANKYOU_LISTS = os.getenv('SHOW_THANKYOU_LISTS', False)
 CELERYBEAT_SCHEDULE = {
         'every-five-minutes': {
             'task': 'batch.charge_cards',

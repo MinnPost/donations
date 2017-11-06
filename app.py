@@ -62,6 +62,7 @@ from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
 from config import SHOW_ACH
 #from config import DEFAULT_FREQUENCY
+from config import SHOW_THANKYOU_LISTS
 from salesforce import add_customer_and_charge
 from salesforce import update_account
 from salesforce import get_opportunity
@@ -93,6 +94,7 @@ app.top_swag_minimum_level = TOP_SWAG_MINIMUM_LEVEL
 app.separate_swag_minimum_level = SEPARATE_SWAG_MINIMUM_LEVEL
 app.main_swag_minimum_level = MAIN_SWAG_MINIMUM_LEVEL
 app.maximum_choose_multiple_level_int = MAXIMUM_CHOOSE_MULTIPLE_LEVEL_INT
+app.show_thankyou_lists = SHOW_THANKYOU_LISTS
 
 #app.wsgi_app = SassMiddleware(app.wsgi_app, {
 #        'app': ('static/sass', 'static/css', 'static/css')
@@ -188,7 +190,7 @@ def minnpost_form():
         top_swag_minimum_level = app.top_swag_minimum_level,
         separate_swag_minimum_level = app.separate_swag_minimum_level,
         main_swag_minimum_level = app.main_swag_minimum_level,
-        maximum_choose_multiple_int = maximum_choose_multiple_int, maximum_choose_multiple_level_text = maximum_choose_multiple_level_text,
+        show_thankyou_lists = app.show_thankyou_lists, maximum_choose_multiple_int = maximum_choose_multiple_int, maximum_choose_multiple_level_text = maximum_choose_multiple_level_text,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
