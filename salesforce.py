@@ -1649,6 +1649,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
     if flask_id != None:
         form = form.to_dict()
         form['flask_id'] = flask_id
+        print('the whole form object')
+        print(form)
 
     if (form['recurring'] == 'one-time'):
         print("----One time payment...")
