@@ -407,6 +407,8 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     Format an opportunity for insertion.
     """
 
+    print('this is the start?')
+
     today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     amount = _format_amount(form['amount'])
 
