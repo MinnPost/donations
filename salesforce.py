@@ -725,14 +725,11 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         swag_other_benefits = ''
 
-    try:
-        swag_thankyou = form.getlist('swag_thankyou')
-        print('thank you swag is {}'.format(swag_thankyou))
-        swag_thankyou_list = ''
-        for s in swag_thankyou:
-            swag_thankyou_list = swag_thankyou_list + s.encode('utf-8') + ';'
-    except:
-        swag_thankyou_list = ''
+    swag_thankyou = form.getlist('swag_thankyou')
+    print('thank you swag is {}'.format(swag_thankyou))
+    swag_thankyou_list = ''
+    for s in swag_thankyou:
+        swag_thankyou_list = swag_thankyou_list + s.encode('utf-8') + ';'
 
     print('list is {}'.format(swag_thankyou_list))
 
