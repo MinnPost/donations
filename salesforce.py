@@ -730,6 +730,10 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         swag_thankyou_lists = ''
 
+    print('lists value')
+    print(swag_thankyou_lists)
+    print('above is list value')
+
     try:
         if form['pay_fees'] == '1':
             pay_fees = True
