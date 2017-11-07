@@ -726,6 +726,9 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         swag_other_benefits = ''
 
     if 'swag_thankyou_lists' in form:
+        print('there is a value')
+        print(form['swag_thankyou_lists'])
+        print('that is the value')
         swag_thankyou_lists = form['swag_thankyou_lists']
     else:
         swag_thankyou_lists = ''
