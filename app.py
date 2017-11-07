@@ -62,14 +62,13 @@ from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
 from config import SHOW_ACH
 from config import SHOW_THANKYOU_LISTS
-#from config import DEFAULT_FREQUENCY
+from config import DEFAULT_FREQUENCY
 from salesforce import add_customer_and_charge
 from salesforce import update_account
 from salesforce import get_opportunity
 from salesforce import get_recurring
 from salesforce import get_campaign
 from salesforce import get_report
-#from salesforce import add_tw_customer_and_charge
 from salesforce import update_donation_object
 from app_celery import make_celery
 
@@ -126,64 +125,64 @@ LOGGING = {
 #if app.config['ENABLE_SENTRY']:
 #    sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
 
-#@app.route('/')
-#def minnpost_support():
-#    form = MinnPostForm()
-#
-#    if request.args.get('amount'):
-#        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
-#        if (amount).is_integer():
-#            amount_formatted = int(amount)
-#        else:
-#            amount_formatted = format(amount, ',.2f')
-#    else:
-#        amount = ''
-#        amount_formatted = ''
-#
-#    if request.args.get('campaign'):
-#        campaign = request.args.get('campaign')
-#    else:
-#        campaign = ''
-#
-#    frequency = request.args.get('frequency')
-#    if frequency is None:
-#        frequency = DEFAULT_FREQUENCY
-#    if frequency == 'monthly':
-#        yearly = 12
-#    else:
-#        yearly = 1
-#
-#    if request.args.get('customer_id'):
-#        customer_id = request.args.get('customer_id')
-#    else:
-#        customer_id = ''
-#
-#    if amount != '':
-#        level = checkLevel(amount, frequency, yearly)
-#    else:
-#        level = 0
-#
-#    if request.args.get('firstname'):
-#        first_name = request.args.get('firstname')
-#    else:
-#        first_name = ''
-#    
-#    if request.args.get('lastname'):
-#        last_name = request.args.get('lastname')
-#    else:
-#        last_name = ''
-#    
-#    if request.args.get('email'):
-#        email = request.args.get('email')
-#    else:
-#        email = ''
-#
-#    return render_template('minnpost-default.html', form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
-#        frequency=frequency,
-#        yearly=yearly,
-#        level=level,
-#        first_name = first_name,last_name = last_name, email=email,
-#        key=app.config['STRIPE_KEYS']['publishable_key'])
+@app.route('/')
+def minnpost_support():
+    form = MinnPostForm()
+
+    if request.args.get('amount'):
+        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
+        if (amount).is_integer():
+            amount_formatted = int(amount)
+        else:
+            amount_formatted = format(amount, ',.2f')
+    else:
+        amount = ''
+        amount_formatted = ''
+
+    if request.args.get('campaign'):
+        campaign = request.args.get('campaign')
+    else:
+        campaign = ''
+
+    frequency = request.args.get('frequency')
+    if frequency is None:
+        frequency = DEFAULT_FREQUENCY
+    if frequency == 'monthly':
+        yearly = 12
+    else:
+        yearly = 1
+
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    else:
+        customer_id = ''
+
+    if amount != '':
+        level = checkLevel(amount, frequency, yearly)
+    else:
+        level = 0
+
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    else:
+        first_name = ''
+    
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    else:
+        last_name = ''
+    
+    if request.args.get('email'):
+        email = request.args.get('email')
+    else:
+        email = ''
+
+    return render_template('minnpost-default.html', form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
+        frequency=frequency,
+        yearly=yearly,
+        level=level,
+        first_name = first_name,last_name = last_name, email=email,
+        key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # used at support.minnpost.com/give
 @app.route('/give/')
