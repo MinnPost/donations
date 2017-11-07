@@ -1662,11 +1662,12 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
 
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
 
-    form['swag_thankyou_list'] = ";".join([i for i in form.getlist('swag_thankyou')])
+    swags = ";".join([i for i in form.getlist('swag_thankyou')])
 
     if flask_id != None:
         form = form.to_dict()
         form['flask_id'] = flask_id
+        form['swag_thankyou_list'] = swags
 
     if (form['recurring'] == 'one-time'):
         print("----One time payment...")
