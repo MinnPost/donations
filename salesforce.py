@@ -1509,6 +1509,11 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     else:
         swag_other_benefits = ''
 
+    if 'swag_thankyou_lists' in form:
+        swag_thankyou_lists = form['swag_thankyou_lists']
+    else:
+        swag_thankyou_lists = ''
+
 
     open_ended_status = 'Open'
 
@@ -1597,6 +1602,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'Member_benefit_request_Swag__c': swag,
         'Member_benefit_request_Other_benefits__c': swag_other_benefits,
         'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
+        'Member_benefit_special_thank_you_list__c': swag_thankyou_lists,
         'npe03__Open_Ended_Status__c': open_ended_status,
         'Payment_Page_Full_URL__c': full_url,
         'Payment_Type__c': 'Stripe',
