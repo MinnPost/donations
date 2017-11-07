@@ -725,6 +725,9 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         swag_other_benefits = ''
 
+    swag_thankyou_list = form['swag_thankyou_list']
+    print('list is {}'.format(swag_thankyou_list))
+
     #swag_thankyou = form['swag_thankyou']
     #print('thank you swag is {}'.format(swag_thankyou))
     #swag_thankyou_list = ''
@@ -732,9 +735,10 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     #    swag_thankyou_list = swag_thankyou_list + value.encode('utf-8') + ';'
 
     #print('list is {}'.format(swag_thankyou_list))
-    print('list is ')
-    print(form.get('swag_thankyou'))
-    print('that was the list')
+    #print('list is ')
+    #print(form.get('swag_thankyou'))
+    #print('that was the list')
+    #swag_thankyou_list = ''
 
     try:
         if form['pay_fees'] == '1':
@@ -1657,6 +1661,8 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         #reason = ' (encouraged by {})'.format(reason)
 
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
+
+    form['swag_thankyou_list'] = ";".join([i for i in form.getlist('swag_thankyou')])
 
     if flask_id != None:
         form = form.to_dict()
