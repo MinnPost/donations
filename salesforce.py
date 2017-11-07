@@ -726,6 +726,15 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         swag_other_benefits = ''
 
     try:
+        swag_thankyou = form['swag_thankyou[]']
+        swag_thankyou_list = ''
+        for s in swag_thankyou:
+            self.thankyou_count[s] += 1
+            swag_thankyou_list = swag_thankyou_list + s.encode('utf-8') + ';'
+    except:
+        swag_thankyou_list = ''
+
+    try:
         if form['pay_fees'] == '1':
             pay_fees = True
         else:
@@ -790,6 +799,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Member_benefit_request_Swag__c': swag,
             'Member_benefit_request_Other_benefits__c': swag_other_benefits,
             'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
+            'Member_benefit_special_thank_you_list__c': swag_thankyou_list,
             'MinnPost_Invoice__c': invoice,
             'MRpledge_com_ID__c': pledge,
             'Opportunity_Subtype__c': subtype,
