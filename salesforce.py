@@ -725,7 +725,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         swag_other_benefits = ''
 
-    swag_thankyou = form.getlist('swag_thankyou')
+    swag_thankyou = form.getlist['swag_thankyou']
     print('thank you swag is {}'.format(swag_thankyou))
     swag_thankyou_list = ''
     for s in swag_thankyou:
