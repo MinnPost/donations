@@ -62,7 +62,7 @@ from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
 from config import SHOW_ACH
 from config import SHOW_THANKYOU_LISTS
-from config import DEFAULT_FREQUENCY
+#from config import DEFAULT_FREQUENCY
 from salesforce import add_customer_and_charge
 from salesforce import update_account
 from salesforce import get_opportunity
@@ -126,64 +126,64 @@ LOGGING = {
 #if app.config['ENABLE_SENTRY']:
 #    sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
 
-@app.route('/')
-def minnpost_support():
-    form = MinnPostForm()
-
-    if request.args.get('amount'):
-        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
-        if (amount).is_integer():
-            amount_formatted = int(amount)
-        else:
-            amount_formatted = format(amount, ',.2f')
-    else:
-        amount = ''
-        amount_formatted = ''
-
-    if request.args.get('campaign'):
-        campaign = request.args.get('campaign')
-    else:
-        campaign = ''
-
-    frequency = request.args.get('frequency')
-    if frequency is None:
-        frequency = DEFAULT_FREQUENCY
-    if frequency == 'monthly':
-        yearly = 12
-    else:
-        yearly = 1
-
-    if request.args.get('customer_id'):
-        customer_id = request.args.get('customer_id')
-    else:
-        customer_id = ''
-
-    if amount != '':
-        level = checkLevel(amount, frequency, yearly)
-    else:
-        level = 0
-
-    if request.args.get('firstname'):
-        first_name = request.args.get('firstname')
-    else:
-        first_name = ''
-    
-    if request.args.get('lastname'):
-        last_name = request.args.get('lastname')
-    else:
-        last_name = ''
-    
-    if request.args.get('email'):
-        email = request.args.get('email')
-    else:
-        email = ''
-
-    return render_template('minnpost-default.html', form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
-        frequency=frequency,
-        yearly=yearly,
-        level=level,
-        first_name = first_name,last_name = last_name, email=email,
-        key=app.config['STRIPE_KEYS']['publishable_key'])
+#@app.route('/')
+#def minnpost_support():
+#    form = MinnPostForm()
+#
+#    if request.args.get('amount'):
+#        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
+#        if (amount).is_integer():
+#            amount_formatted = int(amount)
+#        else:
+#            amount_formatted = format(amount, ',.2f')
+#    else:
+#        amount = ''
+#        amount_formatted = ''
+#
+#    if request.args.get('campaign'):
+#        campaign = request.args.get('campaign')
+#    else:
+#        campaign = ''
+#
+#    frequency = request.args.get('frequency')
+#    if frequency is None:
+#        frequency = DEFAULT_FREQUENCY
+#    if frequency == 'monthly':
+#        yearly = 12
+#    else:
+#        yearly = 1
+#
+#    if request.args.get('customer_id'):
+#        customer_id = request.args.get('customer_id')
+#    else:
+#        customer_id = ''
+#
+#    if amount != '':
+#        level = checkLevel(amount, frequency, yearly)
+#    else:
+#        level = 0
+#
+#    if request.args.get('firstname'):
+#        first_name = request.args.get('firstname')
+#    else:
+#        first_name = ''
+#    
+#    if request.args.get('lastname'):
+#        last_name = request.args.get('lastname')
+#    else:
+#        last_name = ''
+#    
+#    if request.args.get('email'):
+#        email = request.args.get('email')
+#    else:
+#        email = ''
+#
+#    return render_template('minnpost-default.html', form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
+#        frequency=frequency,
+#        yearly=yearly,
+#        level=level,
+#        first_name = first_name,last_name = last_name, email=email,
+#        key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # used at support.minnpost.com/give
 @app.route('/give/')
@@ -1036,99 +1036,6 @@ def anniversary_party_sponsorship_form():
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
-
-# this is a texas url
-#@app.route('/memberform/')
-#def member_form():
-#    form = DonateForm()
-#    if request.args.get('amount'):
-#        amount = request.args.get('amount')
-#    else:
-#        message = "The page you requested can't be found."
-#        return render_template('error.html', message=message)
-#    installment_period = request.args.get('installmentPeriod')
-#    if installment_period is None:
-#        installment_period = 'None'
-#    installments = 'None'
-#    openended_status = 'Open'
-#    return render_template('member-form.html', form=form, amount=amount,
-#        installment_period=installment_period, installments=installments,
-#        openended_status=openended_status,
-#        key=app.config['STRIPE_KEYS']['publishable_key'])
-
-
-# this is a texas url
-#@app.route('/donateform/')
-#def donate_renew_form():
-#    form = DonateForm()
-#    if request.args.get('amount'):
-#        amount = request.args.get('amount')
-#    else:
-#        amount = 50
-#    openended_status = 'None'
-#    installments = 'None'
-#    installment_period = 'None'
-#    return render_template('donate-form.html', form=form, amount=amount,
-#        installment_period=installment_period, installments=installments,
-#        openended_status=openended_status,
-#        key=app.config['STRIPE_KEYS']['publishable_key'])
-
-
-# this is a texas url
-#@app.route('/circleform/')
-#def circle_form():
-#    form = DonateForm()
-#    if request.args.get('amount'):
-#        amount = request.args.get('amount')
-#    else:
-#        message = "The page you requested can't be found."
-#        return render_template('error.html', message=message)
-#    openended_status = 'None'
-#    installments = request.args.get('installments')
-#    installment_period = request.args.get('installmentPeriod')
-#    return render_template('circle-form.html', form=form, amount=amount,
-#        installment_period=installment_period, installments=installments,
-#        openended_status=openended_status,
-#        key=app.config['STRIPE_KEYS']['publishable_key'])
-
-
-# this is a texas url
-#@app.route('/internal-texasweekly/')
-#def internal_texasweekly_form():
-#    form = TexasWeeklyForm()
-#    if request.args.get('amount'):
-#        amount = request.args.get('amount')
-#    else:
-#        amount = 349
-#    return render_template('internal_texasweekly_form.html', form=form,
-#            amount=amount, key=app.config['STRIPE_KEYS']['publishable_key'])
-
-
-# this is a texas url
-#@app.route('/submit-tw/', methods=['POST'])
-#def submit_tw():
-#    form = TexasWeeklyForm(request.form)
-
-#    email_is_valid = validate_email(request.form['stripeEmail'])
-
-#    if email_is_valid:
-#        customer = stripe.Customer.create(
-#            email=request.form['stripeEmail'],
-#            card=request.form['stripeToken']
-#        )
-#    else:
-#        message = "There was an issue saving your email address."
-#        return render_template('error.html', message=message)
-
-#    if form.validate():
-#        print("----Adding TW subscription...")
-#        add_tw_customer_and_charge.delay(form=request.form,
-#                customer=customer)
-#        return render_template('charge.html')
-#    else:
-#        message = "There was an issue saving your donation information."
-#        return render_template('error.html', message=message)
-
 # generalized error with a specific template
 @app.route('/error/')
 def error():
@@ -1140,47 +1047,6 @@ def error():
 def page_not_found(error):
     message = "The page you requested can't be found."
     return render_template('error.html', message=message)
-
-# this is a texas url
-@app.route('/charge/', methods=['POST'])
-def charge():
-
-    form = MinnPostForm(request.form)
-    #pprint('Request: {}'.format(request))
-
-    customer_email = request.form['stripeEmail']
-    customer_first = request.form['first_name']
-    customer_last = request.form['last_name']
-
-    email_is_valid = validate_email(customer_email)
-
-    if email_is_valid:
-        customer = stripe.Customer.create(
-                email=request.form['stripeEmail'],
-                card=request.form['stripeToken']
-        )
-        print('Create Stripe customer {} {} {}'.format(customer_email,
-            customer_first, customer_last))
-    else:
-        message = "There was an issue saving your email address."
-        print('Error saving customer {} {} {}; showed error'.format(customer_email,
-            customer_first, customer_last))
-        return render_template('error.html', message=message)
-
-    if form.validate():
-        add_customer_and_charge.delay(form=request.form, customer=customer)
-        if not result['errors']:
-            #print(result['id'])
-            print('customer added')
-        else:
-            print('result has errors')
-            print(result)
-
-        return render_template('charge.html', amount=request.form['amount'])
-    else:
-        message = "There was an issue saving your donation information."
-        return render_template('error.html', message=message)
-
 
 ## this is a minnpost url. use this when sending a request to plaid
 ## if successful, this returns the access token and bank account token for stripe from plaid
@@ -1506,14 +1372,6 @@ def thanks():
         message = "There was an issue saving your donation information."
         print('Error with stripe processing {} {} {}'.format(email, first_name, last_name))
         return render_template('error.html', message=message)
-
-
-# this is a texas url? or maybe a mp one we do not use?
-#@app.route('/finish/', methods=['POST'])
-#def finish():
-
-#    form = DonateForm(request.form)
-#    pprint('Request: {}'.format(request))
 
 
 # this is a minnpost url
