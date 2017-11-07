@@ -725,13 +725,15 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         swag_other_benefits = ''
 
-    swag_thankyou = form['swag_thankyou']
-    print('thank you swag is {}'.format(swag_thankyou))
-    swag_thankyou_list = ''
-    for key,value in swag_thankyou.items():
-        swag_thankyou_list = swag_thankyou_list + value.encode('utf-8') + ';'
+    #swag_thankyou = form['swag_thankyou']
+    #print('thank you swag is {}'.format(swag_thankyou))
+    #swag_thankyou_list = ''
+    #for key,value in swag_thankyou.items():
+    #    swag_thankyou_list = swag_thankyou_list + value.encode('utf-8') + ';'
 
-    print('list is {}'.format(swag_thankyou_list))
+    #print('list is {}'.format(swag_thankyou_list))
+    print('list is ')
+    print(form.get('swag_thankyou_list'))
 
     try:
         if form['pay_fees'] == '1':
