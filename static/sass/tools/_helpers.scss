@@ -11,3 +11,7 @@
 .clear-block {
 	@include clearfix;
 }
+
+.hidden {
+	display: none;
+}

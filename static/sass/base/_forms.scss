@@ -390,6 +390,10 @@ select {
   width: auto;
 }
 
+input.hidden {
+  display: none;
+}
+
 @media screen and (min-width: $medium-screen) {
   fieldset {
     max-width: 52.083333333333%;
