@@ -725,7 +725,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         swag_other_benefits = ''
 
-    if 'swag_thankyou_list' in form:
+    if 'swag_thankyou_lists' in form:
         swag_thankyou_lists = form['swag_thankyou_lists']
     else:
         swag_thankyou_lists = ''
@@ -1662,7 +1662,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         form = form.to_dict()
         form['flask_id'] = flask_id
 
-        form['swag_thankyou_list'] = swag_lists
+        form['swag_thankyou_lists'] = swag_lists
 
     if (form['recurring'] == 'one-time'):
         print("----One time payment...")
