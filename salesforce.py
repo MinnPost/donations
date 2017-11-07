@@ -726,11 +726,6 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         swag_other_benefits = ''
 
     try:
-        swag_thankyou_list = form['swag_thankyou_list']
-    except:
-        swag_thankyou_list = ''
-
-    try:
         if form['pay_fees'] == '1':
             pay_fees = True
         else:
@@ -795,7 +790,6 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Member_benefit_request_Swag__c': swag,
             'Member_benefit_request_Other_benefits__c': swag_other_benefits,
             'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
-            'Member_benefit_special_thank_you_list__c': swag_thankyou_list,
             'MinnPost_Invoice__c': invoice,
             'MRpledge_com_ID__c': pledge,
             'Opportunity_Subtype__c': subtype,
@@ -1652,13 +1646,9 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
 
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
 
-    #swags = ";".join([i for i in form.getlist('swag_thankyou')])
-    #print('swags are {}'.format(swags))
-
     if flask_id != None:
         form = form.to_dict()
         form['flask_id'] = flask_id
-        #form['swag_thankyou_list'] = swags
 
     if (form['recurring'] == 'one-time'):
         print("----One time payment...")
