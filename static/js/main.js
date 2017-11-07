@@ -877,7 +877,7 @@ global.Payment = Payment;
     'separate_swag_selector' : 'fieldset.swag--separate',
     'separate_swag_redeem' : '.swag-redeem--separate',
     'swag_selector_choose_multiple' : '.swag--choose-multiple',
-    'swag_choose_multiple_name' : 'swag_thankyou[]',
+    'swag_choose_multiple_name' : 'swag_thankyou',
     'atlantic_status' : 'input[name="swag_atlanticsubscription"]',
     'atlantic_existing' : '#atlantic_existing',
     'atlantic_selector' : '.form-item--atlantic_id',
