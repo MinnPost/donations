@@ -733,7 +733,8 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
 
     #print('list is {}'.format(swag_thankyou_list))
     print('list is ')
-    print(form.get('swag_thankyou_list'))
+    print(form.get('swag_thankyou'))
+    print('that was the list')
 
     try:
         if form['pay_fees'] == '1':
