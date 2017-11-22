@@ -796,12 +796,12 @@ def minnpost_recurring_donation_update_form():
 
     if request.args.get('show_ach'):
         show_ach = request.args.get('show_ach')
-        if show_ach == 'false':
-            show_ach = False
-        else:
+        if show_ach == 'true':
             show_ach = True
+        else:
+            show_ach = False
     else:
-        show_ach = True
+        show_ach = SHOW_ACH
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
