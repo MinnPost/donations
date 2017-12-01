@@ -54,10 +54,10 @@
         <p class="swag swag--separate swag--1">For this member drive, MinnPost {{ level.level.title() }} members can also choose <strong>{{ maximum_choose_multiple_level_text }}</strong> special thank you list{% if maximum_choose_multiple_int > 1 %}s{% endif %}, to be sent in an email during January.</p>
         <fieldset class="swag swag--1 swag--choose-multiple" data-maximum-choose="{{ maximum_choose_multiple_int }}">
           <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Bierschbach" name="swag_thankyou" class="swag"> Briana Bierschbach's Top 5 Hidden Corners of the State Capitol</label>
-          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Black" name="swag_thankyou" class="swag"> Eric Black's Top 5 Books About US Political History</label>
-          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Espeland" name="swag_thankyou" class="swag"> Pamela Espeland's Top 5 Underground Art Spots</label>
+          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Black" name="swag_thankyou" class="swag"> Eric Black's Top 5 Political Movies</label>
+          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Espeland" name="swag_thankyou" class="swag"> Pamela Espeland's Top 5 Art Spots You (Probably) Don’t Know About</label>
           <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Hirsi" name="swag_thankyou" class="swag"> Ibrahim Hirsi's Top 5 Immigrant-Owned Restaurants</label>
-          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Meador" name="swag_thankyou" class="swag"> Ron Meador's Top 5 Hiking Trails in Minnesota</label>
+          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Meador" name="swag_thankyou" class="swag"> Ron Meador's Top 5 Books on the Environment</label>
         </fieldset>
         {% else %}
         <p class="swag swag--separate swag--1">For this member drive, MinnPost {{ level.level.title() }} members will also receive <strong>{{ maximum_choose_multiple_level_text }}</strong> special thank you list{% if maximum_choose_multiple_int > 1 %}s{% endif %}, to be sent in an email during January.</p>
