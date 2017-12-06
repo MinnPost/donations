@@ -705,7 +705,7 @@ def minnpost_pledge_payment():
     #else:
         #heading = 'Recurring Donation Update'
     heading = 'MinnPost Pledge Payment'
-    summary = 'Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email Claire Radomski at <a href="mailto:cradomski@minnpost.com">cradomski@minnpost.com</a>.'
+    summary = 'Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email Tanner Curl at <a href="mailto:tcurl@minnpost.com">tcurl@minnpost.com</a>.'
     hide_comments = True
     hide_display = True
     button = 'Update your Donation'
@@ -963,7 +963,7 @@ def minnroast_pledge_form():
         heading = '${} Donation for Election Coverage'.format(amount_formatted)
     else:
         heading = 'Donation for Election Coverage'
-    summary = 'Thank you for supporting our election coverage at MinnRoast. Please enter your information below to fulfill your pledge. If you have any questions, contact Claire Radomski at <a href="mailto:cradomski@minnpost.com">cradomski@minnpost.com</a>.'
+    summary = 'Thank you for supporting our election coverage at MinnRoast. Please enter your information below to fulfill your pledge. If you have any questions, contact Tanner Curl at <a href="mailto:tcurl@minnpost.com">tcurl@minnpost.com</a>.'
 
     button = 'Place this Donation'
 
