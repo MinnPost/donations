@@ -13,3 +13,4 @@ celerybeat-schedule.db
 celerybeat.pid
 dump.rdb
 venv
+.sass-cache
