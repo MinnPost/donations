@@ -29,7 +29,7 @@ Mako==1.0.3
 MarkupSafe==0.23
 num2words==0.5.5
 opbeat==3.1.4
-psycopg2==2.6
+psycopg2==2.7 # updated from 2.6
 python-editor==0.5
 pytz==2016.7
 raven==5.8.1
