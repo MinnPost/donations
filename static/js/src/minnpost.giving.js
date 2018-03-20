@@ -1385,28 +1385,25 @@
     showNewsletterSettings: function(element, options) {
       var that = this;
       if ($(options.newsletter_group_selector).length > 0 && typeof $(options.email_field_selector, element).val() !== 'undefined') {
-        var post_data = {
+        var get_data = {
           email: $(options.email_field_selector, element).val()
         };
         $.ajax({
-          method: 'POST',
-          url: options.minnpost_root + '/mailchimp/minnpost/groups',
-          data: post_data
+          method: 'GET',
+          url: options.minnpost_root + '/wp-json/minnpost-api/v1/mailchimp/user',
+          data: get_data
         }).done(function( result ) {
           if (result.status === 'success' && result.reason === 'user exists') {
             // user created - show a success message
             $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
-            var groups = result.groups;
-            var additional = result.additional;
-            $.each(groups, function( index, value ) {
-              $(':checkbox[value="' + value + '"]').prop('checked','true');
+            var interests = result.interests;
+            $.each(interests, function( index, value ) {
+              if ( value === true ) {
+                $(':checkbox[value="' + index + '"]').prop('checked',true);
+              } else {
+                $(':checkbox[value="' + index + '"]').prop('checked',false);
+              }
             });
-            $.each(additional, function( index, value ) {
-              $(':checkbox[value="' + value + '"]').prop('checked','true');
-            });
-
-            //this.options.existing_newsletter_settings = $('.support-newsletter :input').serialize();
-
           }
         });
       }
