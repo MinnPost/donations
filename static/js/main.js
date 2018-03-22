@@ -2301,7 +2301,6 @@ global.Payment = Payment;
             data: JSON.stringify(post_data)
           })
           .done(function(response) { // response from the PHP action
-            console.dir(response);
             var message = '';
             if ( response.success === true ) {
               /*switch (response.data.user_status) {
@@ -2317,15 +2316,17 @@ global.Payment = Payment;
               }*/
               //confirmform.get(0).submit();
             }
+            confirmform.get(0).submit();
             //$('.m-hold-message').html('<div class="m-form-message m-form-message-info">' + message + '</div>');
           })
           .fail(function(response) {
+            // we should put an actual error message here someday, probably
             //$('.m-hold-message').html('<div class="m-form-message m-form-message-info">An error has occured. Please try again.</div>');
-            //confirmform.get(0).submit();
+            confirmform.get(0).submit();
           });
 
         } else { // end part where settings changed
-          //confirmform.get(0).submit();
+          confirmform.get(0).submit();
         }
 
       });
