@@ -1733,11 +1733,11 @@ global.Payment = Payment;
         email: email
       };
       $.ajax({
-        method: 'POST',
-        url: options.minnpost_root + '/accounts/exists',
+        method: 'GET',
+        url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account-exists',
         data: user
-      }).done(function( data ) {
-        if (data.status === 'success' && data.reason === 'user exists') { // user exists
+      }).done(function( result ) {
+        if (result.status === 'success' && result.reason === 'user exists') { // user exists
           if ($(options.create_mp_selector, element).is(':checked')) {
             $(options.password_selector, element).hide();
             $(options.create_mp_selector, element).parent().hide();
