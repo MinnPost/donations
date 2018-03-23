@@ -2159,8 +2159,8 @@ global.Payment = Payment;
           if (options.create_account === true) {
             var user = {
               email: $(options.email_field_selector, element).val(),
-              first: $(options.first_name_field_selector, element).val(),
-              last: $(options.last_name_field_selector, element).val(),
+              first_name: $(options.first_name_field_selector, element).val(),
+              last_name: $(options.last_name_field_selector, element).val(),
               password: $(options.password_field_selector, element).val(),
               city: $(options.account_city_selector, element).val(),
               state: $(options.account_state_selector, element).val(),
@@ -2168,7 +2168,7 @@ global.Payment = Payment;
             };
             $.ajax({
               method: 'POST',
-              url: options.minnpost_root + '/accounts/create',
+              url: options.minnpost_root + '/wp-json/user-account-management/v1/create-user',
               data: user
             }).done(function( data ) {
               if (data.status === 'success' && data.reason === 'new user') {
