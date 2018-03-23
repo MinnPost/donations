@@ -36,6 +36,7 @@ from config import ALLOW_DONATION_NOTIFICATION
 from config import OPBEAT_ORGANIZATION_ID
 from config import OPBEAT_APP_ID
 from config import OPBEAT_SECRET_TOKEN
+from config import MINNPOST_ROOT
 
 from config import EVENT_1_USE_PROMO_CODE
 from config import EVENT_1_SINGLE_UNIT_PRICE
@@ -250,6 +251,7 @@ def minnpost_form():
         main_swag_minimum_level = app.main_swag_minimum_level,
         show_thankyou_lists = app.show_thankyou_lists, maximum_choose_multiple_int = maximum_choose_multiple_int, maximum_choose_multiple_level_text = maximum_choose_multiple_level_text,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        minnpost_root = MINNPOST_ROOT,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
@@ -348,7 +350,7 @@ def minnpost_event_form():
         first_name = first_name,last_name = last_name, email=email,
         promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,
         quantity=quantity, single_unit_price = single_unit_price, starting_amount = starting_amount,
-        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = MINNPOST_ROOT,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # used to validate event promo codes to assign users discount
@@ -522,7 +524,7 @@ def minnpost_advertising_form():
     return render_template('minnpost-advertising.html', form=form, amount=amount_formatted, invoice=invoice, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         organization=organization, first_name = first_name,last_name = last_name, email=email,
-        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = MINNPOST_ROOT,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # used at support.minnpost.com/minnroast-sponsorship
@@ -577,7 +579,7 @@ def minnroast_sponsorship_form():
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = MINNPOST_ROOT,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
@@ -720,7 +722,7 @@ def minnpost_pledge_payment():
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = MINNPOST_ROOT,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
@@ -863,7 +865,7 @@ def minnpost_recurring_donation_update_form():
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = MINNPOST_ROOT,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
@@ -977,7 +979,7 @@ def minnroast_pledge_form():
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = MINNPOST_ROOT,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # used at support.minnpost.com/anniversary-party-sponsorship
@@ -1032,7 +1034,7 @@ def anniversary_party_sponsorship_form():
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = MINNPOST_ROOT,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 # generalized error with a specific template
