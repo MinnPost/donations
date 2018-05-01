@@ -34,6 +34,17 @@ celery beat --app app.celery &
 # gunicorn app:app --log-file=- --bind=0.0.0.0:5000 --access-logfile=-
 ```
 
+Restarting the batch process on Heroku
+--------------------------------------
+
+We've only seen this happen once, but apparently it is possible for the batch process in `batch.py` to fail and need to be rerun manually.
+
+This can be done on the command line like this:
+
+```
+heroku run python batch.py --app app-name app.py
+```
+
 ### Tests
 
 Running tests
