@@ -37,12 +37,13 @@ celery beat --app app.celery &
 Restarting the batch process on Heroku
 --------------------------------------
 
-We've only seen this happen once, but apparently it is possible for the batch process in `batch.py` to fail and need to be rerun manually.
+We've only seen this happen once (in our case, it was because the broker was overloaded by another user), but apparently it is possible for the batch process in `batch.py` to fail and need to be rerun manually. It seems to be a good idea to restart after this.
 
 This can be done on the command line like this:
 
 ```
 heroku run python batch.py --app app-name app.py
+heroku restart --app app-name
 ```
 
 ### Tests
