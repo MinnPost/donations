@@ -15,7 +15,6 @@ from models import Transaction
 #from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
 from forms import MinnPostForm, ConfirmForm
 #from raven.contrib.flask import Sentry
-from opbeat.contrib.flask import Opbeat
 #from sassutils.wsgi import SassMiddleware # mp put this into grunt instead
 import stripe
 from validate_email import validate_email
@@ -33,9 +32,6 @@ from config import MINNROAST_CAMPAIGN_ID
 from config import ANNIVERSARY_PARTY_CAMPAIGN_ID
 from config import SHOW_UPSELL
 from config import ALLOW_DONATION_NOTIFICATION
-from config import OPBEAT_ORGANIZATION_ID
-from config import OPBEAT_APP_ID
-from config import OPBEAT_SECRET_TOKEN
 
 from config import EVENT_1_USE_PROMO_CODE
 from config import EVENT_1_SINGLE_UNIT_PRICE
@@ -80,7 +76,6 @@ app = Flask(__name__)
 
 if 'DYNO' in os.environ:
     sslify = SSLify(app) # only trigger SSLify if the app is running on Heroku
-    opbeat = Opbeat(app) # only trigger opbeat if the app is running on Heroku
 
 app.secret_key = FLASK_SECRET_KEY
 app.default_campaign_onetime = DEFAULT_CAMPAIGN_ONETIME
