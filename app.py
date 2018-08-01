@@ -975,12 +975,12 @@ def minnroast_pledge_form():
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
-# used at support.minnpost.com/anniversary-party-sponsorship
-@app.route('/anniversary-party-sponsorship/')
-def anniversary_party_sponsorship_form():
+# used at support.minnpost.com/anniversary-sponsorship
+@app.route('/anniversary-sponsorship/')
+def anniversary_sponsorship_form():
     form = MinnPostForm()
 
-    redirect_url = 'anniversary-party-sponsorship-thanks'
+    redirect_url = 'anniversary-sponsorship-thanks'
 
     now = datetime.now()
     year = now.year
@@ -1023,7 +1023,7 @@ def anniversary_party_sponsorship_form():
         additional_donation = float(request.args.get('additional_donation'))
     else:
         additional_donation = ''
-    return render_template('anniversary-party-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
+    return render_template('anniversary-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
@@ -1515,8 +1515,8 @@ def minnroast_pledge_confirm():
         return render_template('error.html', message=message)
 
 # this is a minnpost url
-@app.route('/anniversary-party-sponsorship-confirm/', methods=['POST'])
-def anniversary_party_sponsorship_confirm():
+@app.route('/anniversary-sponsorship-confirm/', methods=['POST'])
+def anniversary_sponsorship_confirm():
 
     form = ConfirmForm(request.form)
     amount = float(request.form['amount'])
@@ -1527,7 +1527,7 @@ def anniversary_party_sponsorship_confirm():
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('anniversary-party-sponsorship/finish.html', amount=amount_formatted, session=session)
+        return render_template('anniversary-sponsorship/finish.html', amount=amount_formatted, session=session)
     else:
         print('post-sponsorship form did not validate: error below')
         print(form.errors)

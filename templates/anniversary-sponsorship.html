@@ -1,19 +1,19 @@
-{% extends "anniversary-party-sponsorship/layout.html" %}
+{% extends "anniversary-sponsorship/layout.html" %}
 
 {% block content %}
 
 <main>
   <div class="wrapper support--forms">
 
-    <img src="/static/img/campaigns/mcdonoughheader850x190.png" alt="MinnPost 10th Anniversary Party" class="anniversary-sponsorship-image" />
+    <img src="/static/img/campaigns/mcdonoughheader850x190.png" alt="MinnPost 11th Anniversary Celebration" class="anniversary-sponsorship-image" />
 
-    <form action="/anniversary-party-sponsorship-confirm/" method="post" class="support support--donate" id="donate">
+    <form action="/anniversary-sponsorship-confirm/" method="post" class="support support--donate" id="donate">
       {{ form.csrf_token }}
 
       <input type="hidden" name="recurring" id="recurring" value="one-time">
       <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
       <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
-      <input type="hidden" name="description" id="description" value="MinnPost Anniversary Party Sponsorship">
+      <input type="hidden" name="description" id="description" value="MinnPost Anniversary Celebration Sponsorship">
       <input type="hidden" name="opp_type" id="opp_type" value="{{ opp_type }}">
       <input type="hidden" name="opp_subtype" id="opp_subtype" value="{{ opp_subtype }}">
       <input type="hidden" name="redirect_url" id="redirect_url" value="{{ redirect_url }}">
@@ -24,8 +24,8 @@
       <input type="hidden" name="billing_zip_geocode" id="billing_zip_geocode" value="" maxlength="10">
       <input type="hidden" name="billing_country_geocode" id="billing_country_geocode" value="" maxlength="50">
 
-      {% include 'anniversary-party-sponsorship/includes/details.html' %}
-      {% include 'anniversary-party-sponsorship/includes/pay.html' %}
+      {% include 'anniversary-sponsorship/includes/details.html' %}
+      {% include 'anniversary-sponsorship/includes/pay.html' %}
 
     </form>
   </div>
