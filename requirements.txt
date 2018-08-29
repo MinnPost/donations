@@ -28,7 +28,7 @@ kombu==3.0.30
 Mako==1.0.3
 MarkupSafe==0.23
 num2words==0.5.5
-psycopg2==2.6
+psycopg2==2.7
 python-editor==0.5
 pytz==2016.7
 raven==5.8.1
