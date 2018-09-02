@@ -907,11 +907,11 @@
         email: email
       };
       $.ajax({
-        method: 'POST',
-        url: options.minnpost_root + '/accounts/exists',
+        method: 'GET',
+        url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account-exists',
         data: user
-      }).done(function( data ) {
-        if (data.status === 'success' && data.reason === 'user exists') { // user exists
+      }).done(function( result ) {
+        if (result.status === 'success' && result.reason === 'user exists') { // user exists
           if ($(options.create_mp_selector, element).is(':checked')) {
             $(options.password_selector, element).hide();
             $(options.create_mp_selector, element).parent().hide();
@@ -1333,8 +1333,8 @@
           if (options.create_account === true) {
             var user = {
               email: $(options.email_field_selector, element).val(),
-              first: $(options.first_name_field_selector, element).val(),
-              last: $(options.last_name_field_selector, element).val(),
+              first_name: $(options.first_name_field_selector, element).val(),
+              last_name: $(options.last_name_field_selector, element).val(),
               password: $(options.password_field_selector, element).val(),
               city: $(options.account_city_selector, element).val(),
               state: $(options.account_state_selector, element).val(),
@@ -1342,7 +1342,7 @@
             };
             $.ajax({
               method: 'POST',
-              url: options.minnpost_root + '/accounts/create',
+              url: options.minnpost_root + '/wp-json/user-account-management/v1/create-user',
               data: user
             }).done(function( data ) {
               if (data.status === 'success' && data.reason === 'new user') {
@@ -1385,28 +1385,31 @@
     showNewsletterSettings: function(element, options) {
       var that = this;
       if ($(options.newsletter_group_selector).length > 0 && typeof $(options.email_field_selector, element).val() !== 'undefined') {
-        var post_data = {
+        var get_data = {
           email: $(options.email_field_selector, element).val()
         };
         $.ajax({
-          method: 'POST',
-          url: options.minnpost_root + '/mailchimp/minnpost/groups',
-          data: post_data
+          method: 'GET',
+          url: options.minnpost_root + '/wp-json/minnpost-api/v1/mailchimp/user',
+          data: get_data
         }).done(function( result ) {
-          if (result.status === 'success' && result.reason === 'user exists') {
+          if ( typeof result.status !== 'undefined' ) {
+            $(options.email_field_selector, element).after('<input name="mailchimp_user_status" type="hidden" value="' + result.status + '">');
+          }
+          if ( typeof result.mailchimp_id !== 'undefined' ) {
+            $(options.email_field_selector, element).after('<input name="mailchimp_user_id" type="hidden" value="' + result.mailchimp_id + '">');
+          }
+          if (result.status === 'subscribed') {
             // user created - show a success message
             $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
-            var groups = result.groups;
-            var additional = result.additional;
-            $.each(groups, function( index, value ) {
-              $(':checkbox[value="' + value + '"]').prop('checked','true');
+            var interests = result.interests;
+            $.each(interests, function( index, value ) {
+              if ( value === true ) {
+                $(':checkbox[value="' + index + '"]').prop('checked',true);
+              } else {
+                $(':checkbox[value="' + index + '"]').prop('checked',false);
+              }
             });
-            $.each(additional, function( index, value ) {
-              $(':checkbox[value="' + value + '"]').prop('checked','true');
-            });
-
-            //this.options.existing_newsletter_settings = $('.support-newsletter :input').serialize();
-
           }
         });
       }
@@ -1431,44 +1434,71 @@
         var new_newsletter_settings = $('.support-newsletter :input:checked').serialize();
 
         if ((existing_newsletter_settings !== new_newsletter_settings) && (typeof newsletter_groups !== 'undefined' || typeof message_groups !== 'undefined')) {
+          //add our own ajax check as X-Requested-With is not always reliable
+          //ajax_form_data = new_newsletter_settings + '&ajaxrequest=true&subscribe';
+
           var post_data = {
-            minnpost_mailchimp_js_form_action: 'newsletter_subscribe',
-            minnpost_mailchimp_email: $(options.email_field_selector, element).val(),
-            minnpost_mailchimp_firstname: $(options.first_name_field_selector, element).val(),
-            minnpost_mailchimp_lastname: $(options.last_name_field_selector, element).val(),
-            minnpost_mailchimp_groups: {},
-            minnpost_mailchimp_periodic: {}
+            email: $(options.email_field_selector, element).val(),
+            first_name: $(options.first_name_field_selector, element).val(),
+            last_name: $(options.last_name_field_selector, element).val(),
+            newsletters: {},
+            occasional_emails: {}
           };
 
+          if ( $('input[name="mailchimp_user_status"]').length > 0 ) {
+            post_data.mailchimp_user_status = $('input[name="mailchimp_user_status"]').val();
+          }
+
+          if ( $('input[name="mailchimp_user_id"]').length > 0 ) {
+            post_data.mailchimp_user_id = $('input[name="mailchimp_user_id"]').val();
+          }
+
           if (typeof newsletter_groups !== 'undefined') {
-            $.each(newsletter_groups, function() {
+            $.each(newsletter_groups, function(index, value) {
               var group = $(this).val();
-              post_data.minnpost_mailchimp_groups[group] = 1;
+              post_data.newsletters[index] = group;
             });
           }
 
           if (typeof message_groups !== 'undefined') {
-            $.each(message_groups, function() {
+            $.each(message_groups, function(index, value) {
               var group = $(this).val();
-              post_data.minnpost_mailchimp_periodic[group] = 1;
+              post_data.occasional_emails[index] = group;
             });
           }
 
           $.ajax({
-            method: 'POST',
-            url: options.minnpost_root + '/mailchimp/minnpost/api',
-            data: post_data
-          }).done(function( result ) {
-            if (result.status === 'success') {
-              // user created - show a success message?
-              //console.dir(result);
-              confirmform.get(0).submit();
-            } else {
-              // user not created - show error message
-              //console.dir(result);
-              confirmform.get(0).submit();
+            url: options.minnpost_root + '/wp-json/minnpost-api/v1/mailchimp/user',
+            type: 'post',
+            dataType : 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(post_data)
+          })
+          .done(function(response) { // response from the PHP action
+            var message = '';
+            if ( response.success === true ) {
+              /*switch (response.data.user_status) {
+                case 'existing':
+                  message = 'Thanks for updating your email preferences. They will go into effect immediately.';
+                  break;
+                case 'new':
+                  message = 'We have added you to the MinnPost mailing list.';
+                  break;
+                case 'pending':
+                  message = 'We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages.';
+                  break;
+              }*/
+              //confirmform.get(0).submit();
             }
+            confirmform.get(0).submit();
+            //$('.m-hold-message').html('<div class="m-form-message m-form-message-info">' + message + '</div>');
+          })
+          .fail(function(response) {
+            // we should put an actual error message here someday, probably
+            //$('.m-hold-message').html('<div class="m-form-message m-form-message-info">An error has occured. Please try again.</div>');
+            confirmform.get(0).submit();
           });
+
         } else { // end part where settings changed
           confirmform.get(0).submit();
         }
