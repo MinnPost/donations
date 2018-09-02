@@ -78,7 +78,7 @@ app = Flask(__name__)
 if 'DYNO' in os.environ:
     sslify = SSLify(app) # only trigger SSLify if the app is running on Heroku
 
-app.minnpost_root = app.minnpost_root
+app.minnpost_root = MINNPOST_ROOT
 app.secret_key = FLASK_SECRET_KEY
 app.default_campaign_onetime = DEFAULT_CAMPAIGN_ONETIME
 app.default_campaign_recurring = DEFAULT_CAMPAIGN_RECURRING
