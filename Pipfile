@@ -9,10 +9,10 @@ amqp = "*"
 anyjson = "==0.3.3"
 Babel = "==2.1.1"
 backports_abc = "==0.4"
-"backports.ssl_match_hostname" = "*"
+"backports.ssl_match_hostname" = "==3.4.0.2"
 billiard = "*"
 blinker = "==1.4"
-celery = "==4.2.1"
+celery = "==4.1.0"
 certifi = "==2015.11.20.1"
 click = "==6.7"
 dj-database-url = "==0.3.0"
@@ -56,4 +56,4 @@ WTForms = "==2.1"
 [dev-packages]
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"

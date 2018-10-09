@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f8202050bd57aa548cf857b7efeee003caa17d70e420dcebc5c9ce9439bec399"
+            "sha256": "19990ca692f798dac177d15e7f0e35ca5de7f2c36291a370435bdb59a055bce1"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.7"
+            "python_version": "3.6"
         },
         "sources": [
             {
@@ -75,11 +75,11 @@
         },
         "celery": {
             "hashes": [
-                "sha256:77dab4677e24dc654d42dfbdfed65fa760455b6bb563a0877ecc35f4cfcfc678",
-                "sha256:ad7a7411772b80a4d6c64f2f7f723200e39fb66cf614a7fdfab76d345acc7b13"
+                "sha256:77ff3730198d6a17b3c1f05579ebe570b579efb35f6d7e13dba3b1368d068b35",
+                "sha256:81a67f0d53a688ec2bc8557bd5d6d7218f925a6f2e6df80e01560de9e28997ec"
             ],
             "index": "pypi",
-            "version": "==4.2.1"
+            "version": "==4.1.0"
         },
         "certifi": {
             "hashes": [
