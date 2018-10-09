@@ -31,7 +31,7 @@ from config import REDIS_URL
 from config import REPORT_RUN_FREQUENCY
 from config import REPORT_INSTANCE_FALLBACK
 
-from config import CELERY_BROKER_URL
+from config import CLOUDAMQP_URL
 from config import CELERY_RESULT_BACKEND
 
 from emails import send_email
