@@ -1808,8 +1808,8 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
     except:
         reason_for_supporting_shareable = False
 
-    newsletters = form.getlist('newsletters')
-    messages = form.getlist('messages')
+    newsletters = form.getall('newsletters')
+    messages = form.getall('messages')
 
     if 'Daily newsletter' in newsletters:
         daily_newsletter = True
