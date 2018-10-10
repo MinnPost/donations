@@ -6,6 +6,8 @@ import redis
 import locale
 from pprint import pprint   # TODO: remove
 
+from flask import request
+
 #import celery
 from app_celery import make_celery
 
@@ -1800,31 +1802,14 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
         reason_for_supporting = ''
     try:
         if form['reason_shareable'] == '1':
-            print('yep')
             reason_for_supporting_shareable = True
         else:
             reason_for_supporting_shareable = False
     except:
         reason_for_supporting_shareable = False
 
-    print('shareable')
-    print(form['reason_shareable'])
-
-    if 'newsletters' in form:
-        print('newsletters')
-        print(form['newsletters'])
-        print(type(form['newsletters']))
-        print('that was newsletters')
-        #newsletters = form['newsletters'].values()
-        newsletters = ''
-    else:
-        newsletters = ''
-
-    if 'messages' in form:
-        #messages = form['messages'].values()
-        messages = ''
-    else:
-        messages = ''
+    newsletters = request.form.getlist('newsletters')
+    messages = request.form.getlist('messages')
 
     if 'Daily newsletter' in newsletters:
         daily_newsletter = True
