@@ -1798,20 +1798,22 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
         reason_for_supporting = form['reason_for_supporting']
     except:
         reason_for_supporting = ''
-    print('reason')
-    print(reason_for_supporting)
     try:
         if form['reason_shareable'] == '1':
+            print('yep')
             reason_for_supporting_shareable = True
         else:
             reason_for_supporting_shareable = False
     except:
         reason_for_supporting_shareable = False
 
+    print('shareable')
+    print(form['reason_shareable'])
+
     if 'newsletters' in form:
         print('newsletters')
-        print(newsletters)
-        print(type(newsletters))
+        print(form['newsletters'])
+        print(type(form['newsletters']))
         print('that was newsletters')
         #newsletters = form['newsletters'].values()
         newsletters = ''
