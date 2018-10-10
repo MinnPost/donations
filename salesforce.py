@@ -383,6 +383,7 @@ def update_account(self, form=None, account=None):
 
         print('start form')
         print(form)
+        print(type(form))
         print('end form')
 
         updated_request.update(form.to_dict())
