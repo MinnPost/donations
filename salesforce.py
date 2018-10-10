@@ -338,7 +338,7 @@ def upsert_customer(customer=None, form=None):
     if form is None:
         raise Exception("Value for 'form' must be specified.")
 
-    update = {'Stripe_Customer_Id__c': customer.id}
+    update = {'Stripe_Customer_Id__c': customer['id']}
     updated_request = update.copy()
     updated_request.update(form.to_dict())
 
@@ -811,7 +811,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
-            'Stripe_Customer_Id__c': customer.id,    
+            'Stripe_Customer_Id__c': customer['id'],    
             'Ticket_count__c': quantity,        
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
@@ -1009,7 +1009,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
-            'Stripe_Customer_Id__c': customer.id,
+            'Stripe_Customer_Id__c': customer['id'],
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
             'Card_type__c': card_type
@@ -1225,7 +1225,7 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
-            'Stripe_Customer_Id__c': customer.id,
+            'Stripe_Customer_Id__c': customer['id'],
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
             'Card_type__c': card_type
@@ -1616,7 +1616,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'Stripe_Agreed_to_pay_fees__c': pay_fees,
         'Stripe_Bank_Account__c': stripe_bank_account,
         'Stripe_Card__c': stripe_card,
-        'Stripe_Customer_Id__c': customer.id,
+        'Stripe_Customer_Id__c': customer['id'],
         'Stripe_Description__c': '{}'.format(form['description']),
         #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
         #'Type__c': type__c,
@@ -1742,7 +1742,7 @@ def _format_blast_rdo(contact=None, form=None, customer=None):
                 form['last_name'],
                 now,
                 ),
-            'Stripe_Customer_Id__c': customer.id,
+            'Stripe_Customer_Id__c': customer['id'],
             'Lead_Source__c': 'Stripe',
             'Stripe_Description__c': '{}'.format(form['description']),
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
