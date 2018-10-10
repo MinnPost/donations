@@ -32,6 +32,7 @@ itsdangerous = "==0.24"
 kombu = "<4.2.0"
 Mako = "==1.0.3"
 MarkupSafe = "==0.23"
+multidict = "==4.4.2"
 "num2words" = "==0.5.5"
 plaid-python = "==2.0.2"
 "psycopg2" = "==2.7"
@@ -50,7 +51,6 @@ virtualenv = "==15.1.0"
 Werkzeug = "==0.11.2"
 whitenoise = "==1.0.6"
 WTForms = "==2.1"
-multidict = "*"
 
 [dev-packages]
 
