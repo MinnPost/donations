@@ -4,9 +4,8 @@ import json
 import time
 import redis
 import locale
+import multidict
 from pprint import pprint   # TODO: remove
-
-from flask import request
 
 #import celery
 from app_celery import make_celery
@@ -1795,6 +1794,7 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
     #print('---Updating this {} ---'.format(object_name))
     #print('update the flask id {}'.format(flask_id))
     #print(form)
+    form = MultiDict(form)
 
     try:
         reason_for_supporting = form['reason_for_supporting']
@@ -1808,8 +1808,8 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
     except:
         reason_for_supporting_shareable = False
 
-    newsletters = request.form.getlist('newsletters')
-    messages = request.form.getlist('messages')
+    newsletters = form.getlist('newsletters')
+    messages = form.getlist('messages')
 
     if 'Daily newsletter' in newsletters:
         daily_newsletter = True
