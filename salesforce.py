@@ -1658,7 +1658,10 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
 
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
 
-    swag_lists = ";".join(form['swag_thankyou'].values())
+    if 'swag_lists' in form:
+        swag_lists = ";".join(form['swag_thankyou'].values())
+    else:
+        swag_lists = ''
 
     if flask_id != None:
         form['flask_id'] = flask_id
@@ -1804,8 +1807,15 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
     except:
         reason_for_supporting_shareable = False
 
-    newsletters = form.getlist('newsletters')
-    messages = form.getlist('messages')
+    if 'newsletters' in form:
+        newsletters = form['newsletters'].values()
+    else:
+        newsletters = ''
+
+    if 'messages' in form:
+        messages = form['messages'].values()
+    else:
+        messages = ''
 
     if 'Daily newsletter' in newsletters:
         daily_newsletter = True
