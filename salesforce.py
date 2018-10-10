@@ -4,7 +4,6 @@ import json
 import time
 import redis
 import locale
-import multidict
 from pprint import pprint   # TODO: remove
 
 #import celery
