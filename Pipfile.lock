@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "19990ca692f798dac177d15e7f0e35ca5de7f2c36291a370435bdb59a055bce1"
+            "sha256": "dfeec141c0958f380d3f713f7dda53e6ae9df52f3074636b288eabb2a1456147"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.6"
+            "python_version": "3.6.6"
         },
         "sources": [
             {
@@ -46,19 +46,6 @@
             "index": "pypi",
             "version": "==2.1.1"
         },
-        "backports-abc": {
-            "hashes": [
-                "sha256:8b3e4092ba3d541c7a2f9b7d0d9c0275b21c6a01c53a61c731eba6686939d0a5",
-                "sha256:c64508e766dfe09a94a442c12b57c6e098a402921ecb340a4ec57c7e10fd464c"
-            ],
-            "index": "pypi",
-            "version": "==0.4"
-        },
-        "backports-ssl-match-hostname": {
-            "hashes": [],
-            "index": "pypi",
-            "version": "==3.4.0.2"
-        },
         "billiard": {
             "hashes": [
                 "sha256:ed65448da5877b5558f19d2f7f11f8355ea76b3e63e1c0a6059f47cfae5f1c84"
@@ -83,11 +70,11 @@
         },
         "certifi": {
             "hashes": [
-                "sha256:30b0a7354a1b32caa8b4705d3f5fb2dadefac7ba4bf8af8a2176869f93e38f16",
-                "sha256:ad86683448f7483d4147a64d96856e551734e594c4563747e9fbe2368df13d3f"
+                "sha256:376690d6f16d32f9d1fe8932551d80b23e9d393a8578c5633a2ed39a64861638",
+                "sha256:456048c7e371c089d0a77a5212fb37a2c2dce1e24146e3b7e0261736aaeaa22a"
             ],
             "index": "pypi",
-            "version": "==2015.11.20.1"
+            "version": "==2018.8.24"
         },
         "click": {
             "hashes": [
@@ -249,10 +236,10 @@
         },
         "plaid-python": {
             "hashes": [
-                "sha256:7a1f29fc73c3ce55eb03788d1c04f9026cda957155e81246eb8e1fcc559696da"
+                "sha256:5c6afd0c2c60ec4385ea6d5b7d2a3c06a1d73603d674a56b0bdab2bf17607449"
             ],
             "index": "pypi",
-            "version": "==2.0.2"
+            "version": "==2.3.3"
         },
         "psycopg2": {
             "hashes": [
