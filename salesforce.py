@@ -4,7 +4,6 @@ import json
 import time
 import redis
 import locale
-from multidict import MultiDict
 from pprint import pprint   # TODO: remove
 
 #import celery
@@ -339,9 +338,9 @@ def upsert_customer(customer=None, form=None):
     if form is None:
         raise Exception("Value for 'form' must be specified.")
 
-    update = {'Stripe_Customer_Id__c': customer['id']}
+    update = {'Stripe_Customer_Id__c': customer.id}
     updated_request = update.copy()
-    updated_request.update(form)
+    updated_request.update(form.to_dict())
 
     sf = SalesforceConnection()
     created, contact = sf.get_or_create_contact(updated_request)
@@ -381,7 +380,7 @@ def update_account(self, form=None, account=None):
 
         update = {'Membership_level_Manual_override__c': level, 'Member_level_manual_override_exp_date__c': tomorrow}
         updated_request = update.copy()
-        updated_request.update(form)
+        updated_request.update(form.to_dict())
 
         sf = SalesforceConnection()
         email = form.get('email', None)
@@ -812,7 +811,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
-            'Stripe_Customer_Id__c': customer['id'],    
+            'Stripe_Customer_Id__c': customer.id,    
             'Ticket_count__c': quantity,        
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
@@ -1010,7 +1009,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
-            'Stripe_Customer_Id__c': customer['id'],
+            'Stripe_Customer_Id__c': customer.id,
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
             'Card_type__c': card_type
@@ -1226,7 +1225,7 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
-            'Stripe_Customer_Id__c': customer['id'],
+            'Stripe_Customer_Id__c': customer.id,
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
             'Card_type__c': card_type
@@ -1617,7 +1616,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'Stripe_Agreed_to_pay_fees__c': pay_fees,
         'Stripe_Bank_Account__c': stripe_bank_account,
         'Stripe_Card__c': stripe_card,
-        'Stripe_Customer_Id__c': customer['id'],
+        'Stripe_Customer_Id__c': customer.id,
         'Stripe_Description__c': '{}'.format(form['description']),
         #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
         #'Type__c': type__c,
@@ -1659,12 +1658,10 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
 
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
 
-    if 'swag_lists' in form:
-        swag_lists = ";".join(form['swag_thankyou'].values())
-    else:
-        swag_lists = ''
+    swag_lists = ";".join(form.getlist('swag_thankyou'))
 
     if flask_id != None:
+        form = form.to_dict()
         form['flask_id'] = flask_id
 
         form['swag_thankyou_lists'] = swag_lists
@@ -1745,7 +1742,7 @@ def _format_blast_rdo(contact=None, form=None, customer=None):
                 form['last_name'],
                 now,
                 ),
-            'Stripe_Customer_Id__c': customer['id'],
+            'Stripe_Customer_Id__c': customer.id,
             'Lead_Source__c': 'Stripe',
             'Stripe_Description__c': '{}'.format(form['description']),
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
@@ -1794,12 +1791,12 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
     #print('---Updating this {} ---'.format(object_name))
     #print('update the flask id {}'.format(flask_id))
     #print(form)
-    form = MultiDict(form)
 
     try:
         reason_for_supporting = form['reason_for_supporting']
     except:
         reason_for_supporting = ''
+
     try:
         if form['reason_shareable'] == '1':
             reason_for_supporting_shareable = True
@@ -1808,8 +1805,8 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
     except:
         reason_for_supporting_shareable = False
 
-    newsletters = form.getall('newsletters')
-    messages = form.getall('messages')
+    newsletters = form.getlist('newsletters')
+    messages = form.getlist('messages')
 
     if 'Daily newsletter' in newsletters:
         daily_newsletter = True
@@ -1843,12 +1840,10 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
 
     with app.app_context():
         # get the salesforce id from the local database where the flask id matches
-        print('flask id')
-        print(flask_id)
+        #print('flask id')
+        #print(flask_id)
         transaction = Transaction.query.filter(Transaction.id==flask_id,Transaction.sf_id!='NULL').first()
-        print('Retrieve transaction with flask ID {} and a non-null Salesforce ID'.format(flask_id))
-        print(transaction)
-        print('that was transaction')
+        #print('Retrieve transaction with flask ID {} and a non-null Salesforce ID'.format(flask_id))
         if transaction is not None:
             #print('transaction has been added to salesforce. get its sf id ({}) and update it in salesforce.'.format(transaction.sf_id))
             #if transaction.sf_id != 'NULL':
