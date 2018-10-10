@@ -1658,7 +1658,7 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
 
     upsert_customer(form=form, customer=customer) # remember customer already exists; this adds it to sf
 
-    swag_lists = ";".join(form.getlist('swag_thankyou'))
+    swag_lists = ";".join(form['swag_thankyou'].items())
 
     if flask_id != None:
         form['flask_id'] = flask_id
