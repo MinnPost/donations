@@ -380,6 +380,11 @@ def update_account(self, form=None, account=None):
 
         update = {'Membership_level_Manual_override__c': level, 'Member_level_manual_override_exp_date__c': tomorrow}
         updated_request = update.copy()
+
+        print('start form')
+        print(form)
+        print('end form')
+
         updated_request.update(form.to_dict())
 
         sf = SalesforceConnection()
