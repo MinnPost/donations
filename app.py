@@ -2,7 +2,6 @@ import os
 import sys
 import re
 from datetime import datetime
-from multidict import MultiDict
 
 from num2words import num2words
 
@@ -175,7 +174,7 @@ def minnpost_support():
     else:
         email = ''
 
-    return render_template('minnpost-default.html', form=MultiDict(form), amount=amount_formatted, campaign=campaign, customer_id=customer_id,
+    return render_template('minnpost-default.html', form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
         frequency=frequency,
         yearly=yearly,
         level=level,
@@ -236,7 +235,7 @@ def minnpost_form():
         email = request.args.get('email')
     else:
         email = ''
-    return render_template('minnpost-form.html', form=MultiDict(form), amount=amount_formatted, campaign=campaign, customer_id=customer_id,
+    return render_template('minnpost-form.html', form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
         frequency=frequency, installments=installments,
         openended_status=openended_status,
         yearly=yearly,
@@ -342,7 +341,7 @@ def minnpost_event_form():
         single_unit_price = discount_single_unit_price
     starting_amount = format(quantity * single_unit_price)
 
-    return render_template('minnpost-events/form.html', form=MultiDict(form), event=event, use_promo_code=use_promo_code, campaign_id=campaign_id, campaign=campaign, customer_id=customer_id,
+    return render_template('minnpost-events/form.html', form=form, event=event, use_promo_code=use_promo_code, campaign_id=campaign_id, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,
@@ -518,7 +517,7 @@ def minnpost_advertising_form():
     else:
         email = ''
 
-    return render_template('minnpost-advertising.html', form=MultiDict(form), amount=amount_formatted, invoice=invoice, campaign=campaign, customer_id=customer_id,
+    return render_template('minnpost-advertising.html', form=form, amount=amount_formatted, invoice=invoice, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         organization=organization, first_name = first_name,last_name = last_name, email=email,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
@@ -572,7 +571,7 @@ def minnroast_sponsorship_form():
         additional_donation = float(request.args.get('additional_donation'))
     else:
         additional_donation = ''
-    return render_template('minnroast-sponsorship.html', form=MultiDict(form), year=year, campaign=campaign, customer_id=customer_id,
+    return render_template('minnroast-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
@@ -715,7 +714,7 @@ def minnpost_pledge_payment():
     return render_template('minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
-        form=MultiDict(form), amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
+        form=form, amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
@@ -858,7 +857,7 @@ def minnpost_recurring_donation_update_form():
     return render_template('minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
-        form=MultiDict(form), amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
+        form=form, amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
@@ -972,7 +971,7 @@ def minnroast_pledge_form():
     return render_template('minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, pledge=pledge, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
-        form=MultiDict(form), amount=amount_formatted, campaign=campaign, customer_id=customer_id,
+        form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
@@ -1027,7 +1026,7 @@ def anniversary_sponsorship_form():
         additional_donation = float(request.args.get('additional_donation'))
     else:
         additional_donation = ''
-    return render_template('anniversary-sponsorship.html', form=MultiDict(form), year=year, campaign=campaign, customer_id=customer_id,
+    return render_template('anniversary-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
