@@ -747,6 +747,10 @@ def minnpost_recurring_donation_update_form():
             else:
                 amount_formatted = format(amount, ',.2f')
             campaign = opportunity['CampaignId']
+            if request.args.get('frequency'):
+                frequency = request.args.get('frequency')
+            else:
+                frequency = recurring['npe03__Installment_Period__c'].lower()
 
         except:
             opp_id = ''
@@ -863,6 +867,106 @@ def minnpost_recurring_donation_update_form():
         additional_donation = additional_donation,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
         key=app.config['STRIPE_KEYS']['publishable_key'])
+
+
+# used at support.minnpost.com/recurring-donation-cancel
+@app.route('/donation-cancel/')
+def minnpost_donation_cancel_form():
+    form = MinnPostForm()
+
+    confirm_url = '/donation-update-confirm/'
+    redirect_url = 'donation-update-thanks'
+
+    now = datetime.now()
+    year = now.year
+
+    if request.args.get('opportunity'):
+        opp_id = request.args.get('opportunity')
+        recurring_id = ''
+        recurring = []
+        try:
+            result = get_opportunity(opp_id)
+            opportunity = result['opportunity']
+
+            amount = float(opportunity['Amount'])
+            if (amount).is_integer():
+                amount_formatted = int(amount)
+            else:
+                amount_formatted = format(amount, ',.2f')
+            campaign = opportunity['CampaignId']
+            title = 'MinnPost | Cancel Donation'
+            description = 'Donation Cancellation'
+            heading = 'Cancel Donation'
+            summary = 'Thanks for your support of MinnPost. To confirm cancellation of your ${} donation, click the button.'.format(amount_formatted)
+        except:
+            opp_id = ''
+            recurring_id = ''
+            opportunity = []
+            recurring = []
+    elif request.args.get('recurring'):
+        recurring_id = request.args.get('recurring')
+        opp_id = ''
+        opportunity = []
+        try:
+            result = get_recurring(recurring_id)
+            recurring = result['recurring']
+            amount = float(recurring['npe03__Amount__c'])
+            if (amount).is_integer():
+                amount_formatted = int(amount)
+            else:
+                amount_formatted = format(amount, ',.2f')
+            campaign = recurring['npe03__Recurring_Donation_Campaign__c']
+            if request.args.get('frequency'):
+                frequency = request.args.get('frequency')
+            else:
+                frequency = recurring['npe03__Installment_Period__c'].lower()
+            title = 'MinnPost | Cancel Recurring Donation'
+            heading = 'Cancel Recurring Donation'
+            description = 'Recurring Donation Cancellation'
+            summary = 'Thanks for your support of MinnPost. To confirm cancellation of your ${} {} donation, click the button.'.format(amount_formatted, frequency)
+        except:
+            opp_id = ''
+            recurring_id = ''
+            opportunity = []
+            recurring = []
+
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    elif 'Donor_first_name__c' in opportunity and opportunity['Donor_first_name__c'] is not None:
+        first_name = opportunity['Donor_first_name__c']
+    elif 'Donor_first_name__c' in recurring and recurring['Donor_first_name__c'] is not None:
+        first_name = recurring['Donor_first_name__c']
+    else:
+        first_name = ''
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    elif 'Donor_last_name__c' in opportunity and opportunity['Donor_last_name__c'] is not None:
+        last_name = opportunity['Donor_last_name__c']
+    elif 'Donor_last_name__c' in recurring and recurring['Donor_last_name__c'] is not None:
+        last_name = recurring['Donor_last_name__c']
+    else:
+        last_name = ''
+    if request.args.get('email'):
+        email = request.args.get('email')
+    elif 'Donor_e_mail__c' in opportunity and opportunity['Donor_e_mail__c'] is not None:
+        email = opportunity['Donor_e_mail__c']
+    elif 'Donor_e_mail__c' in recurring and recurring['Donor_e_mail__c'] is not None:
+        email = recurring['Donor_e_mail__c']
+    else:
+        email = ''
+
+    show_amount_field = True
+    hide_comments = True
+    hide_display = True
+    button = 'Confirm your cancellation'
+
+    return render_template('minnpost-cancel.html',
+        title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
+        description=description, summary=summary, button=button,
+        form=form, amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, hide_comments=hide_comments, hide_display=hide_display,
+        #opp_type = opp_type, opp_subtype = opp_subtype,
+        first_name = first_name,last_name = last_name, email=email,
+        minnpost_root = app.minnpost_root)
 
 
 # used at support.minnpost.com/minnroast-pledge
@@ -1484,6 +1588,32 @@ def minnpost_recurring_donation_update_confirm():
         # we shouldn't need to run the update donation object here bc no newsletters or whatever
         #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session)
+    else:
+        print('post-pledge form did not validate: error below')
+        print(form.errors)
+        message = "there was an issue with this form"
+        print('Error with post-update form {} {}'.format(sf_type, flask_id))
+        return render_template('error.html', message=message)
+
+# this is a minnpost url
+@app.route('/donation-cancel-confirm/', methods=['POST'])
+def minnpost_donation_cancel_confirm():
+
+    form = ConfirmForm(request.form)
+    #pprint('Request: {}'.format(request))
+    amount = float(request.form['amount'])
+    amount_formatted = format(amount, ',.2f')
+
+    flask_id = session['flask_id']
+    sf_type = session['sf_type']
+
+    #print('flask id is {} and now update'.format(flask_id))
+    #print(request.form)
+
+    if flask_id:
+        # we shouldn't need to run the update donation object here bc no newsletters or whatever
+        #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        return render_template('minnpost-cancel/finish.html', amount=amount_formatted, session=session)
     else:
         print('post-pledge form did not validate: error below')
         print(form.errors)

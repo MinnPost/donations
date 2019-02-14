@@ -1138,7 +1138,7 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
     """
 
     query = """
-            SELECT Id, SF_Recurring_Donation_ID__c, npe03__Amount__c, npe03__Recurring_Donation_Campaign__c,
+            SELECT Id, SF_Recurring_Donation_ID__c, npe03__Amount__c, npe03__Installment_Period__c, npe03__Recurring_Donation_Campaign__c,
             Donor_first_name__c, Donor_last_name__c, Donor_e_mail__c,
             Stripe_Customer_Id__c
             FROM npe03__Recurring_Donation__c
@@ -1514,8 +1514,10 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     else:
         swag_thankyou_lists = ''
 
-
-    open_ended_status = 'Open'
+    try:
+        open_ended_status = form['open_ended_status']
+    except:
+        open_ended_status = 'Open'
 
     try:
         if form['pay_fees'] == '1':
