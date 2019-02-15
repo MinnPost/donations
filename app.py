@@ -969,7 +969,7 @@ def minnpost_donation_cancel_form():
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, button=button,
         form=form, amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, hide_comments=hide_comments, hide_display=hide_display,
-        #opp_type = opp_type, opp_subtype = opp_subtype,
+        sf_type=sf_type, sf_id=sf_id,
         first_name = first_name,last_name = last_name, email=email,
         minnpost_root = app.minnpost_root)
 
