@@ -66,6 +66,7 @@ from salesforce import get_opportunity
 from salesforce import get_recurring
 from salesforce import get_campaign
 from salesforce import get_report
+from salesforce import change_donation_status
 from salesforce import update_donation_object
 from app_celery import make_celery
 
@@ -881,7 +882,9 @@ def minnpost_donation_cancel_form():
     year = now.year
 
     if request.args.get('opportunity'):
+        sf_type = 'opportunity'
         opp_id = request.args.get('opportunity')
+        sf_id = opp_id
         recurring_id = ''
         recurring = []
         try:
@@ -904,7 +907,9 @@ def minnpost_donation_cancel_form():
             opportunity = []
             recurring = []
     elif request.args.get('recurring'):
+        sf_type = 'recurring_donation'
         recurring_id = request.args.get('recurring')
+        sf_id = recurring_id
         opp_id = ''
         opportunity = []
         try:
@@ -959,6 +964,8 @@ def minnpost_donation_cancel_form():
     hide_comments = True
     hide_display = True
     button = 'Confirm your cancellation'
+
+    result = change_donation_status.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
 
     return render_template('minnpost-cancel.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,

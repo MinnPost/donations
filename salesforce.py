@@ -1524,8 +1524,6 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     except:
         givalike_donation_status = 'Open'
 
-    print('Givalike status is {}'.format(givalike_donation_status))
-
     try:
         if form['pay_fees'] == '1':
             pay_fees = True
@@ -1891,6 +1889,90 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
                 'Event_member_benefit_messages__c': event_messages,
                 'Input_feedback_messages__c': feedback_messages
                 }
+            
+            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+            # TODO: check 'errors' and 'success' too
+            #print (resp)
+            if resp.status_code == 204:
+                return True
+            else:
+                raise Exception('Error: updating object failed. Tried to pass {} to server. Status code was {} and message was {}'.format(update, resp.status_code, resp.text))
+        else:
+            print('Error: No response from Salesforce query {}'.format(query))
+        
+
+
+@celery.task(name='salesforce.change_donation_status', bind=True, max_retries=None)
+def change_donation_status(self, object_name=None, sf_id=None, form=None):
+    print ("----Change status {}...".format(object_name))
+    #print('---Updating this {} ---'.format(object_name))
+    #print('update the flask id {}'.format(flask_id))
+    #print(form)
+
+    if object_name == 'recurring_donation':
+
+        try:
+            givalike_donation_status = form['givalike_donation_status']
+        except:
+            givalike_donation_status = ''
+
+        try:
+            open_ended_status = form['open_ended_status']
+        except:
+            open_ended_status = ''
+
+    elif object_name == 'opportunity':
+
+        try:
+            stage = form['stage']
+        except:
+            stage = ''
+
+        try:
+            close_date = form['close_date']
+        except:
+            close_date = ''
+
+    with app.app_context():
+
+        sf = SalesforceConnection()
+
+        if object_name == 'recurring_donation':
+
+            query = """
+                SELECT givalike__Donation_Status__c, npe03__Open_Ended_Status__c
+                FROM npe03__Recurring_Donation__c
+                WHERE Id = '{}'
+                """.format(sf_id)
+
+        elif object_name == 'opportunity':
+
+            query = """
+                SELECT StageName, CloseDate
+                FROM Opportunity
+                WHERE Id = '{}'
+                """.format(sf_id)
+
+        response = sf.query(query)
+
+        if response:
+            path = response[0]['attributes']['url']
+            url = '{}{}'.format(sf.instance_url, path)
+            #print (url)
+
+            update = {}
+
+            if givalike_donation_status != '':
+                update['givalike__Donation_Status__c'] = givalike_donation_status
+
+            if open_ended_status != '':
+                update['npe03__Open_Ended_Status__c'] = open_ended_status
+
+            if stage != '':
+                update['StageName'] = stage
+
+            if close_date != '':
+                update['CloseDate'] = close_date
             
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             # TODO: check 'errors' and 'success' too
