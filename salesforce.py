@@ -1905,9 +1905,8 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
 @celery.task(name='salesforce.change_donation_status', bind=True, max_retries=None)
 def change_donation_status(self, object_name=None, sf_id=None, form=None):
     print ("----Change status {}...".format(object_name))
-    #print('---Updating this {} ---'.format(object_name))
     #print('update the flask id {}'.format(flask_id))
-    #print(form)
+    print(form)
 
     givalike_donation_status = None
     open_ended_status = None
@@ -1960,13 +1959,13 @@ def change_donation_status(self, object_name=None, sf_id=None, form=None):
 
         response = sf.query(query)
 
-        print('sf response')
-        print(response)
+        #print('sf response')
+        #print(response)
 
         if response:
             path = response[0]['attributes']['url']
             url = '{}{}'.format(sf.instance_url, path)
-            print (url)
+            #print (url)
 
             update = {}
 
@@ -1982,12 +1981,13 @@ def change_donation_status(self, object_name=None, sf_id=None, form=None):
             if close_date is not None:
                 update['CloseDate'] = close_date
 
+            print('update values are:')
             print(update)
             
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             # TODO: check 'errors' and 'success' too
-            print('update response')
-            print (resp)
+            #print('update response')
+            #print (resp)
             if resp.status_code == 204:
                 return True
             else:
