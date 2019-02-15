@@ -890,17 +890,20 @@ def minnpost_donation_cancel_form():
         try:
             result = get_opportunity(opp_id)
             opportunity = result['opportunity']
-
             amount = float(opportunity['Amount'])
             if (amount).is_integer():
                 amount_formatted = int(amount)
             else:
                 amount_formatted = format(amount, ',.2f')
             campaign = opportunity['CampaignId']
+            close_date = opportunity['CloseDate']
+            
+            close_date = datetime.strptime(close_date, '%Y-%m-%d').strftime('%B %-d, %Y')
+
             title = 'MinnPost | Cancel Donation'
             description = 'Donation Cancellation'
             heading = 'Cancel Donation'
-            summary = 'Thanks for your support of MinnPost. To confirm cancellation of your ${} donation, click the button.'.format(amount_formatted)
+            summary = 'Thanks for your support of MinnPost. To confirm cancellation of your ${} donation scheduled for {}, click the button.'.format(amount_formatted, close_date)
         except:
             opp_id = ''
             recurring_id = ''

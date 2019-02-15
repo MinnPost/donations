@@ -920,7 +920,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
     """
 
     query = """
-            SELECT Id, Amount, Campaignid, Description, StageName, Type, MRpledge_com_ID__c,
+            SELECT Id, Amount, Campaignid, Description, StageName, CloseDate, Type, MRpledge_com_ID__c,
             Donor_first_name__c, Donor_last_name__c, Donor_e_mail__c,
             Stripe_Customer_Id__c
             FROM Opportunity

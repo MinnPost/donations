@@ -15,9 +15,11 @@
       <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
       {% if opp_id %}
       <input type="hidden" name="opp_id" id="opp_id" value="{{ opp_id }}">
+      <input type="hidden" name="stage" id="stage" value="Closed Lost">
       {% endif %}
       {% if recurring_id %}
       <input type="hidden" name="recurring_id" id="recurring_id" value="{{ recurring_id }}">
+      <input type="hidden" name="givalike_donation_status" id="givalike_donation_status" value="Canceled">
       {% endif %}
       <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
       <input type="hidden" name="pledge" id="pledge" value="{{ pledge }}">
@@ -29,7 +31,7 @@
       <input type="hidden" name="opp_subtype" id="opp_subtype" value="{{ opp_subtype }}">
       {% endif %}
       <input type="hidden" name="redirect_url" id="redirect_url" value="{{ redirect_url }}">
-      <input type="hidden" name="givalike_donation_status" id="givalike_donation_status" value="Canceled">
+
       <input type="hidden" name="sf_id" id="sf_id" value="{{ sf_id }}">
       <input type="hidden" name="sf_type" id="sf_type" value="{{ sf_type }}">
 
