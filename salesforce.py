@@ -1905,7 +1905,7 @@ def update_donation_object(self, object_name=None, flask_id=None, form=None):
 @celery.task(name='salesforce.change_donation_status', bind=True, max_retries=None)
 def change_donation_status(self, object_name=None, sf_id=None, form=None):
     print ("----Change status {}...".format(object_name))
-    form = request.form
+    form = form.to_dict()
     #print('update the flask id {}'.format(flask_id))
     print(form)
 
