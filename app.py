@@ -874,8 +874,8 @@ def minnpost_recurring_donation_update_form():
 def minnpost_donation_cancel_form():
     form = MinnPostForm()
 
-    confirm_url = '/donation-update-confirm/'
-    redirect_url = 'donation-update-thanks'
+    confirm_url = '/donation-cancel-confirm/'
+    redirect_url = 'donation-cancel-thanks'
 
     now = datetime.now()
     year = now.year
