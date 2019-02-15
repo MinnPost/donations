@@ -1520,6 +1520,11 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         open_ended_status = 'Open'
 
     try:
+        givalike_donation_status = form['givalike_donation_status']
+    except:
+        givalike_donation_status = 'Open'
+
+    try:
         if form['pay_fees'] == '1':
             pay_fees = True
         else:
@@ -1597,6 +1602,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'In_Honor_Memory__c': inhonorormemory,
         'In_honor_memory_of__c': inhonorormemoryof,
         'Flask_Transaction_ID__c': flask_id,
+        'givalike__Donation_Status__c': givalike_donation_status,
         'Notify_someone__c': in_honor_notify,
         #'npe03__Installments__c': installments, # only add this if we need to close it
         'npe03__Installment_Period__c': installment_period, # this has to be there even if it is open ended
