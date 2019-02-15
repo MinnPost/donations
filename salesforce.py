@@ -1909,29 +1909,34 @@ def change_donation_status(self, object_name=None, sf_id=None, form=None):
     #print('update the flask id {}'.format(flask_id))
     #print(form)
 
+    givalike_donation_status = None
+    open_ended_status = None
+    stage = None
+    close_date = None
+
     if object_name == 'recurring_donation':
 
         try:
             givalike_donation_status = form['givalike_donation_status']
         except:
-            givalike_donation_status = ''
+            givalike_donation_status = None
 
         try:
             open_ended_status = form['open_ended_status']
         except:
-            open_ended_status = ''
+            open_ended_status = None
 
     elif object_name == 'opportunity':
 
         try:
             stage = form['stage']
         except:
-            stage = ''
+            stage = None
 
         try:
             close_date = form['close_date']
         except:
-            close_date = ''
+            close_date = None
 
     with app.app_context():
 
@@ -1962,16 +1967,16 @@ def change_donation_status(self, object_name=None, sf_id=None, form=None):
 
             update = {}
 
-            if givalike_donation_status != '':
+            if givalike_donation_status is not None:
                 update['givalike__Donation_Status__c'] = givalike_donation_status
 
-            if open_ended_status != '':
+            if open_ended_status is not None:
                 update['npe03__Open_Ended_Status__c'] = open_ended_status
 
-            if stage != '':
+            if stage is not None:
                 update['StageName'] = stage
 
-            if close_date != '':
+            if close_date is not None:
                 update['CloseDate'] = close_date
             
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
