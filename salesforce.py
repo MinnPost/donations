@@ -1524,6 +1524,8 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     except:
         givalike_donation_status = 'Open'
 
+    print('Givalike status is {}'.format(givalike_donation_status))
+
     try:
         if form['pay_fees'] == '1':
             pay_fees = True
