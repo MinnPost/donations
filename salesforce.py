@@ -1960,10 +1960,13 @@ def change_donation_status(self, object_name=None, sf_id=None, form=None):
 
         response = sf.query(query)
 
+        print('sf response')
+        print(response)
+
         if response:
             path = response[0]['attributes']['url']
             url = '{}{}'.format(sf.instance_url, path)
-            #print (url)
+            print (url)
 
             update = {}
 
@@ -1978,10 +1981,13 @@ def change_donation_status(self, object_name=None, sf_id=None, form=None):
 
             if close_date is not None:
                 update['CloseDate'] = close_date
+
+            print(update)
             
             resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
             # TODO: check 'errors' and 'success' too
-            #print (resp)
+            print('update response')
+            print (resp)
             if resp.status_code == 204:
                 return True
             else:
