@@ -1300,11 +1300,11 @@ def charge_ajax():
         transaction = Transaction('NULL', 'NULL')
         db.session.add(transaction)
         db.session.commit()
-        #print('add a transaction show me the id. then do sf method.')
-        # print(transaction.id)
+        print('add a transaction show me the id. then do sf method.')
+        print(transaction.id)
         flask_id = str(transaction.id)
         session['flask_id'] = flask_id
-        #print('session flask id is {}'.format(session['flask_id']))
+        print('session flask id is {}'.format(session['flask_id']))
         if frequency == 'one-time':
             session['sf_type'] = 'Opportunity'
         else:
