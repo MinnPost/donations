@@ -30,6 +30,8 @@
       {% endif %}
       <input type="hidden" name="redirect_url" id="redirect_url" value="{{ redirect_url }}">
       <input type="hidden" name="givalike_donation_status" id="givalike_donation_status" value="Canceled">
+      <input type="hidden" name="sf_id" id="sf_id" value="{{ sf_id }}">
+      <input type="hidden" name="sf_type" id="sf_type" value="{{ sf_type }}">
 
       {% include 'minnpost-cancel/includes/details.html' %}
       {% include 'minnpost-cancel/includes/confirm.html' %}

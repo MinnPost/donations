@@ -1603,6 +1603,8 @@ def minnpost_recurring_donation_update_confirm():
 # this is a minnpost url
 @app.route('/donation-cancel-confirm/', methods=['POST'])
 def minnpost_donation_cancel_confirm():
+    sf_type = request.form['sf_type']
+    sf_id = request.form['sf_id']
     # here we don't need any session info because all we do is tell them it worked
     result = change_donation_status.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
     return render_template('minnpost-cancel/finish.html')
