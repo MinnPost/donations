@@ -1598,24 +1598,8 @@ def minnpost_recurring_donation_update_confirm():
 # this is a minnpost url
 @app.route('/donation-cancel-confirm/', methods=['POST'])
 def minnpost_donation_cancel_confirm():
-
-    form = ConfirmForm(request.form)
-
-    flask_id = session['flask_id']
-
-    #print('flask id is {} and now update'.format(flask_id))
-    #print(request.form)
-
-    if flask_id:
-        # we shouldn't need to run the update donation object here bc no newsletters or whatever
-        #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnpost-cancel/finish.html')
-    else:
-        print('post-pledge form did not validate: error below')
-        print(form.errors)
-        message = "there was an issue with this form"
-        print('Error with post-update form {} {}'.format(sf_type, flask_id))
-        return render_template('error.html', message=message)
+    # here we don't need any session info because all we do is tell them it worked
+    return render_template('minnpost-cancel/finish.html')
 
 
 # this is a minnpost url
