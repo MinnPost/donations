@@ -965,8 +965,6 @@ def minnpost_donation_cancel_form():
     hide_display = True
     button = 'Confirm your cancellation'
 
-    result = change_donation_status.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
-
     return render_template('minnpost-cancel.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, button=button,
@@ -1592,8 +1590,7 @@ def minnpost_recurring_donation_update_confirm():
     #print(request.form)
 
     if flask_id:
-        # we shouldn't need to run the update donation object here bc no newsletters or whatever
-        #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        result = change_donation_status.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
         return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session)
     else:
         print('post-pledge form did not validate: error below')
