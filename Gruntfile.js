@@ -1,5 +1,7 @@
 module.exports = function(grunt) {
 
+  const sass = require('node-sass');
+
   /**
    * Initialize grunt
    */
@@ -35,13 +37,13 @@ module.exports = function(grunt) {
 
     /**
      * Sass compiling
-     * @github.com/gruntjs/grunt-contrib-sass
+     * @github.com/gruntjs/grunt-sass
      */
     sass: {
 
       dist: {
         options: {
-          style: 'expanded'
+          implementation: sass
         },
 
         files: [{
@@ -268,7 +270,7 @@ module.exports = function(grunt) {
    */
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-imagemin');
