@@ -34,7 +34,7 @@ Mako = "==1.0.3"
 MarkupSafe = "==0.23"
 "num2words" = "==0.5.5"
 plaid-python = "==2.0.2"
-"psycopg2" = "==2.7"
+"psycopg2" = "==2.7.3.2"
 python-editor = "==0.5"
 pytz = "==2016.7"
 raven = {version = "==5.31.0", extras = ["flask"]}
