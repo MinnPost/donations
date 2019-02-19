@@ -21,7 +21,7 @@
   </fieldset>
   {% endif %}
 
-  {% if frequency == '' or show_frequency_field == True %}
+  {% if show_frequency_field == True %}
   <fieldset class="clear-block">
     <div class="form-item form-item--frequency">
       <input type="radio" id="frequency-monthly" name="frequency" value="monthly"{% if frequency == 'monthly' %} checked {% endif %}> <label for="frequency-monthly">monthly</label>
