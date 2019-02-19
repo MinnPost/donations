@@ -1,5 +1,7 @@
-.support--summary {
-
+.support--minimal {
+	clear: both;
+	display: flex;
+	flex-direction: column;
 }
 
 .two-radios {
@@ -18,12 +20,54 @@
 	}
 }
 
+.form-item--frequency {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	width: 100%;
+	justify-content: space-between;
+	position: relative;
+	label {
+		display: block;
+		padding: 0.5em 1em;
+		border: $base-border;
+		cursor: pointer;
+		font-family: $helvetica;
+		font-size: 1.15em;
+		text-align: center;
+		flex: 1;
+		margin-right: 4%;
+		&:last-child {
+			margin-right: 0;
+		}
+	}
+	input {
+		left: 0;
+		opacity: 0;
+		position: absolute;
+		top: 0;
+	}
+	label:hover {
+		background: $base-border-color;
+	}
+	input:checked + label {
+		background: $minnpost-blue;
+		color: $minnpost-white;
+	}
+}
+
 .anniversary-sponsorship-image {
 	margin: $half-space auto;
 	display: block;
 }
 
 @media screen and (min-width: $large-screen) {
+
+	.support--minimal {
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
 	.support--summary, .support--confirm, .support--post-confirm {
 		@include row();
 		> fieldset {
@@ -37,9 +81,12 @@
 	    > label {
 	      @include span-columns(6);
 	    }
+	    > label:first-child {
+	      padding: $half-space 0 0 $base-spacing;
+	    }
 	    > label:last-child {
 	      text-align: right;
-	      padding: $half-space $base-spacing 0 $base-spacing;
+	      padding: $half-space $base-spacing 0 0;
 	    }
 	  }
 }

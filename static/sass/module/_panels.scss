@@ -4,6 +4,7 @@
 .no-js .panel, .no-js .honor fieldset, .no-js .swag .form-item--atlantic_id {
 	display: block;
 }
+
 .panel, .panel--error {
 	h1, h2, h3 {
 		margin-bottom: 0;
@@ -130,11 +131,33 @@
 	}
 }
 
+.support--minimal .panel--form {
+	display: block;
+	h1 {
+		margin-bottom: $quarter-space;
+	}
+	&#panel--details {
+		.form-item input:last-child {
+			margin-bottom: 0;
+		}
+		.form-item--amount {
+			font-size: 1.25em;
+			label, input {
+				font-size: 1em;
+			}
+		}
+	}
+	&#panel--pay {
+		display: flex;
+	}
+}
+
 // media queries
 @media screen and (min-width: $small-screen) {
 	.panel, .panel--error {
 		h1 {
 			font-size: $h1-size;
+
 		}
 		.actions--edit-amount, .actions--pay-fees {
 			font-size: 80%;
@@ -143,6 +166,23 @@
 }
 
 @media screen and (min-width: $large-screen) {
+	.support--minimal .panel--form {
+		display: block;
+		&#panel--details {
+			width: 100%;
+			margin-right: 10%;
+			> fieldset {
+				max-width: none;
+				width: 82%;
+			}
+		}
+		&#panel--pay {
+			> fieldset {
+				max-width: none;
+				width: 100%;
+			}
+		}
+	}
 	fieldset.payment .location-group {
 		@include row();
 		> div {
