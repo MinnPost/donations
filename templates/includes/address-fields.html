@@ -2,30 +2,30 @@
     
   <div class="form-item form-item--street">
     <label for="edit-billing-street" class="required">Street Address: </label>
-    <input type="text" name="billing_street" id="billing_street" required maxlength="255">
+    <input type="text" name="billing_street" id="billing_street" required maxlength="255" value="{{ billing_street }}">
   </div>
 
   <div class="location-group">
     <div class="form-item form-item--city">
       <label for="edit-billing-city" class="required">City: </label>
-      <input type="text" name="billing_city" id="billing_city" required maxlength="255">
+      <input type="text" name="billing_city" id="billing_city" required maxlength="255" value="{{ billing_city }}">
     </div>
 
     <div class="form-item form-item--state">
       <label for="edit-billing-state" class="required">State: </label>
-      <input type="text" name="billing_state" id="billing_state" maxlength="20" required>
+      <input type="text" name="billing_state" id="billing_state" maxlength="20" required value="{{ billing_state }}">
     </div>
   </div>
 
   <div class="form-item form-item--zip">
     <label for="edit-billing-zip" class="required">Zip Code: </label>
-    <input type="tel" name="billing_zip" id="edit-billing-zip" maxlength="10" required>
+    <input type="tel" name="billing_zip" id="edit-billing-zip" maxlength="10" required value="{{ billing_zip }}">
     <div class="caption show-country"><a href="#" id="billing_show_country"><small>Not in the US?</small></a></div>
   </div>
 
   <div class="form-item form-item--nojs form-item--country">
     <label>Country: </label>
-    <input type="text" name="billing_country" id="billing_country" maxlength="50">
+    <input type="text" name="billing_country" id="billing_country" maxlength="50" value="{{ billing_country }}">
   </div>
 
   {% if shipping == True %}
