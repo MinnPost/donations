@@ -759,10 +759,6 @@ def minnpost_donation_update_form():
             else:
                 amount_formatted = format(amount, ',.2f')
             campaign = opportunity['CampaignId']
-            if request.args.get('frequency'):
-                frequency = request.args.get('frequency')
-            else:
-                frequency = recurring['npe03__Installment_Period__c'].lower()
 
         except:
             opp_id = ''
