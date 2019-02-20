@@ -431,6 +431,22 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     #print('opportunity: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
 
     try:
+        if form['stage'] != '':
+            stage = form['stage']
+        else:
+            stage = 'Pledged'
+    except:
+        stage = 'Pledged'
+
+    try:
+        if form['close_date'] != '':
+            close_date = form['close_date']
+        else:
+            close_date = today
+    except:
+        close_date = today
+
+    try:
         if form['campaign'] != '':
             campaign = form['campaign']
         else:
@@ -758,7 +774,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     opportunity = {
             'AccountId': '{}'.format(contact['AccountId']),
             'Amount': '{}'.format(amount),
-            'CloseDate': today,
+            'CloseDate': close_date,
             'Description': '{}'.format(form['description']),
             'LeadSource': 'Stripe',
             #'RecordTypeId': DONATION_RECORDTYPEID,
@@ -769,7 +785,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
                 today
             ),
             'Campaignid': campaign,
-            'StageName': 'Pledged',
+            'StageName': stage,
             'Type': type__c,
             'Anonymous__c': anonymous,
             'Card_type__c': card_type,
@@ -934,6 +950,19 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
     if form is not None:
         print ("----Opportunity form data present, update the record")
 
+        today = datetime.now(tz=zone).strftime('%Y-%m-%d')
+        now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
+
+        try:
+            stage = form['stage']
+        except:
+            stage = 'Pledged'
+
+        try:
+            close_date = form['close_date']
+        except:
+            close_date = today
+
         try:
             billing_full = form['full_address']
             try:
@@ -1000,7 +1029,8 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
 
         update = {
             'Description': form['description'],
-            'StageName': 'Pledged',
+            'StageName': pledged,
+            'CloseDate': close_date,
             'Donor_address_line_1__c': billing_street,
             'Donor_city__c': billing_city,
             'Donor_state__c': billing_state,
