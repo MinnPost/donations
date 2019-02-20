@@ -879,7 +879,7 @@ def minnpost_donation_update_form():
     if request.args.get('billing_street'):
         billing_street = request.args.get('billing_street')
     elif 'Donor_address_line_1__c' in opportunity and opportunity['Donor_address_line_1__c'] is not None:
-        billing_street = opportunity['Donor_last_name__c']
+        billing_street = opportunity['Donor_address_line_1__c']
     elif 'Donor_address_line_1__c' in recurring and recurring['Donor_address_line_1__c'] is not None:
         billing_street = recurring['Donor_address_line_1__c']
     else:
