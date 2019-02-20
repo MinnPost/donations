@@ -1,4 +1,4 @@
-{% extends "minnroast-sponsorship/layout.html" %}
+{% extends "minnroast-patron/layout.html" %}
 
 {% block content %}
 
@@ -7,7 +7,7 @@
 
     <img src="/static/img/campaigns/MinnRoast2018Logo640.png" alt="MinnPost presents MinnRoast 2018" />
 
-    <form action="/minnroast-sponsorship-confirm/" method="post" class="support support--donate" id="donate">
+    <form action="/minnroast-patron-confirm/" method="post" class="support support--donate" id="donate">
       {{ form.csrf_token }}
 
       <input type="hidden" name="recurring" id="recurring" value="one-time">
@@ -24,8 +24,8 @@
       <input type="hidden" name="billing_zip_geocode" id="billing_zip_geocode" value="" maxlength="10">
       <input type="hidden" name="billing_country_geocode" id="billing_country_geocode" value="" maxlength="50">
 
-      {% include 'minnroast-sponsorship/includes/details.html' %}
-      {% include 'minnroast-sponsorship/includes/pay.html' %}
+      {% include 'minnroast-patron/includes/details.html' %}
+      {% include 'minnroast-patron/includes/pay.html' %}
 
     </form>
   </div>

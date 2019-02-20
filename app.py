@@ -527,9 +527,16 @@ def minnpost_advertising_form():
 # used at support.minnpost.com/minnroast-sponsorship
 @app.route('/minnroast-sponsorship/')
 def minnroast_sponsorship_form():
+    full_url = url_for('minnroast_patron_form', **request.args)
+    return redirect(full_url)
+
+
+# used at support.minnpost.com/minnroast-patron/
+@app.route('/minnroast-patron/')
+def minnroast_patron_form():
     form = MinnPostForm()
 
-    redirect_url = 'minnroast-sponsorship-thanks'
+    redirect_url = 'minnroast-patron-thanks'
 
     now = datetime.now()
     year = now.year
@@ -572,7 +579,7 @@ def minnroast_sponsorship_form():
         additional_donation = float(request.args.get('additional_donation'))
     else:
         additional_donation = ''
-    return render_template('minnroast-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
+    return render_template('minnroast-patron.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
@@ -1543,8 +1550,8 @@ def minnpost_advertising_confirm():
         return render_template('error.html', message=message)
 
 # this is a minnpost url
-@app.route('/minnroast-sponsorship-confirm/', methods=['POST'])
-def minnroast_sponsorship_confirm():
+@app.route('/minnroast-patron-confirm/', methods=['POST'])
+def minnroast_patron_confirm():
 
     form = ConfirmForm(request.form)
     #pprint('Request: {}'.format(request))
@@ -1556,7 +1563,7 @@ def minnroast_sponsorship_confirm():
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnroast-sponsorship/finish.html', amount=amount_formatted, session=session)
+        return render_template('minnroast-patron/finish.html', amount=amount_formatted, session=session)
     else:
         print('post-sponsorship form did not validate: error below')
         print(form.errors)
