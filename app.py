@@ -935,6 +935,7 @@ def minnpost_donation_update_form():
         first_name = first_name,last_name = last_name, email=email,
         billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
         additional_donation = additional_donation,
+        stage=stage, close_date=close_date,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
