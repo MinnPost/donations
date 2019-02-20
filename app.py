@@ -840,7 +840,7 @@ def minnpost_donation_update_form():
     if 'CloseDate' in opportunity and opportunity['CloseDate'] is not None:
         three_days_ago = (datetime.now(tz=zone) - timedelta(days=3)).strftime('%Y-%m-%d')
         if opportunity['CloseDate'] <= three_days_ago:
-            close_date = opportunity['CloseDate']
+            close_date = today
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
