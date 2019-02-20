@@ -1,7 +1,8 @@
 import os
 import sys
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
+from pytz import timezone
 
 from num2words import num2words
 
@@ -25,6 +26,7 @@ from flask_sslify import SSLify
 from plaid import Client
 from plaid.errors import APIError, ItemError
 
+from config import TIMEZONE
 from config import MINNPOST_ROOT
 from config import FLASK_SECRET_KEY
 from config import DEFAULT_CAMPAIGN_ONETIME
@@ -108,6 +110,8 @@ stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 celery = make_celery(app)
 
 db.init_app(app)
+
+zone = timezone(TIMEZONE)
 
 # Set up to send logging to stdout and Heroku forwards to Papertrail
 LOGGING = {
@@ -748,6 +752,7 @@ def minnpost_donation_update_form():
     redirect_url = 'donation-update-thanks'
 
     now = datetime.now()
+    today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     year = now.year
 
     if request.args.get('opportunity'):
@@ -827,6 +832,16 @@ def minnpost_donation_update_form():
     else:
         show_ach = SHOW_ACH
 
+    stage = ''
+    if opportunity.get('StageName') == 'Failed':
+        stage = 'Pledged'
+
+    close_date = ''
+    if 'CloseDate' in opportunity and opportunity['CloseDate'] is not None:
+        three_days_ago = (datetime.now(tz=zone) - timedelta(days=3)).strftime('%Y-%m-%d')
+        if opportunity['CloseDate'] <= three_days_ago:
+            close_date = today
+
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
     elif 'Stripe_Customer_ID__c' in opportunity and opportunity['Stripe_Customer_ID__c'] is not None:
@@ -864,7 +879,7 @@ def minnpost_donation_update_form():
     if request.args.get('billing_street'):
         billing_street = request.args.get('billing_street')
     elif 'Donor_address_line_1__c' in opportunity and opportunity['Donor_address_line_1__c'] is not None:
-        billing_street = opportunity['Donor_last_name__c']
+        billing_street = opportunity['Donor_address_line_1__c']
     elif 'Donor_address_line_1__c' in recurring and recurring['Donor_address_line_1__c'] is not None:
         billing_street = recurring['Donor_address_line_1__c']
     else:
@@ -930,6 +945,7 @@ def minnpost_donation_update_form():
         first_name = first_name,last_name = last_name, email=email,
         billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
         additional_donation = additional_donation,
+        stage=stage, close_date=close_date,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
