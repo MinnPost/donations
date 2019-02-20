@@ -1,7 +1,8 @@
 import os
 import sys
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
+from pytz import timezone
 
 from num2words import num2words
 
@@ -25,6 +26,7 @@ from flask_sslify import SSLify
 from plaid import Client
 from plaid.errors import APIError, ItemError
 
+from config import TIMEZONE
 from config import MINNPOST_ROOT
 from config import FLASK_SECRET_KEY
 from config import DEFAULT_CAMPAIGN_ONETIME
@@ -108,6 +110,8 @@ stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 celery = make_celery(app)
 
 db.init_app(app)
+
+zone = timezone(TIMEZONE)
 
 # Set up to send logging to stdout and Heroku forwards to Papertrail
 LOGGING = {
@@ -748,6 +752,7 @@ def minnpost_donation_update_form():
     redirect_url = 'donation-update-thanks'
 
     now = datetime.now()
+    today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     year = now.year
 
     if request.args.get('opportunity'):
