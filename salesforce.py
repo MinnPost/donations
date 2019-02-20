@@ -1029,7 +1029,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
 
         update = {
             'Description': form['description'],
-            'StageName': pledged,
+            'StageName': stage,
             'CloseDate': close_date,
             'Donor_address_line_1__c': billing_street,
             'Donor_city__c': billing_city,
