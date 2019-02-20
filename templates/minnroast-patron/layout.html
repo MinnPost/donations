@@ -67,6 +67,7 @@
       'stripe_publishable_key' : '{{key}}',
       'tabs' : false,{% if show_ach == True %}
       'plaid_env' : '{{plaid_env}}',
+      'original_amount_selector' : 'input[name="amount"]',
       'plaid_public_key' : '{{plaid_public_key}}',{% endif %}
     });
   });
