@@ -922,6 +922,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
     query = """
             SELECT Id, Amount, Campaignid, Description, StageName, CloseDate, Type, MRpledge_com_ID__c,
             Donor_first_name__c, Donor_last_name__c, Donor_e_mail__c,
+            Donor_address_line_1__c, Donor_city__c, Donor_state__c, Donor_ZIP__c, Donor_country__c,
             Stripe_Customer_Id__c
             FROM Opportunity
             WHERE Id='{0}'
@@ -1140,6 +1141,7 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
     query = """
             SELECT Id, SF_Recurring_Donation_ID__c, npe03__Amount__c, npe03__Installment_Period__c, npe03__Recurring_Donation_Campaign__c,
             Donor_first_name__c, Donor_last_name__c, Donor_e_mail__c,
+            Donor_address_line_1__c, Donor_city__c, Donor_state__c, Donor_ZIP__c, Donor_country__c,
             Stripe_Customer_Id__c
             FROM npe03__Recurring_Donation__c
             WHERE Id = '{}'

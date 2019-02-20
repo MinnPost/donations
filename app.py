@@ -716,7 +716,7 @@ def minnpost_pledge_payment():
     hide_display = True
     button = 'Update your Donation'
 
-    description = 'Recurring Donation Update'
+    description = 'MinnPost Pledge Payment'
     allow_additional = False
 
     return render_template('minnpost-minimal-form.html',
@@ -860,6 +860,48 @@ def minnpost_donation_update_form():
         email = recurring['Donor_e_mail__c']
     else:
         email = ''
+
+    if request.args.get('billing_street'):
+        billing_street = request.args.get('billing_street')
+    elif 'Donor_address_line_1__c' in opportunity and opportunity['Donor_address_line_1__c'] is not None:
+        billing_street = opportunity['Donor_last_name__c']
+    elif 'Donor_address_line_1__c' in recurring and recurring['Donor_address_line_1__c'] is not None:
+        billing_street = recurring['Donor_address_line_1__c']
+    else:
+        billing_street = ''
+    if request.args.get('billing_city'):
+        billing_city = request.args.get('billing_city')
+    elif 'Donor_city__c' in opportunity and opportunity['Donor_city__c'] is not None:
+        billing_city = opportunity['Donor_city__c']
+    elif 'Donor_city__c' in recurring and recurring['Donor_city__c'] is not None:
+        billing_city = recurring['Donor_city__c']
+    else:
+        billing_city = ''
+    if request.args.get('billing_state'):
+        billing_state = request.args.get('billing_state')
+    elif 'Donor_state__c' in opportunity and opportunity['Donor_state__c'] is not None:
+        billing_state = opportunity['Donor_state__c']
+    elif 'Donor_state__c' in recurring and recurring['Donor_state__c'] is not None:
+        billing_state = recurring['Donor_state__c']
+    else:
+        billing_state = ''
+    if request.args.get('billing_zip'):
+        billing_zip = request.args.get('billing_zip')
+    elif 'Donor_ZIP__c' in opportunity and opportunity['Donor_ZIP__c'] is not None:
+        billing_zip = opportunity['Donor_ZIP__c']
+    elif 'Donor_ZIP__c' in recurring and recurring['Donor_ZIP__c'] is not None:
+        billing_zip = recurring['Donor_ZIP__c']
+    else:
+        billing_zip = ''
+    if request.args.get('billing_country'):
+        billing_country = request.args.get('billing_country')
+    elif 'Donor_country__c' in opportunity and opportunity['Donor_country__c'] is not None:
+        billing_country = opportunity['Donor_country__c']
+    elif 'Donor_country__c' in recurring and recurring['Donor_country__c'] is not None:
+        billing_country = recurring['Donor_country__c']
+    else:
+        billing_country = ''
+
     if request.args.get('additional_donation'):
         additional_donation = float(request.args.get('additional_donation'))
     else:
@@ -886,6 +928,7 @@ def minnpost_donation_update_form():
         form=form, amount=amount_formatted, show_amount_field=show_amount_field, frequency=frequency, show_frequency_field=show_frequency_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
+        billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
         additional_donation = additional_donation,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
         key=app.config['STRIPE_KEYS']['publishable_key'])
