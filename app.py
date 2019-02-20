@@ -832,6 +832,10 @@ def minnpost_donation_update_form():
     else:
         show_ach = SHOW_ACH
 
+    stage = ''
+    if opportunity.get('StageName') == 'Failed':
+        stage = 'Pledged'
+
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
     elif 'Stripe_Customer_ID__c' in opportunity and opportunity['Stripe_Customer_ID__c'] is not None:
