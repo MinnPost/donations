@@ -5,7 +5,7 @@ from datetime import datetime
 
 from num2words import num2words
 
-from flask import Flask, render_template, request, session, jsonify, json, send_from_directory
+from flask import Flask, redirect, render_template, request, session, url_for, jsonify, json, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 
@@ -726,10 +726,19 @@ def minnpost_pledge_payment():
 # used at support.minnpost.com/recurring-donation-update
 @app.route('/recurring-donation-update/')
 def minnpost_recurring_donation_update_form():
+    full_url = url_for('minnpost_donation_update_form', **request.args)
+    return redirect(full_url)
+
+
+# used at support.minnpost.com/donation-update
+@app.route('/donation-update/')
+def minnpost_donation_update_form():
+
+
     form = MinnPostForm()
 
-    confirm_url = '/recurring-donation-update-confirm/'
-    redirect_url = 'recurring-donation-update-thanks'
+    confirm_url = '/donation-update-confirm/'
+    redirect_url = 'donation-update-thanks'
 
     now = datetime.now()
     year = now.year
@@ -737,7 +746,9 @@ def minnpost_recurring_donation_update_form():
     if request.args.get('opportunity'):
         opp_id = request.args.get('opportunity')
         recurring_id = ''
+        frequency = ''
         recurring = []
+        show_frequency_field = False
         try:
             result = get_opportunity(opp_id)
             opportunity = result['opportunity']
@@ -748,10 +759,6 @@ def minnpost_recurring_donation_update_form():
             else:
                 amount_formatted = format(amount, ',.2f')
             campaign = opportunity['CampaignId']
-            if request.args.get('frequency'):
-                frequency = request.args.get('frequency')
-            else:
-                frequency = recurring['npe03__Installment_Period__c'].lower()
 
         except:
             opp_id = ''
@@ -762,6 +769,7 @@ def minnpost_recurring_donation_update_form():
         recurring_id = request.args.get('recurring')
         opp_id = ''
         opportunity = []
+        show_frequency_field = True
         try:
             result = get_recurring(recurring_id)
             recurring = result['recurring']
@@ -770,6 +778,12 @@ def minnpost_recurring_donation_update_form():
                 amount_formatted = int(amount)
             else:
                 amount_formatted = format(amount, ',.2f')
+
+            if request.args.get('frequency'):
+                frequency = request.args.get('frequency')
+            else:
+                frequency = recurring['npe03__Installment_Period__c'].lower()
+
             campaign = recurring['npe03__Recurring_Donation_Campaign__c']
 
         except:
@@ -845,24 +859,24 @@ def minnpost_recurring_donation_update_form():
         additional_donation = ''
 
     show_amount_field = True
-    title = 'MinnPost | Recurring Donation Update'
+    title = 'MinnPost | Donation Update'
     #if amount_formatted != '':
     #    heading = '${} Donation for Election Coverage'.format(amount_formatted)
     #else:
         #heading = 'Recurring Donation Update'
-    heading = 'Recurring Donation Update'
-    summary = 'Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to update your payment information for your recurring donation. We appreciate your cooperation as we update our system!'
+    heading = 'Update your donation'
+    summary = 'Thank you for your support of MinnPost. Please fill out the fields to update your donation.'
     hide_comments = True
     hide_display = True
     button = 'Update your Donation'
 
-    description = 'Recurring Donation Update'
+    description = 'Donation Update'
     allow_additional = False
 
     return render_template('minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
-        form=form, amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
+        form=form, amount=amount_formatted, show_amount_field=show_amount_field, frequency=frequency, show_frequency_field=show_frequency_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
@@ -870,7 +884,7 @@ def minnpost_recurring_donation_update_form():
         key=app.config['STRIPE_KEYS']['publishable_key'])
 
 
-# used at support.minnpost.com/recurring-donation-cancel
+# used at support.minnpost.com/donation-cancel
 @app.route('/donation-cancel/')
 def minnpost_donation_cancel_form():
     form = MinnPostForm()
@@ -1578,8 +1592,8 @@ def minnpost_pledge_confirm():
         return render_template('error.html', message=message)
 
 # this is a minnpost url
-@app.route('/recurring-donation-update-confirm/', methods=['POST'])
-def minnpost_recurring_donation_update_confirm():
+@app.route('/donation-update-confirm/', methods=['POST'])
+def minnpost_donation_update_confirm():
 
     form = ConfirmForm(request.form)
     #pprint('Request: {}'.format(request))

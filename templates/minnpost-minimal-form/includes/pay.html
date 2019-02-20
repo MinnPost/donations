@@ -29,7 +29,9 @@
     </div>
     {% endif %}
 
-    {% include 'includes/address-fields.html' %}
+    {% if hide_address != True %}
+      {% include 'includes/address-fields.html' %}
+    {% endif %}
     
     {% include '/includes/card-or-ach.html' %}
 

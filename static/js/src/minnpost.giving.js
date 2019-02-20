@@ -24,6 +24,7 @@
     'minnpost_root' : 'https://www.minnpost.com',
     'donate_form_selector': '#donate',
     'review_step_selector' : '#panel--review',
+    'details_step_selector' : '#panel--details',
     'attendees_step_selector' : '#panel--attendees',
     'donate_step_selector' : '#panel--pay',
     'confirm_form_selector' : '#confirm',
@@ -220,7 +221,16 @@
         $(this.options.credit_card_fieldset).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
       }
 
-      if ($(this.options.review_step_selector).length > 0) {
+      if ($(this.options.details_step_selector).length > 0) {
+        if ($(this.options.original_amount_selector).length > 0) {
+          var that = this;
+          $(this.options.original_amount_selector).change( function() {
+            that.options.original_amount = $(that.options.original_amount_selector).val();
+            that.calculateFees('visa');
+            $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
+            $('#edit-pay-fees').val(0);
+          });
+        }
         this.options.level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
         this.options.levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
         this.honorOrMemory(this.element, this.options); // in honor or in memory of someone
@@ -422,11 +432,10 @@
       }
 
       this.options.processing_percent = parseFloat(percentage);
-      this.options.new_amount = (this.options.original_amount + fixed_fee) / (1 - this.options.processing_percent);
+      this.options.new_amount = (parseFloat(this.options.original_amount) + fixed_fee) / (1 - this.options.processing_percent);
       this.options.processing_fee = this.options.new_amount - this.options.original_amount;
       this.options.processing_fee = (Math.round(parseFloat(this.options.processing_fee)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
       this.options.processing_fee_text = this.options.processing_fee;
-
     },
 
     creditCardProcessingFees: function(options, reset) {

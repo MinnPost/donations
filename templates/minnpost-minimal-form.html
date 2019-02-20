@@ -5,7 +5,7 @@
 <main>
   <div class="wrapper support--forms">
 
-    <form action="{{ confirm_url }}" method="post" class="support support--donate" id="donate">
+    <form action="{{ confirm_url }}" method="post" class="support support--minimal support--donate support--update" id="donate">
       {{ form.csrf_token }}
 
       {% if amount != '' and show_amount_field != True %}
