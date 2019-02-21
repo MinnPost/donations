@@ -833,8 +833,9 @@ def minnpost_donation_update_form():
         show_ach = SHOW_ACH
 
     stage = ''
-    if opportunity.get('StageName') == 'Failed':
-        stage = 'Pledged'
+    if 'StageName' in opportunity and opportunity['StageName'] is not None:
+        if 'Failed' == opportunity['StageName']:
+            stage = 'Pledged'
 
     close_date = ''
     if 'CloseDate' in opportunity and opportunity['CloseDate'] is not None:
