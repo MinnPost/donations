@@ -896,6 +896,7 @@ def get_recurring(recurring_id=None, customer=None, form=None, extra_values=None
 
         result = _find_recurring(recurring_id=recurring_id, customer=customer, form=form, extra_values=extra_values) # form is if we are updating it also
         recurring = result[0]
+        # this is the actual recurring donation
         response = {'recurring':recurring, 'id': recurring_id, 'success': True, 'errors' : []}
 
         # if the response is empty then there is no recurring donation for this ID
@@ -1265,6 +1266,8 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
 
         if 'amount' in form:
             update['npe03__Amount__c'] = _format_amount(form['amount'])
+        if 'recurring' in form:
+            update['npe03__Installment_Period__c'] = form['recurring']
         
         path = '/services/data/v{}/sobjects/npe03__Recurring_Donation__c/{}'.format(SALESFORCE['API_VERSION'], form['recurring_id'])
         url = '{}{}'.format(sf.instance_url, path)

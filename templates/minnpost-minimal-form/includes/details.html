@@ -23,9 +23,9 @@
 
   {% if show_frequency_field == True %}
   <fieldset class="clear-block">
-    <div class="form-item form-item--frequency">
-      <input type="radio" id="frequency-monthly" name="frequency" value="monthly"{% if frequency == 'monthly' %} checked {% endif %}> <label for="frequency-monthly">monthly</label>
-      <input type="radio" id="frequency-yearly" name="frequency" value="yearly"{% if frequency == 'yearly' %} checked {% endif %}> <label for="frequency-yearly">yearly</label>
+    <div class="form-item form-item--recurring">
+      <input type="radio" id="recurring-monthly" name="recurring" value="monthly"{% if frequency == 'monthly' %} checked {% endif %}> <label for="recurring-monthly">monthly</label>
+      <input type="radio" id="recurring-yearly" name="recurring" value="yearly"{% if frequency == 'yearly' %} checked {% endif %}> <label for="recurring-yearly">yearly</label>
     </div>
   </fieldset>
   {% endif %}
