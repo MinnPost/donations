@@ -1730,7 +1730,12 @@ def add_customer_and_charge(form=None, customer=None, flask_id=None, extra_value
         msg = '*{}* pledged *${}* [recurring]'.format(name, amount)
         print(msg)
         notify_slack(msg)
-        response = add_recurring_donation(form=form, customer=customer, extra_values=extra_values)
+        if 'opp_id' not in form and 'recurring_id' not in form:
+            response = add_recurring_donation(form=form, customer=customer, extra_values=extra_values)
+        elif 'recurring_id' in form:
+            response = get_recurring(recurring_id=form['recurring_id'], customer=customer, form=form, extra_values=extra_values)
+        else:
+            response = get_opportunity(opp_id=form['opp_id'], customer=customer, form=form, extra_values=extra_values)
 
     #print('1')
     #print(response)
