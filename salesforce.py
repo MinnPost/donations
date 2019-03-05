@@ -439,6 +439,14 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         stage = 'Pledged'
 
     try:
+        if form['email_user_when_canceled'] == '1':
+            email_user_when_canceled = True
+        else:
+            email_user_when_canceled = False
+    except:
+        email_user_when_canceled = False
+
+    try:
         if form['close_date'] != '':
             close_date = form['close_date']
         else:
@@ -800,6 +808,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Donor_ZIP__c': billing_zip,
             'Donor_country__c': billing_country,
             'Email_to_notify__c': inhonorormemory_email,
+            'Email_User_When_Canceled__c': email_user_when_canceled,
             'Event_Attendees__c': attendees,
             'gweb__Eventbrite_Ticket_Quantity__c': quantity,
             'Fair_market_value__c': fair_market_value,
@@ -1287,6 +1296,14 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
     amount = _format_amount(form['amount'])
 
+    try:
+        if form['email_user_when_canceled'] == '1':
+            email_user_when_canceled = True
+        else:
+            email_user_when_canceled = False
+    except:
+        email_user_when_canceled = False
+
     # payment method for this recurring donation
     if 'stripe_card' in extra_values:
         stripe_card = extra_values['stripe_card'] 
@@ -1633,6 +1650,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'Donor_first_name__c': first_name,
         'Donor_last_name__c': last_name,
         'Email_to_notify__c': inhonorormemory_email,
+        'Email_User_When_Canceled__c': email_user_when_canceled,
         'Include_amount_in_notification__c': inhonorormemory_include_amount,
         'In_Honor_Memory__c': inhonorormemory,
         'In_honor_memory_of__c': inhonorormemoryof,
