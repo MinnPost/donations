@@ -1980,6 +1980,12 @@ def change_donation_status(self, object_name=None, sf_id=None, form=None):
     open_ended_status = None
     stage = None
     close_date = None
+    email_user_when_canceled = False
+
+    try:
+        email_user_when_canceled = form['email_user_when_canceled']
+    except:
+        email_user_when_canceled = False
 
     if object_name == 'recurring_donation':
 
@@ -2048,6 +2054,9 @@ def change_donation_status(self, object_name=None, sf_id=None, form=None):
 
             if close_date is not None:
                 update['CloseDate'] = close_date
+
+            if email_user_when_canceled is not False:
+                update['Email_User_When_Canceled__c'] = email_user_when_canceled
 
             print('update values are:')
             print(update)
