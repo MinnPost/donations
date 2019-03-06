@@ -969,7 +969,10 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             stage = 'Pledged'
 
         try:
-            email_user_when_canceled = form['email_user_when_canceled']
+            if form['email_user_when_canceled'] == '1':
+                email_user_when_canceled = True
+            else:
+                email_user_when_canceled = False
         except:
             email_user_when_canceled = False
 
@@ -1284,7 +1287,11 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
         if 'recurring' in form:
             update['npe03__Installment_Period__c'] = form['recurring']
         if 'email_user_when_canceled' in form:
-            update['Email_User_When_Canceled__c'] = form['email_user_when_canceled']
+            if form['email_user_when_canceled'] == '1':
+                email_user_when_canceled = True
+            else:
+                email_user_when_canceled = False
+            update['Email_User_When_Canceled__c'] = email_user_when_canceled
         
         
         path = '/services/data/v{}/sobjects/npe03__Recurring_Donation__c/{}'.format(SALESFORCE['API_VERSION'], form['recurring_id'])
@@ -1983,7 +1990,10 @@ def change_donation_status(self, object_name=None, sf_id=None, form=None):
     email_user_when_canceled = False
 
     try:
-        email_user_when_canceled = form['email_user_when_canceled']
+        if form['email_user_when_canceled'] == '1':
+            email_user_when_canceled = True
+        else:
+            email_user_when_canceled = False
     except:
         email_user_when_canceled = False
 
