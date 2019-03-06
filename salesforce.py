@@ -969,6 +969,11 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             stage = 'Pledged'
 
         try:
+            email_user_when_canceled = form['email_user_when_canceled']
+        except:
+            email_user_when_canceled = False
+
+        try:
             close_date = form['close_date']
         except:
             close_date = today
@@ -1041,6 +1046,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             'Description': form['description'],
             'StageName': stage,
             'CloseDate': close_date,
+            'Email_User_When_Canceled__c': email_user_when_canceled,
             'Donor_address_line_1__c': billing_street,
             'Donor_city__c': billing_city,
             'Donor_state__c': billing_state,
@@ -1277,6 +1283,9 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
             update['npe03__Amount__c'] = _format_amount(form['amount'])
         if 'recurring' in form:
             update['npe03__Installment_Period__c'] = form['recurring']
+        if 'email_user_when_canceled' in form:
+            update['Email_User_When_Canceled__c'] = form['email_user_when_canceled']
+        
         
         path = '/services/data/v{}/sobjects/npe03__Recurring_Donation__c/{}'.format(SALESFORCE['API_VERSION'], form['recurring_id'])
         url = '{}{}'.format(sf.instance_url, path)
