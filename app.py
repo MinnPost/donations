@@ -674,8 +674,8 @@ def minnpost_pledge_payment():
         customer_id = request.args.get('customer_id')
     elif 'Stripe_Customer_ID__c' in opportunity and opportunity['Stripe_Customer_ID__c'] is not None:
         customer_id = opportunity['Stripe_Customer_ID__c']
-    elif 'Stripe_Customer_ID__c' in recurring and recurring['Stripe_Customer_ID__c'] is not None:
-        customer_id = recurring['Stripe_Customer_ID__c']
+    elif 'Stripe_Customer_Id__c' in recurring and recurring['Stripe_Customer_Id__c'] is not None:
+        customer_id = recurring['Stripe_Customer_Id__c']
     else:
         customer_id = ''
 
@@ -849,8 +849,8 @@ def minnpost_donation_update_form():
         customer_id = request.args.get('customer_id')
     elif 'Stripe_Customer_ID__c' in opportunity and opportunity['Stripe_Customer_ID__c'] is not None:
         customer_id = opportunity['Stripe_Customer_ID__c']
-    elif 'Stripe_Customer_ID__c' in recurring and recurring['Stripe_Customer_ID__c'] is not None:
-        customer_id = recurring['Stripe_Customer_ID__c']
+    elif 'Stripe_Customer_Id__c' in recurring and recurring['Stripe_Customer_Id__c'] is not None:
+        customer_id = recurring['Stripe_Customer_Id__c']
     else:
         customer_id = ''
 

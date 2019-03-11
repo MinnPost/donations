@@ -836,7 +836,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Stripe_Agreed_to_pay_fees__c': pay_fees,
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
-            'Stripe_Customer_Id__c': customer.id,    
+            'Stripe_Customer_ID__c': customer.id,    
             'Ticket_count__c': quantity,        
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
@@ -949,7 +949,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             SELECT Id, Amount, Campaignid, Description, StageName, CloseDate, Type, MRpledge_com_ID__c,
             Donor_first_name__c, Donor_last_name__c, Donor_e_mail__c,
             Donor_address_line_1__c, Donor_city__c, Donor_state__c, Donor_ZIP__c, Donor_country__c,
-            Stripe_Customer_Id__c
+            Stripe_Customer_ID__c
             FROM Opportunity
             WHERE Id='{0}'
             """.format(opp_id)
@@ -1059,7 +1059,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
-            'Stripe_Customer_Id__c': customer.id,
+            'Stripe_Customer_ID__c': customer.id,
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
             'Card_type__c': card_type
