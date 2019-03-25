@@ -1047,7 +1047,7 @@ global.Payment = Payment;
         $(this.options.credit_card_fieldset).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
       }
 
-      if ($(this.options.details_step_selector).length > 0) {
+      if ($(this.options.details_step_selector).length > 0 || $(this.options.review_step_selector).length > 0) {
         if ($(this.options.original_amount_selector).length > 0) {
           var that = this;
           $(this.options.original_amount_selector).change( function() {
