@@ -600,6 +600,7 @@ def minnpost_pledge_payment():
     redirect_url = 'pledge-thanks'
 
     now = datetime.now()
+    today = datetime.now(tz=zone).strftime('%Y-%m-%d')
     year = now.year
 
     if request.args.get('opportunity'):
