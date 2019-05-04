@@ -1399,11 +1399,11 @@
         };
         $.ajax({
           method: 'GET',
-          url: options.minnpost_root + '/wp-json/minnpost-api/v1/mailchimp/user',
+          url: options.minnpost_root + '/wp-json/minnpost-api/v2/mailchimp/user',
           data: get_data
         }).done(function( result ) {
           if ( typeof result.status !== 'undefined' ) {
-            $(options.email_field_selector, element).after('<input name="mailchimp_user_status" type="hidden" value="' + result.status + '">');
+            $(options.email_field_selector, element).after('<input name="mailchimp_status" type="hidden" value="' + result.status + '">');
           }
           if ( typeof result.mailchimp_id !== 'undefined' ) {
             $(options.email_field_selector, element).after('<input name="mailchimp_user_id" type="hidden" value="' + result.mailchimp_id + '">');
@@ -1450,12 +1450,13 @@
             email: $(options.email_field_selector, element).val(),
             first_name: $(options.first_name_field_selector, element).val(),
             last_name: $(options.last_name_field_selector, element).val(),
-            newsletters: {},
-            occasional_emails: {}
+            groups_submitted: {}
           };
 
-          if ( $('input[name="mailchimp_user_status"]').length > 0 ) {
-            post_data.mailchimp_user_status = $('input[name="mailchimp_user_status"]').val();
+          post_data.groups_available = 'all';
+
+          if ( $('input[name="mailchimp_status"]').length > 0 ) {
+            post_data.mailchimp_status = $('input[name="mailchimp_status"]').val();
           }
 
           if ( $('input[name="mailchimp_user_id"]').length > 0 ) {
@@ -1465,19 +1466,19 @@
           if (typeof newsletter_groups !== 'undefined') {
             $.each(newsletter_groups, function(index, value) {
               var group = $(this).val();
-              post_data.newsletters[index] = group;
+              post_data.groups_submitted[index] = group;
             });
           }
 
           if (typeof message_groups !== 'undefined') {
             $.each(message_groups, function(index, value) {
               var group = $(this).val();
-              post_data.occasional_emails[index] = group;
+              post_data.groups_submitted[index] = group;
             });
           }
 
           $.ajax({
-            url: options.minnpost_root + '/wp-json/minnpost-api/v1/mailchimp/user',
+            url: options.minnpost_root + '/wp-json/minnpost-api/v2/mailchimp/user',
             type: 'post',
             dataType : 'json',
             contentType: 'application/json; charset=utf-8',
