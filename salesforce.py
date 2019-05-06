@@ -947,7 +947,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
 
     query = """
             SELECT Id, Amount, Campaignid, Description, StageName, CloseDate, Type, MRpledge_com_ID__c,
-            Donor_first_name__c, Donor_last_name__c, Donor_e_mail__c,
+            Donor_first_name__c, Donor_last_name__c, Donor_e_mail__c, Credited_as__c,
             Donor_address_line_1__c, Donor_city__c, Donor_state__c, Donor_ZIP__c, Donor_country__c,
             Stripe_Customer_ID__c
             FROM Opportunity
@@ -980,6 +980,11 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             close_date = form['close_date']
         except:
             close_date = today
+
+        try:
+            credited_as = form['display_as']
+        except:
+            credited_as = ''
 
         try:
             billing_full = form['full_address']
@@ -1057,6 +1062,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             'Donor_country__c': billing_country,
             'Donor_first_name__c': form['first_name'],
             'Donor_last_name__c': form['last_name'],
+            'Credited_as__c': credited_as,
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
             'Stripe_Customer_ID__c': customer.id,
