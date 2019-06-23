@@ -1,37 +1,10 @@
-.logo {
-	background-image: url('https://www.minnpost.com/wp-content/uploads/sites/default/themes/siteskin/inc/images/logo.png');
-	background-size: contain;
-	background-repeat: no-repeat;
-	display: block;
-	@include hide-text;
-	//margin-top: 1.5em;
-	//margin-bottom: -1px;
-	width: 234px;
-	height: 33px;
-}
-// media queries
-@media screen and (min-width: $small-screen) {
-	.logo {
-		width: 264px;
-		height: 37px;
-	}
-}
-@media screen and (min-width: $nav-breaks) {
-	.logo {
-		float: left;
-		width: 330px;
-		height: 46px;
-		margin-top: 1.5em;
-	}
-}
-
 // with svg instead
 .a-site-branding {
 	max-width: 330px;
 	width: 100%;
 	height: auto;
 	position: relative;
-	margin: 10px auto 5px auto;
+	margin: 10px auto 3px auto;
 	.a-logo-svg {
 		width: 102%;
 		display: block;
