@@ -964,6 +964,28 @@
 
     }, // creditCardFields
 
+    setBrandIcon: function(brand) {
+      var cardBrandToPfClass = {
+        'visa': 'pf-visa',
+        'mastercard': 'pf-mastercard',
+        'amex': 'pf-american-express',
+        'discover': 'pf-discover',
+        'diners': 'pf-diners',
+        'jcb': 'pf-jcb',
+        'unknown': 'pf-credit-card',
+      }
+      var brandIconElement = document.getElementById('brand-icon');
+      var pfClass = 'pf-credit-card';
+      if (brand in cardBrandToPfClass) {
+        pfClass = cardBrandToPfClass[brand];
+      }
+      for (var i = brandIconElement.classList.length - 1; i >= 0; i--) {
+        brandIconElement.classList.remove(brandIconElement.classList[i]);
+      }
+      brandIconElement.classList.add('pf');
+      brandIconElement.classList.add(pfClass);
+    },
+
     achFields: function(element, options) {
       var that = this;
       if (options.plaid_env != '' && options.key != '' && typeof Plaid !== 'undefined') {
@@ -1058,14 +1080,42 @@
       var that = this;
       $(this.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
 
-      var card = that.elements.create(
-        'card',
-        {
-          hidePostalCode: true
-        }
-      );
+      var style = {
+        base: {
+          iconColor: '#666EE8',
+          lineHeight: '37px',
+          fontWeight: 400,
+          fontFamily: 'Georgia,Cambria,Times New Roman,Times,serif',
+          fontSize: '16px',
+        },
+      };
+
       // Add an instance of the card UI component into the `card-element` <div>
-      card.mount('#card-element');
+      //card.mount('#card-element');
+      var cardNumberElement = that.elements.create('cardNumber', {
+        style: style
+      });
+      cardNumberElement.mount('#card-number');
+
+      var cardExpiryElement = that.elements.create('cardExpiry', {
+        style: style
+      });
+      cardExpiryElement.mount('#card-expiry');
+
+      var cardCvcElement = that.elements.create('cardCvc', {
+        style: style
+      });
+      cardCvcElement.mount('#card-cvc');
+
+
+      cardNumberElement.on('change', function(event) {
+        // Switch brand logo
+        if (event.brand) {
+          that.setBrandIcon(event.brand);
+        }
+
+        //setOutcome(event);
+      });
 
 
       $(options.donate_form_selector).submit(function(event) {
