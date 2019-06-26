@@ -194,7 +194,8 @@
       var button_text = $('button.give, input.give').text();
       this.options.button_text = button_text;
 
-      Stripe.setPublishableKey(this.options.stripe_publishable_key);
+      this.stripe = Stripe(this.options.stripe_publishable_key);
+      this.elements = this.stripe.elements();
 
       // use a referrer for edit link if we have one
       if (document.referrer !== '') {
@@ -950,57 +951,17 @@
 
       var that = this;
 
-      if ($(options.choose_payment).length > 0) {      
-        if ($(options.choose_payment + ' input').is(':checked')) {
-          var checked = $(options.choose_payment + ' input:checked').attr('id');
-          $(options.payment_method_selector).removeClass('active');
-          $(options.payment_method_selector + '.' + checked).addClass('active');
-          $(options.payment_method_selector + ':not(.active) label').removeClass('required');
-          $(options.payment_method_selector + ':not(.active) input').prop('required', false);
-          $(options.payment_method_selector + '.active label').addClass('required');
-          $(options.payment_method_selector + '.active input').prop('required', true);
+      // todo: we should be able to get rid of this whole thing, but need to test it
+
+      /*var card = that.elements.create(
+        'card',
+        {
+          hidePostalCode: true
         }
+      );
+      // Add an instance of the card UI component into the `card-element` <div>
+      card.mount('#card-element');*/
 
-        $(options.choose_payment + ' input').change(function (event) {
-          $(options.payment_method_selector).removeClass('active');
-          $(options.payment_method_selector + '.' + this.id).addClass('active');
-          $(options.payment_method_selector + ':not(.active) label').removeClass('required');
-          $(options.payment_method_selector + ':not(.active) input').prop('required', false);
-          $(options.payment_method_selector + '.active label').addClass('required');
-          $(options.payment_method_selector + '.active input').prop('required', true);
-          $('#bankToken').remove();
-        });
-      }
-
-      if (typeof Payment !== 'undefined') {
-        // format values
-        Payment.formatCardNumber($(options.cc_num_selector, element));
-        Payment.formatCardExpiry($(options.cc_exp_selector, element));
-        Payment.formatCardCVC($(options.cc_cvv_selector, element));
-        
-        // get and show the card type
-        $(options.cc_num_selector, element).parent().prepend('<span class="card-image"></span>');
-        $(options.cc_num_selector, element).keyup(function() {
-          options.cardType = Payment.fns.cardType($(options.cc_num_selector, element).val());
-          /*if (options.cardType !== null) {            
-            $('.card-image').prop('class', 'card-image ' + options.cardType);
-          }*/
-          if (options.cardType !== null) {
-            that.calculateFees(options.cardType);
-          }
-          $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
-          $('#edit-pay-fees').val(0);
-          $('.card-image').prop('class', 'card-image ' + $('#cc-number').prop('class'));
-        });
-
-
-
-        /*$(options.credit_card_fieldset + ' input').focusin(function() {
-          $(this).parent().addClass('focus');
-        }).focusout(function() {
-          $(this).parent().removeClass('focus');
-        });*/
-      }
     }, // creditCardFields
 
     achFields: function(element, options) {
@@ -1096,6 +1057,17 @@
     validateAndSubmit: function(element, options) {
       var that = this;
       $(this.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
+
+      var card = that.elements.create(
+        'card',
+        {
+          hidePostalCode: true
+        }
+      );
+      // Add an instance of the card UI component into the `card-element` <div>
+      card.mount('#card-element');
+
+
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
 
@@ -1116,6 +1088,7 @@
             }
         }
 
+
         // validate and submit the form
         $('.check-field, .card-instruction').remove();
         $('input, label', element).removeClass('error');
@@ -1127,54 +1100,7 @@
         $(options.choose_payment + ' input').change(function() {
           $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
         });
-        if (typeof Payment !== 'undefined' && payment_method !== 'ach') {
-          var exp = Payment.fns.cardExpiryVal($(options.cc_exp_selector, element).val());
-          var valid_cc = Payment.fns.validateCardNumber($(options.cc_num_selector, element).val());
-          var valid_exp = Payment.fns.validateCardExpiry(exp.month, exp.year);
-          var valid_cvv = Payment.fns.validateCardCVC($(options.cc_cvv_selector, element).val(), options.cardType);
-          if (valid_cc === false || valid_exp === false || valid_cvv === false) {
-            //console.log('cc ' + valid_cc + ' exp ' + valid_exp + ' cvv ' + valid_cvv);
-            valid = false;
-            //$(options.cc_num_selector, element).parent().addClass('error');
-            if (valid_cc === false) {
-              $(options.cc_num_selector).after('<p class="card-instruction invalid cc-error">Your credit card number is not valid. Please try again.</p>');
-              $(options.cc_num_selector, element).addClass('error');
-              $(options.cc_num_selector, element).parent().addClass('error');
-            } else {
-              $(options.cc_exp_selector, element).removeClass('error');
-              $(options.cc_cvv_selector, element).removeClass('error');
-              $(options.cc_exp_selector, element).parent().removeClass('error');
-              $(options.cc_cvv_selector, element).parent().removeClass('error');
-            }
-            if (valid_exp === false) {
-              $(options.cc_exp_selector).after('<p class="card-instruction invalid cc-error">Your credit card expiration date is not valid. Please try again.</p>');
-              $(options.cc_exp_selector, element).addClass('error');
-              $(options.cc_exp_selector, element).parent().addClass('error');
-            } else {
-              $(options.cc_num_selector, element).removeClass('error');
-              $(options.cc_cvv_selector, element).removeClass('error');
-              $(options.cc_num_selector, element).parent().removeClass('error');
-              $(options.cc_cvv_selector, element).parent().removeClass('error');
-            }
-            if (valid_cvv === false) {
-              $(options.cc_cvv_selector).after('<p class="card-instruction invalid cc-error">Your credit card CVC number is not valid. Please try again.</p>');
-              $(options.cc_cvv_selector, element).addClass('error');
-              $(options.cc_cvv_selector, element).parent().addClass('error');
-            } else {
-              $(options.cc_num_selector, element).removeClass('error');
-              $(options.cc_exp_selector, element).removeClass('error');
-              $(options.cc_num_selector, element).parent().removeClass('error');
-              $(options.cc_exp_selector, element).parent().removeClass('error');
-            }
-          } else {
-            $(options.cc_num_selector, element).parent().removeClass('error');
-            $(options.cc_num_selector, element).removeClass('error');
-            $(options.cc_exp_selector, element).parent().removeClass('error');
-            $(options.cc_exp_selector, element).removeClass('error');
-            $(options.cc_cvv_selector, element).parent().removeClass('error');
-            $(options.cc_cvv_selector, element).removeClass('error');
-          }
-        } else if (payment_method === 'ach') {
+        if (payment_method === 'ach') {
           if ($('input[name="bankToken"]').length === 0) {
             valid = false;
             $(options.payment_method_selector).prepend('<p class="error">You are required to enter credit card information, or to authorize MinnPost to charge your bank account, to make a payment.</p>');
@@ -1368,7 +1294,10 @@
 
           if ($('input[name="bankToken"]').length == 0) {
             // finally, get a token from stripe, and try to charge it if it is not ach
-            Stripe.card.createToken({
+
+            that.createToken(card);
+
+            /*Stripe.card.createToken({
                 number: $(options.cc_num_selector).val(),
                 cvc: $(options.cc_cvv_selector).val(),
                 exp: $(options.cc_exp_selector).val(),
@@ -1378,7 +1307,7 @@
                 address_state: state,
                 address_zip: zip,
                 address_country: country,
-              }, stripeResponseHandler);
+              }, stripeResponseHandler);*/
           } else {
             var ach = stripeResponseHandler('success', $('#bankToken').val());
           }
@@ -1390,6 +1319,32 @@
 
       });
     }, // validateAndSubmit
+
+    createToken: function(card) {
+      var that = this;
+      that.stripe.createToken(card).then(function(result) {
+      if (result.error) {
+        // Inform the user if there was an error
+        var errorElement = document.getElementById('card-errors');
+        errorElement.textContent = result.error.message;
+      } else {
+        // Send the token to your server
+        that.stripeTokenHandler(result.token);
+      }
+    });
+    }, // createToken
+
+    stripeTokenHandler: function(token) {
+      // Insert the token ID into the form so it gets submitted to the server
+      var supportform = $(this.options.donate_form_selector);
+      var hiddenInput = document.createElement('input');
+      hiddenInput.setAttribute('type', 'hidden');
+      hiddenInput.setAttribute('name', 'stripeToken');
+      hiddenInput.setAttribute('value', token.id);
+      supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token.id));
+      // Submit the form
+      supportform.submit();
+    },
 
     showNewsletterSettings: function(element, options) {
       var that = this;
