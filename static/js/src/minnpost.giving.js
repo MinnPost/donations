@@ -1107,128 +1107,10 @@
           }
         }
 
-        var supportform = $(options.donate_form_selector);
-
         if (valid === true) {
           // 1. process donation to stripe
-          that.buttonStatus(options, supportform.find('button'), true);
-          var stripeResponseHandler = function(status, response) {
-            that.debug('trying to get stripe response');
-            var supportform = $(options.donate_form_selector);
+          //that.buttonStatus(options, supportform.find('button'), true);
 
-            if (response.errors) {
-              // Show the errors on the form
-              that.buttonStatus(options, supportform.find('button'), false);
-            } else {
-
-              if ($('input[name="bankToken"]').length === 0) {
-                // response contains id and card, which contains additional card details
-                var token = response.id;
-                // Insert the token into the form so it gets submitted to the server
-                if ($('input[name="stripeToken"]').length > 0) {
-                  $('input[name="stripeToken"]').val(token);
-                } else {
-                  supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));  
-                }
-                if ($('input[name="payment_type"]').length > 0) {
-                  $('input[name="payment_type"]').val(response.card.brand);
-                } else {
-                  supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(response.card.brand));  
-                }
-              } else {
-                //that.debug('we have a bank token');
-                if ($('input[name="payment_type"]').length > 0) {
-                  $('input[name="payment_type"]').val('ach');
-                } else {
-                  supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val('ach'));  
-                }
-              }
-
-              // get the card validated first by ajax
-              //setTimeout(function() {
-                $.ajax({
-                  url:'/charge_ajax/',
-                  cache: false,
-                  data: $(supportform).serialize(),
-                  type: 'POST'
-                })
-                .done(function(response) {
-                  if (typeof response.errors !== 'undefined') {
-                    // do not submit. there is an error.
-                    that.buttonStatus(options, supportform.find('button'), false);
-
-                    // add some error messages and styles
-                    $.each(response.errors, function( index, error ) {
-                      var field = error.field + '_field_selector';
-                      var message = '';
-                      if (typeof error.message === 'string') {
-                        message = error.message;
-                      } else {
-                        message = error.message[0];
-                      }
-                      if ($(field).length > 0) {
-                        $(options[field], element).addClass('error');
-                        $(options[field], element).prev().addClass('error');
-                        $(options[field], element).after('<span class="check-field invalid">' + message + '</span>');
-                      }
-
-                      if (error.field == 'csrf_token') {
-                        $('button.give').before('<p class="error">Sorry, this form had a back-end error and was unable to complete your donation. Please <a href="#" onclick="location.reload(); return false;">reload the page</a> and try again (we will preserve as much of your information as possible).</p>')
-                      }
-
-                    });
-
-                    if (typeof response.errors.error !== 'undefined') {
-                      if (response.errors.error.code == 'invalid_number' || response.errors.error.code == 'incorrect_number' || response.errors.error.code == 'card_declined' || response.errors.error.code == 'processing_error') {
-                        $(options.cc_num_selector, element).addClass('error');
-                        $(options.cc_num_selector, element).prev().addClass('error');
-                        $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
-                      }
-
-                      if (response.errors.error.code == 'invalid_expiry_month' || response.errors.error.code == 'invalid_expiry_year' || response.errors.error.code == 'expired_card') {
-                        $(options.cc_exp_selector, element).addClass('error');
-                        $(options.cc_exp_selector, element).prev().addClass('error');
-                        $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
-                      }
-
-                      if (response.errors.error.code == 'invalid_cvc' || response.errors.error.code == 'incorrect_cvc') {
-                        $(options.cc_cvv_selector, element).addClass('error');
-                        $(options.cc_cvv_selector, element).prev().addClass('error');
-                        $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
-                      }
-
-                      if (response.errors.error.type == 'invalid_request_error') {
-                        //$(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
-                        $('button.give').before('<p class="error">' + response.errors.error.message + '</p>')
-                      }
-
-                    }
-
-                    if (typeof response.errors[0] !== 'undefined') {
-                      var field = response.errors[0].field + '_field_selector';
-                      if ($(field).length > 0) {
-                        $('html, body').animate({
-                          scrollTop: $(options[field], element).parent().offset().top
-                        }, 2000);
-                      }
-                    }
-
-                  } else {
-                    supportform.get(0).submit(); // continue submitting the form
-                  }
-                })
-                .error(function(response) {
-                  that.buttonStatus(options, supportform.find('button'), false);
-                });
-              //},500);
-
-              // Disable the submit button to prevent repeated clicks
-              that.buttonStatus(options, supportform.find('button'), true);
-
-            }
-          }; // end stripeResponseHandler          
-
-          // prepare for stripeResponseHandler
           var full_name = '';
           if ($('#full_name').length > 0) {
             full_name = $('#full_name').val();
@@ -1294,7 +1176,7 @@
 
           if ($('input[name="bankToken"]').length == 0) {
             // finally, get a token from stripe, and try to charge it if it is not ach
-
+            console.log('1');
             that.createToken(card);
 
             /*Stripe.card.createToken({
@@ -1321,13 +1203,17 @@
     }, // validateAndSubmit
 
     createToken: function(card) {
+      console.log('2');
       var that = this;
       that.stripe.createToken(card).then(function(result) {
       if (result.error) {
+        console.log('errors');
+        console.dir(result);
         // Inform the user if there was an error
         var errorElement = document.getElementById('card-errors');
         errorElement.textContent = result.error.message;
       } else {
+        console.log('success');
         // Send the token to your server
         that.stripeTokenHandler(result.token);
       }
@@ -1335,15 +1221,32 @@
     }, // createToken
 
     stripeTokenHandler: function(token) {
+      var that = this;
       // Insert the token ID into the form so it gets submitted to the server
       var supportform = $(this.options.donate_form_selector);
-      var hiddenInput = document.createElement('input');
-      hiddenInput.setAttribute('type', 'hidden');
-      hiddenInput.setAttribute('name', 'stripeToken');
-      hiddenInput.setAttribute('value', token.id);
-      supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token.id));
+      supportform.append($('<input type=\"hidden\" name=\"stripeToken\">').val(token.id));
       // Submit the form
-      supportform.submit();
+      //supportform.submit();
+      $.ajax({
+        url:'/charge_ajax/',
+        cache: false,
+        data: $(supportform).serialize(),
+        type: 'POST'
+      })
+      .done(function(response) {
+        if (typeof response.errors !== 'undefined') {
+          // do not submit. there is an error.
+          that.buttonStatus(that.options, supportform.find('button'), false);
+          console.log('errors');
+          console.dir(response);
+        } else {
+          supportform.get(0).submit(); // continue submitting the form
+        }
+      })
+      .error(function(response) {
+        that.buttonStatus(that.options, supportform.find('button'), false);
+      });
+
     },
 
     showNewsletterSettings: function(element, options) {
