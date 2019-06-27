@@ -1308,11 +1308,23 @@
       if (result.error) {
         // Show the errors on the form
         that.buttonStatus(options, supportform.find('button'), false);
-        //console.log('errors');
-        //console.dir(result);
-        // Inform the user if there was an error
-        //var errorElement = document.getElementById('card-errors');
-        //errorElement.textContent = result.error.message;
+
+        var field = result.error.field + '_field_selector';
+        var message = '';
+        if (typeof result.error.message === 'string') {
+          message = result.error.message;
+        } else {
+          message = result.error.message[0];
+        }
+        if ($(field).length > 0) {
+          $(that.options[field], element).addClass('error');
+          $(that.options[field], element).prev().addClass('error');
+          $(that.options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+        }
+
+        if (result.error.field == 'csrf_token') {
+          $('button.give').before('<p class="error">Sorry, this form had a back-end error and was unable to complete your donation. Please <a href="#" onclick="location.reload(); return false;">reload the page</a> and try again (we will preserve as much of your information as possible).</p>')
+        }
       } else {
         // Send the token to your server
         that.stripeTokenHandler(result.token, 'card');
@@ -1364,10 +1376,6 @@
               $(options[field], element).addClass('error');
               $(options[field], element).prev().addClass('error');
               $(options[field], element).after('<span class="check-field invalid">' + message + '</span>');
-            }
-
-            if (error.field == 'csrf_token') {
-              $('button.give').before('<p class="error">Sorry, this form had a back-end error and was unable to complete your donation. Please <a href="#" onclick="location.reload(); return false;">reload the page</a> and try again (we will preserve as much of your information as possible).</p>')
             }
 
             if (typeof response.errors.error !== 'undefined') {
