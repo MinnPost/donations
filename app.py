@@ -1520,7 +1520,8 @@ def charge_ajax():
         # the payment type here won't work because it doesn't get sent to the method, but to the template       
         return render_template(
             'thanks.html',
-            amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, minnpost_root = app.minnpost_root, key=app.config['STRIPE_KEYS']['publishable_key'])
+            amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, minnpost_root = app.minnpost_root, key = app.config['STRIPE_KEYS']['publishable_key']
+        )
 
         #body = transaction.id
         #return jsonify(body)
@@ -1582,7 +1583,10 @@ def thanks():
         print('Done with stripe processing {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
         print('try to update account now')
         update_account.delay(form=request.form, account = {'levelint' : level.get('levelint', 0), 'level' : 'MinnPost {}'.format(level.get('level', '--None--').title())})
-        return render_template('thanks.html', amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, minnpost_root = app.minnpost_root)
+        return render_template(
+            'thanks.html',
+            amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, minnpost_root = app.minnpost_root, key = app.config['STRIPE_KEYS']['publishable_key']
+        )
     else:
         print('ajax result donate form did not validate: error below')
         print(form.errors)
