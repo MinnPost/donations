@@ -1306,11 +1306,13 @@
       var that = this;
       that.stripe.createToken(card).then(function(result) {
       if (result.error) {
-        console.log('errors');
-        console.dir(result);
+        // Show the errors on the form
+        that.buttonStatus(options, supportform.find('button'), false);
+        //console.log('errors');
+        //console.dir(result);
         // Inform the user if there was an error
-        var errorElement = document.getElementById('card-errors');
-        errorElement.textContent = result.error.message;
+        //var errorElement = document.getElementById('card-errors');
+        //errorElement.textContent = result.error.message;
       } else {
         // Send the token to your server
         that.stripeTokenHandler(result.token, 'card');
@@ -1349,8 +1351,64 @@
         if (typeof response.errors !== 'undefined') {
           // do not submit. there is an error.
           that.buttonStatus(that.options, supportform.find('button'), false);
-          console.log('errors');
-          console.dir(response);
+          // add some error messages and styles
+          $.each(response.errors, function( index, error ) {
+            var field = error.field + '_field_selector';
+            var message = '';
+            if (typeof error.message === 'string') {
+              message = error.message;
+            } else {
+              message = error.message[0];
+            }
+            if ($(field).length > 0) {
+              $(options[field], element).addClass('error');
+              $(options[field], element).prev().addClass('error');
+              $(options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+            }
+
+            if (error.field == 'csrf_token') {
+              $('button.give').before('<p class="error">Sorry, this form had a back-end error and was unable to complete your donation. Please <a href="#" onclick="location.reload(); return false;">reload the page</a> and try again (we will preserve as much of your information as possible).</p>')
+            }
+
+            if (typeof response.errors.error !== 'undefined') {
+              if (response.errors.error.code == 'invalid_number' || response.errors.error.code == 'incorrect_number' || response.errors.error.code == 'card_declined' || response.errors.error.code == 'processing_error') {
+                // error handling
+                that.stripeErrorDisplay(response.errors, $(that.options.cc_num_selector, element), that.element, that.options );
+              }
+
+              if (response.errors.error.code == 'invalid_expiry_month' || response.errors.error.code == 'invalid_expiry_year' || response.errors.error.code == 'expired_card') {
+                //$(options.cc_exp_selector, element).addClass('error');
+                //$(options.cc_exp_selector, element).prev().addClass('error');
+                //$(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
+                // error handling
+                that.stripeErrorDisplay(response.errors, $(that.options.cc_exp_selector, element), that.element, that.options );
+              }
+
+              if (response.errors.error.code == 'invalid_cvc' || response.errors.error.code == 'incorrect_cvc') {
+                //$(options.cc_cvv_selector, element).addClass('error');
+                //$(options.cc_cvv_selector, element).prev().addClass('error');
+                //$(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
+                // error handling
+                that.stripeErrorDisplay(response.errors, $(that.options.cc_cvv_selector, element), that.element, that.options );
+              }
+
+              if (response.errors.error.type == 'invalid_request_error') {
+                //$(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
+                $('button.give').before('<p class="error">' + response.errors.error.message + '</p>')
+              }
+
+            }
+
+            if (typeof response.errors[0] !== 'undefined') {
+              var field = response.errors[0].field + '_field_selector';
+              if ($(field).length > 0) {
+                $('html, body').animate({
+                  scrollTop: $(options[field], element).parent().offset().top
+                }, 2000);
+              }
+            }
+
+          });
         } else {
           supportform.get(0).submit(); // continue submitting the form
         }
