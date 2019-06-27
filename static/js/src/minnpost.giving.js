@@ -1201,7 +1201,7 @@
 
         if (valid === true) {
           // 1. process donation to stripe
-          //that.buttonStatus(options, supportform.find('button'), true);
+          that.buttonStatus(options, supportform.find('button'), true);
 
           var full_name = '';
           if ($('#full_name').length > 0) {
