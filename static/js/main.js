@@ -921,9 +921,9 @@ global.Payment = Payment;
     'credit_card_fieldset' : '.payment-method-group',
     'choose_payment' : '#choose-payment-method',
     'payment_method_selector' : '.payment-method',
-    'cc_num_selector' : '#cc-number',
-    'cc_exp_selector' : '#cc-exp',
-    'cc_cvv_selector' : '#cc-cvc',
+    'cc_num_selector' : '#card-number',
+    'cc_exp_selector' : '#card-expiry',
+    'cc_cvv_selector' : '#card-cvc',
     'payment_button_selector' : '#submit',
     'confirm_button_selector' : '#finish',
     'opp_id_selector' : '#flask_id',
@@ -1949,20 +1949,24 @@ global.Payment = Payment;
       var cardNumberElement = that.elements.create('cardNumber', {
         style: style
       });
-      cardNumberElement.mount('#card-number');
+      cardNumberElement.mount(options.cc_num_selector);
 
       var cardExpiryElement = that.elements.create('cardExpiry', {
         style: style
       });
-      cardExpiryElement.mount('#card-expiry');
+      cardExpiryElement.mount(options.cc_exp_selector);
 
       var cardCvcElement = that.elements.create('cardCvc', {
         style: style
       });
-      cardCvcElement.mount('#card-cvc');
+      cardCvcElement.mount(options.cc_cvv_selector);
 
 
       cardNumberElement.on('change', function(event) {
+
+        // error handling
+        that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
+
         // Switch brand logo
         if (event.brand) {
           that.calculateFees(event.brand);
@@ -1970,6 +1974,16 @@ global.Payment = Payment;
           that.setBrandIcon(event.brand);
         }
         //setOutcome(event);
+      });
+
+      cardExpiryElement.on('change', function(event) {
+        // error handling
+        that.stripeErrorDisplay(event, $(options.cc_exp_selector, element), element, options );
+      });
+
+      cardCvcElement.on('change', function(event) {
+        // error handling
+        that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
       });
 
 
@@ -1993,7 +2007,7 @@ global.Payment = Payment;
 
 
         // validate and submit the form
-        $('.check-field, .card-instruction').remove();
+        $('.check-field').remove();
         $('input, label', element).removeClass('error');
         var valid = true;
         var payment_method = 'card';
@@ -2003,6 +2017,7 @@ global.Payment = Payment;
         $(options.choose_payment + ' input').change(function() {
           $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
         });
+
         if (payment_method === 'ach') {
           if ($('input[name="bankToken"]').length === 0) {
             valid = false;
@@ -2093,6 +2108,25 @@ global.Payment = Payment;
 
       });
     }, // validateAndSubmit
+
+    stripeErrorDisplay: function(event, this_selector, element, options) {
+      // listen for errors and display/hide error messages
+      var which_error = this_selector.attr('id');
+      if (event.error) {
+        $('.card-instruction.' + which_error).text(event.error.message + ' Please try again.');
+        $('.card-instruction.' + which_error).addClass('invalid');
+        this_selector.parent().addClass('error');
+      } else {
+        $('.card-instruction.' + which_error).removeClass('invalid');
+        $('.card-instruction.' + which_error).empty();
+        $(options.cc_num_selector, element).removeClass('error');
+        $(options.cc_exp_selector, element).removeClass('error');
+        $(options.cc_cvv_selector, element).removeClass('error');
+        $(options.cc_num_selector, element).parent().removeClass('error');
+        $(options.cc_exp_selector, element).parent().removeClass('error');
+        $(options.cc_cvv_selector, element).parent().removeClass('error');
+      }
+    }, // stripeErrorDisplay
 
     createToken: function(card) {
       var that = this;
