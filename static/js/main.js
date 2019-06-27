@@ -1961,12 +1961,10 @@ global.Payment = Payment;
       });
       cardCvcElement.mount(options.cc_cvv_selector);
 
-
+      // validate/error handle the card fields
       cardNumberElement.on('change', function(event) {
-
         // error handling
         that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
-
         // Switch brand logo
         if (event.brand) {
           that.calculateFees(event.brand);
@@ -1986,7 +1984,6 @@ global.Payment = Payment;
         that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
       });
 
-
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
 
@@ -2004,7 +2001,6 @@ global.Payment = Payment;
               $(this).find('input:invalid').parent().removeClass('error');
             }
         }
-
 
         // validate and submit the form
         $('.check-field').remove();
@@ -2027,7 +2023,7 @@ global.Payment = Payment;
 
         if (valid === true) {
           // 1. process donation to stripe
-          //that.buttonStatus(options, supportform.find('button'), true);
+          that.buttonStatus(options, supportform.find('button'), true);
 
           var full_name = '';
           if ($('#full_name').length > 0) {
@@ -2131,31 +2127,31 @@ global.Payment = Payment;
     createToken: function(card) {
       var that = this;
       that.stripe.createToken(card).then(function(result) {
-      if (result.error) {
-        // Show the errors on the form
-        that.buttonStatus(options, supportform.find('button'), false);
+        if (result.error) {
+          // Show the errors on the form
+          that.buttonStatus(options, supportform.find('button'), false);
 
-        var field = result.error.field + '_field_selector';
-        var message = '';
-        if (typeof result.error.message === 'string') {
-          message = result.error.message;
+          var field = result.error.field + '_field_selector';
+          var message = '';
+          if (typeof result.error.message === 'string') {
+            message = result.error.message;
+          } else {
+            message = result.error.message[0];
+          }
+          if ($(field).length > 0) {
+            $(that.options[field], element).addClass('error');
+            $(that.options[field], element).prev().addClass('error');
+            $(that.options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+          }
+
+          if (result.error.field == 'csrf_token') {
+            $('button.give').before('<p class="error">Sorry, this form had a back-end error and was unable to complete your donation. Please <a href="#" onclick="location.reload(); return false;">reload the page</a> and try again (we will preserve as much of your information as possible).</p>')
+          }
         } else {
-          message = result.error.message[0];
+          // Send the token to your server
+          that.stripeTokenHandler(result.token, 'card');
         }
-        if ($(field).length > 0) {
-          $(that.options[field], element).addClass('error');
-          $(that.options[field], element).prev().addClass('error');
-          $(that.options[field], element).after('<span class="check-field invalid">' + message + '</span>');
-        }
-
-        if (result.error.field == 'csrf_token') {
-          $('button.give').before('<p class="error">Sorry, this form had a back-end error and was unable to complete your donation. Please <a href="#" onclick="location.reload(); return false;">reload the page</a> and try again (we will preserve as much of your information as possible).</p>')
-        }
-      } else {
-        // Send the token to your server
-        that.stripeTokenHandler(result.token, 'card');
-      }
-    });
+      });
     }, // createToken
 
     stripeTokenHandler: function(token, type) {
