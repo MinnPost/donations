@@ -1164,13 +1164,13 @@ global.Payment = Payment;
       }
 
       if (step === nav_item_count - 1 && $(this.options.opp_id_selector).length > 0) {
-        //console.log('this is a payment step but there is a step after it');
+        //this.debug('this is a payment step but there is a step after it');
         step = 'purchase';
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length > 0) {
-        //console.log('this is a payment step and there is no step after it');
+        //this.debug('this is a payment step and there is no step after it');
         step = 'purchase';
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length === 0) {
-        //console.log('this is a post-finish step. it does not have an id');
+        //this.debug('this is a post-finish step. it does not have an id');
       }
 
       document.title = title + page;
@@ -1220,7 +1220,7 @@ global.Payment = Payment;
       });
 
       if (step === 'purchase') {
-        //console.log('add a purchase action. step is ' + step);
+        //this.debug('add a purchase action. step is ' + step);
         ga('ec:setAction', 'purchase',{
           'id': opp_id, // Transaction id - Type: string
           'affiliation': 'MinnPost', // Store name - Type: string
@@ -1519,11 +1519,11 @@ global.Payment = Payment;
         show_shipping = true;
       }
 //      show_shipping = !!$(options.use_for_shipping_selector + ':checked', element).length;
-//      console.log('show is there');
+//      //this.debug('show is there');
 
 /*      $(options.use_for_shipping_selector, element).change(function() {
         that.shippingAddress(element, options);
-        console.log('change it');
+        //this.debug('change it');
       });
 */
       if (show_shipping === true ) {
@@ -1642,7 +1642,7 @@ global.Payment = Payment;
     },
 
     calculateAmount: function(element, options, data) {
-      //console.log('start. set variables and plain text, and remove code result.');
+      //this.debug('start. set variables and plain text, and remove code result.');
       var that = this;
       var quantity = $(options.quantity_field).val();
 
@@ -1777,6 +1777,34 @@ global.Payment = Payment;
 
       var that = this;
 
+      if ($(options.choose_payment).length > 0) {      
+        if ($(options.choose_payment + ' input').is(':checked')) {
+          var checked = $(options.choose_payment + ' input:checked').attr('id');
+          $(options.payment_method_selector).removeClass('active');
+          $(options.payment_method_selector + '.' + checked).addClass('active');
+          $(options.payment_method_selector + ':not(.active) label').removeClass('required');
+          $(options.payment_method_selector + ':not(.active) input').prop('required', false);
+          $(options.payment_method_selector + '.active label').addClass('required');
+          $(options.payment_method_selector + '.active input').prop('required', true);
+        }
+
+        $(options.choose_payment + ' input').change(function (event) {
+          $(options.payment_method_selector).removeClass('active');
+          $(options.payment_method_selector + '.' + this.id).addClass('active');
+          $(options.payment_method_selector + ':not(.active) label').removeClass('required');
+          $(options.payment_method_selector + ':not(.active) input').prop('required', false);
+          $(options.payment_method_selector + '.active label').addClass('required');
+          $(options.payment_method_selector + '.active input').prop('required', true);
+          $('#bankToken').remove();
+          if ( this.value === 'ach' ) {
+            that.calculateFees('ach');
+          } else {
+            that.calculateFees('visa');
+          }
+          $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
+        });
+      }
+
       // todo: we should be able to get rid of this whole thing, but need to test it
 
       /*var card = that.elements.create(
@@ -1837,8 +1865,8 @@ global.Payment = Payment;
             //   account_id: metadata.account_id
             // });
 
-            //console.log('Public Token: ' + public_token);
-            //console.log('Customer-selected account ID: ' + metadata.account_id);
+            //this.debug('Public Token: ' + public_token);
+            //this.debug('Customer-selected account ID: ' + metadata.account_id);
 
             var supportform = $(options.donate_form_selector);
 
@@ -1859,8 +1887,8 @@ global.Payment = Payment;
                 // there is an error.
                 $(options.plaid_link).parent().after('<p class="error">' + response.error + '</p>')
               } else {
-                //console.log('print response here');
-                //console.dir(response);
+                //this.debug('print response here');
+                //this.debug(response);
                 $(options.donate_form_selector).prepend('<input type="hidden" id="bankToken" name="bankToken" value="' + response.stripe_bank_account_token + '" />');
                 $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
                 that.calculateFees('ach'); // calculate the ach fees
@@ -1889,7 +1917,7 @@ global.Payment = Payment;
     }, // achFields
 
     hasHtml5Validation: function(element, options) {
-      //console.log('value is ' + typeof document.createElement('input').checkValidity === 'function');
+      //this.debug('value is ' + typeof document.createElement('input').checkValidity === 'function');
       return typeof document.createElement('input').checkValidity === 'function';
     },
 
@@ -1937,9 +1965,10 @@ global.Payment = Payment;
       cardNumberElement.on('change', function(event) {
         // Switch brand logo
         if (event.brand) {
+          that.calculateFees(event.brand);
+          $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
           that.setBrandIcon(event.brand);
         }
-
         //setOutcome(event);
       });
 
@@ -1954,13 +1983,11 @@ global.Payment = Payment;
               $('html, body').animate({
                 scrollTop: $(this).find('input:invalid').parent().offset().top
               }, 2000);
-              //console.log('top is ' + );
+              //this.debug('top is ' + );
               $(this).find('input:invalid').parent().addClass('error');
-              //$('#status').html('invalid');
             } else {
               $(this).removeClass('invalid');
               $(this).find('input:invalid').parent().removeClass('error');
-              //$('#status').html('submitted');
             }
         }
 
@@ -2052,26 +2079,15 @@ global.Payment = Payment;
 
           if ($('input[name="bankToken"]').length == 0) {
             // finally, get a token from stripe, and try to charge it if it is not ach
-            console.log('1');
-            that.createToken(card);
-
-            /*Stripe.card.createToken({
-                number: $(options.cc_num_selector).val(),
-                cvc: $(options.cc_cvv_selector).val(),
-                exp: $(options.cc_exp_selector).val(),
-                name: full_name,
-                address_line1: street,
-                address_city: city,
-                address_state: state,
-                address_zip: zip,
-                address_country: country,
-              }, stripeResponseHandler);*/
+            that.createToken(cardNumberElement);
           } else {
-            var ach = stripeResponseHandler('success', $('#bankToken').val());
+            // if it is ach, we already have a token so pass it to stripe.
+            that.stripeTokenHandler( $('#bankToken').val(), 'ach' );
           }
           //return true;
 
-        } else { // valid = true
+        } else {
+          // this means valid is false
           that.buttonStatus(options, supportform.find('button'), false);
         }
 
@@ -2079,7 +2095,6 @@ global.Payment = Payment;
     }, // validateAndSubmit
 
     createToken: function(card) {
-      console.log('2');
       var that = this;
       that.stripe.createToken(card).then(function(result) {
       if (result.error) {
@@ -2089,18 +2104,31 @@ global.Payment = Payment;
         var errorElement = document.getElementById('card-errors');
         errorElement.textContent = result.error.message;
       } else {
-        console.log('success');
         // Send the token to your server
-        that.stripeTokenHandler(result.token);
+        that.stripeTokenHandler(result.token, 'card');
       }
     });
     }, // createToken
 
-    stripeTokenHandler: function(token) {
+    stripeTokenHandler: function(token, type) {
       var that = this;
       // Insert the token ID into the form so it gets submitted to the server
       var supportform = $(this.options.donate_form_selector);
-      supportform.append($('<input type=\"hidden\" name=\"stripeToken\">').val(token.id));
+      if ( type === 'card' ) {
+        supportform.append($('<input type=\"hidden\" name=\"stripeToken\">').val(token.id));
+        if ($('input[name="payment_type"]').length > 0) {
+          $('input[name="payment_type"]').val(token.card.brand);
+        } else {
+          supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(token.card.brand));  
+        }
+      } else if ( type === 'ach' ) {
+        if ($('input[name="payment_type"]').length > 0) {
+          $('input[name="payment_type"]').val(type);
+        } else {
+          supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(type));  
+        }
+      }
+
       // Submit the form
       //supportform.submit();
       $.ajax({
@@ -2163,7 +2191,7 @@ global.Payment = Payment;
 
       //var existing_newsletter_settings = this.options.existing_newsletter_settings;
       var existing_newsletter_settings = $('.support-newsletter :input').serialize();
-      //console.dir(existing_newsletter_settings);
+      //this.debug(existing_newsletter_settings);
 
       $(options.confirm_form_selector).submit(function(event) {
         event.preventDefault();
