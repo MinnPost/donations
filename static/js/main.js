@@ -1946,6 +1946,9 @@ global.Payment = Payment;
 
       // Add an instance of the card UI component into the `card-element` <div>
       //card.mount('#card-element');
+      if ( $('.credit-card-group').length === 0 && $('.payment-method.choose-card').length === 0) {
+        return;
+      }
       var cardNumberElement = that.elements.create('cardNumber', {
         style: style
       });
