@@ -2192,36 +2192,29 @@ global.Payment = Payment;
               message = error.message[0];
             }
             if ($(field).length > 0) {
-              $(options[field], element).addClass('error');
-              $(options[field], element).prev().addClass('error');
-              $(options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+              $(options[field]).addClass('error');
+              $(options[field]).prev().addClass('error');
+              $(options[field]).after('<span class="check-field invalid">' + message + '</span>');
             }
 
-            if (typeof response.errors.error !== 'undefined') {
-              if (response.errors.error.code == 'invalid_number' || response.errors.error.code == 'incorrect_number' || response.errors.error.code == 'card_declined' || response.errors.error.code == 'processing_error') {
+            if (typeof error !== 'undefined') {
+              if (error.code == 'invalid_number' || error.code == 'incorrect_number' || error.code == 'card_declined' || error.code == 'processing_error') {
                 // error handling
-                that.stripeErrorDisplay(response.errors, $(that.options.cc_num_selector, element), that.element, that.options );
+                that.stripeErrorDisplay(response.errors, $(that.options.cc_num_selector), that.element, that.options );
               }
 
-              if (response.errors.error.code == 'invalid_expiry_month' || response.errors.error.code == 'invalid_expiry_year' || response.errors.error.code == 'expired_card') {
-                //$(options.cc_exp_selector, element).addClass('error');
-                //$(options.cc_exp_selector, element).prev().addClass('error');
-                //$(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
+              if (error.code == 'invalid_expiry_month' || error.code == 'invalid_expiry_year' || error.code == 'expired_card') {
                 // error handling
-                that.stripeErrorDisplay(response.errors, $(that.options.cc_exp_selector, element), that.element, that.options );
+                that.stripeErrorDisplay(response.errors, $(that.options.cc_exp_selector), that.element, that.options );
               }
 
-              if (response.errors.error.code == 'invalid_cvc' || response.errors.error.code == 'incorrect_cvc') {
-                //$(options.cc_cvv_selector, element).addClass('error');
-                //$(options.cc_cvv_selector, element).prev().addClass('error');
-                //$(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
+              if (error.code == 'invalid_cvc' || error.code == 'incorrect_cvc') {
                 // error handling
-                that.stripeErrorDisplay(response.errors, $(that.options.cc_cvv_selector, element), that.element, that.options );
+                that.stripeErrorDisplay(response.errors, $(that.options.cc_cvv_selector), that.element, that.options );
               }
 
-              if (response.errors.error.type == 'invalid_request_error') {
-                //$(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
-                $('button.give').before('<p class="error">' + response.errors.error.message + '</p>')
+              if (error.type == 'invalid_request_error') {
+                $('button.give').before('<p class="error">' + error.message + '</p>')
               }
 
             }
@@ -2230,7 +2223,7 @@ global.Payment = Payment;
               var field = response.errors[0].field + '_field_selector';
               if ($(field).length > 0) {
                 $('html, body').animate({
-                  scrollTop: $(options[field], element).parent().offset().top
+                  scrollTop: $(options[field]).parent().offset().top
                 }, 2000);
               }
             }
