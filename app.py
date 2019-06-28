@@ -179,12 +179,15 @@ def minnpost_support():
     else:
         email = ''
 
-    return render_template('minnpost-default.html', form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
+    return render_template(
+        'minnpost-default.html',
+        form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
         frequency=frequency,
         yearly=yearly,
         level=level,
         first_name = first_name,last_name = last_name, email=email,
-        key=app.config['STRIPE_KEYS']['publishable_key'])
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 # used at support.minnpost.com/give
 @app.route('/give/')
@@ -266,7 +269,9 @@ def minnpost_form():
     else:
         billing_country = ''
 
-    return render_template('minnpost-form.html', form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
+    return render_template(
+        'minnpost-form.html',
+        form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
         frequency=frequency, installments=installments,
         openended_status=openended_status,
         yearly=yearly,
@@ -280,7 +285,8 @@ def minnpost_form():
         show_thankyou_lists = app.show_thankyou_lists, maximum_choose_multiple_int = maximum_choose_multiple_int, maximum_choose_multiple_level_text = maximum_choose_multiple_level_text,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         minnpost_root = app.minnpost_root,
-        key=app.config['STRIPE_KEYS']['publishable_key'])
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 
 # used at support.minnpost.com/event-register
@@ -373,13 +379,16 @@ def minnpost_event_form():
         single_unit_price = discount_single_unit_price
     starting_amount = format(quantity * single_unit_price)
 
-    return render_template('minnpost-events/form.html', form=form, event=event, use_promo_code=use_promo_code, campaign_id=campaign_id, campaign=campaign, customer_id=customer_id,
+    return render_template(
+        'minnpost-events/form.html',
+        form=form, event=event, use_promo_code=use_promo_code, campaign_id=campaign_id, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,
         quantity=quantity, single_unit_price = single_unit_price, starting_amount = starting_amount,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
-        key=app.config['STRIPE_KEYS']['publishable_key'])
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 # used to validate event promo codes to assign users discount
 # called by ajax
@@ -549,11 +558,14 @@ def minnpost_advertising_form():
     else:
         email = ''
 
-    return render_template('minnpost-advertising.html', form=form, amount=amount_formatted, invoice=invoice, campaign=campaign, customer_id=customer_id,
+    return render_template(
+        'minnpost-advertising.html',
+        form=form, amount=amount_formatted, invoice=invoice, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         organization=organization, first_name = first_name,last_name = last_name, email=email,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
-        key=app.config['STRIPE_KEYS']['publishable_key'])
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 # used at support.minnpost.com/minnroast-sponsorship
 @app.route('/minnroast-sponsorship/')
@@ -610,12 +622,15 @@ def minnroast_patron_form():
         additional_donation = float(request.args.get('additional_donation'))
     else:
         additional_donation = ''
-    return render_template('minnroast-patron.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
+    return render_template(
+        'minnroast-patron.html',
+        form=form, year=year, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
-        key=app.config['STRIPE_KEYS']['publishable_key'])
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 
 # used at support.minnpost.com/pledge-payment
@@ -771,7 +786,8 @@ def minnpost_pledge_payment():
     description = 'MinnPost Pledge Payment'
     allow_additional = False
 
-    return render_template('minnpost-minimal-form.html',
+    return render_template(
+        'minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, pledge=pledge, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
         form=form, amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
@@ -780,7 +796,8 @@ def minnpost_pledge_payment():
         additional_donation = additional_donation,
         stage=stage, close_date=close_date,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
-        key=app.config['STRIPE_KEYS']['publishable_key'])
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 
 # used at support.minnpost.com/recurring-donation-update
@@ -793,7 +810,6 @@ def minnpost_recurring_donation_update_form():
 # used at support.minnpost.com/donation-update
 @app.route('/donation-update/')
 def minnpost_donation_update_form():
-
 
     form = MinnPostForm()
 
@@ -989,7 +1005,8 @@ def minnpost_donation_update_form():
     description = 'Donation Update'
     allow_additional = False
 
-    return render_template('minnpost-minimal-form.html',
+    return render_template(
+        'minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
         form=form, amount=amount_formatted, show_amount_field=show_amount_field, frequency=frequency, show_frequency_field=show_frequency_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
@@ -999,7 +1016,8 @@ def minnpost_donation_update_form():
         additional_donation = additional_donation,
         stage=stage, close_date=close_date,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
-        key=app.config['STRIPE_KEYS']['publishable_key'])
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 
 # used at support.minnpost.com/donation-cancel
@@ -1215,7 +1233,8 @@ def minnroast_pledge_form():
     description = 'MinnRoast Pledge'
     allow_additional = False
 
-    return render_template('minnpost-minimal-form.html',
+    return render_template(
+        'minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, pledge=pledge, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
         form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
@@ -1223,7 +1242,8 @@ def minnroast_pledge_form():
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
-        key=app.config['STRIPE_KEYS']['publishable_key'])
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 # used at support.minnpost.com/anniversary-sponsorship
 @app.route('/anniversary-sponsorship/')
@@ -1273,24 +1293,35 @@ def anniversary_sponsorship_form():
         additional_donation = float(request.args.get('additional_donation'))
     else:
         additional_donation = ''
-    return render_template('anniversary-sponsorship.html', form=form, year=year, campaign=campaign, customer_id=customer_id,
+    return render_template(
+        'anniversary-sponsorship.html',
+        form=form, year=year, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
-        key=app.config['STRIPE_KEYS']['publishable_key'])
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 # generalized error with a specific template
 @app.route('/error/')
 def error():
     message = "Something went wrong!"
-    return render_template('error.html', message=message)
+    return render_template(
+        'error.html',
+        message=message,
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 # generalized error with a specific template
 @app.errorhandler(404)
 def page_not_found(error):
     message = "The page you requested can't be found."
-    return render_template('error.html', message=message)
+    return render_template(
+        'error.html',
+        message=message,
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 ## this is a minnpost url. use this when sending a request to plaid
 ## if successful, this returns the access token and bank account token for stripe from plaid
@@ -1550,7 +1581,10 @@ def charge_ajax():
         # the payment type here won't work because it doesn't get sent to the method, but to the template       
         return render_template(
             'thanks.html',
-            amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, minnpost_root = app.minnpost_root, key = app.config['STRIPE_KEYS']['publishable_key']
+            amount=amount_formatted, frequency=frequency, yearly=yearly, level=level,
+            email=email, first_name=first_name, last_name=last_name,
+            session=session, minnpost_root = app.minnpost_root,
+            key = app.config['STRIPE_KEYS']['publishable_key']
         )
 
         #body = transaction.id
@@ -1622,7 +1656,11 @@ def thanks():
         print(form.errors)
         message = "There was an issue saving your donation information."
         print('Error with stripe processing {} {} {}'.format(email, first_name, last_name))
-        return render_template('error.html', message=message)
+        return render_template(
+            'error.html',
+            message=message,
+            key=app.config['STRIPE_KEYS']['publishable_key']
+        )
 
 
 # this is a minnpost url
@@ -1639,13 +1677,21 @@ def confirm():
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('finish.html', session=session, key = app.config['STRIPE_KEYS']['publishable_key'])
+        return render_template(
+            'finish.html',
+            session=session,
+            key = app.config['STRIPE_KEYS']['publishable_key']
+        )
     else:
         print('post-donate form did not validate: error below')
         print(form.errors)
         message = "there was an issue saving your preferences, but your donation was successful"
         print('Error with post-donation preferences {} {}'.format(sf_type, flask_id))
-        return render_template('error.html', message=message)
+        return render_template(
+            'error.html',
+            message=message,
+            key=app.config['STRIPE_KEYS']['publishable_key']
+        )
 
 # this is a minnpost url
 @app.route('/minnpost-advertising-confirm/', methods=['POST'])
@@ -1662,13 +1708,21 @@ def minnpost_advertising_confirm():
     if flask_id:
         # we shouldn't need to run the update donation object here bc no newsletters or whatever
         #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnpost-advertising/finish.html', amount=amount_formatted, session=session, key = app.config['STRIPE_KEYS']['publishable_key'])
+        return render_template(
+            'minnpost-advertising/finish.html',
+            amount=amount_formatted, session=session,
+            key = app.config['STRIPE_KEYS']['publishable_key']
+        )
     else:
         print('post-advertising form did not validate: error below')
         print(form.errors)
         message = "there was an issue with this form"
         print('Error with post-advertising form {} {}'.format(sf_type, flask_id))
-        return render_template('error.html', message=message)
+        return render_template(
+            'error.html',
+            message=message,
+            key=app.config['STRIPE_KEYS']['publishable_key']
+        )
 
 # this is a minnpost url
 @app.route('/minnroast-patron-confirm/', methods=['POST'])
@@ -1684,13 +1738,21 @@ def minnroast_patron_confirm():
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnroast-patron/finish.html', amount=amount_formatted, session=session, key = app.config['STRIPE_KEYS']['publishable_key'])
+        return render_template(
+            'minnroast-patron/finish.html',
+            amount=amount_formatted, session=session,
+            key = app.config['STRIPE_KEYS']['publishable_key']
+        )
     else:
         print('post-sponsorship form did not validate: error below')
         print(form.errors)
         message = "there was an issue with this form"
         print('Error with post-sponsorship form {} {}'.format(sf_type, flask_id))
-        return render_template('error.html', message=message)
+        return render_template(
+            'error.html',
+            message=message,
+            key=app.config['STRIPE_KEYS']['publishable_key']
+        )
 
 
 # this is a minnpost url
@@ -1711,13 +1773,21 @@ def minnpost_pledge_confirm():
     if flask_id:
         # we shouldn't need to run the update donation object here bc no newsletters or whatever
         #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session, key = app.config['STRIPE_KEYS']['publishable_key'])
+        return render_template(
+            'minnpost-minimal-form/finish.html',
+            amount=amount_formatted, session=session,
+            key = app.config['STRIPE_KEYS']['publishable_key']
+        )
     else:
         print('post-pledge form did not validate: error below')
         print(form.errors)
         message = "there was an issue with this form"
         print('Error with post-update form {} {}'.format(sf_type, flask_id))
-        return render_template('error.html', message=message)
+        return render_template(
+            'error.html',
+            message=message,
+            key=app.config['STRIPE_KEYS']['publishable_key']
+        )
 
 # this is a minnpost url
 @app.route('/donation-update-confirm/', methods=['POST'])
@@ -1737,13 +1807,21 @@ def minnpost_donation_update_confirm():
     if flask_id:
         # we shouldn't need to run the update donation object here bc no newsletters or whatever
         #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session, key = app.config['STRIPE_KEYS']['publishable_key'])
+        return render_template(
+            'minnpost-minimal-form/finish.html',
+            amount=amount_formatted, session=session,
+            key = app.config['STRIPE_KEYS']['publishable_key']
+        )
     else:
         print('post-pledge form did not validate: error below')
         print(form.errors)
         message = "there was an issue with this form"
         print('Error with post-update form {} {}'.format(sf_type, flask_id))
-        return render_template('error.html', message=message)
+        return render_template(
+            'error.html',
+            message=message,
+            key=app.config['STRIPE_KEYS']['publishable_key']
+        )
 
 # this is a minnpost url
 @app.route('/donation-cancel-confirm/', methods=['POST'])
@@ -1752,7 +1830,10 @@ def minnpost_donation_cancel_confirm():
     sf_id = request.form['sf_id']
     # here we don't need any session info because all we do is tell them it worked
     result = change_donation_status.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
-    return render_template('minnpost-cancel/finish.html')
+    return render_template(
+        'minnpost-cancel/finish.html',
+        key=app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 
 # this is a minnpost url
@@ -1772,13 +1853,21 @@ def minnroast_pledge_confirm():
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session, key = app.config['STRIPE_KEYS']['publishable_key'])
+        return render_template(
+            'minnpost-minimal-form/finish.html',
+            amount=amount_formatted, session=session,
+            key = app.config['STRIPE_KEYS']['publishable_key']
+        )
     else:
         print('post-pledge form did not validate: error below')
         print(form.errors)
         message = "there was an issue with this form"
         print('Error with post-pledge form {} {}'.format(sf_type, flask_id))
-        return render_template('error.html', message=message)
+        return render_template(
+            'error.html',
+            message=message,
+            key=app.config['STRIPE_KEYS']['publishable_key']
+        )
 
 # this is a minnpost url
 @app.route('/anniversary-sponsorship-confirm/', methods=['POST'])
@@ -1793,13 +1882,21 @@ def anniversary_sponsorship_confirm():
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('anniversary-sponsorship/finish.html', amount=amount_formatted, session=session, key = app.config['STRIPE_KEYS']['publishable_key'])
+        return render_template(
+            'anniversary-sponsorship/finish.html',
+            amount=amount_formatted, session=session,
+            key = app.config['STRIPE_KEYS']['publishable_key']
+        )
     else:
         print('post-sponsorship form did not validate: error below')
         print(form.errors)
         message = "there was an issue with this form"
         print('Error with post-sponsorship form {} {}'.format(sf_type, flask_id))
-        return render_template('error.html', message=message)
+        return render_template(
+            'error.html',
+            message=message,
+            key=app.config['STRIPE_KEYS']['publishable_key']
+        )
 
 # this is a minnpost url
 @app.route('/minnpost-event-confirm/', methods=['POST'])
@@ -1823,13 +1920,21 @@ def minnroast_event_confirm():
     if flask_id:
         # we shouldn't need to run the update donation object here bc no newsletters or whatever
         #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnpost-events/finish.html', amount=amount_formatted, session=session, event=event, key = app.config['STRIPE_KEYS']['publishable_key'])
+        return render_template(
+            'minnpost-events/finish.html',
+            amount=amount_formatted, session=session, event=event,
+            key = app.config['STRIPE_KEYS']['publishable_key']
+        )
     else:
         print('post-event form did not validate: error below')
         print(form.errors)
         message = "there was an issue with this form"
         print('Error with post-event form {} {}'.format(sf_type, flask_id))
-        return render_template('error.html', message=message)
+        return render_template(
+            'error.html',
+            message=message,
+            key=app.config['STRIPE_KEYS']['publishable_key']
+        )
 
 
 # this is for apple pay verification through stripe
