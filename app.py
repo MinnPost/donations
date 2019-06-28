@@ -1769,7 +1769,7 @@ def minnroast_pledge_confirm():
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session)
+        return render_template('minnpost-minimal-form/finish.html', amount=amount_formatted, session=session, key = app.config['STRIPE_KEYS']['publishable_key'])
     else:
         print('post-pledge form did not validate: error below')
         print(form.errors)
@@ -1790,7 +1790,7 @@ def anniversary_sponsorship_confirm():
 
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('anniversary-sponsorship/finish.html', amount=amount_formatted, session=session)
+        return render_template('anniversary-sponsorship/finish.html', amount=amount_formatted, session=session, key = app.config['STRIPE_KEYS']['publishable_key'])
     else:
         print('post-sponsorship form did not validate: error below')
         print(form.errors)
@@ -1820,7 +1820,7 @@ def minnroast_event_confirm():
     if flask_id:
         # we shouldn't need to run the update donation object here bc no newsletters or whatever
         #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template('minnpost-events/finish.html', amount=amount_formatted, session=session, event=event)
+        return render_template('minnpost-events/finish.html', amount=amount_formatted, session=session, event=event, key = app.config['STRIPE_KEYS']['publishable_key'])
     else:
         print('post-event form did not validate: error below')
         print(form.errors)
