@@ -2023,7 +2023,7 @@ global.Payment = Payment;
 
         if (valid === true) {
           // 1. process donation to stripe
-          that.buttonStatus(options, supportform.find('button'), true);
+          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), true);
 
           var full_name = '';
           if ($('#full_name').length > 0) {
@@ -2095,11 +2095,9 @@ global.Payment = Payment;
             // if it is ach, we already have a token so pass it to stripe.
             that.stripeTokenHandler( $('#bankToken').val(), 'ach' );
           }
-          //return true;
-
         } else {
           // this means valid is false
-          that.buttonStatus(options, supportform.find('button'), false);
+          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
         }
 
       });
@@ -2129,8 +2127,7 @@ global.Payment = Payment;
       that.stripe.createToken(card).then(function(result) {
         if (result.error) {
           // Show the errors on the form
-          that.buttonStatus(options, supportform.find('button'), false);
-
+          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
           var field = result.error.field + '_field_selector';
           var message = '';
           if (typeof result.error.message === 'string') {
@@ -2184,7 +2181,7 @@ global.Payment = Payment;
       .done(function(response) {
         if (typeof response.errors !== 'undefined') {
           // do not submit. there is an error.
-          that.buttonStatus(that.options, supportform.find('button'), false);
+          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
           // add some error messages and styles
           $.each(response.errors, function( index, error ) {
             var field = error.field + '_field_selector';
@@ -2244,7 +2241,7 @@ global.Payment = Payment;
         }
       })
       .error(function(response) {
-        that.buttonStatus(that.options, supportform.find('button'), false);
+        that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       });
 
     },
