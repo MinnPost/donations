@@ -1100,13 +1100,16 @@ def minnpost_donation_cancel_form():
     hide_display = True
     button = 'Confirm your cancellation'
 
-    return render_template('minnpost-cancel.html',
+    return render_template(
+        'minnpost-cancel.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, button=button,
         form=form, amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, hide_comments=hide_comments, hide_display=hide_display,
         sf_type=sf_type, sf_id=sf_id,
         first_name = first_name,last_name = last_name, email=email,
-        minnpost_root = app.minnpost_root)
+        minnpost_root = app.minnpost_root,
+        key = app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 
 # used at support.minnpost.com/minnroast-pledge
