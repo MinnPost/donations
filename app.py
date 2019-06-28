@@ -240,12 +240,39 @@ def minnpost_form():
         email = request.args.get('email')
     else:
         email = ''
+
+    if request.args.get('billing_street'):
+        billing_street = request.args.get('billing_street')
+    else:
+        billing_street = ''
+
+    if request.args.get('billing_city'):
+        billing_city = request.args.get('billing_city')
+    else:
+        billing_city = ''
+
+    if request.args.get('billing_state'):
+        billing_state = request.args.get('billing_state')
+    else:
+        billing_state = ''
+
+    if request.args.get('billing_zip'):
+        billing_zip = request.args.get('billing_zip')
+    else:
+        billing_zip = ''
+
+    if request.args.get('billing_country'):
+        billing_country = request.args.get('billing_country')
+    else:
+        billing_country = ''
+
     return render_template('minnpost-form.html', form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
         frequency=frequency, installments=installments,
         openended_status=openended_status,
         yearly=yearly,
         level=level,
         first_name = first_name,last_name = last_name, email=email,
+        billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
         show_upsell = app.show_upsell, allow_donation_notification = app.allow_donation_notification,
         top_swag_minimum_level = app.top_swag_minimum_level,
         separate_swag_minimum_level = app.separate_swag_minimum_level,
