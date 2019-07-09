@@ -13,6 +13,7 @@
 
   <link rel="apple-touch-icon" href="https://www.minnpost.com/wp-content/uploads/sites/default/themes/siteskin/inc/images/apple-touch-icon.png" />
 
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/paymentfont/1.1.2/css/paymentfont.min.css" rel="stylesheet">
   <link href="{{ url_for('static', filename='css/events.min.css') }}" rel="stylesheet">
 
   <script src="{{ url_for('static', filename='js/vendor/modernizr-2.8.3.min.js') }}"></script>
@@ -58,7 +59,7 @@
   </footer>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-  <script src="https://js.stripe.com/v2/"></script>
+  <script src="https://js.stripe.com/v3/"></script>
   {% if show_ach == 'True' %}<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>{% endif %}
   <script src="https://addevent.com/libs/atc/1.6.1/atc.min.js" async defer></script> 
   <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>

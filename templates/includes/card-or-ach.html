@@ -1,17 +1,26 @@
 {% if show_ach == False or show_ach == 'False' %}
 <fieldset class="credit-card-group">
   <div class="form-item" id="cc-number-wrapper">
-    <label for="cc-number" class="required">Credit Card Number: </label>
-    <input type="tel" maxlength="128" data-stripe="number" id="cc-number" size="60" value="" autocomplete="cc-number" placeholder="1234 5678 9012 3456" required />
+    <label class="required">
+      Credit Card Number:
+      <div class="stripe-field" id="card-number"></div>
+      <p class="card-instruction card-number"></p>
+    </label>
   </div>
   <div class="card-group clear-block">
     <div class="form-item" id="cc-exp-wrapper">
-      <label for="cc-exp" class="required">Expiration Date: </label>
-      <input type="tel" maxlength="128" data-stripe="expiry" id="cc-exp" size="60" value="" autocomplete="cc-exp" placeholder="** / **" required />
+      <label class="required">
+        Expiration Date:
+        <div class="stripe-field" id="card-expiry"></div>
+        <p class="card-instruction card-expiry"></p>
+       </label>
     </div>
     <div class="form-item" id="cc-cvc-wrapper">
-      <label for="cc-cvc" class="required">CVC Number: </label>
-      <input type="tel" maxlength="128" data-stripe="cvc" id="cc-cvc" size="60" value="" autocomplete="off" placeholder="***" required />
+      <label class="required">
+        CVC Number:
+        <div class="stripe-field" id="card-cvc"></div>
+        <p class="card-instruction card-cvc"></p>
+       </label>
     </div>
   </div>
   <ul class="actions actions--pay-fees clear-block">
@@ -26,17 +35,27 @@
   </div>
   <div class="payment-method choose-card active">
     <div class="form-item" id="cc-number-wrapper">
-      <label for="cc-number" class="required">Credit Card Number: </label>
-      <input type="tel" maxlength="128" data-stripe="number" id="cc-number" size="60" value="" autocomplete="cc-number" placeholder="1234 5678 9012 3456" required />
+      <label class="required">
+        <span>Credit Card Number:</span>
+        <div class="stripe-field" id="card-number"></div>
+        <span class="brand"><i class="pf pf-credit-card" id="brand-icon"></i></span>
+        <p class="card-instruction card-number"></p>
+      </label>
     </div>
     <div class="card-group clear-block">
       <div class="form-item" id="cc-exp-wrapper">
-        <label for="cc-exp" class="required">Expiration Date: </label>
-        <input type="tel" maxlength="128" data-stripe="expiry" id="cc-exp" size="60" value="" autocomplete="cc-exp" placeholder="** / **" required />
+        <label class="required">
+          <span>Expiration Date:</span>
+          <div class="stripe-field" id="card-expiry"></div>
+          <p class="card-instruction card-expiry"></p>
+         </label>
       </div>
       <div class="form-item" id="cc-cvc-wrapper">
-        <label for="cc-cvc" class="required">CVC Number: </label>
-        <input type="tel" maxlength="128" data-stripe="cvc" id="cc-cvc" size="60" value="" autocomplete="off" placeholder="***" required />
+        <label class="required">
+          <span>CVC Number:</span>
+          <div class="stripe-field" id="card-cvc"></div>
+          <p class="card-instruction card-cvc"></p>
+         </label>
       </div>
     </div>
   </div>

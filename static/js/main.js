@@ -921,9 +921,9 @@ global.Payment = Payment;
     'credit_card_fieldset' : '.payment-method-group',
     'choose_payment' : '#choose-payment-method',
     'payment_method_selector' : '.payment-method',
-    'cc_num_selector' : '#cc-number',
-    'cc_exp_selector' : '#cc-exp',
-    'cc_cvv_selector' : '#cc-cvc',
+    'cc_num_selector' : '#card-number',
+    'cc_exp_selector' : '#card-expiry',
+    'cc_cvv_selector' : '#card-cvc',
     'payment_button_selector' : '#submit',
     'confirm_button_selector' : '#finish',
     'opp_id_selector' : '#flask_id',
@@ -1020,7 +1020,8 @@ global.Payment = Payment;
       var button_text = $('button.give, input.give').text();
       this.options.button_text = button_text;
 
-      Stripe.setPublishableKey(this.options.stripe_publishable_key);
+      this.stripe = Stripe(this.options.stripe_publishable_key);
+      this.elements = this.stripe.elements();
 
       // use a referrer for edit link if we have one
       if (document.referrer !== '') {
@@ -1163,13 +1164,13 @@ global.Payment = Payment;
       }
 
       if (step === nav_item_count - 1 && $(this.options.opp_id_selector).length > 0) {
-        //console.log('this is a payment step but there is a step after it');
+        //this.debug('this is a payment step but there is a step after it');
         step = 'purchase';
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length > 0) {
-        //console.log('this is a payment step and there is no step after it');
+        //this.debug('this is a payment step and there is no step after it');
         step = 'purchase';
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length === 0) {
-        //console.log('this is a post-finish step. it does not have an id');
+        //this.debug('this is a post-finish step. it does not have an id');
       }
 
       document.title = title + page;
@@ -1219,7 +1220,7 @@ global.Payment = Payment;
       });
 
       if (step === 'purchase') {
-        //console.log('add a purchase action. step is ' + step);
+        //this.debug('add a purchase action. step is ' + step);
         ga('ec:setAction', 'purchase',{
           'id': opp_id, // Transaction id - Type: string
           'affiliation': 'MinnPost', // Store name - Type: string
@@ -1518,11 +1519,11 @@ global.Payment = Payment;
         show_shipping = true;
       }
 //      show_shipping = !!$(options.use_for_shipping_selector + ':checked', element).length;
-//      console.log('show is there');
+//      //this.debug('show is there');
 
 /*      $(options.use_for_shipping_selector, element).change(function() {
         that.shippingAddress(element, options);
-        console.log('change it');
+        //this.debug('change it');
       });
 */
       if (show_shipping === true ) {
@@ -1641,7 +1642,7 @@ global.Payment = Payment;
     },
 
     calculateAmount: function(element, options, data) {
-      //console.log('start. set variables and plain text, and remove code result.');
+      //this.debug('start. set variables and plain text, and remove code result.');
       var that = this;
       var quantity = $(options.quantity_field).val();
 
@@ -1795,39 +1796,49 @@ global.Payment = Payment;
           $(options.payment_method_selector + '.active label').addClass('required');
           $(options.payment_method_selector + '.active input').prop('required', true);
           $('#bankToken').remove();
-        });
-      }
-
-      if (typeof Payment !== 'undefined') {
-        // format values
-        Payment.formatCardNumber($(options.cc_num_selector, element));
-        Payment.formatCardExpiry($(options.cc_exp_selector, element));
-        Payment.formatCardCVC($(options.cc_cvv_selector, element));
-        
-        // get and show the card type
-        $(options.cc_num_selector, element).parent().prepend('<span class="card-image"></span>');
-        $(options.cc_num_selector, element).keyup(function() {
-          options.cardType = Payment.fns.cardType($(options.cc_num_selector, element).val());
-          /*if (options.cardType !== null) {            
-            $('.card-image').prop('class', 'card-image ' + options.cardType);
-          }*/
-          if (options.cardType !== null) {
-            that.calculateFees(options.cardType);
+          if ( this.value === 'ach' ) {
+            that.calculateFees('ach');
+          } else {
+            that.calculateFees('visa');
           }
           $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
-          $('#edit-pay-fees').val(0);
-          $('.card-image').prop('class', 'card-image ' + $('#cc-number').prop('class'));
         });
-
-
-
-        /*$(options.credit_card_fieldset + ' input').focusin(function() {
-          $(this).parent().addClass('focus');
-        }).focusout(function() {
-          $(this).parent().removeClass('focus');
-        });*/
       }
+
+      // todo: we should be able to get rid of this whole thing, but need to test it
+
+      /*var card = that.elements.create(
+        'card',
+        {
+          hidePostalCode: true
+        }
+      );
+      // Add an instance of the card UI component into the `card-element` <div>
+      card.mount('#card-element');*/
+
     }, // creditCardFields
+
+    setBrandIcon: function(brand) {
+      var cardBrandToPfClass = {
+        'visa': 'pf-visa',
+        'mastercard': 'pf-mastercard',
+        'amex': 'pf-american-express',
+        'discover': 'pf-discover',
+        'diners': 'pf-diners',
+        'jcb': 'pf-jcb',
+        'unknown': 'pf-credit-card',
+      }
+      var brandIconElement = document.getElementById('brand-icon');
+      var pfClass = 'pf-credit-card';
+      if (brand in cardBrandToPfClass) {
+        pfClass = cardBrandToPfClass[brand];
+      }
+      for (var i = brandIconElement.classList.length - 1; i >= 0; i--) {
+        brandIconElement.classList.remove(brandIconElement.classList[i]);
+      }
+      brandIconElement.classList.add('pf');
+      brandIconElement.classList.add(pfClass);
+    },
 
     achFields: function(element, options) {
       var that = this;
@@ -1854,8 +1865,8 @@ global.Payment = Payment;
             //   account_id: metadata.account_id
             // });
 
-            //console.log('Public Token: ' + public_token);
-            //console.log('Customer-selected account ID: ' + metadata.account_id);
+            //this.debug('Public Token: ' + public_token);
+            //this.debug('Customer-selected account ID: ' + metadata.account_id);
 
             var supportform = $(options.donate_form_selector);
 
@@ -1876,8 +1887,8 @@ global.Payment = Payment;
                 // there is an error.
                 $(options.plaid_link).parent().after('<p class="error">' + response.error + '</p>')
               } else {
-                //console.log('print response here');
-                //console.dir(response);
+                //this.debug('print response here');
+                //this.debug(response);
                 $(options.donate_form_selector).prepend('<input type="hidden" id="bankToken" name="bankToken" value="' + response.stripe_bank_account_token + '" />');
                 $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
                 that.calculateFees('ach'); // calculate the ach fees
@@ -1906,7 +1917,7 @@ global.Payment = Payment;
     }, // achFields
 
     hasHtml5Validation: function(element, options) {
-      //console.log('value is ' + typeof document.createElement('input').checkValidity === 'function');
+      //this.debug('value is ' + typeof document.createElement('input').checkValidity === 'function');
       return typeof document.createElement('input').checkValidity === 'function';
     },
 
@@ -1922,6 +1933,60 @@ global.Payment = Payment;
     validateAndSubmit: function(element, options) {
       var that = this;
       $(this.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
+
+      var style = {
+        base: {
+          iconColor: '#666EE8',
+          lineHeight: '37px',
+          fontWeight: 400,
+          fontFamily: 'Georgia,Cambria,Times New Roman,Times,serif',
+          fontSize: '16px',
+        },
+      };
+
+      // Add an instance of the card UI component into the `card-element` <div>
+      //card.mount('#card-element');
+      if ( $('.credit-card-group').length === 0 && $('.payment-method.choose-card').length === 0) {
+        return;
+      }
+      var cardNumberElement = that.elements.create('cardNumber', {
+        style: style
+      });
+      cardNumberElement.mount(options.cc_num_selector);
+
+      var cardExpiryElement = that.elements.create('cardExpiry', {
+        style: style
+      });
+      cardExpiryElement.mount(options.cc_exp_selector);
+
+      var cardCvcElement = that.elements.create('cardCvc', {
+        style: style
+      });
+      cardCvcElement.mount(options.cc_cvv_selector);
+
+      // validate/error handle the card fields
+      cardNumberElement.on('change', function(event) {
+        // error handling
+        that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
+        // Switch brand logo
+        if (event.brand) {
+          that.calculateFees(event.brand);
+          $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
+          that.setBrandIcon(event.brand);
+        }
+        //setOutcome(event);
+      });
+
+      cardExpiryElement.on('change', function(event) {
+        // error handling
+        that.stripeErrorDisplay(event, $(options.cc_exp_selector, element), element, options );
+      });
+
+      cardCvcElement.on('change', function(event) {
+        // error handling
+        that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
+      });
+
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
 
@@ -1932,18 +1997,16 @@ global.Payment = Payment;
               $('html, body').animate({
                 scrollTop: $(this).find('input:invalid').parent().offset().top
               }, 2000);
-              //console.log('top is ' + );
+              //this.debug('top is ' + );
               $(this).find('input:invalid').parent().addClass('error');
-              //$('#status').html('invalid');
             } else {
               $(this).removeClass('invalid');
               $(this).find('input:invalid').parent().removeClass('error');
-              //$('#status').html('submitted');
             }
         }
 
         // validate and submit the form
-        $('.check-field, .card-instruction').remove();
+        $('.check-field').remove();
         $('input, label', element).removeClass('error');
         var valid = true;
         var payment_method = 'card';
@@ -1953,182 +2016,18 @@ global.Payment = Payment;
         $(options.choose_payment + ' input').change(function() {
           $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
         });
-        if (typeof Payment !== 'undefined' && payment_method !== 'ach') {
-          var exp = Payment.fns.cardExpiryVal($(options.cc_exp_selector, element).val());
-          var valid_cc = Payment.fns.validateCardNumber($(options.cc_num_selector, element).val());
-          var valid_exp = Payment.fns.validateCardExpiry(exp.month, exp.year);
-          var valid_cvv = Payment.fns.validateCardCVC($(options.cc_cvv_selector, element).val(), options.cardType);
-          if (valid_cc === false || valid_exp === false || valid_cvv === false) {
-            //console.log('cc ' + valid_cc + ' exp ' + valid_exp + ' cvv ' + valid_cvv);
-            valid = false;
-            //$(options.cc_num_selector, element).parent().addClass('error');
-            if (valid_cc === false) {
-              $(options.cc_num_selector).after('<p class="card-instruction invalid cc-error">Your credit card number is not valid. Please try again.</p>');
-              $(options.cc_num_selector, element).addClass('error');
-              $(options.cc_num_selector, element).parent().addClass('error');
-            } else {
-              $(options.cc_exp_selector, element).removeClass('error');
-              $(options.cc_cvv_selector, element).removeClass('error');
-              $(options.cc_exp_selector, element).parent().removeClass('error');
-              $(options.cc_cvv_selector, element).parent().removeClass('error');
-            }
-            if (valid_exp === false) {
-              $(options.cc_exp_selector).after('<p class="card-instruction invalid cc-error">Your credit card expiration date is not valid. Please try again.</p>');
-              $(options.cc_exp_selector, element).addClass('error');
-              $(options.cc_exp_selector, element).parent().addClass('error');
-            } else {
-              $(options.cc_num_selector, element).removeClass('error');
-              $(options.cc_cvv_selector, element).removeClass('error');
-              $(options.cc_num_selector, element).parent().removeClass('error');
-              $(options.cc_cvv_selector, element).parent().removeClass('error');
-            }
-            if (valid_cvv === false) {
-              $(options.cc_cvv_selector).after('<p class="card-instruction invalid cc-error">Your credit card CVC number is not valid. Please try again.</p>');
-              $(options.cc_cvv_selector, element).addClass('error');
-              $(options.cc_cvv_selector, element).parent().addClass('error');
-            } else {
-              $(options.cc_num_selector, element).removeClass('error');
-              $(options.cc_exp_selector, element).removeClass('error');
-              $(options.cc_num_selector, element).parent().removeClass('error');
-              $(options.cc_exp_selector, element).parent().removeClass('error');
-            }
-          } else {
-            $(options.cc_num_selector, element).parent().removeClass('error');
-            $(options.cc_num_selector, element).removeClass('error');
-            $(options.cc_exp_selector, element).parent().removeClass('error');
-            $(options.cc_exp_selector, element).removeClass('error');
-            $(options.cc_cvv_selector, element).parent().removeClass('error');
-            $(options.cc_cvv_selector, element).removeClass('error');
-          }
-        } else if (payment_method === 'ach') {
+
+        if (payment_method === 'ach') {
           if ($('input[name="bankToken"]').length === 0) {
             valid = false;
             $(options.payment_method_selector).prepend('<p class="error">You are required to enter credit card information, or to authorize MinnPost to charge your bank account, to make a payment.</p>');
           }
         }
 
-        var supportform = $(options.donate_form_selector);
-
         if (valid === true) {
           // 1. process donation to stripe
-          that.buttonStatus(options, supportform.find('button'), true);
-          var stripeResponseHandler = function(status, response) {
-            that.debug('trying to get stripe response');
-            var supportform = $(options.donate_form_selector);
+          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), true);
 
-            if (response.errors) {
-              // Show the errors on the form
-              that.buttonStatus(options, supportform.find('button'), false);
-            } else {
-
-              if ($('input[name="bankToken"]').length === 0) {
-                // response contains id and card, which contains additional card details
-                var token = response.id;
-                // Insert the token into the form so it gets submitted to the server
-                if ($('input[name="stripeToken"]').length > 0) {
-                  $('input[name="stripeToken"]').val(token);
-                } else {
-                  supportform.append($('<input type=\"hidden\" name=\"stripeToken\" />').val(token));  
-                }
-                if ($('input[name="payment_type"]').length > 0) {
-                  $('input[name="payment_type"]').val(response.card.brand);
-                } else {
-                  supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(response.card.brand));  
-                }
-              } else {
-                //that.debug('we have a bank token');
-                if ($('input[name="payment_type"]').length > 0) {
-                  $('input[name="payment_type"]').val('ach');
-                } else {
-                  supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val('ach'));  
-                }
-              }
-
-              // get the card validated first by ajax
-              //setTimeout(function() {
-                $.ajax({
-                  url:'/charge_ajax/',
-                  cache: false,
-                  data: $(supportform).serialize(),
-                  type: 'POST'
-                })
-                .done(function(response) {
-                  if (typeof response.errors !== 'undefined') {
-                    // do not submit. there is an error.
-                    that.buttonStatus(options, supportform.find('button'), false);
-
-                    // add some error messages and styles
-                    $.each(response.errors, function( index, error ) {
-                      var field = error.field + '_field_selector';
-                      var message = '';
-                      if (typeof error.message === 'string') {
-                        message = error.message;
-                      } else {
-                        message = error.message[0];
-                      }
-                      if ($(field).length > 0) {
-                        $(options[field], element).addClass('error');
-                        $(options[field], element).prev().addClass('error');
-                        $(options[field], element).after('<span class="check-field invalid">' + message + '</span>');
-                      }
-
-                      if (error.field == 'csrf_token') {
-                        $('button.give').before('<p class="error">Sorry, this form had a back-end error and was unable to complete your donation. Please <a href="#" onclick="location.reload(); return false;">reload the page</a> and try again (we will preserve as much of your information as possible).</p>')
-                      }
-
-                    });
-
-                    if (typeof response.errors.error !== 'undefined') {
-                      if (response.errors.error.code == 'invalid_number' || response.errors.error.code == 'incorrect_number' || response.errors.error.code == 'card_declined' || response.errors.error.code == 'processing_error') {
-                        $(options.cc_num_selector, element).addClass('error');
-                        $(options.cc_num_selector, element).prev().addClass('error');
-                        $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
-                      }
-
-                      if (response.errors.error.code == 'invalid_expiry_month' || response.errors.error.code == 'invalid_expiry_year' || response.errors.error.code == 'expired_card') {
-                        $(options.cc_exp_selector, element).addClass('error');
-                        $(options.cc_exp_selector, element).prev().addClass('error');
-                        $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
-                      }
-
-                      if (response.errors.error.code == 'invalid_cvc' || response.errors.error.code == 'incorrect_cvc') {
-                        $(options.cc_cvv_selector, element).addClass('error');
-                        $(options.cc_cvv_selector, element).prev().addClass('error');
-                        $(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
-                      }
-
-                      if (response.errors.error.type == 'invalid_request_error') {
-                        //$(options.cc_num_selector, element).after('<span class="card-instruction invalid">' + response.errors.error.message + '</span>');
-                        $('button.give').before('<p class="error">' + response.errors.error.message + '</p>')
-                      }
-
-                    }
-
-                    if (typeof response.errors[0] !== 'undefined') {
-                      var field = response.errors[0].field + '_field_selector';
-                      if ($(field).length > 0) {
-                        $('html, body').animate({
-                          scrollTop: $(options[field], element).parent().offset().top
-                        }, 2000);
-                      }
-                    }
-
-                  } else {
-                    supportform.get(0).submit(); // continue submitting the form
-                  }
-                })
-                .error(function(response) {
-                  that.buttonStatus(options, supportform.find('button'), false);
-                });
-              //},500);
-
-              // Disable the submit button to prevent repeated clicks
-              that.buttonStatus(options, supportform.find('button'), true);
-
-            }
-          }; // end stripeResponseHandler          
-
-          // prepare for stripeResponseHandler
           var full_name = '';
           if ($('#full_name').length > 0) {
             full_name = $('#full_name').val();
@@ -2194,28 +2093,154 @@ global.Payment = Payment;
 
           if ($('input[name="bankToken"]').length == 0) {
             // finally, get a token from stripe, and try to charge it if it is not ach
-            Stripe.card.createToken({
-                number: $(options.cc_num_selector).val(),
-                cvc: $(options.cc_cvv_selector).val(),
-                exp: $(options.cc_exp_selector).val(),
-                name: full_name,
-                address_line1: street,
-                address_city: city,
-                address_state: state,
-                address_zip: zip,
-                address_country: country,
-              }, stripeResponseHandler);
+            that.createToken(cardNumberElement);
           } else {
-            var ach = stripeResponseHandler('success', $('#bankToken').val());
+            // if it is ach, we already have a token so pass it to stripe.
+            that.stripeTokenHandler( $('#bankToken').val(), 'ach' );
           }
-          //return true;
-
-        } else { // valid = true
-          that.buttonStatus(options, supportform.find('button'), false);
+        } else {
+          // this means valid is false
+          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
         }
 
       });
     }, // validateAndSubmit
+
+    stripeErrorDisplay: function(event, this_selector, element, options) {
+      // listen for errors and display/hide error messages
+      var which_error = this_selector.attr('id');
+      if (event.error) {
+        $('.card-instruction.' + which_error).text(event.error.message + ' Please try again.');
+        $('.card-instruction.' + which_error).addClass('invalid');
+        this_selector.parent().addClass('error');
+      } else {
+        $('.card-instruction.' + which_error).removeClass('invalid');
+        $('.card-instruction.' + which_error).empty();
+        $(options.cc_num_selector, element).removeClass('error');
+        $(options.cc_exp_selector, element).removeClass('error');
+        $(options.cc_cvv_selector, element).removeClass('error');
+        $(options.cc_num_selector, element).parent().removeClass('error');
+        $(options.cc_exp_selector, element).parent().removeClass('error');
+        $(options.cc_cvv_selector, element).parent().removeClass('error');
+      }
+    }, // stripeErrorDisplay
+
+    createToken: function(card) {
+      var that = this;
+      that.stripe.createToken(card).then(function(result) {
+        if (result.error) {
+          // Show the errors on the form
+          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
+          var field = result.error.field + '_field_selector';
+          var message = '';
+          if (typeof result.error.message === 'string') {
+            message = result.error.message;
+          } else {
+            message = result.error.message[0];
+          }
+          if ($(field).length > 0) {
+            $(that.options[field], element).addClass('error');
+            $(that.options[field], element).prev().addClass('error');
+            $(that.options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+          }
+
+          if (result.error.field == 'csrf_token') {
+            $('button.give').before('<p class="error">Sorry, this form had a back-end error and was unable to complete your donation. Please <a href="#" onclick="location.reload(); return false;">reload the page</a> and try again (we will preserve as much of your information as possible).</p>')
+          }
+        } else {
+          // Send the token to your server
+          that.stripeTokenHandler(result.token, 'card');
+        }
+      });
+    }, // createToken
+
+    stripeTokenHandler: function(token, type) {
+      var that = this;
+      // Insert the token ID into the form so it gets submitted to the server
+      var supportform = $(this.options.donate_form_selector);
+      if ( type === 'card' ) {
+        supportform.append($('<input type=\"hidden\" name=\"stripeToken\">').val(token.id));
+        if ($('input[name="payment_type"]').length > 0) {
+          $('input[name="payment_type"]').val(token.card.brand);
+        } else {
+          supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(token.card.brand));  
+        }
+      } else if ( type === 'ach' ) {
+        if ($('input[name="payment_type"]').length > 0) {
+          $('input[name="payment_type"]').val(type);
+        } else {
+          supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(type));  
+        }
+      }
+
+      // Submit the form
+      //supportform.submit();
+      $.ajax({
+        url:'/charge_ajax/',
+        cache: false,
+        data: $(supportform).serialize(),
+        type: 'POST'
+      })
+      .done(function(response) {
+        if (typeof response.errors !== 'undefined') {
+          // do not submit. there is an error.
+          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
+          // add some error messages and styles
+          $.each(response.errors, function( index, error ) {
+            var field = error.field + '_field_selector';
+            var message = '';
+            if (typeof error.message === 'string') {
+              message = error.message;
+            } else {
+              message = error.message[0];
+            }
+            if ($(field).length > 0) {
+              $(options[field]).addClass('error');
+              $(options[field]).prev().addClass('error');
+              $(options[field]).after('<span class="check-field invalid">' + message + '</span>');
+            }
+
+            if (typeof error !== 'undefined') {
+              if (error.code == 'invalid_number' || error.code == 'incorrect_number' || error.code == 'card_declined' || error.code == 'processing_error') {
+                // error handling
+                that.stripeErrorDisplay(response.errors, $(that.options.cc_num_selector), that.element, that.options );
+              }
+
+              if (error.code == 'invalid_expiry_month' || error.code == 'invalid_expiry_year' || error.code == 'expired_card') {
+                // error handling
+                that.stripeErrorDisplay(response.errors, $(that.options.cc_exp_selector), that.element, that.options );
+              }
+
+              if (error.code == 'invalid_cvc' || error.code == 'incorrect_cvc') {
+                // error handling
+                that.stripeErrorDisplay(response.errors, $(that.options.cc_cvv_selector), that.element, that.options );
+              }
+
+              if (error.type == 'invalid_request_error') {
+                $('button.give').before('<p class="error">' + error.message + '</p>')
+              }
+
+            }
+
+            if (typeof response.errors[0] !== 'undefined') {
+              var field = response.errors[0].field + '_field_selector';
+              if ($(field).length > 0) {
+                $('html, body').animate({
+                  scrollTop: $(options[field]).parent().offset().top
+                }, 2000);
+              }
+            }
+
+          });
+        } else {
+          supportform.get(0).submit(); // continue submitting the form
+        }
+      })
+      .error(function(response) {
+        that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
+      });
+
+    },
 
     showNewsletterSettings: function(element, options) {
       var that = this;
@@ -2255,7 +2280,7 @@ global.Payment = Payment;
 
       //var existing_newsletter_settings = this.options.existing_newsletter_settings;
       var existing_newsletter_settings = $('.support-newsletter :input').serialize();
-      //console.dir(existing_newsletter_settings);
+      //this.debug(existing_newsletter_settings);
 
       $(options.confirm_form_selector).submit(function(event) {
         event.preventDefault();
