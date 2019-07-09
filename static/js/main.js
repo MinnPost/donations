@@ -1070,6 +1070,7 @@ global.Payment = Payment;
         this.outsideUnitedStates(this.element, this.options); // outside US
         this.shippingAddress(this.element, this.options); // shipping address
         this.allowMinnpostAccount(this.element, this.options, false); // option for creating minnpost account
+        this.choosePaymentMethod(this.element, this.options); // switch between card and ach
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
         this.achFields(this.element, this.options); // do stuff for ach payments, if applicable to the form
         this.validateAndSubmit(this.element, this.options); // validate and submit the form
@@ -1773,7 +1774,7 @@ global.Payment = Payment;
       });
     }, // checkMinnpostAccountExists
 
-    creditCardFields: function(element, options) {
+    choosePaymentMethod: function(element, options) {
 
       var that = this;
 
@@ -1804,9 +1805,68 @@ global.Payment = Payment;
           $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
         });
       }
+    }, // choosePaymentMethod
 
-      // todo: we should be able to get rid of this whole thing, but need to test it
+    creditCardFields: function(element, options) {
 
+      var that = this;
+
+      $(that.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
+
+      var style = {
+        base: {
+          iconColor: '#666EE8',
+          lineHeight: '37px',
+          fontWeight: 400,
+          fontFamily: 'Georgia,Cambria,Times New Roman,Times,serif',
+          fontSize: '16px',
+        },
+      };
+
+      // Add an instance of the card UI component into the `card-element` <div>
+      //card.mount('#card-element');
+      if ( $('.credit-card-group').length === 0 && $('.payment-method.choose-card').length === 0) {
+        return;
+      }
+      that.cardNumberElement = that.elements.create('cardNumber', {
+        style: style
+      });
+      that.cardNumberElement.mount(options.cc_num_selector);
+
+      that.cardExpiryElement = that.elements.create('cardExpiry', {
+        style: style
+      });
+      that.cardExpiryElement.mount(options.cc_exp_selector);
+
+      that.cardCvcElement = that.elements.create('cardCvc', {
+        style: style
+      });
+      that.cardCvcElement.mount(options.cc_cvv_selector);
+
+      // validate/error handle the card fields
+      that.cardNumberElement.on('change', function(event) {
+        // error handling
+        that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
+        // Switch brand logo
+        if (event.brand) {
+          that.calculateFees(event.brand);
+          $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
+          that.setBrandIcon(event.brand);
+        }
+        //setOutcome(event);
+      });
+
+      that.cardExpiryElement.on('change', function(event) {
+        // error handling
+        that.stripeErrorDisplay(event, $(options.cc_exp_selector, element), element, options );
+      });
+
+      that.cardCvcElement.on('change', function(event) {
+        // error handling
+        that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
+      });
+
+      // this is the method to create a single card field and mount it
       /*var card = that.elements.create(
         'card',
         {
@@ -1932,61 +1992,6 @@ global.Payment = Payment;
 
     validateAndSubmit: function(element, options) {
       var that = this;
-      $(this.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
-
-      var style = {
-        base: {
-          iconColor: '#666EE8',
-          lineHeight: '37px',
-          fontWeight: 400,
-          fontFamily: 'Georgia,Cambria,Times New Roman,Times,serif',
-          fontSize: '16px',
-        },
-      };
-
-      // Add an instance of the card UI component into the `card-element` <div>
-      //card.mount('#card-element');
-      if ( $('.credit-card-group').length === 0 && $('.payment-method.choose-card').length === 0) {
-        return;
-      }
-      var cardNumberElement = that.elements.create('cardNumber', {
-        style: style
-      });
-      cardNumberElement.mount(options.cc_num_selector);
-
-      var cardExpiryElement = that.elements.create('cardExpiry', {
-        style: style
-      });
-      cardExpiryElement.mount(options.cc_exp_selector);
-
-      var cardCvcElement = that.elements.create('cardCvc', {
-        style: style
-      });
-      cardCvcElement.mount(options.cc_cvv_selector);
-
-      // validate/error handle the card fields
-      cardNumberElement.on('change', function(event) {
-        // error handling
-        that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
-        // Switch brand logo
-        if (event.brand) {
-          that.calculateFees(event.brand);
-          $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
-          that.setBrandIcon(event.brand);
-        }
-        //setOutcome(event);
-      });
-
-      cardExpiryElement.on('change', function(event) {
-        // error handling
-        that.stripeErrorDisplay(event, $(options.cc_exp_selector, element), element, options );
-      });
-
-      cardCvcElement.on('change', function(event) {
-        // error handling
-        that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
-      });
-
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
 
@@ -2093,7 +2098,7 @@ global.Payment = Payment;
 
           if ($('input[name="bankToken"]').length == 0) {
             // finally, get a token from stripe, and try to charge it if it is not ach
-            that.createToken(cardNumberElement);
+            that.createToken(that.cardNumberElement);
           } else {
             // if it is ach, we already have a token so pass it to stripe.
             that.stripeTokenHandler( $('#bankToken').val(), 'ach' );
