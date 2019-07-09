@@ -1071,6 +1071,7 @@ global.Payment = Payment;
         this.shippingAddress(this.element, this.options); // shipping address
         this.allowMinnpostAccount(this.element, this.options, false); // option for creating minnpost account
         this.choosePaymentMethod(this.element, this.options); // switch between card and ach
+        this.paymentRequestElement(this.element, this.options); // add paymentRequest element
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
         this.achFields(this.element, this.options); // do stuff for ach payments, if applicable to the form
         this.validateAndSubmit(this.element, this.options); // validate and submit the form
@@ -1807,6 +1808,53 @@ global.Payment = Payment;
       }
     }, // choosePaymentMethod
 
+    paymentRequestElement: function(element, options) {
+      var that = this;
+      var amount = that.options.amount;
+      /**
+       * Payment Request Element
+       */
+      var paymentRequest = that.stripe.paymentRequest({
+        country: "US",
+        currency: "usd",
+        total: {
+          amount: amount,
+          label: "Total"
+        },
+        requestPayerName: true,
+        requestPayerEmail: true
+        /*requestShipping: true,
+        shippingOptions: [
+          {
+            id: "free-shipping",
+            label: "Free shipping",
+            detail: "Arrives in 5 to 7 days",
+            amount: 0
+          }
+        ]*/
+      });
+
+      that.prButton = that.elements.create('paymentRequestButton', {
+        paymentRequest: paymentRequest,
+      });
+
+      // Check the availability of the Payment Request API first.
+      paymentRequest.canMakePayment().then(function(result) {
+        if (result) {
+          that.prButton.mount('#payment-request-button');
+        } else {
+          document.getElementById('payment-request-button').style.display = 'none';
+        }
+      });
+
+      paymentRequest.on('token', function(event) {
+
+        that.stripeTokenHandler(event, 'payment_request');
+        
+      });
+
+    }, // paymentRequestMethod
+
     creditCardFields: function(element, options) {
 
       var that = this;
@@ -2176,6 +2224,8 @@ global.Payment = Payment;
         } else {
           supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(type));  
         }
+      } else if ( type === 'payment_request' ) {
+        supportform.append($('<input type=\"hidden\" name=\"stripeToken\">').val(token.token.id));
       }
 
       // Submit the form
@@ -2187,6 +2237,20 @@ global.Payment = Payment;
         type: 'POST'
       })
       .done(function(response) {
+
+        if ( type === 'payment_request' ) {
+          if (response.ok) {
+            // Report to the browser that the payment was successful, prompting
+            // it to close the browser payment interface.
+            token.complete('success');
+          } else {
+            // Report to the browser that the payment failed, prompting it to
+            // re-show the payment interface, or show an error message and close
+            // the payment interface.
+            token.complete('fail');
+          }
+        }
+
         if (typeof response.errors !== 'undefined') {
           // do not submit. there is an error.
           that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
