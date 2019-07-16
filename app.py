@@ -894,6 +894,13 @@ def minnpost_donation_update_form():
         else:
             campaign = ''
 
+    if request.args.get('amount'):
+        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
+        if (amount).is_integer():
+            amount_formatted = int(amount)
+        else:
+            amount_formatted = format(amount, ',.2f')
+
     if request.args.get('show_ach'):
         show_ach = request.args.get('show_ach')
         if show_ach == 'true':
