@@ -131,24 +131,29 @@
 	}
 }
 
-.support--minimal .panel--form {
-	display: block;
-	h1 {
-		margin-bottom: $quarter-space;
+.support--minimal {
+	#amount_for_js {
+		display: none;
 	}
-	&#panel--details {
-		.form-item input:last-child {
-			margin-bottom: 0;
+	.panel--form {
+		display: block;
+		h1 {
+			margin-bottom: $quarter-space;
 		}
-		.form-item--amount {
-			font-size: 1.25em;
-			label, input {
-				font-size: 1em;
+		&#panel--details {
+			.form-item input:last-child {
+				margin-bottom: 0;
+			}
+			.form-item--amount {
+				font-size: 1.25em;
+				label, input {
+					font-size: 1em;
+				}
 			}
 		}
-	}
-	&#panel--pay {
-		display: flex;
+		&#panel--pay {
+			display: flex;
+		}
 	}
 }
 

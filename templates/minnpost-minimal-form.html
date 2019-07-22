@@ -8,6 +8,8 @@
     <form action="{{ confirm_url }}" method="post" class="support support--minimal support--donate support--update" id="donate">
       {{ form.csrf_token }}
 
+      <div id="amount_for_js" class="amount"><span class="level-amount">{{ amount }}</span></div>
+
       {% if stage != '' %}
         <input type="hidden" name="stage" id="stage" value="{{ stage }}">
       {% endif %}
