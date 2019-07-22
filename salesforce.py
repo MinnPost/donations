@@ -34,6 +34,8 @@ from config import REPORT_INSTANCE_FALLBACK
 from config import CLOUDAMQP_URL
 from config import CELERY_RESULT_BACKEND
 
+from helpers import amount_to_charge
+
 from emails import send_email
 from check_response import check_response
 
