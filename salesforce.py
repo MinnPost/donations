@@ -1055,12 +1055,13 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         if 'pay_fees' in form:
             pay_fees = form['pay_fees']
             if pay_fees == '1':
+                pay_fees = True
                 entry = {'Amount': form['amount'], 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': extra_values['payment_type'] }
                 amount_plus_fees = amount_to_charge(entry)
             else:
-                pay_fees = ''
+                pay_fees = False
         else:
-            pay_fees = ''
+            pay_fees = False
 
         update = {
             'Description': form['description'],
@@ -1087,7 +1088,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         if 'amount' in form:
             update['Amount'] = _format_amount(form['amount'])
 
-        if pay_fees == '1':
+        if pay_fees == True:
             update['Amount'] = format(amount_plus_fees / 100, ',.2f')
 
         path = '/services/data/v{}/sobjects/Opportunity/{}'.format(SALESFORCE['API_VERSION'], form['opp_id'])
@@ -1291,12 +1292,13 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
         if 'pay_fees' in form:
             pay_fees = form['pay_fees']
             if pay_fees == '1':
+                pay_fees = True
                 entry = {'Amount': form['amount'], 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': extra_values['payment_type'] }
                 amount_plus_fees = amount_to_charge(entry)
             else:
-                pay_fees = ''
+                pay_fees = False
         else:
-            pay_fees = ''
+            pay_fees = False
 
         update = {
             'Donor_address_line_1__c': billing_street,
@@ -1317,7 +1319,7 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
 
         if 'amount' in form:
             update['npe03__Amount__c'] = _format_amount(form['amount'])
-        if pay_fees == '1':
+        if pay_fees == True:
             update['npe03__Amount__c'] = format(amount_plus_fees / 100, ',.2f')
         if 'recurring' in form:
             update['npe03__Installment_Period__c'] = form['recurring']
