@@ -1074,6 +1074,13 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         if 'amount' in form:
             update['amount'] = _format_amount(form['amount'])
 
+        if 'pay_fees' in request.form:
+            pay_fees = request.form['pay_fees']
+            if pay_fees == '1':
+                entry = {'Amount': form['amount'], 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': extra_values['payment_type'] }
+                amount_plus_fees = amount_to_charge(entry)
+                update['amount'] = format(amount_plus_fees / 100, ',.2f')
+
         path = '/services/data/v{}/sobjects/Opportunity/{}'.format(SALESFORCE['API_VERSION'], form['opp_id'])
         url = '{}{}'.format(sf.instance_url, path)
         resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
