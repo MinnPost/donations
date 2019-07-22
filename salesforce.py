@@ -1050,8 +1050,8 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         else:
             card_type = ''
 
-        if 'pay_fees' in request.form:
-            pay_fees = request.form['pay_fees']
+        if 'pay_fees' in form:
+            pay_fees = form['pay_fees']
             if pay_fees == '1':
                 entry = {'Amount': form['amount'], 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': extra_values['payment_type'] }
                 amount_plus_fees = amount_to_charge(entry)
@@ -1284,8 +1284,8 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
         else:
             card_type = ''
 
-        if 'pay_fees' in request.form:
-            pay_fees = request.form['pay_fees']
+        if 'pay_fees' in form:
+            pay_fees = form['pay_fees']
             if pay_fees == '1':
                 entry = {'Amount': form['amount'], 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': extra_values['payment_type'] }
                 amount_plus_fees = amount_to_charge(entry)
