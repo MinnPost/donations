@@ -34,6 +34,8 @@ from config import REPORT_INSTANCE_FALLBACK
 from config import CLOUDAMQP_URL
 from config import CELERY_RESULT_BACKEND
 
+from helpers import amount_to_charge
+
 from emails import send_email
 from check_response import check_response
 
@@ -1050,6 +1052,17 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         else:
             card_type = ''
 
+        if 'pay_fees' in form:
+            pay_fees = form['pay_fees']
+            if pay_fees == '1':
+                pay_fees = True
+                entry = {'Amount': form['amount'], 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': extra_values['payment_type'] }
+                amount_plus_fees = amount_to_charge(entry)
+            else:
+                pay_fees = False
+        else:
+            pay_fees = False
+
         update = {
             'Description': form['description'],
             'StageName': stage,
@@ -1065,6 +1078,7 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
             'Credited_as__c': credited_as,
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
+            'Stripe_Agreed_to_pay_fees__c' : pay_fees,
             'Stripe_Customer_ID__c': customer.id,
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
@@ -1072,7 +1086,10 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         }
 
         if 'amount' in form:
-            update['amount'] = _format_amount(form['amount'])
+            update['Amount'] = _format_amount(form['amount'])
+
+        if pay_fees == True:
+            update['Amount'] = format(amount_plus_fees / 100, ',.2f')
 
         path = '/services/data/v{}/sobjects/Opportunity/{}'.format(SALESFORCE['API_VERSION'], form['opp_id'])
         url = '{}{}'.format(sf.instance_url, path)
@@ -1272,6 +1289,17 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
         else:
             card_type = ''
 
+        if 'pay_fees' in form:
+            pay_fees = form['pay_fees']
+            if pay_fees == '1':
+                pay_fees = True
+                entry = {'Amount': form['amount'], 'Stripe_Agreed_to_pay_fees__c': pay_fees, 'payment_type': extra_values['payment_type'] }
+                amount_plus_fees = amount_to_charge(entry)
+            else:
+                pay_fees = False
+        else:
+            pay_fees = False
+
         update = {
             'Donor_address_line_1__c': billing_street,
             'Donor_city__c': billing_city,
@@ -1282,6 +1310,7 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
             'Donor_last_name__c': form['last_name'],
             'Donor_e_mail__c': form['email'],
             'Flask_Transaction_ID__c': form['flask_id'],
+            'Stripe_Agreed_to_pay_fees__c': pay_fees,
             'Stripe_Customer_Id__c': customer.id,
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
@@ -1290,6 +1319,8 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
 
         if 'amount' in form:
             update['npe03__Amount__c'] = _format_amount(form['amount'])
+        if pay_fees == True:
+            update['npe03__Amount__c'] = format(amount_plus_fees / 100, ',.2f')
         if 'recurring' in form:
             update['npe03__Installment_Period__c'] = form['recurring']
         if 'email_user_when_canceled' in form:
