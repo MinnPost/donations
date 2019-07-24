@@ -258,6 +258,7 @@ def minnpost_form():
         if decline_benefits == 'true':
             swag = ''
             atlantic_subscription = ''
+            atlantic_id = ''
             nyt_subscription = ''
     else:
         decline_benefits = ''
