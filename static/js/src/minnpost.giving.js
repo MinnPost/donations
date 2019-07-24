@@ -49,6 +49,8 @@
     'upsell_selector' : '.well--upsell',
     'upsell_amount_selector' : '.upsell-amount',
     'swag_selector' : '.swag',
+    'swag_decline_selector' : '#swag-no',
+    'swag_nyt_selector' : 'input[name="nyt"]',
     'separate_swag_selector' : 'fieldset.swag--separate',
     'separate_swag_redeem' : '.swag-redeem--separate',
     'swag_selector_choose_multiple' : '.swag--choose-multiple',
@@ -655,6 +657,10 @@
 
       $(options.atlantic_status, element).change(function() { // if user clicks one of the atlantic radio buttons
         that.swag(element, options, true);
+      });
+
+      $(options.swag_decline_selector, element).click(function(event) {
+        $(options.swag_nyt_selector, element).prop('checked', false);
       });
 
       var maximum_choose = $(options.swag_selector_choose_multiple, element).data('maximum-choose');
