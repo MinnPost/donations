@@ -737,19 +737,24 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         swag = ''
 
     try:
-        swag_other_benefits = form['swag_atlanticsubscription']
+        nyt_subscription = form['nyt']
+    except:
+        nyt_subscription = 'No'
+
+    try:
+        atlantic_subscription = form['swag_atlanticsubscription']
         try:
             existing_atlantic_id = form['atlantic_id']
         except:
             existing_atlantic_id = ''
     except:
-        swag_other_benefits = ''
+        atlantic_subscription = ''
         existing_atlantic_id = ''
 
-    if (swag_other_benefits == 'new' or swag_other_benefits == 'existing'):
-        swag_other_benefits = 'Atlantic subscription'
+    if (atlantic_subscription == 'new' or atlantic_subscription == 'existing'):
+        atlantic_subscription = 'Yes'
     else:
-        swag_other_benefits = ''
+        atlantic_subscription = 'No'
 
     if 'swag_thankyou_lists' in form:
         swag_thankyou_lists = form['swag_thankyou_lists']
@@ -820,7 +825,8 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'In_Honor_of_In_Memory__c': inhonorormemoryof,
             'Notify_someone__c': in_honor_notify,
             'Member_benefit_request_Swag__c': swag,
-            'Member_benefit_request_Other_benefits__c': swag_other_benefits,
+            'Member_benefit_request_New_York_Times__c': nyt_subscription,
+            'Member_benefit_request_Other_benefits__c': atlantic_subscription,
             'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
             'Member_benefit_special_thank_you_list__c': swag_thankyou_lists,
             'MinnPost_Invoice__c': invoice,
@@ -1600,19 +1606,24 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         swag = ''
 
     try:
-        swag_other_benefits = form['swag_atlanticsubscription']
+        nyt_subscription = form['nyt']
+    except:
+        nyt_subscription = 'No'
+
+    try:
+        atlantic_subscription = form['swag_atlanticsubscription']
         try:
             existing_atlantic_id = form['atlantic_id']
         except:
             existing_atlantic_id = ''
     except:
-        swag_other_benefits = ''
+        atlantic_subscription = ''
         existing_atlantic_id = ''
 
-    if (swag_other_benefits == 'new' or swag_other_benefits == 'existing'):
-        swag_other_benefits = 'Atlantic subscription'
+    if (atlantic_subscription == 'new' or atlantic_subscription == 'existing'):
+        atlantic_subscription = 'Yes'
     else:
-        swag_other_benefits = ''
+        atlantic_subscription = 'No'
 
     if 'swag_thankyou_lists' in form:
         swag_thankyou_lists = form['swag_thankyou_lists']
@@ -1714,7 +1725,8 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'npe03__Installment_Period__c': installment_period, # this has to be there even if it is open ended
         'Lead_Source__c': 'Stripe',
         'Member_benefit_request_Swag__c': swag,
-        'Member_benefit_request_Other_benefits__c': swag_other_benefits,
+        'Member_benefit_request_New_York_Times__c': nyt_subscription,
+        'Member_benefit_request_Other_benefits__c': atlantic_subscription,
         'Member_benefit_request_Atlantic_sub_ID__c': existing_atlantic_id,
         'Member_benefit_special_thank_you_list__c': swag_thankyou_lists,
         'npe03__Open_Ended_Status__c': open_ended_status,
