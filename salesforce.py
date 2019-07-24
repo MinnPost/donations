@@ -751,7 +751,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
         atlantic_subscription = ''
         existing_atlantic_id = ''
 
-    if (atlantic_subscription == 'new' or atlantic_subscription == 'existing'):
+    if atlantic_subscription == 'true':
         atlantic_subscription = 'Yes'
     else:
         atlantic_subscription = 'No'

@@ -238,13 +238,13 @@ def minnpost_form():
 
     if request.args.get('atlantic_subscription'):
         atlantic_subscription = request.args.get('atlantic_subscription')
+        if atlantic_subscription != 'true':
+            atlantic_subscription = ''
     else:
         atlantic_subscription = ''
 
     if request.args.get('atlantic_id'):
         atlantic_id = request.args.get('atlantic_id')
-        if atlantic_id != '':
-            atlantic_subscription = ''
     else:
         atlantic_id = ''
 
