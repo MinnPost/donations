@@ -34,20 +34,20 @@
     <fieldset class="benefits">
       <h2 class="level level--{{ level.levelint }}">MinnPost <span class="level-name">{{ level.level.title() }}</span></h2>  <!-- load server-side from parsing querystring -->
       <p><span class="swag swag--{{ main_swag_minimum_level }}">Choose your thank you gifts below.</span> You can <span class="swag swag--{{ main_swag_minimum_level }}">also</span> <a href="https://www.minnpost.com/support/member-benefits/?level={{ level.level }}" class="review-benefits">review all MinnPost <span class="level-name">{{ level.level.title() }}</span> benefits</a>.</p>  <!-- load server-side from parsing querystring -->
-      <label class="swag swag--{{ main_swag_minimum_level }}"><input type="radio" name="swag" value="mug" id="swag-mug"> <div><img src="/static/img/mug.png" alt="Coffee Mug"></div></label>
-      <label class="swag swag--{{ main_swag_minimum_level }}"><input type="radio" name="swag" value="water bottle" id="swag-bottle"> <div><img src="/static/img/waterbottle.png" alt="Water Bottle"></div></label>
-      <label class="swag swag--{{ top_swag_minimum_level }}"><input type="radio" name="nyt" value="Yes" id="swag-nyt"> <div><img src="/static/img/nyt.png" alt="NYT Digital Subscription"></div></label>
-      <label class="swag swag--{{ main_swag_minimum_level }} total--{{ level.levelint }}"><input type="radio" name="swag" value="None" id="swag-no"> <div>Give entire amount to MinnPost</div></label>
+      <label class="swag swag--{{ main_swag_minimum_level }}"><input type="radio" name="swag" value="mug" id="swag-mug"{% if swag == 'mug' %} checked{% endif %}> <div><img src="/static/img/mug.png" alt="Coffee Mug"></div></label>
+      <label class="swag swag--{{ main_swag_minimum_level }}"><input type="radio" name="swag" value="water bottle" id="swag-bottle"{% if swag == 'waterbottle' %} checked{% endif %}> <div><img src="/static/img/waterbottle.png" alt="Water Bottle"></div></label>
+      <label class="swag swag--{{ top_swag_minimum_level }}"><input type="radio" name="nyt" value="Yes" id="swag-nyt"{% if nyt_subscription == 'true' %} checked{% endif %}> <div><img src="/static/img/nyt.png" alt="NYT Digital Subscription"></div></label>
+      <label class="swag swag--{{ main_swag_minimum_level }} total--{{ level.levelint }}"><input type="radio" name="swag" value="None" id="swag-no"{% if decline_benefits == 'true' %} checked{% endif %}> <div>Give entire amount to MinnPost</div></label>
       <p class="swag swag--separate swag--{{ separate_swag_minimum_level }}">Also, <strong>MinnPost Gold and Platinum</strong> members are entitled to a 1-year subscription to The Atlantic. This offer is available each year that you qualify. More information is available in <a href="/static/documents/atlantic-subscription-details.pdf" target="_blank">this document</a>.</p>
       <fieldset class="swag swag--{{ separate_swag_minimum_level }}">
-        <label><input type="radio" value="new" id="atlantic_new" name="swag_atlanticsubscription" class="swag--shipping"> Start a new subscription</label>
-        <label><input type="radio" value="existing" id="atlantic_existing" name="swag_atlanticsubscription" class="swag--shipping"> Extend an existing subscription</label>
+        <label><input type="radio" value="new" id="atlantic_new" name="swag_atlanticsubscription" class="swag--shipping"{% if (atlantic_subscription == 'true' and atlantic_id == '') %} checked{% endif %}> Start a new subscription</label>
+        <label><input type="radio" value="existing" id="atlantic_existing" name="swag_atlanticsubscription" class="swag--shipping"{% if (atlantic_subscription == 'true' and atlantic_id != '') %} checked{% endif %}> Extend an existing subscription</label>
         <div class="form-item form-item--atlantic_id" >
           <label>Existing Subscription ID
-          <input type="text" value="" id="atlantic_id" name="atlantic_id" autocorrect="off" autocapitalize="off">
+          <input type="text" value="{% if atlantic_id != '' %}{{ atlantic_id }}{% endif %}" id="atlantic_id" name="atlantic_id" autocorrect="off" autocapitalize="off">
           </label>
         </div>
-        <label><input type="radio" value="No" id="atlantic_decline" name="swag_atlanticsubscription" class="swag--shipping"> Decline this item</label>
+        <label><input type="radio" value="No" id="atlantic_decline" name="swag_atlanticsubscription" class="swag--shipping"{% if decline_benefits == 'true' %} checked{% endif %}> Decline this item</label>
       </fieldset>
       {% if show_thankyou_lists == 'True' %}
         {% if level.levelint < 4 %}
