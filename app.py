@@ -231,6 +231,37 @@ def minnpost_form():
     maximum_choose_multiple_int = int(app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))])
     maximum_choose_multiple_level_text = num2words(int(app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))]))
 
+    if request.args.get('swag'):
+        swag = request.args.get('swag')
+    else:
+        swag = ''
+
+    if request.args.get('atlantic_subscription'):
+        atlantic_subscription = request.args.get('atlantic_subscription')
+    else:
+        atlantic_subscription = ''
+
+    if request.args.get('atlantic_id'):
+        atlantic_id = request.args.get('atlantic_id')
+        if atlantic_id != '':
+            atlantic_subscription = ''
+    else:
+        atlantic_id = ''
+
+    if request.args.get('nyt_subscription'):
+        nyt_subscription = request.args.get('nyt_subscription')
+    else:
+        nyt_subscription = ''
+
+    if request.args.get('decline_benefits'):
+        decline_benefits = request.args.get('decline_benefits')
+        if decline_benefits == 'true':
+            swag = ''
+            atlantic_subscription = ''
+            nyt_subscription = ''
+    else:
+        decline_benefits = ''
+
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
     else:
@@ -276,6 +307,7 @@ def minnpost_form():
         openended_status=openended_status,
         yearly=yearly,
         level=level,
+        swag=swag, atlantic_subscription=atlantic_subscription, atlantic_id=atlantic_id, nyt_subscription=nyt_subscription, decline_benefits=decline_benefits,
         first_name = first_name,last_name = last_name, email=email,
         billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
         show_upsell = app.show_upsell, allow_donation_notification = app.allow_donation_notification,
