@@ -23,32 +23,30 @@
       <input type="hidden" name="sf_type" id="sf_type" value="{{ session['sf_type'] }}">
       <section class="panel panel--form" id="panel--confirmation">
         <h1>Thank you for supporting MinnPost</h1>
-        <p>Thank you for your $<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency }}</span> donation. You are entitled to MinnPost <span class="level-name">{{ level.level.title() }}</span> benefits, which you can <a href="https://www.minnpost.com/support/member-benefits/?level={{ level.level }}" target="_blank" class="review-benefits">review</a> anytime. You will receive an automatic receipt email.</p>
+        <p>Thank you for your $<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency }}</span> donation. This contribution gives you MinnPost <span class="level-name">{{ level.level.title() }}</span> benefits. You will receive an email that includes a receipt of your contribution, an overview of your member benefits and if you selected a thank you gift, information regarding how you will receive your selection.</p>
         <h2>What next?</h2>
         <p class="confirm-instructions" data-known-user="Please take a quick moment to share why you chose to support MinnPost. You can also review your current settings for MinnPost email communications.">Please take a quick moment to share why you chose to support MinnPost, and consider signing up for our email newsletters.</p>
-        <div class="support support--post-confirm">
-          <fieldset class="support-reasons">
-            <div class="form-item form-item--comments">
-              <label>Your reason for supporting MinnPost:
-              <textarea id="reason_for_supporting" cols="20" rows="8" name="reason_for_supporting"></textarea></label> <!-- could send to Givalike and/or ajax -->
-              <label class="additional-option" id="reason_shareable" for="reason_shareable"><input type="checkbox" checked="checked" name="reason_shareable" id="reason_shareable" value="1"> MinnPost has permission to post this comment on the website.</label>
-            </div>
-          </fieldset> <!-- we are open to how this gets transferred. if we need to, we can make a minnpost ajax endpoint, but it does have to get stored somewhere -->
-          <fieldset class="support-newsletter">
-            <div class="form-item form-item--newsletter">
-              <label>Choose any of these newsletters:</label>
-              <label><input type="checkbox" name="newsletters" id="daily" value="04471b1571"> Daily newsletter</label>
-              <label><input type="checkbox" name="newsletters" id="sunday" value="94fc1bd7c9"> Sunday review</label>
-              <label><input type="checkbox" name="newsletters" id="greatermn" value="ce6fd734b6"> Greater Minnesota newsletter</label>
-              <label><input type="checkbox" name="newsletters" id="dcmemo" value="d89249e207"> D. C. Memo</label>
-            </div>
-            <div class="form-item form-item--optional">
-              <label>Periodic MinnPost messages:</label>
-              <label><input type="checkbox" name="messages" id="events" value="68449d845c"> Events &amp; member benefits</label>
-              <label><input type="checkbox" name="messages" id="feedback" value="958bdb5d3c"> Opportunities to give MinnPost input/feedback</label>
-            </div>
-          </fieldset> <!-- we have a working api endpoint for this already, and it is operating -->
-        </div>
+        <fieldset class="support-reasons">
+          <div class="form-item form-item--comments">
+            <label>Your reason for supporting MinnPost:
+            <textarea id="reason_for_supporting" cols="20" rows="8" name="reason_for_supporting"></textarea></label> <!-- could send to Givalike and/or ajax -->
+            <label class="additional-option" id="reason_shareable" for="reason_shareable"><input type="checkbox" checked="checked" name="reason_shareable" id="reason_shareable" value="1"> MinnPost has permission to post this comment on the website.</label>
+          </div>
+        </fieldset> <!-- we are open to how this gets transferred. if we need to, we can make a minnpost ajax endpoint, but it does have to get stored somewhere -->
+        <fieldset class="support-newsletter">
+          <div class="form-item form-item--newsletter">
+            <label>Choose any of these newsletters:</label>
+            <label><input type="checkbox" name="newsletters" id="daily" value="04471b1571"> Daily newsletter</label>
+            <label><input type="checkbox" name="newsletters" id="sunday" value="94fc1bd7c9"> Sunday review</label>
+            <label><input type="checkbox" name="newsletters" id="greatermn" value="ce6fd734b6"> Greater Minnesota newsletter</label>
+            <label><input type="checkbox" name="newsletters" id="dcmemo" value="d89249e207"> D. C. Memo</label>
+          </div>
+          <div class="form-item form-item--optional">
+            <label>Periodic MinnPost messages:</label>
+            <label><input type="checkbox" name="messages" id="events" value="68449d845c"> Events &amp; member benefits</label>
+            <label><input type="checkbox" name="messages" id="feedback" value="958bdb5d3c"> Opportunities to give MinnPost input/feedback</label>
+          </div>
+        </fieldset> <!-- we have a working api endpoint for this already, and it is operating -->
         <button type="submit" name="finish" id="finish" class="clear-block btn btn--submit">Send and Finish</button> <!-- ideally this would call both ajax endpoints, but the mailchimp one is the only one currently in use -->
       </section>
     </form>
