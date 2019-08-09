@@ -19,7 +19,7 @@ from forms import MinnPostForm, ConfirmForm
 #from sassutils.wsgi import SassMiddleware # mp put this into grunt instead
 import stripe
 from validate_email import validate_email
-from helpers import checkLevel, amount_to_charge
+from helpers import checkLevel, amount_to_charge, calculate_amount_fees
 
 from flask_sslify import SSLify
 
@@ -301,6 +301,8 @@ def minnpost_form():
     else:
         billing_country = ''
 
+    fees = calculate_amount_fees(amount, 'visa')
+
     return render_template(
         'minnpost-form.html',
         form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
@@ -311,6 +313,7 @@ def minnpost_form():
         swag=swag, atlantic_subscription=atlantic_subscription, atlantic_id=atlantic_id, nyt_subscription=nyt_subscription, decline_benefits=decline_benefits,
         first_name = first_name,last_name = last_name, email=email,
         billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
+        fees = fees,
         show_upsell = app.show_upsell, allow_donation_notification = app.allow_donation_notification,
         top_swag_minimum_level = app.top_swag_minimum_level,
         separate_swag_minimum_level = app.separate_swag_minimum_level,
@@ -1274,6 +1277,24 @@ def plaid_token():
         response = {'error' : 'We were unable to connect to your account. Please try again.'}
     
     return jsonify(response)
+
+
+# used to validate event promo codes to assign users discount
+# called by ajax
+@app.route('/calculate-fees/', methods=['POST'])
+def calculate_fees():
+
+    amount = float(request.form['amount'])
+    fees = ''
+    
+    # get fee amount to send to stripe; user does not see this
+    if 'payment_type' in request.form:
+        payment_type = request.form['payment_type']
+        fees = calculate_amount_fees(amount, payment_type)
+
+    ret_data = {"fees": fees}
+    return jsonify(ret_data)
+
 
 
 ## this is a minnpost url. when submitting a charge, start with ajax, then submit to the /thanks or whatever other url

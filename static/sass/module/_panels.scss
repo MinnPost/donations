@@ -31,7 +31,16 @@
 			margin: $half-space 0 0 0;
 		}
 		.actions--edit-amount, .actions--pay-fees {
-			font-size: 80%;
+			font-size: 90%;
+		}
+		.actions--pay-fees {
+			margin-bottom: $h4-space;
+			input[type="checkbox"] {
+				display: block;
+				float: left;
+				margin-top: 0;
+				margin-bottom: $h5-space;
+			}
 		}
 	}
 	.honor, .actions--edit-amount, .actions--pay-fees {
@@ -167,7 +176,7 @@
 			font-size: $h1-size;
 		}
 		.actions--edit-amount, .actions--pay-fees {
-			font-size: 80%;
+			font-size: 90%;
 		}
 		&#panel--pay {
 			h3, .actions--edit-amount {
@@ -175,6 +184,14 @@
 			}
 			.actions--edit-amount {
 				margin: $half-space 0 0 $h1-space;
+			}
+			.actions--pay-fees {
+				input[type="checkbox"] {
+					display: inline;
+					float: none;
+					margin-top: 0;
+					margin-bottom: 0;
+				}
 			}
 		}
 	}

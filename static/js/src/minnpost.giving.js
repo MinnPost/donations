@@ -32,11 +32,8 @@
     'active' : 'panel--review',
     'confirm' : 'panel--confirmation',
     'query' : 'step',
-    'percentage' : 0.022,
-    'fixed_amount' : 0.3,
-    'amex_percentage': 0.035,
-    'ach_percentage': 0.008,
     'pay_cc_processing_selector' : 'input[id="edit-pay-fees"]',
+    'fee_amount' : '.processing-amount',
     'level_amount_selector' : '#panel--review .amount .level-amount',
     'original_amount_selector' : '#amount',
     'frequency_selector' : '.frequency',
@@ -185,12 +182,8 @@
       if (typeof recurring !== 'undefined') {
         this.options.recurring = recurring.charAt(0).toUpperCase() + recurring.slice(1);
       }
-      this.options.processing_percent = parseFloat(this.options.percentage);
-      this.options.fixed_fee = parseFloat(this.options.fixed_amount);
       
-      this.options.new_amount = (this.options.original_amount + this.options.fixed_fee) / (1 - this.options.processing_percent);
-      this.options.processing_fee = this.options.new_amount - this.options.original_amount;
-      this.options.processing_fee = (Math.round(parseFloat(this.options.processing_fee)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
+      this.options.processing_fee = (Math.round(parseFloat(this.options.fee_amount)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
       this.options.processing_fee_text = this.options.processing_fee;
       
       this.options.upsell_amount = parseFloat($(this.options.upsell_amount_selector, this.element).text());
@@ -226,19 +219,9 @@
 
       if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options, reset); // processing fees
-        $(this.options.credit_card_fieldset).prepend('<input type="hidden" id="edit-pay-fees" name="pay_fees" value="0" />');
       }
 
       if ($(this.options.details_step_selector).length > 0 || $(this.options.review_step_selector).length > 0) {
-        if ($(this.options.original_amount_selector).length > 0) {
-          var that = this;
-          $(this.options.original_amount_selector).change( function() {
-            that.options.original_amount = $(that.options.original_amount_selector).val();
-            that.calculateFees('visa');
-            $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
-            $('#edit-pay-fees').val(0);
-          });
-        }
         this.options.level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
         this.options.levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
         this.honorOrMemory(this.element, this.options); // in honor or in memory of someone
@@ -422,71 +405,45 @@
 
     }, // analyticsTrackingStep
 
-    calculateFees: function(payment_type) {
-      // todo: we need to run this on page load as well, if the card form field has any value in it
-      this.options.fixed_fee = parseFloat(this.options.fixed_amount);
-
-      var percentage = this.options.percentage;
-      var fixed_amount = this.options.fixed_amount;
-      var fixed_fee = this.options.fixed_fee;
-
-      if (payment_type === 'amex') {
-        percentage = this.options.amex_percentage;
-        fixed_amount = 0;
-        fixed_fee = 0;
-      } else if (payment_type === 'ach') {
-        percentage = this.options.ach_percentage;
-        fixed_amount = 0;
-        fixed_fee = 0;
-      }
-
-      this.options.processing_percent = parseFloat(percentage);
-      this.options.new_amount = (parseFloat(this.options.original_amount) + fixed_fee) / (1 - this.options.processing_percent);
-      this.options.processing_fee = this.options.new_amount - this.options.original_amount;
-      this.options.processing_fee = (Math.round(parseFloat(this.options.processing_fee)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
-      this.options.processing_fee_text = this.options.processing_fee;
-    },
+    calculateFees: function(amount, payment_type) {
+      // this sends the amount and payment type to python; get the fee and display it to the user on the checkbox label
+      var that = this;
+      var data = {
+        amount: amount,
+        payment_type: payment_type
+      };
+      $.ajax({
+        method: 'POST',
+        url: '/calculate-fees/',
+        data: data
+      }).done(function( data ) {
+        if ($(data.fees).length > 0) {
+          $(that.options.fee_amount).text(data.fees);
+          that.creditCardFeeCheckbox($(that.options.pay_cc_processing_selector));
+        }
+      });
+    }, // calculateFees
 
     creditCardProcessingFees: function(options, reset) {
-      var full_amount;
+      // this adds or subtracts the fee to the original amount when the user indicates they do or do not want to pay the fees
       var that = this;
-      var remove = false;
-      $(this.options.pay_cc_processing_selector).parent().html('<a href="#" class="add-credit-card-processing">Add $<span class="processing-amount"></span></a> <span class="processing-explain">to each transaction to cover MinnPost\'s credit card fees?</span>');      
-      $('.processing-amount').text(options.processing_fee_text);
-      if (this.options.original_amount != this.options.amount) {
-        $('.add-credit-card-processing').text('Remove $' + options.processing_fee_text);
-        $('#edit-pay-fees').val(1);
-        remove = true;
-        $('.processing-explain').hide();
-      }
-      if (reset === true) {
-        remove = false;
-        full_amount = that.options.original_amount;
-        $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
-        $('#edit-pay-fees').val(0);
-        $('.processing-explain').show();
-      }
-      $('.add-credit-card-processing').click(function(event) {
-        $('.amount .level-amount').addClass('full-amount');
-        if (!remove) {
-          remove = true;
-          full_amount = that.options.new_amount;
-          $('.add-credit-card-processing').text('Remove $' + options.processing_fee_text);
-          $('#edit-pay-fees').val(1);
-          $('.processing-explain').hide();
-        } else {
-          remove = false;
-          full_amount = that.options.original_amount;
-          $('.add-credit-card-processing').text('Add $' + options.processing_fee_text);
-          $('#edit-pay-fees').val(0);
-          $('.processing-explain').show();
-        }
-        $('.add-credit-card-processing').toggleClass('remove');
-        $(options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
-        event.stopPropagation();
-        event.preventDefault();
+      that.creditCardFeeCheckbox($(this.options.pay_cc_processing_selector));
+      $(this.options.pay_cc_processing_selector).on('change', function () {
+          that.creditCardFeeCheckbox(this);
       });
     }, // creditCardProcessingFees
+
+    creditCardFeeCheckbox: function(field) {
+      var full_amount;
+      var that = this;
+      if ($(field).is(':checked') || $(field).prop('checked')) {
+        $('.amount .level-amount').addClass('full-amount');
+        full_amount = (that.options.original_amount + parseFloat($(that.options.fee_amount).text()));
+      } else {
+        full_amount = that.options.original_amount;
+      }
+      $(that.options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
+    }, // creditCardFeeCheckbox
 
     donateAnonymously: function(element, options) {
       if ($(options.anonymous_selector, element).is(':checked')) {
@@ -961,12 +918,18 @@
       if ($(options.choose_payment).length > 0) {      
         if ($(options.choose_payment + ' input').is(':checked')) {
           var checked = $(options.choose_payment + ' input:checked').attr('id');
+          var checked_value = $(options.choose_payment + ' input:checked').val();
           $(options.payment_method_selector).removeClass('active');
           $(options.payment_method_selector + '.' + checked).addClass('active');
           $(options.payment_method_selector + ':not(.active) label').removeClass('required');
           $(options.payment_method_selector + ':not(.active) input').prop('required', false);
           $(options.payment_method_selector + '.active label').addClass('required');
           $(options.payment_method_selector + '.active input').prop('required', true);
+          if ( checked_value === 'ach' ) {
+            that.calculateFees(that.options.original_amount, 'ach');
+          } else {
+            that.calculateFees(that.options.original_amount, 'visa');
+          }
         }
 
         $(options.choose_payment + ' input').change(function (event) {
@@ -978,11 +941,10 @@
           $(options.payment_method_selector + '.active input').prop('required', true);
           $('#bankToken').remove();
           if ( this.value === 'ach' ) {
-            that.calculateFees('ach');
+            that.calculateFees(that.options.original_amount, 'ach');
           } else {
-            that.calculateFees('visa');
+            that.calculateFees(that.options.original_amount, 'visa');
           }
-          $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
         });
       }
     }, // choosePaymentMethod
@@ -1029,8 +991,7 @@
         that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
         // Switch brand logo
         if (event.brand) {
-          that.calculateFees(event.brand);
-          $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
+          that.calculateFees(that.options.original_amount, event.brand);
           that.setBrandIcon(event.brand);
         }
         //setOutcome(event);
@@ -1131,9 +1092,7 @@
                 //this.debug(response);
                 $(options.donate_form_selector).prepend('<input type="hidden" id="bankToken" name="bankToken" value="' + response.stripe_bank_account_token + '" />');
                 $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
-                that.calculateFees('ach'); // calculate the ach fees
-                $('.add-credit-card-processing').text('Add $' + that.options.processing_fee_text);
-                $('#edit-pay-fees').val(0);
+                that.calculateFees(that.options.original_amount, 'ach'); // calculate the ach fees
                 // add the field(s) we need to the form for submitting
               }
             })

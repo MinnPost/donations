@@ -63,24 +63,32 @@ def amount_to_charge(entry):
     """
     amount = float(entry['Amount'])
     if entry['Stripe_Agreed_to_pay_fees__c']:
-
-        processing_percent = 0.022
-        fixed_fee = 0.3
-
-        if 'payment_type' in entry or 'Card_type__c' in entry or 'Stripe_Bank_Account__c' in entry:
-            if entry.get('payment_type') == 'American Express' or entry.get('Card_type__c') == 'American Express':
-                processing_percent = 0.035
-                fixed_fee = 0
-            elif entry.get('payment_type') == 'ach' or entry.get('Stripe_Bank_Account__c') is not None:
-                processing_percent = 0.008
-                fixed_fee = 0
-        new_amount = (amount + fixed_fee) / (1 - processing_percent)
-        processing_fee = new_amount - amount
-        fees = round(processing_fee, 2)
-
+        payment_type = entry.get('payment_type')
+        if entry.get('payment_type') == 'American Express' or entry.get('Card_type__c') == 'American Express':
+            payment_type = 'American Express'
+        elif entry.get('payment_type') == 'ach' or entry.get('Stripe_Bank_Account__c') is not None:
+            payment_type = 'ach'
+        fees = calculate_amount_fees(amount, payment_type)
     else:
         fees = 0
     total = amount + fees
     total_in_cents = total * 100
 
     return int(total_in_cents)
+
+
+def calculate_amount_fees(amount, payment_type):
+    amount = float(amount)
+    processing_percent = 0.022
+    fixed_fee = 0.3
+    if payment_type == 'American Express' or payment_type == 'amex':
+        processing_percent = 0.035
+        fixed_fee = 0
+    elif payment_type == 'ach':
+        processing_percent = 0.008
+        fixed_fee = 0
+    new_amount = (amount + fixed_fee) / (1 - processing_percent)
+    processing_fee = new_amount - amount
+    fees = round(processing_fee, 2)
+
+    return fees
