@@ -89,14 +89,16 @@ p {
 
 a {
   color: $action-color;
-  text-decoration: none;
+  //text-decoration: none;
+  text-decoration: underline;
   transition: color 0.1s linear;
 
   &:active,
   &:focus,
   &:hover {
     color: darken($action-color, 15%);
-    text-decoration: underline;
+    //text-decoration: underline;
+    text-decoration: none;
   }
 
   &:active,

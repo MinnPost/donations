@@ -2,10 +2,12 @@
   <!-- this should always change with the previous tab amount -->
 
   <fieldset class="amount">
-    <ul class="actions actions--edit-amount clear-block">
-      <li><a href="https://www.minnpost.com/support/" id="edit_url">Edit</a></li>
-    </ul>
     <h3>Donate $<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency }}</span></h1>
+    <ul class="actions actions--edit-amount clear-block">
+      <li>
+        <a href="https://www.minnpost.com/support/?amount={{ amount }}&amp;frequency={{ frequency }}" id="edit_url">Edit Amount</a>
+      </li>
+    </ul>
   </fieldset>
 
   <fieldset class="payment">
