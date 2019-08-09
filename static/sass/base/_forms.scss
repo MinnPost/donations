@@ -93,6 +93,13 @@ label {
 
 }
 
+.form-group--recognition {
+  margin-bottom: $small-spacing;
+  .additional-option {
+    margin-bottom: 0;
+  }
+}
+
 .form-item--with-help {
   position: relative;
 }

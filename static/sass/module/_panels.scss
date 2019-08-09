@@ -1,7 +1,7 @@
-.js .panel, .js .panel .honor fieldset, .js .swag.swag--separate, .js .swag .form-item--atlantic_id {
+.js .panel, .js .panel .form-item--honor-memory .honor-or-memory, .js .swag.swag--separate, .js .swag .form-item--atlantic_id {
 	display: none;
 }
-.no-js .panel, .no-js .honor fieldset, .no-js .swag .form-item--atlantic_id {
+.no-js .panel, .js .panel .form-item--honor-memory .honor-or-memory, .no-js .swag .form-item--atlantic_id {
 	display: block;
 }
 
@@ -50,31 +50,11 @@
 			float: right;
 		}
 	}
-	.honor {
-		position: relative;
-		fieldset {
-			position: absolute;
-			background: $white;
-			top: 0;
-			left: 0;
-			border: 1px solid $gray-light;
-			padding: $milli-space;
-			h3 {
-				margin: 0 0 0.75em;
-			}
-			a.close {
-				display: block;
-				//float: right;
-				@include hide-text;
-				background: transparent url("https://www.minnpost.com/wp-content/uploads/sites/default/modules/custom/minnpost_directedmessages/libs/fancybox/fancybox.png") repeat scroll -40px 0;
-			    cursor: pointer;
-			    height: 30px;
-			    width: 30px;
-			    z-index: 1103;
-				position: absolute;
-				right: -15px;
-				top: -15px;
-			}
+	.form-item--honor-memory {
+		.honor-or-memory {
+			padding: $half-space;
+			margin-bottom: $half-space;
+			background: $gray-lightest;
 		}
 	}
 	.actions--edit-amount, .actions--pay-fees {

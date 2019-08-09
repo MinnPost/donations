@@ -59,7 +59,12 @@
     'atlantic_existing' : '#atlantic_existing',
     'atlantic_selector' : '.form-item--atlantic_id',
     'name_selector' : '.form-item--display-name',
-    'honor_selector' : '.honor',
+    'honor_memory_name_selector' : '.form-item--honor-memory',
+    'honor_or_memory_chooser' : 'input[name="in-honor-or-memory"]',
+    'honor_name_selector' : '.honor',
+    'memory_name_selector' : '.memory',
+    'honor_selector' : '#edit-in-honor',
+    'memory_selector' : '#edit-in-memory',
     'notify_selector' : '.notify_someone',
     'notify_field_selector' : '.form-item--notify',
     'anonymous_selector' : '#edit-anonymous',
@@ -595,37 +600,32 @@
     }, // upsell
 
     honorOrMemory: function(element, options) {
-      var that = this;
-      var key_escape = 27;
-
-      $(options.honor_selector + ' fieldset').prepend('<a href="#" class="close">Close</a>');
-      $(options.honor_selector + ' p a', element).click(function() {
-        var link_class = $(this).prop('class');
-        $('fieldset.' + link_class, element).addClass('visible').show();
-        return false;
-      });
-      $(options.honor_selector + ' fieldset a.close', element).click(function() {
-        var link_class = $(this).parent().prop('class').substring(0, $(this).parent().prop('class').length - 8);
-        $('fieldset.' + link_class, element).removeClass('visible').hide();
-        return false;
-      });
-
-      $(document).keyup(function(e) {
-        if (e.keyCode === key_escape) {
-          $('fieldset.visible', element).removeClass('visible').hide();
-        }
-      });
-
-      if ($(options.notify_selector, element).is(':checked')) {
-        $(options.notify_field_selector, element).show();
+      if ($(options.honor_selector, element).is(':checked')) {
+        $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).show();
       } else {
-        $(options.notify_field_selector, element).hide();
+        $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).hide();
+        $(options.honor_name_selector + ' input', element).val('');
       }
-      $(options.notify_selector, element).change(function() {
-        if ($(this).is(':checked')) {
-          $(options.notify_field_selector, element).show();
+
+      if ($(options.memory_selector, element).is(':checked')) {
+        $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).show();
+      } else {
+        $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).hide();
+        $(options.memory_name_selector + ' input', element).val('');
+      }
+
+      $(options.honor_or_memory_chooser, element).change(function() {
+        if ($(options.honor_selector).is(':checked')) {
+          $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).show();
         } else {
-          $(options.notify_field_selector, element).hide();
+          $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).hide();
+          $(options.honor_name_selector + ' input', element).val('');
+        }
+        if ($(options.memory_selector).is(':checked')) {
+          $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).show();
+        } else {
+          $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).hide();
+          $(options.memory_name_selector + ' input', element).val('');
         }
       });
 

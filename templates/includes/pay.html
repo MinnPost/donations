@@ -22,15 +22,33 @@
       <input type="text" id="last_name" name="last_name" maxlength="80" required value="{{ last_name }}">
     </div>
     
-    <div class="form-item form-item--display-name">
-      <div>
-        <label for="display_as">Display as (in our year-end report): </label>
-        <input type="text" id="display_as" name="display_as">
+    <div class="form-group form-group--recognition">
+      <div class="form-item form-item--display-name">
+        <div>
+          <label for="display_as">Preferred name(s) for donor recognition: </label>
+          <input type="text" id="display_as" name="display_as">
+        </div>
+        <div>
+          <label class="additional-option"><input type="checkbox" name="anonymous" id="edit-anonymous" value="1"> Make this donation anonymously</label>
+        </div>
       </div>
-      <div>
-        <label class="additional-option"><input type="checkbox" name="anonymous" id="edit-anonymous" value="1"> Make this donation anonymously</label>
+
+      <div class="form-item form-item--honor-memory">
+        <div>
+          <label class="additional-option"><input type="radio" name="in-honor-or-memory" id="edit-in-honor" value="1"> Make this donation in honor of someone</label>
+        </div>
+        <div>
+          <label class="additional-option"><input type="radio" name="in-honor-or-memory" id="edit-in-memory" value="1"> Make this donation in memory of someone</label>
+        </div>
+        <div class="honor-or-memory honor">
+          <label for="in_honor_name">In honor of: </label>
+          <input type="text" id="in-honor-name" name="in_honor_name">
+        </div>
+        <div class="honor-or-memory memory">
+          <label for="in_memory_name">In memory of: </label>
+          <input type="text" id="in-memory-name" name="in_memory_name">
+        </div>
       </div>
-    </div>
 
     {% with shipping=true %}
     {% include 'includes/address-fields.html' %}
