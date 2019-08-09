@@ -601,17 +601,17 @@
 
     honorOrMemory: function(element, options) {
       if ($(options.honor_selector, element).is(':checked')) {
-        console.log('show');
         $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).show();
       } else {
-        console.log('hide');
         $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).hide();
+        $(options.honor_name_selector + ' input', element).val('');
       }
 
       if ($(options.memory_selector, element).is(':checked')) {
         $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).show();
       } else {
         $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).hide();
+        $(options.memory_name_selector + ' input', element).val('');
       }
 
       $(options.honor_or_memory_chooser, element).change(function() {
@@ -619,11 +619,13 @@
           $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).show();
         } else {
           $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).hide();
+          $(options.honor_name_selector + ' input', element).val('');
         }
         if ($(options.memory_selector).is(':checked')) {
           $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).show();
         } else {
           $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).hide();
+          $(options.memory_name_selector + ' input', element).val('');
         }
       });
 
