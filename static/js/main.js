@@ -1009,7 +1009,6 @@ global.Payment = Payment;
         this.options.recurring = recurring.charAt(0).toUpperCase() + recurring.slice(1);
       }
       
-      this.options.new_amount = (this.options.original_amount + parseFloat($(this.options.fee_amount).text()));
       this.options.processing_fee = (Math.round(parseFloat(this.options.fee_amount)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
       this.options.processing_fee_text = this.options.processing_fee;
       
@@ -1246,6 +1245,7 @@ global.Payment = Payment;
       }).done(function( data ) {
         if ($(data.fees).length > 0) {
           $(that.options.fee_amount).text(data.fees);
+          that.creditCardFeeCheckbox($(that.options.pay_cc_processing_selector));
         }
       });
     }, // calculateFees
@@ -1264,7 +1264,7 @@ global.Payment = Payment;
       var that = this;
       if ($(field).is(':checked') || $(field).prop('checked')) {
         $('.amount .level-amount').addClass('full-amount');
-        full_amount = that.options.new_amount;
+        full_amount = (that.options.original_amount + parseFloat($(that.options.fee_amount).text()));
       } else {
         full_amount = that.options.original_amount;
       }
