@@ -19,15 +19,36 @@
 	.actions {
 		list-style: none;
 		padding-left: 0;
-		font-size: $micro-size;
+		margin-left: 0;
+	}
+	&#panel--review {
+		.actions {
+			font-size: $micro-size;
+		}
+	}
+	&#panel--pay {
+		.actions {
+			margin: $half-space 0 0 0;
+		}
+		.actions--edit-amount, .actions--pay-fees {
+			font-size: 80%;
+		}
 	}
 	.honor, .actions--edit-amount, .actions--pay-fees {
 		font-family: $helvetica;
-		font-size: $small-size;
 	}
 	.actions--edit-amount {
 		width: auto;
-		float: right;
+	}
+	&#panel--review {
+		.honor, .actions--edit-amount, .actions--pay-fees {
+			font-size: $small-size;
+		}
+	}
+	&#panel--review {
+		.actions--edit-amount {
+			float: right;
+		}
 	}
 	.honor {
 		position: relative;
@@ -58,8 +79,6 @@
 	}
 	.actions--edit-amount, .actions--pay-fees {
 		line-height: normal;
-		font-size: 55%;
-		margin-bottom: $half-space;
 		li {
 			border-right: 1px solid $gray-med;
 			padding: 0 $half-space;
@@ -77,6 +96,10 @@
 			border: none;
 			padding-right: 0;
 		}
+	}
+	.actions--edit-amount, .actions--pay-fees {
+		font-size: 55%;
+		margin-bottom: $half-space;
 	}
 	.benefits {
 		margin-bottom: 0;
@@ -162,10 +185,17 @@
 	.panel, .panel--error {
 		h1 {
 			font-size: $h1-size;
-
 		}
 		.actions--edit-amount, .actions--pay-fees {
 			font-size: 80%;
+		}
+		&#panel--pay {
+			h3, .actions--edit-amount {
+				display: inline-block;
+			}
+			.actions--edit-amount {
+				margin: $half-space 0 0 $h1-space;
+			}
 		}
 	}
 }
