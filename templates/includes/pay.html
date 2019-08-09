@@ -22,41 +22,37 @@
       <input type="text" id="last_name" name="last_name" maxlength="80" required value="{{ last_name }}">
     </div>
     
-    <div class="form-item form-item--display-name">
-      <div>
-        <label for="display_as">Display as (in our year-end report): </label>
-        <input type="text" id="display_as" name="display_as">
+    <div class="form-group form-group--recognition">
+      <div class="form-item form-item--display-name">
+        <div>
+          <label for="display_as">Preferred name(s) for donor recognition: </label>
+          <input type="text" id="display_as" name="display_as">
+        </div>
+        <div>
+          <label class="additional-option"><input type="checkbox" name="anonymous" id="edit-anonymous" value="1"> Make this donation anonymously</label>
+        </div>
       </div>
-      <div>
-        <label class="additional-option"><input type="checkbox" name="anonymous" id="edit-anonymous" value="1"> Make this donation anonymously</label>
+
+      <div class="form-item form-item--honor">
+        <div>
+          <label class="additional-option"><input type="checkbox" name="in-honor" id="edit-in-honor" value="1"> Make this donation in honor of someone</label>
+        </div>
+        <div>
+          <label for="honor_of">In honor of: </label>
+          <input type="text" id="in-honor-name" name="in_honor_name">
+        </div>
+      </div>
+
+      <div class="form-item form-item--memory">
+        <div>
+          <label class="additional-option"><input type="checkbox" name="in-memory" id="edit-in-memory" value="1"> Make this donation in memory of someone</label>
+        </div>
+        <div>
+          <label for="honor_of">In memory of: </label>
+          <input type="text" id="in-memory-name" name="in_memory_name">
+        </div>
       </div>
     </div>
-
-    <fieldset class="honor">
-        <p>This donation is <a href="#" class="in-honor">in honor</a> or <a href="#" class="in-memory">in memory</a>...</p>
-        <fieldset class="in-honor">
-          <h3>In honor of</h3>
-          <div class="form-item form-item--honoree-name">
-            <label>Name <input type="text" id="in-honor-name" name="in_honor_name"></label>
-            {% if allow_donation_notification == 'True' %}<label>Notify someone? <input type="checkbox" value="1" class="notify_someone" name="in_honor_notify" id="in-honor-notify"></label>{% endif %}
-          </div>
-          {% if allow_donation_notification == 'True' %}<div class="form-item form-item--notify">
-            <label>Email (we will send a message if you put an address here) <input type="email" id="in-honor-email" name="in_honor_email"></label>
-            <label>Include Amount? <input type="checkbox" value="1" name="in_honor_amount" id="in-honor-amount"></label>
-          </div>{% endif %}
-        </fieldset>
-        <fieldset class="in-memory">
-          <h3>In memory of</h3>
-          <div class="form-item form-item--memory-name">
-            <label>Name <input type="text" id="in-memory-name" name="in_memory_name"></label>
-            {% if allow_donation_notification == 'True' %}<label>Notify someone? <input type="checkbox" value="1" class="notify_someone" name="in_memory_notify" id="in-memory-notify"></label>{% endif %}
-          </div>
-          {% if allow_donation_notification == 'True' %}<div class="form-item form-item--notify">
-            <label>Email (we will send a message if you put an address here) <input type="email" id="in-memory-email" name="in_memory_email"></label>
-            <label>Include Amount? <input type="checkbox" value="1" name="in_memory_amount" id="in-memory-amount"></label>
-          </div>{% endif %}
-        </fieldset>
-      </fieldset> <!-- this should trigger the fields for reporting, and also for emailing to the user specified with/without the amount -->
 
     {% with shipping=true %}
     {% include 'includes/address-fields.html' %}

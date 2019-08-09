@@ -885,7 +885,10 @@ global.Payment = Payment;
     'atlantic_existing' : '#atlantic_existing',
     'atlantic_selector' : '.form-item--atlantic_id',
     'name_selector' : '.form-item--display-name',
-    'honor_selector' : '.honor',
+    'honor_selector' : '#edit-in-honor',
+    'honor_name_selector' : '.form-item--honor',
+    'memory_selector' : '#edit-in-memory',
+    'memory_name_selector' : '.form-item--memory',
     'notify_selector' : '.notify_someone',
     'notify_field_selector' : '.form-item--notify',
     'anonymous_selector' : '#edit-anonymous',
@@ -1421,37 +1424,31 @@ global.Payment = Payment;
     }, // upsell
 
     honorOrMemory: function(element, options) {
-      var that = this;
-      var key_escape = 27;
+      if ($(options.honor_selector, element).is(':checked')) {
+        $(options.honor_name_selector + ' div:last', element).show();
+      } else {
+        $(options.honor_name_selector + ' div:last', element).hide();
+      }
 
-      $(options.honor_selector + ' fieldset').prepend('<a href="#" class="close">Close</a>');
-      $(options.honor_selector + ' p a', element).click(function() {
-        var link_class = $(this).prop('class');
-        $('fieldset.' + link_class, element).addClass('visible').show();
-        return false;
-      });
-      $(options.honor_selector + ' fieldset a.close', element).click(function() {
-        var link_class = $(this).parent().prop('class').substring(0, $(this).parent().prop('class').length - 8);
-        $('fieldset.' + link_class, element).removeClass('visible').hide();
-        return false;
-      });
-
-      $(document).keyup(function(e) {
-        if (e.keyCode === key_escape) {
-          $('fieldset.visible', element).removeClass('visible').hide();
+      $(options.honor_selector, element).change(function() {
+        if ($(this).is(':checked')) {
+          $(options.honor_name_selector + ' div:last', element).show();
+        } else {
+          $(options.honor_name_selector + ' div:last', element).hide();
         }
       });
 
-      if ($(options.notify_selector, element).is(':checked')) {
-        $(options.notify_field_selector, element).show();
+      if ($(options.memory_selector, element).is(':checked')) {
+        $(options.memory_name_selector + ' div:last', element).show();
       } else {
-        $(options.notify_field_selector, element).hide();
+        $(options.memory_name_selector + ' div:last', element).hide();
       }
-      $(options.notify_selector, element).change(function() {
+
+      $(options.memory_selector, element).change(function() {
         if ($(this).is(':checked')) {
-          $(options.notify_field_selector, element).show();
+          $(options.memory_name_selector + ' div:last', element).show();
         } else {
-          $(options.notify_field_selector, element).hide();
+          $(options.memory_name_selector + ' div:last', element).hide();
         }
       });
 
