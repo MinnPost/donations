@@ -1253,7 +1253,7 @@ global.Payment = Payment;
     creditCardProcessingFees: function(options, reset) {
       // this adds or subtracts the fee to the original amount when the user indicates they do or do not want to pay the fees
       var that = this;
-      that.creditCardFeeCheckbox(this);
+      that.creditCardFeeCheckbox($(this.options.pay_cc_processing_selector));
       $(this.options.pay_cc_processing_selector).on('change', function () {
           that.creditCardFeeCheckbox(this);
       });
@@ -1262,7 +1262,7 @@ global.Payment = Payment;
     creditCardFeeCheckbox: function(field) {
       var full_amount;
       var that = this;
-      if ($(field).is(':checked')) {
+      if ($(field).is(':checked') || $(field).prop('checked')) {
         $('.amount .level-amount').addClass('full-amount');
         full_amount = that.options.new_amount;
       } else {
