@@ -858,11 +858,8 @@ global.Payment = Payment;
     'active' : 'panel--review',
     'confirm' : 'panel--confirmation',
     'query' : 'step',
-    'percentage' : 0.022,
-    'fixed_amount' : 0.3,
-    'amex_percentage': 0.035,
-    'ach_percentage': 0.008,
     'pay_cc_processing_selector' : 'input[id="edit-pay-fees"]',
+    'fee_amount' : '.processing-amount',
     'level_amount_selector' : '#panel--review .amount .level-amount',
     'original_amount_selector' : '#amount',
     'frequency_selector' : '.frequency',
@@ -1011,12 +1008,9 @@ global.Payment = Payment;
       if (typeof recurring !== 'undefined') {
         this.options.recurring = recurring.charAt(0).toUpperCase() + recurring.slice(1);
       }
-      this.options.processing_percent = parseFloat(this.options.percentage);
-      this.options.fixed_fee = parseFloat(this.options.fixed_amount);
       
-      this.options.new_amount = (this.options.original_amount + this.options.fixed_fee) / (1 - this.options.processing_percent);
-      this.options.processing_fee = this.options.new_amount - this.options.original_amount;
-      this.options.processing_fee = (Math.round(parseFloat(this.options.processing_fee)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
+      this.options.new_amount = (this.options.original_amount + parseFloat($(this.options.fee_amount).text()));
+      this.options.processing_fee = (Math.round(parseFloat(this.options.fee_amount)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
       this.options.processing_fee_text = this.options.processing_fee;
       
       this.options.upsell_amount = parseFloat($(this.options.upsell_amount_selector, this.element).text());
@@ -1240,6 +1234,7 @@ global.Payment = Payment;
 
     calculateFees: function(amount, payment_type) {
       // this sends the amount and payment type to python; get the fee and display it to the user on the checkbox label
+      var that = this;
       var data = {
         amount: amount,
         payment_type: payment_type
@@ -1250,35 +1245,31 @@ global.Payment = Payment;
         data: data
       }).done(function( data ) {
         if ($(data.fees).length > 0) {
-          $('.processing-amount').text(data.fees);
+          $(that.options.fee_amount).text(data.fees);
         }
       });
     }, // calculateFees
 
     creditCardProcessingFees: function(options, reset) {
       // this adds or subtracts the fee to the original amount when the user indicates they do or do not want to pay the fees
+      var that = this;
+      that.creditCardFeeCheckbox(this);
+      $(this.options.pay_cc_processing_selector).on('change', function () {
+          that.creditCardFeeCheckbox(this);
+      });
+    }, // creditCardProcessingFees
+
+    creditCardFeeCheckbox: function(field) {
       var full_amount;
       var that = this;
-      var remove = false;
-      if (this.options.original_amount != this.options.amount) {
-        remove = true;
-      }
-      if (reset === true) {
-        remove = false;
+      if ($(field).is(':checked')) {
+        $('.amount .level-amount').addClass('full-amount');
+        full_amount = that.options.new_amount;
+      } else {
         full_amount = that.options.original_amount;
       }
-      $(this.options.pay_cc_processing_selector).on('change', function () {
-        $('.amount .level-amount').addClass('full-amount');
-        if (!remove) {
-          remove = true;
-          full_amount = that.options.new_amount;
-        } else {
-          remove = false;
-          full_amount = that.options.original_amount;
-        }
-        $(options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
-      })
-    }, // creditCardProcessingFees
+      $(that.options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
+    }, // creditCardFeeCheckbox
 
     donateAnonymously: function(element, options) {
       if ($(options.anonymous_selector, element).is(':checked')) {
