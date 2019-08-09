@@ -59,10 +59,12 @@
     'atlantic_existing' : '#atlantic_existing',
     'atlantic_selector' : '.form-item--atlantic_id',
     'name_selector' : '.form-item--display-name',
+    'honor_memory_name_selector' : '.form-item--honor-memory',
+    'honor_or_memory_chooser' : 'input[name="in-honor-or-memory"]',
+    'honor_name_selector' : '.honor',
+    'memory_name_selector' : '.memory',
     'honor_selector' : '#edit-in-honor',
-    'honor_name_selector' : '.form-item--honor',
     'memory_selector' : '#edit-in-memory',
-    'memory_name_selector' : '.form-item--memory',
     'notify_selector' : '.notify_someone',
     'notify_field_selector' : '.form-item--notify',
     'anonymous_selector' : '#edit-anonymous',
@@ -599,30 +601,29 @@
 
     honorOrMemory: function(element, options) {
       if ($(options.honor_selector, element).is(':checked')) {
-        $(options.honor_name_selector + ' div:last', element).show();
+        console.log('show');
+        $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).show();
       } else {
-        $(options.honor_name_selector + ' div:last', element).hide();
+        console.log('hide');
+        $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).hide();
       }
-
-      $(options.honor_selector, element).change(function() {
-        if ($(this).is(':checked')) {
-          $(options.honor_name_selector + ' div:last', element).show();
-        } else {
-          $(options.honor_name_selector + ' div:last', element).hide();
-        }
-      });
 
       if ($(options.memory_selector, element).is(':checked')) {
-        $(options.memory_name_selector + ' div:last', element).show();
+        $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).show();
       } else {
-        $(options.memory_name_selector + ' div:last', element).hide();
+        $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).hide();
       }
 
-      $(options.memory_selector, element).change(function() {
-        if ($(this).is(':checked')) {
-          $(options.memory_name_selector + ' div:last', element).show();
+      $(options.honor_or_memory_chooser, element).change(function() {
+        if ($(options.honor_selector).is(':checked')) {
+          $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).show();
         } else {
-          $(options.memory_name_selector + ' div:last', element).hide();
+          $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).hide();
+        }
+        if ($(options.memory_selector).is(':checked')) {
+          $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).show();
+        } else {
+          $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).hide();
         }
       });
 
