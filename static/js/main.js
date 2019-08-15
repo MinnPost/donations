@@ -855,7 +855,7 @@ global.Payment = Payment;
     'donate_step_selector' : '#panel--pay',
     'confirm_form_selector' : '#confirm',
     'confirm_step_selector' : '#panel--confirmation',
-    'active' : 'panel--review',
+    'active' : 'panel--pay',
     'confirm' : 'panel--confirmation',
     'query' : 'step',
     'pay_cc_processing_selector' : 'input[id="edit-pay-fees"]',
@@ -1182,7 +1182,7 @@ global.Payment = Payment;
         $('#' + active).fadeIn();
       }
       
-      $('.progress--donation li a, a.btn.btn--next').click(function(event) {
+      /*$('.progress--donation li a, a.btn.btn--next').click(function(event) {
         event.preventDefault();
         $('.progress--donation li a').removeClass('active');
         var link = $(this).prop('href');
@@ -1190,7 +1190,7 @@ global.Payment = Payment;
         query = query['step'];
         $('.progress--donation li.' + query + ' a').addClass('active');
         that.paymentPanels(query);    
-      });
+      });*/
     }, // paymentPanels
 
     analyticsTrackingStep: function(step, title) {
