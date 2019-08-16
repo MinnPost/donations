@@ -1175,11 +1175,11 @@ global.Payment = Payment;
       }
       // activate the tabs
       if ($('.progress--donation li .active').length === 0) {
-        $('#' + active).fadeIn();
+        $('#' + active).show();
         $('.progress--donation li.' + active + ' a').addClass('active');
       } else {
         active = $('.progress--donation li .active').parent().prop('class');
-        $('#' + active).fadeIn();
+        $('#' + active).show();
       }
       
       /*$('.progress--donation li a, a.btn.btn--next').click(function(event) {
