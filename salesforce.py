@@ -738,6 +738,8 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
 
     try:
         nyt_subscription = form['nyt']
+        if nyt_subscription == 'true':
+            nyt_subscription = 'Yes'
     except:
         nyt_subscription = 'No'
 
