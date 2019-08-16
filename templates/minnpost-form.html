@@ -4,7 +4,7 @@
 <section class="progress progress--donation">
 	<div class="wrapper">
 	  <ol>
-	    <li class="panel--choose"><a href="{{ minnpost_root }}/support/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}{% if swag != '' %}&amp;swag={{ swag }}{% endif %}{% if atlantic_subscription != '' %}&amp;atlantic_subscription={{ atlantic_subscription }}{% endif %}{% if atlantic_id != '' %}&amp;atlantic_id={{ atlantic_id }}{% endif %}{% if nyt_subscription != '' %}&amp;nyt_subscription={{ nyt_subscription }}{% endif %}{% if decline_benefits != '' %}&amp;decline_benefits={{ decline_benefits }}{% endif %}">Choose</a></li>
+	    <li class="panel--choose"><a href="{{ step_one_url }}">Choose</a></li>
 	    <li class="panel--pay"><a href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--pay">Payment</a></li>
 	    <li class="panel--confirmation"><span>Thank You</span></li>
 	  </ol>
