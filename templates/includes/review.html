@@ -24,44 +24,10 @@
         </div>
         <label><input type="radio" value="No" id="atlantic_decline" name="swag_atlanticsubscription" class="swag--shipping"{% if decline_benefits == 'true' %} checked{% endif %}> Decline this item</label>
       </fieldset>
-      {% if show_thankyou_lists == 'True' %}
-        {% if level.levelint < 4 %}
-        <p class="swag swag--separate swag--1">For this member drive, MinnPost {{ level.level.title() }} members can also choose <strong>{{ maximum_choose_multiple_level_text }}</strong> special thank you list{% if maximum_choose_multiple_int > 1 %}s{% endif %}, to be sent in an email during January.</p>
-        <fieldset class="swag swag--1 swag--choose-multiple" data-maximum-choose="{{ maximum_choose_multiple_int }}">
-          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Bierschbach" name="swag_thankyou" class="swag"> Briana Bierschbach's Top 5 Hidden Corners of the State Capitol</label>
-          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Black" name="swag_thankyou" class="swag"> Eric Black's Top 5 Political Movies</label>
-          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Espeland" name="swag_thankyou" class="swag"> Pamela Espeland's Top 5 Art Spots You (Probably) Don’t Know About</label>
-          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Hirsi" name="swag_thankyou" class="swag"> Ibrahim Hirsi's Top 5 Immigrant-Owned Restaurants</label>
-          <label><input type="{% if maximum_choose_multiple_int > 1 %}checkbox{% else %}radio{% endif %}" value="Meador" name="swag_thankyou" class="swag"> Ron Meador's Top 5 Books on the Environment</label>
-        </fieldset>
-        {% else %}
-        <p class="swag swag--separate swag--1">For this member drive, MinnPost {{ level.level.title() }} members will also receive <strong>{{ maximum_choose_multiple_level_text }}</strong> special thank you list{% if maximum_choose_multiple_int > 1 %}s{% endif %}, to be sent in an email during January.</p>
-        <ul class="swag swag--1 swag--choose-multiple" data-maximum-choose="{{ maximum_choose_multiple_int }}">
-          <li class="swag"><input type="checkbox" checked value="Bierschbach" name="swag_thankyou" class="hidden"> Briana Bierschbach's Top 5 Hidden Corners of the State Capitol</li>
-          <li class="swag"><input type="checkbox" checked value="Black" name="swag_thankyou" class="hidden"> Eric Black's Top 5 Books About US Political History</li>
-          <li class="swag"><input type="checkbox" checked value="Espeland" name="swag_thankyou" class="hidden"> Pamela Espeland's Top 5 Underground Art Spots</li>
-          <li class="swag"><input type="checkbox" checked value="Hirsi" name="swag_thankyou" class="hidden"> Ibrahim Hirsi's Top 5 Immigrant-Owned Restaurants</li>
-          <li class="swag"><input type="checkbox" checked value="Meador" name="swag_thankyou" class="hidden"> Ron Meador's Top 5 Hiking Trails in Minnesota</li>
-        </ul>
-        {% endif %}
-      {% endif %}
       <!-- load all swag/redeemable things from server; activate the eligible ones with javascript. not a huge deal if js hiccups here since it gets validated by person anyway -->
     </fieldset>
   </div>
   <!-- load upsell options server-side from parsing querystring for current level. we only display it if it is within our range (currently $1 away from next level, unless it is bronze where we show all the time) -->
-  {% if (show_upsell == 'True' and level.levelint <= 3) and (frequency != 'one-time' and (amount * yearly / 12) >= level.nextlevelmonthlystart - 1|float or amount >= level.nextlevelmonthlystart * 12 - level.nextlevelmonthlystart) %}
-  <fieldset class="well well--upsell clear-block">
-    <h3>MinnPost {{ level.nextlevel.title() }} benefits start at ${{ level.nextlevelmonthlystart }} per month, or ${{ level.nextlevelmonthlystart * 12 }} per year.</h3>
-    {% if level.nextlevel == 'silver' %}
-    <p>Joining at this level gets you member benefits, including MinnPost events, a mug or water bottle, and supplemental content.</p>
-    {% elif level.nextlevel == 'gold' %}
-    <p>Joining at this level gets you additional member benefits, including a one-year new subscription or extension to The Atlantic, and chances to get free tickets to MinnPost partner events and attractions.</p>
-    {% elif level.nextlevel == 'platinum' %}
-    <p>Joining at this level gets you additional member benefits, including an invitation to our free, annual &ldquo;Inside MinnPost&rdquo; event.</p>
-    {% endif %}
-    <a href="#" class="btn btn--text btn--upsell">Add $<span class="upsell-amount">1</span> per month</a>
-  </fieldset>
-  {% endif %}
   
   <a href="/give/?step=panel--pay" class="btn btn--next">Payment</a>
 
