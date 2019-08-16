@@ -303,6 +303,12 @@ def minnpost_form():
 
     fees = calculate_amount_fees(amount, 'visa')
 
+    atlantic_id_url = ''
+    if atlantic_id != '':
+        atlantic_id_url = '&amp;' + atlantic_id
+    
+    step_one_url = f'{app.minnpost_root}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
+
     return render_template(
         'minnpost-form.html',
         form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
@@ -320,7 +326,7 @@ def minnpost_form():
         main_swag_minimum_level = app.main_swag_minimum_level,
         show_thankyou_lists = app.show_thankyou_lists, maximum_choose_multiple_int = maximum_choose_multiple_int, maximum_choose_multiple_level_text = maximum_choose_multiple_level_text,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
-        minnpost_root = app.minnpost_root,
+        minnpost_root = app.minnpost_root, step_one_url = step_one_url,
         key=app.config['STRIPE_KEYS']['publishable_key']
     )
 
