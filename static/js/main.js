@@ -1142,6 +1142,8 @@ global.Payment = Payment;
       var opp_id = $(this.options.opp_id_selector).val();
       var next_step = step + 1;
 
+      this.debug( 'step is ' + step + ' and nav item count is ' + nav_item_count + ' and opp id is ' + opp_id + ' and next step is ' + next_step );
+
       // this is the last visible step
       if ($(this.options.confirm_step_selector).length > 0) {
         active = this.options.confirm;
@@ -1155,13 +1157,13 @@ global.Payment = Payment;
       }
 
       if (step === nav_item_count - 1 && $(this.options.opp_id_selector).length > 0) {
-        //this.debug('this is a payment step but there is a step after it');
+        this.debug('this is a payment step but there is a step after it');
         step = 'purchase';
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length > 0) {
-        //this.debug('this is a payment step and there is no step after it');
+        this.debug('this is a payment step and there is no step after it');
         step = 'purchase';
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length === 0) {
-        //this.debug('this is a post-finish step. it does not have an id');
+        this.debug('this is a post-finish step. it does not have an id');
       }
 
       document.title = title + page;
@@ -1211,13 +1213,14 @@ global.Payment = Payment;
       });
 
       if (step === 'purchase') {
-        //this.debug('add a purchase action. step is ' + step);
-        ga('ec:setAction', 'purchase',{
+        this.debug('add a purchase action. step is ' + step);
+        ga('ec:setAction', step,{
           'id': opp_id, // Transaction id - Type: string
           'affiliation': 'MinnPost', // Store name - Type: string
           'revenue': amount, // Total Revenue - Type: numeric
         });
       } else {
+        this.debug('add a checkout action. step is ' + step);
         ga('ec:setAction','checkout', {
           'step': step,            // A value of 1 indicates first checkout step.Value of 2 indicates second checkout step
         });
