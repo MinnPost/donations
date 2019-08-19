@@ -333,16 +333,19 @@
       if (step === nav_item_count - 1 && $(this.options.opp_id_selector).length > 0) {
         this.debug('this is a payment step but there is a step after it');
         step = 'purchase';
+        post_purchase = false;
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length > 0) {
         this.debug('this is a payment step and there is no step after it');
         step = 'purchase';
+        post_purchase = false;
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length === 0) {
         this.debug('this is a post-finish step. it does not have an id');
         step = step + 1;
+        post_purchase = true;
       }
 
       document.title = title + page;
-      this.analyticsTrackingStep(step, title);
+      this.analyticsTrackingStep(step, title, post_purchase);
 
       // make some tabs for form
       if (usetabs === true) {
@@ -370,22 +373,24 @@
       });*/
     }, // paymentPanels
 
-    analyticsTrackingStep: function(step, title) {
+    analyticsTrackingStep: function(step, title, post_purchase) {
       var level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
       var levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
       var amount = $(this.options.original_amount_selector).val();
       var recurring = this.options.recurring;
       var opp_id = $(this.options.opp_id_selector).val();
 
-      ga('ec:addProduct', {
-        'id': 'minnpost_' + level.toLowerCase() + '_membership',
-        'name': 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership',
-        'category': 'Donation',
-        'brand': 'MinnPost',
-        'variant':  recurring,
-        'price': amount,
-        'quantity': 1
-      });
+      if ( post_purchase === true ) {
+        ga('ec:addProduct', {
+          'id': 'minnpost_' + level.toLowerCase() + '_membership',
+          'name': 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership',
+          'category': 'Donation',
+          'brand': 'MinnPost',
+          'variant':  recurring,
+          'price': amount,
+          'quantity': 1
+        });
+      }
 
       if (step === 'purchase') {
         this.debug('add a purchase action. step is ' + step);
