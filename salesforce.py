@@ -1096,8 +1096,8 @@ def _find_opportunity(opp_id=None, customer=None, form=None, extra_values=None):
         if 'amount' in form:
             update['Amount'] = _format_amount(form['amount'])
 
-        if pay_fees == True:
-            update['Amount'] = format(amount_plus_fees / 100, ',.2f')
+        #if pay_fees == True:
+        #    update['Amount'] = format(amount_plus_fees / 100, ',.2f')
 
         path = '/services/data/v{}/sobjects/Opportunity/{}'.format(SALESFORCE['API_VERSION'], form['opp_id'])
         url = '{}{}'.format(sf.instance_url, path)
@@ -1327,8 +1327,8 @@ def _find_recurring(recurring_id=None, customer=None, form=None, extra_values=No
 
         if 'amount' in form:
             update['npe03__Amount__c'] = _format_amount(form['amount'])
-        if pay_fees == True:
-            update['npe03__Amount__c'] = format(amount_plus_fees / 100, ',.2f')
+        #if pay_fees == True:
+        #    update['npe03__Amount__c'] = format(amount_plus_fees / 100, ',.2f')
         if 'recurring' in form:
             update['npe03__Installment_Period__c'] = form['recurring']
         if 'email_user_when_canceled' in form:
