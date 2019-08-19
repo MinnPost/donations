@@ -1164,6 +1164,7 @@ global.Payment = Payment;
         step = 'purchase';
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length === 0) {
         this.debug('this is a post-finish step. it does not have an id');
+        step = step + 1;
       }
 
       document.title = title + page;
