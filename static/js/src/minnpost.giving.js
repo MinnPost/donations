@@ -380,7 +380,8 @@
       var recurring = this.options.recurring;
       var opp_id = $(this.options.opp_id_selector).val();
 
-      if ( post_purchase === true ) {
+      // if we're not after the purchase, use addProduct
+      if ( post_purchase !== true ) {
         ga('ec:addProduct', {
           'id': 'minnpost_' + level.toLowerCase() + '_membership',
           'name': 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership',
