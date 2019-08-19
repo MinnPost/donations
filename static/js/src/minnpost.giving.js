@@ -315,6 +315,7 @@
       var nav_item_count = $('.progress--donation li').length;
       var opp_id = $(this.options.opp_id_selector).val();
       var next_step = step + 1;
+      var post_purchase = false;
 
       this.debug( 'step is ' + step + ' and nav item count is ' + nav_item_count + ' and opp id is ' + opp_id + ' and next step is ' + next_step );
 
@@ -333,11 +334,9 @@
       if (step === nav_item_count - 1 && $(this.options.opp_id_selector).length > 0) {
         this.debug('this is a payment step but there is a step after it');
         step = 'purchase';
-        post_purchase = false;
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length > 0) {
         this.debug('this is a payment step and there is no step after it');
         step = 'purchase';
-        post_purchase = false;
       } else if (step === nav_item_count && $(this.options.opp_id_selector).length === 0) {
         this.debug('this is a post-finish step. it does not have an id');
         step = step + 1;
