@@ -16,7 +16,7 @@
       {% if close_date != '' %}
         <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
       {% endif %}
-      {% if amount != '' and show_amount_field != True %}
+      {% if amount != '' %}
         <input type="hidden" name="amount" id="amount" value="{{ amount }}">
       {% endif %}
       <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
