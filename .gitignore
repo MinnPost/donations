@@ -1,13 +1,14 @@
 env
-**/*.pyc
+*.pyc
 env-docker
 .env
+.sass-cache
+*.scss.*
 node_modules/
 .cache
 .coverage
 htmlcov
-celerybeat-schedule.db
+celerybeat-schedule*
 celerybeat.pid
-yarn-error.log
 .pytest_cache
 **/__pycache__
