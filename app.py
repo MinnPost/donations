@@ -167,7 +167,7 @@ app = Flask(__name__)
 Talisman(
     app,
     content_security_policy={},
-    content_security_policy_report_only=True,
+    content_security_policy_report_only=False,
     content_security_policy_report_uri=REPORT_URI,
 )
 
@@ -194,19 +194,10 @@ make_celery(app)
 
 
 """
-Redirects, including for URLs that used to be
-part of the old donations app that lived at
-support.texastribune.org.
+Redirects.
 """
 
 
-@app.route("/blast-vip")
-# @app.route("/blast-promo")
-def the_blastvip_form():
-    return redirect("/blastform", code=302)
-
-
-@app.route("/")
 @app.route("/levels.html")
 @app.route("/faq.html")
 @app.route("/index.html")
@@ -214,13 +205,6 @@ def the_blastvip_form():
 @app.route("/donateform")
 def index_html_route():
     return redirect("/donate", code=302)
-
-
-@app.route("/circle.html")
-@app.route("/circleform")
-def circle_html_route():
-    query_string = request.query_string.decode("utf-8")
-    return redirect("/circle?%s" % query_string, code=302)
 
 
 """
