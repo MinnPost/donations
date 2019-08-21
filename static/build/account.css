@@ -1,0 +1,3813 @@
+/* line 4, node_modules/@texastribune/queso-ui/assets/scss/3-resets/_box-sizing.scss */
+html {
+  box-sizing: border-box; }
+
+/* line 8, node_modules/@texastribune/queso-ui/assets/scss/3-resets/_box-sizing.scss */
+*,
+*:before,
+*:after {
+  box-sizing: inherit; }
+
+/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
+/* Document
+   ========================================================================== */
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ */
+/* line 11, node_modules/normalize.css/normalize.css */
+html {
+  line-height: 1.15;
+  /* 1 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */ }
+
+/* Sections
+   ========================================================================== */
+/**
+ * Remove the margin in all browsers.
+ */
+/* line 23, node_modules/normalize.css/normalize.css */
+body {
+  margin: 0; }
+
+/**
+ * Render the `main` element consistently in IE.
+ */
+/* line 31, node_modules/normalize.css/normalize.css */
+main {
+  display: block; }
+
+/**
+ * Correct the font size and margin on `h1` elements within `section` and
+ * `article` contexts in Chrome, Firefox, and Safari.
+ */
+/* line 40, node_modules/normalize.css/normalize.css */
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0; }
+
+/* Grouping content
+   ========================================================================== */
+/**
+ * 1. Add the correct box sizing in Firefox.
+ * 2. Show the overflow in Edge and IE.
+ */
+/* line 53, node_modules/normalize.css/normalize.css */
+hr {
+  box-sizing: content-box;
+  /* 1 */
+  height: 0;
+  /* 1 */
+  overflow: visible;
+  /* 2 */ }
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+/* line 64, node_modules/normalize.css/normalize.css */
+pre {
+  font-family: monospace, monospace;
+  /* 1 */
+  font-size: 1em;
+  /* 2 */ }
+
+/* Text-level semantics
+   ========================================================================== */
+/**
+ * Remove the gray background on active links in IE 10.
+ */
+/* line 76, node_modules/normalize.css/normalize.css */
+a {
+  background-color: transparent; }
+
+/**
+ * 1. Remove the bottom border in Chrome 57-
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+ */
+/* line 85, node_modules/normalize.css/normalize.css */
+abbr[title] {
+  border-bottom: none;
+  /* 1 */
+  text-decoration: underline;
+  /* 2 */
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
+  /* 2 */ }
+
+/**
+ * Add the correct font weight in Chrome, Edge, and Safari.
+ */
+/* line 95, node_modules/normalize.css/normalize.css */
+b,
+strong {
+  font-weight: bolder; }
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+/* line 105, node_modules/normalize.css/normalize.css */
+code,
+kbd,
+samp {
+  font-family: monospace, monospace;
+  /* 1 */
+  font-size: 1em;
+  /* 2 */ }
+
+/**
+ * Add the correct font size in all browsers.
+ */
+/* line 116, node_modules/normalize.css/normalize.css */
+small {
+  font-size: 80%; }
+
+/**
+ * Prevent `sub` and `sup` elements from affecting the line height in
+ * all browsers.
+ */
+/* line 125, node_modules/normalize.css/normalize.css */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline; }
+
+/* line 133, node_modules/normalize.css/normalize.css */
+sub {
+  bottom: -0.25em; }
+
+/* line 137, node_modules/normalize.css/normalize.css */
+sup {
+  top: -0.5em; }
+
+/* Embedded content
+   ========================================================================== */
+/**
+ * Remove the border on images inside links in IE 10.
+ */
+/* line 148, node_modules/normalize.css/normalize.css */
+img {
+  border-style: none; }
+
+/* Forms
+   ========================================================================== */
+/**
+ * 1. Change the font styles in all browsers.
+ * 2. Remove the margin in Firefox and Safari.
+ */
+/* line 160, node_modules/normalize.css/normalize.css */
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  /* 1 */
+  font-size: 100%;
+  /* 1 */
+  line-height: 1.15;
+  /* 1 */
+  margin: 0;
+  /* 2 */ }
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ */
+/* line 176, node_modules/normalize.css/normalize.css */
+button,
+input {
+  /* 1 */
+  overflow: visible; }
+
+/**
+ * Remove the inheritance of text transform in Edge, Firefox, and IE.
+ * 1. Remove the inheritance of text transform in Firefox.
+ */
+/* line 186, node_modules/normalize.css/normalize.css */
+button,
+select {
+  /* 1 */
+  text-transform: none; }
+
+/**
+ * Correct the inability to style clickable types in iOS and Safari.
+ */
+/* line 195, node_modules/normalize.css/normalize.css */
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button; }
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+/* line 206, node_modules/normalize.css/normalize.css */
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0; }
+
+/**
+ * Restore the focus styles unset by the previous rule.
+ */
+/* line 218, node_modules/normalize.css/normalize.css */
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+  outline: 1px dotted ButtonText; }
+
+/**
+ * Correct the padding in Firefox.
+ */
+/* line 229, node_modules/normalize.css/normalize.css */
+fieldset {
+  padding: 0.35em 0.75em 0.625em; }
+
+/**
+ * 1. Correct the text wrapping in Edge and IE.
+ * 2. Correct the color inheritance from `fieldset` elements in IE.
+ * 3. Remove the padding so developers are not caught out when they zero out
+ *    `fieldset` elements in all browsers.
+ */
+/* line 240, node_modules/normalize.css/normalize.css */
+legend {
+  box-sizing: border-box;
+  /* 1 */
+  color: inherit;
+  /* 2 */
+  display: table;
+  /* 1 */
+  max-width: 100%;
+  /* 1 */
+  padding: 0;
+  /* 3 */
+  white-space: normal;
+  /* 1 */ }
+
+/**
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
+ */
+/* line 253, node_modules/normalize.css/normalize.css */
+progress {
+  vertical-align: baseline; }
+
+/**
+ * Remove the default vertical scrollbar in IE 10+.
+ */
+/* line 261, node_modules/normalize.css/normalize.css */
+textarea {
+  overflow: auto; }
+
+/**
+ * 1. Add the correct box sizing in IE 10.
+ * 2. Remove the padding in IE 10.
+ */
+/* line 270, node_modules/normalize.css/normalize.css */
+[type="checkbox"],
+[type="radio"] {
+  box-sizing: border-box;
+  /* 1 */
+  padding: 0;
+  /* 2 */ }
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+/* line 280, node_modules/normalize.css/normalize.css */
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+  height: auto; }
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+/* line 290, node_modules/normalize.css/normalize.css */
+[type="search"] {
+  -webkit-appearance: textfield;
+  /* 1 */
+  outline-offset: -2px;
+  /* 2 */ }
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+/* line 299, node_modules/normalize.css/normalize.css */
+[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none; }
+
+/**
+ * 1. Correct the inability to style clickable types in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+/* line 308, node_modules/normalize.css/normalize.css */
+::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  /* 1 */
+  font: inherit;
+  /* 2 */ }
+
+/* Interactive
+   ========================================================================== */
+/*
+ * Add the correct display in Edge, IE 10+, and Firefox.
+ */
+/* line 320, node_modules/normalize.css/normalize.css */
+details {
+  display: block; }
+
+/*
+ * Add the correct display in all browsers.
+ */
+/* line 328, node_modules/normalize.css/normalize.css */
+summary {
+  display: list-item; }
+
+/* Misc
+   ========================================================================== */
+/**
+ * Add the correct display in IE 10+.
+ */
+/* line 339, node_modules/normalize.css/normalize.css */
+template {
+  display: none; }
+
+/**
+ * Add the correct display in IE 10.
+ */
+/* line 347, node_modules/normalize.css/normalize.css */
+[hidden] {
+  display: none; }
+
+/* line 1, node_modules/@texastribune/queso-ui/assets/scss/4-elements/_all.scss */
+html {
+  font-size: 16px; }
+  @media (max-width: 32.49em) {
+    /* line 1, node_modules/@texastribune/queso-ui/assets/scss/4-elements/_all.scss */
+    html {
+      font-size: 15px; } }
+
+/* line 8, node_modules/@texastribune/queso-ui/assets/scss/4-elements/_all.scss */
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #222; }
+  /* line 19, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .fonts-loaded body {
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+
+/* line 14, node_modules/@texastribune/queso-ui/assets/scss/4-elements/_all.scss */
+html,
+body,
+dd,
+dl,
+div,
+dt,
+ul,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote {
+  margin: 0;
+  padding: 0; }
+
+/* line 34, node_modules/@texastribune/queso-ui/assets/scss/4-elements/_all.scss */
+a {
+  text-decoration: none; }
+
+/* line 39, node_modules/@texastribune/queso-ui/assets/scss/4-elements/_all.scss */
+cite {
+  font-style: normal; }
+
+/* line 43, node_modules/@texastribune/queso-ui/assets/scss/4-elements/_all.scss */
+button {
+  background: none;
+  border: none;
+  padding: 0; }
+
+/* line 50, node_modules/@texastribune/queso-ui/assets/scss/4-elements/_all.scss */
+ul {
+  list-style: none; }
+
+/* line 54, node_modules/@texastribune/queso-ui/assets/scss/4-elements/_all.scss */
+hr {
+  border: 1px solid #d0d0d0; }
+
+/* line 10, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_byline.scss */
+.t-byline {
+  letter-spacing: 0.05em;
+  margin: 0.55rem 0 0;
+  text-transform: uppercase; }
+  /* line 15, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_byline.scss */
+  .t-byline__item {
+    display: inline-block;
+    padding-right: 1.1rem; }
+
+/* line 9, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_description.scss */
+.t-description {
+  color: #797979;
+  font-size: 0.92rem; }
+  /* line 65, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .t-description a:not(.t-unlink) {
+    border-bottom: 1px solid #a1d2df;
+    box-shadow: inset 0 -1px 0 0 #a1d2df;
+    font-weight: inherit;
+    color: inherit;
+    transition: all .8s ease; }
+    /* line 47, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+    .t-description a:not(.t-unlink):hover, .t-description a:not(.t-unlink):active {
+      border-bottom: 1px solid #539bae;
+      box-shadow: inset 0 -2px 0 0 #539bae;
+      text-decoration: none; }
+  /* line 14, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_description.scss */
+  .t-description p {
+    font-size: 0.85rem; }
+
+@font-face {
+  font-family: 'PT Serif';
+  src: url("https://cdn.texastribune.org/fonts/ptserif-regular.woff2") format("woff2"), url("https://cdn.texastribune.org/fonts/ptserif-regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'PT Serif';
+  src: url("https://cdn.texastribune.org/fonts/ptserif-bold.woff2") format("woff2"), url("https://cdn.texastribune.org/fonts/ptserif-bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'PT Serif';
+  src: url("https://cdn.texastribune.org/fonts/ptserif-italic.woff2") format("woff2"), url("https://cdn.texastribune.org/fonts/ptserif-italic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic; }
+
+@font-face {
+  font-family: 'PT Serif';
+  src: url("https://cdn.texastribune.org/fonts/ptserif-bolditalic.woff2") format("woff2"), url("https://cdn.texastribune.org/fonts/ptserif-bolditalic.woff") format("woff");
+  font-weight: 700;
+  font-style: italic; }
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://cdn.texastribune.org/fonts/opensans-regular.woff2") format("woff2"), url("https://cdn.texastribune.org/fonts/opensans-regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://cdn.texastribune.org/fonts/opensans-bold.woff2") format("woff2"), url("https://cdn.texastribune.org/fonts/opensans-bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://cdn.texastribune.org/fonts/opensans-italic.woff2") format("woff2"), url("https://cdn.texastribune.org/fonts/opensans-italic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic; }
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://cdn.texastribune.org/fonts/opensans-bolditalic.woff2") format("woff2"), url("https://cdn.texastribune.org/fonts/opensans-bolditalic.woff") format("woff");
+  font-weight: 700;
+  font-style: italic; }
+
+/* line 11, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_headline.scss */
+.t-headline {
+  font-family: Georgia, serif;
+  color: #222;
+  font-weight: 700; }
+  /* line 13, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .fonts-loaded .t-headline {
+    font-family: "PT Serif", Georgia, serif; }
+  /* line 65, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .t-headline a:not(.t-unlink) {
+    font-weight: inherit;
+    color: inherit;
+    transition: all .8s ease; }
+    /* line 47, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+    .t-headline a:not(.t-unlink):hover, .t-headline a:not(.t-unlink):active {
+      border-bottom: 1px solid #a1d2df;
+      box-shadow: inset 0 -2px 0 0 #a1d2df;
+      text-decoration: none; }
+
+/* line 14, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_linkstyle.scss */
+.t-linkstyle a:not(.t-unlink) {
+  color: #539bae;
+  font-weight: bold; }
+
+/* line 19, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_linkstyle.scss */
+.t-linkstyle a:hover {
+  text-decoration: underline; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_linkstyle.scss */
+.t-linkstyle--blue a:not(.t-unlink) {
+  color: #223136; }
+
+/* line 65, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+.t-linkstyle--underlined a:not(.t-unlink) {
+  border-bottom: 1px solid #a1d2df;
+  box-shadow: inset 0 -1px 0 0 #a1d2df;
+  font-weight: inherit;
+  color: inherit;
+  transition: all .8s ease; }
+  /* line 47, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .t-linkstyle--underlined a:not(.t-unlink):hover, .t-linkstyle--underlined a:not(.t-unlink):active {
+    border-bottom: 1px solid #539bae;
+    box-shadow: inset 0 -2px 0 0 #539bae;
+    text-decoration: none; }
+
+/* line 65, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+.t-linkstyle--underlined-subtle a:not(.t-unlink) {
+  font-weight: inherit;
+  color: inherit;
+  transition: all .8s ease; }
+  /* line 47, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .t-linkstyle--underlined-subtle a:not(.t-unlink):hover, .t-linkstyle--underlined-subtle a:not(.t-unlink):active {
+    border-bottom: 1px solid #a1d2df;
+    box-shadow: inset 0 -2px 0 0 #a1d2df;
+    text-decoration: none; }
+
+/* line 46, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_linkstyle.scss */
+.t-unlink {
+  border: none;
+  box-shadow: none; }
+  /* line 50, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_linkstyle.scss */
+  .t-unlink:hover, .t-unlink:active {
+    border: 0;
+    text-decoration: none; }
+
+/* line 10, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_prose.scss */
+.t-prose p {
+  font-family: Georgia, serif;
+  color: #222;
+  line-height: 1.4;
+  margin: 1.1rem 0; }
+  /* line 13, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .fonts-loaded .t-prose p {
+    font-family: "PT Serif", Georgia, serif; }
+  /* line 65, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .t-prose p a:not(.t-unlink) {
+    border-bottom: 1px solid #a1d2df;
+    box-shadow: inset 0 -1px 0 0 #a1d2df;
+    font-weight: inherit;
+    color: inherit;
+    transition: all .8s ease; }
+    /* line 47, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+    .t-prose p a:not(.t-unlink):hover, .t-prose p a:not(.t-unlink):active {
+      border-bottom: 1px solid #539bae;
+      box-shadow: inset 0 -2px 0 0 #539bae;
+      text-decoration: none; }
+  /* line 17, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_prose.scss */
+  .t-prose p:first-of-type {
+    margin: 0 0 1.1rem; }
+
+/* line 9, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_sectionhead.scss */
+.t-sectionhead {
+  border-bottom: 2px solid #797979;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding-bottom: 0.275rem; }
+
+/* line 15, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_smallcaps.scss */
+.t-smallcaps {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.2em 0;
+  text-transform: uppercase; }
+  /* line 22, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_smallcaps.scss */
+  .t-smallcaps--light {
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.05em; }
+    @media (max-width: 52.8025em) {
+      /* line 22, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_smallcaps.scss */
+      .t-smallcaps--light {
+        font-size: 0.92rem; } }
+  /* line 32, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_smallcaps.scss */
+  .t-smallcaps--section {
+    font-size: 0.92rem;
+    margin-bottom: 0.275rem; }
+  /* line 37, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_smallcaps.scss */
+  .t-smallcaps--bordered {
+    border-top: 2px solid #222; }
+
+/* line 12, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-serif {
+  font-family: Georgia, serif; }
+  /* line 13, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .fonts-loaded .t-serif {
+    font-family: "PT Serif", Georgia, serif; }
+
+/* line 16, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-sans {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  /* line 19, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .fonts-loaded .t-sans {
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+
+/* line 33, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-titlecase {
+  text-transform: capitalize; }
+
+/* line 37, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-uppercase {
+  text-transform: uppercase; }
+  /* line 40, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+  .t-uppercase--wide {
+    letter-spacing: 0.03em; }
+  /* line 44, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+  .t-uppercase--extra-wide {
+    letter-spacing: 0.05em; }
+
+/* line 62, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-align-left {
+  text-align: left; }
+
+/* line 66, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-align-center {
+  text-align: center; }
+
+/* line 70, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-align-right {
+  text-align: right; }
+
+/* line 97, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-space-nospace {
+  line-height: 1; }
+
+/* line 97, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-space-heading-s {
+  line-height: 1.25; }
+
+/* line 97, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-space-heading-m {
+  line-height: 1.5; }
+
+/* line 97, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-space-heading-l {
+  line-height: 2; }
+
+/* line 112, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-helpers.scss */
+.t-wrap-break {
+  word-break: break-all; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-xxxl {
+  font-size: 3rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-giant {
+  font-size: 2.5rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-xxl {
+  font-size: 2rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-xl {
+  font-size: 1.75rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-l {
+  font-size: 1.5rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-m {
+  font-size: 1.2rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-b {
+  font-size: 1.1rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-s {
+  font-size: 0.92rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-xs {
+  font-size: 0.85rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-xxs {
+  font-size: 0.7rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/5-typography/_t-size.scss */
+.t-size-xxxs {
+  font-size: 0.55rem; }
+
+/* line 11, node_modules/@texastribune/queso-ui/assets/scss/6-components/icon/_icon.scss */
+.c-icon {
+  display: inline-flex; }
+  /* line 14, node_modules/@texastribune/queso-ui/assets/scss/6-components/icon/_icon.scss */
+  .c-icon svg {
+    fill: currentColor;
+    height: 1.1em;
+    width: 1.1em; }
+  /* line 21, node_modules/@texastribune/queso-ui/assets/scss/6-components/icon/_icon.scss */
+  .c-icon--baseline svg {
+    position: relative;
+    top: 0.125em; }
+  /* line 29, node_modules/@texastribune/queso-ui/assets/scss/6-components/icon/_icon.scss */
+  .c-icon--yellow svg {
+    fill: #ffc200; }
+
+/* line 9, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+.c-navbar {
+  display: flex;
+  padding: 0 1.1rem; }
+  @media (max-width: 52.8025em) {
+    /* line 9, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar {
+      flex-wrap: wrap; } }
+  /* line 17, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar--light {
+    background-color: #fff;
+    border-bottom: 1px solid #f3f3f3; }
+    /* line 21, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar--light .c-icon {
+      color: #222; }
+  /* line 26, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar--dark {
+    background-color: #222; }
+    /* line 29, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar--dark .c-icon {
+      color: #ffc200; }
+  /* line 34, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__top {
+    flex: 0 1 100%;
+    display: flex;
+    height: 45px;
+    justify-content: space-between;
+    max-width: 100rem;
+    position: relative; }
+    /* line 43, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar--home .c-navbar__top {
+      justify-content: normal;
+      max-width: 67.5rem; }
+  /* line 49, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__logo {
+    flex: 0 1 210px; }
+    /* line 52, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar__logo img {
+      display: block; }
+  /* line 57, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__content {
+    display: flex; }
+    /* line 61, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar--home .c-navbar__content {
+      flex: 0 1 100%;
+      justify-content: space-between; }
+  /* line 67, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__items {
+    display: flex;
+    list-style: none; }
+  /* line 72, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__item {
+    display: flex; }
+    /* line 75, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar__item--space-right {
+      margin-right: 1.2rem; }
+    /* line 79, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar__item--giant-space-right {
+      margin-right: 2.5rem; }
+  /* line 84, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__clickable {
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    padding: 0;
+    position: relative;
+    text-decoration: none;
+    transition: all 0.15s; }
+    /* line 94, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar--light .c-navbar__clickable {
+      background-color: #fff;
+      color: #222; }
+    /* line 99, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar--dark .c-navbar__clickable {
+      background-color: #222;
+      color: #d0d0d0; }
+      /* line 103, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+      .c-navbar--dark .c-navbar__clickable:hover, .c-navbar--dark .c-navbar__clickable:active, .c-navbar--dark .c-navbar__clickable.is-active {
+        color: #fff; }
+    @media (min-width: 52.8125em) {
+      /* line 113, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+      .c-navbar__clickable--animated:hover:after {
+        background-color: #ffc200; } }
+    /* line 121, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar__clickable.is-active:after {
+      background-color: #ffc200; }
+    /* line 126, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar__clickable:after {
+      content: '';
+      height: 3px;
+      left: 0;
+      position: absolute;
+      top: 100%;
+      width: 100%;
+      transition: background-color 0.15s; }
+      @media (min-width: 52.8125em) {
+        /* line 126, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+        .c-navbar__clickable:after {
+          top: auto;
+          bottom: 0; } }
+  /* line 142, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__dropdown {
+    display: flex;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    padding: 0.55rem 0 0 0; }
+  /* line 149, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__dropdown-items {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none; }
+  /* line 155, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__dropdown-item {
+    margin-right: 1.2rem;
+    margin-bottom: 1.2rem; }
+  /* line 164, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__search {
+    background-color: #222;
+    bottom: 1px;
+    display: flex;
+    position: absolute;
+    max-width: 400px;
+    right: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1; }
+    @media (max-width: 52.8025em) {
+      /* line 164, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+      .c-navbar__search {
+        max-width: none; } }
+  /* line 180, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__search-form {
+    display: flex;
+    flex: 1 1 100%; }
+  /* line 185, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__search-input {
+    background-color: #222;
+    border: 0;
+    border-bottom: 1px solid #757575;
+    color: #d0d0d0;
+    flex: 1 1 100%;
+    outline: 0; }
+    /* line 193, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar__search-input::-webkit-input-placeholder {
+      color: #757575; }
+    .c-navbar__search-input::-moz-placeholder {
+      color: #757575; }
+    .c-navbar__search-input:-ms-input-placeholder {
+      color: #757575; }
+    .c-navbar__search-input::-ms-input-placeholder {
+      color: #757575; }
+    .c-navbar__search-input::placeholder {
+      color: #757575; }
+    /* line 197, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+    .c-navbar__search-input::-ms-clear {
+      display: none; }
+  /* line 202, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__search-button {
+    margin-right: 1.1rem; }
+  /* line 206, node_modules/@texastribune/queso-ui/assets/scss/6-components/navbar/_navbar.scss */
+  .c-navbar__greeting {
+    display: flex;
+    list-style: none; }
+
+/* line 9, node_modules/@texastribune/queso-ui/assets/scss/6-components/site-footer/_site-footer.scss */
+.c-site-footer {
+  padding: 2rem 2rem 2.5rem 2rem; }
+  /* line 12, node_modules/@texastribune/queso-ui/assets/scss/6-components/site-footer/_site-footer.scss */
+  .c-site-footer__header {
+    letter-spacing: .08em; }
+  /* line 16, node_modules/@texastribune/queso-ui/assets/scss/6-components/site-footer/_site-footer.scss */
+  .c-site-footer__icon {
+    margin-right: 0.55rem; }
+  /* line 20, node_modules/@texastribune/queso-ui/assets/scss/6-components/site-footer/_site-footer.scss */
+  .c-site-footer a {
+    color: inherit;
+    text-decoration: none; }
+    /* line 24, node_modules/@texastribune/queso-ui/assets/scss/6-components/site-footer/_site-footer.scss */
+    .c-site-footer a:hover {
+      text-decoration: underline; }
+
+/* line 11, node_modules/@texastribune/queso-ui/assets/scss/6-components/ad/_ad.scss */
+.c-ad {
+  text-align: center; }
+  /* line 14, node_modules/@texastribune/queso-ui/assets/scss/6-components/ad/_ad.scss */
+  .c-ad__unit {
+    display: inline-block; }
+  /* line 18, node_modules/@texastribune/queso-ui/assets/scss/6-components/ad/_ad.scss */
+  .c-ad--header {
+    margin: 1.1rem 0; }
+  /* line 22, node_modules/@texastribune/queso-ui/assets/scss/6-components/ad/_ad.scss */
+  .c-ad--footer {
+    margin: 0 auto;
+    max-width: 748px;
+    padding: 0.7rem 0 0.85rem; }
+
+/* line 9, node_modules/@texastribune/queso-ui/assets/scss/6-components/back-to-top/_back-to-top.scss */
+.c-back-to-top {
+  bottom: 0.92rem;
+  left: 100%;
+  opacity: 1;
+  padding-right: 0.92rem;
+  position: -webkit-sticky;
+  position: sticky;
+  transition: opacity .3s; }
+
+/* line 19, node_modules/@texastribune/queso-ui/assets/scss/6-components/back-to-top/_back-to-top.scss */
+.c-back-to-top-viewport {
+  height: 200vh;
+  left: 0;
+  top: 0;
+  position: absolute;
+  right: 0;
+  width: 100%;
+  z-index: -1; }
+
+/* line 14, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+.c-button {
+  background-color: #a1d2df;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  padding: 0.85rem;
+  text-align: center;
+  text-transform: uppercase;
+  transition: opacity 0.3s; }
+  @media (hover: hover) {
+    /* line 27, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+    .c-button:hover, .c-button:active {
+      opacity: 0.7; } }
+  /* line 33, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+  .c-button--l {
+    font-size: 1.5rem;
+    padding: 1.5rem; }
+  /* line 38, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+  .c-button--s {
+    font-size: 0.7rem;
+    padding: 0.7rem; }
+  /* line 43, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+  .c-button--xs {
+    font-size: 0.55rem;
+    padding: 0.55rem; }
+  /* line 48, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+  .c-button--circle {
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+    position: relative; }
+  /* line 55, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+  .c-button__inner {
+    color: #fff; }
+  /* line 59, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+  .c-button--outline {
+    border: 2px solid currentColor;
+    transition: background-color 0.3s; }
+    @media (hover: hover) {
+      /* line 64, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+      .c-button--outline:hover, .c-button--outline:active {
+        background-color: #fff;
+        color: currentColor;
+        opacity: 1; }
+        /* line 70, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+        .c-button--outline:hover .c-button__inner, .c-button--outline:active .c-button__inner {
+          color: currentColor; } }
+
+/* line 86, node_modules/@texastribune/queso-ui/assets/scss/6-components/button/_button.scss */
+.c-link-button {
+  border-bottom: 1px solid #a1d2df;
+  box-shadow: inset 0 -1px 0 0 #a1d2df;
+  font-weight: inherit;
+  color: inherit;
+  transition: all .8s ease;
+  cursor: pointer;
+  line-height: normal; }
+  /* line 47, node_modules/@texastribune/queso-ui/assets/scss/2-tools/_mixins.scss */
+  .c-link-button:hover, .c-link-button:active {
+    border-bottom: 1px solid #539bae;
+    box-shadow: inset 0 -2px 0 0 #539bae;
+    text-decoration: none; }
+
+/* line 12, node_modules/@texastribune/queso-ui/assets/scss/6-components/card/_card.scss */
+.c-card__stick-parent {
+  position: relative; }
+
+/* line 17, node_modules/@texastribune/queso-ui/assets/scss/6-components/card/_card.scss */
+.c-card__content {
+  padding: 0.55rem 0; }
+
+/* line 22, node_modules/@texastribune/queso-ui/assets/scss/6-components/card/_card.scss */
+.c-card__title {
+  font-size: 1.2rem;
+  letter-spacing: 0.02rem;
+  line-height: 1.2; }
+  /* line 27, node_modules/@texastribune/queso-ui/assets/scss/6-components/card/_card.scss */
+  .c-card__title--lg {
+    font-size: 1.75rem; }
+
+/* line 32, node_modules/@texastribune/queso-ui/assets/scss/6-components/card/_card.scss */
+.c-card__tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0.7rem;
+  padding: 0.55rem; }
+
+@media (min-width: 40.625em) {
+  /* line 41, node_modules/@texastribune/queso-ui/assets/scss/6-components/card/_card.scss */
+  .c-card__overlay {
+    background: linear-gradient(rgba(0, 0, 0, 0) 60%, #000);
+    position: absolute;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    padding: 0.7rem;
+    align-items: flex-end; }
+  /* line 53, node_modules/@texastribune/queso-ui/assets/scss/6-components/card/_card.scss */
+  .c-card__overlay-text {
+    color: #fff; } }
+
+@media (min-width: 52.8125em) {
+  /* line 60, node_modules/@texastribune/queso-ui/assets/scss/6-components/card/_card.scss */
+  .c-card__content {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-rows: auto auto 1fr;
+    grid-template-rows: auto auto 1fr;
+    padding: 0; } }
+
+@media (min-width: 67.5em) {
+  /* line 68, node_modules/@texastribune/queso-ui/assets/scss/6-components/card/_card.scss */
+  .c-card__title {
+    font-size: 1.5rem; }
+    /* line 71, node_modules/@texastribune/queso-ui/assets/scss/6-components/card/_card.scss */
+    .c-card__title--lg {
+      font-size: 2rem; } }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+.c-table {
+  border-collapse: collapse; }
+  /* line 27, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+  .c-table td,
+  .c-table th {
+    padding: .5rem; }
+  /* line 33, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+  .c-table--10-45-45 {
+    table-layout: fixed; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-table--10-45-45 thead tr:first-child > th:nth-child(1),
+    .c-table--10-45-45 tbody tr:first-child > td:nth-child(1) {
+      width: 10%; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-table--10-45-45 thead tr:first-child > th:nth-child(2),
+    .c-table--10-45-45 tbody tr:first-child > td:nth-child(2) {
+      width: 45%; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-table--10-45-45 thead tr:first-child > th:nth-child(3),
+    .c-table--10-45-45 tbody tr:first-child > td:nth-child(3) {
+      width: 45%; }
+  /* line 38, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+  .c-table--30-70 {
+    table-layout: fixed; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-table--30-70 thead tr:first-child > th:nth-child(1),
+    .c-table--30-70 tbody tr:first-child > td:nth-child(1) {
+      width: 30%; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-table--30-70 thead tr:first-child > th:nth-child(2),
+    .c-table--30-70 tbody tr:first-child > td:nth-child(2) {
+      width: 70%; }
+  /* line 43, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+  .c-table--15-70-15 {
+    table-layout: fixed; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-table--15-70-15 thead tr:first-child > th:nth-child(1),
+    .c-table--15-70-15 tbody tr:first-child > td:nth-child(1) {
+      width: 15%; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-table--15-70-15 thead tr:first-child > th:nth-child(2),
+    .c-table--15-70-15 tbody tr:first-child > td:nth-child(2) {
+      width: 70%; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-table--15-70-15 thead tr:first-child > th:nth-child(3),
+    .c-table--15-70-15 tbody tr:first-child > td:nth-child(3) {
+      width: 15%; }
+  /* line 49, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+  .c-table--striped tbody > tr:nth-child(odd) {
+    background-color: #f7f7f7; }
+  /* line 56, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+  .c-table--bordered tbody > tr {
+    border-top: 1px solid #f3f3f3; }
+
+/* line 8, node_modules/@texastribune/queso-ui/assets/scss/6-components/tabs/_tabs.scss */
+.c-tabs {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  border-bottom: 5px solid #ffc200; }
+  /* line 16, node_modules/@texastribune/queso-ui/assets/scss/6-components/tabs/_tabs.scss */
+  .c-tabs__tab--wide {
+    flex: 0 1 10rem; }
+  /* line 21, node_modules/@texastribune/queso-ui/assets/scss/6-components/tabs/_tabs.scss */
+  .c-tabs__link {
+    background-color: #222;
+    color: #fff;
+    display: block;
+    border-right: 2px solid #fff;
+    padding: 0.92rem;
+    text-align: center; }
+    /* line 29, node_modules/@texastribune/queso-ui/assets/scss/6-components/tabs/_tabs.scss */
+    .c-tabs__link--s {
+      padding: 0.55rem; }
+    /* line 33, node_modules/@texastribune/queso-ui/assets/scss/6-components/tabs/_tabs.scss */
+    .c-tabs__link--active {
+      background-color: #ffc200;
+      color: #222;
+      font-weight: 700; }
+
+/* line 44, node_modules/@texastribune/queso-ui/assets/scss/6-components/tabs/_tabs.scss */
+.c-tab-panes__pane {
+  display: none; }
+  /* line 47, node_modules/@texastribune/queso-ui/assets/scss/6-components/tabs/_tabs.scss */
+  .c-tab-panes__pane--active {
+    display: block; }
+
+/* line 14, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_align.scss */
+.l-align-center-x {
+  margin-left: auto;
+  margin-right: auto; }
+
+/* line 19, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_align.scss */
+.l-align-center-y {
+  left: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  z-index: 1; }
+
+/* line 29, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_align.scss */
+.l-align-center-self {
+  -ms-grid-row-align: center;
+      align-self: center; }
+
+/* line 33, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_align.scss */
+.l-align-center-children {
+  align-items: center;
+  display: flex;
+  justify-content: center; }
+
+/* line 15, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_container.scss */
+.l-container {
+  max-width: 60rem;
+  margin-left: auto;
+  margin-right: auto; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_container.scss */
+.l-container--xs {
+  max-width: 20rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_container.scss */
+.l-container--s {
+  max-width: 32.5rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_container.scss */
+.l-container--m {
+  max-width: 40.625rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_container.scss */
+.l-container--l {
+  max-width: 52.8125rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_container.scss */
+.l-container--xl {
+  max-width: 67.5rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_container.scss */
+.l-container--xxl {
+  max-width: 81.25rem; }
+
+/* line 24, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_container.scss */
+.l-container--default {
+  max-width: 60rem; }
+
+/* line 13, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_display.scss */
+.l-display-ib {
+  display: inline-block; }
+
+/* line 17, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_display.scss */
+.l-display-block {
+  display: block; }
+
+/* line 22, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_display.scss */
+.l-clearfix:after {
+  content: "";
+  display: table;
+  clear: both; }
+
+/* line 36, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_row {
+  display: flex; }
+  /* line 39, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row > :last-child {
+    margin-right: 0; }
+
+/* line 44, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col, .col_adunit300x250 {
+  flex: 0 1 100%;
+  margin-right: 1.1rem;
+  max-width: 100%; }
+
+/* line 55, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_inline {
+  flex: 0 1 auto;
+  margin-right: 1.1rem; }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_1 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(8.33333% - 16.13333px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_2 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(16.66667% - 14.66667px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_3 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(25% - 13.2px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_4 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(33.33333% - 11.73333px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_5 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(41.66667% - 10.26667px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_6 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(50% - 8.8px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_7 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(58.33333% - 7.33333px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_8 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(66.66667% - 5.86667px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_9 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(75% - 4.4px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_10 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(83.33333% - 2.93333px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_11 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(91.66667% - 1.46667px); }
+
+/* line 67, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_12 {
+  flex: 0 1 auto;
+  margin-right: 1.1rem;
+  overflow: hidden;
+  width: calc(100% - 0px); }
+
+/* line 80, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_adunit300x250 {
+  margin-right: 0;
+  max-width: 310px; }
+
+/* line 86, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid {
+  display: flex;
+  flex-wrap: wrap; }
+  /* line 92, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row {
+    flex-wrap: nowrap; }
+  /* line 99, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded {
+    padding: 0 0.85rem; }
+    @media (min-width: 40.625em) and (max-width: 67.49em) {
+      /* line 99, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+      .grid_padded {
+        padding: 0 1.1rem; } }
+    @media (min-width: 67.5em) {
+      /* line 99, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+      .grid_padded {
+        padding: 0; } }
+  /* line 113, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--temp {
+    padding: 0; }
+    @media (min-width: 52.8125em) and (max-width: 67.49em) {
+      /* line 113, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+      .grid_padded--temp {
+        padding: 0 1.1rem; } }
+  /* line 122, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_order--primary {
+    order: -1; }
+  /* line 126, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_order--secondary {
+    order: 1; }
+  /* line 132, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_vertical {
+    flex-direction: column; }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_1--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(8.33333% - 16.13333px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_2--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(16.66667% - 14.66667px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_3--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(25% - 13.2px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_4--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(33.33333% - 11.73333px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_5--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(41.66667% - 10.26667px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_6--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(50% - 8.8px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_7--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(58.33333% - 7.33333px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_8--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(66.66667% - 5.86667px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_9--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(75% - 4.4px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_10--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(83.33333% - 2.93333px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_11--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(91.66667% - 1.46667px); } }
+
+@media (min-width: 32.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_12--s {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(100% - 0px); } }
+
+@media (max-width: 32.49em) {
+  /* line 151, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_separator--until_s {
+    margin-bottom: 1.1rem; } }
+
+@media (max-width: 32.49em) {
+  /* line 157, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--until_s {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 162, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--until_s > :last-child {
+      margin-right: 0; } }
+
+@media (min-width: 32.5em) {
+  /* line 168, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--from_s {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 173, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--from_s > :last-child {
+      margin-right: 0; } }
+
+@media (min-width: 40.625em) and (max-width: 52.8125em) {
+  /* line 179, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--m_to_l {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 184, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--m_to_l > :last-child {
+      margin-right: 0; } }
+
+/**
+    Use the following two classes in tandem,
+    probably with .col and .col_adunit300x250
+    together in a row. It flips the order
+    at different breakpoints, which can be
+    useful when stacking.
+  */
+/* line 197, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_order--secondary--until_s {
+  order: 1; }
+  @media (max-width: 32.49em) {
+    /* line 197, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_order--secondary--until_s {
+      order: 2; } }
+
+/* line 205, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_order--primary--until_s {
+  order: 2; }
+  @media (max-width: 32.49em) {
+    /* line 205, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_order--primary--until_s {
+      order: 1; } }
+
+@media (max-width: 32.49em) {
+  /* line 215, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_wrap--s {
+    flex-wrap: wrap; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_1,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_2,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_3,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_4,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_5,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_6,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_7,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_8,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_9,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_10,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_11,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s > .col_12,
+    .grid_wrap--s > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; } }
+
+@media (max-width: 32.49em) {
+  /* line 229, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_wrap--s.grid_wrap--reverse {
+    flex-wrap: wrap-reverse; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_1,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_2,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_3,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_4,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_5,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_6,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_7,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_8,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_9,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_10,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_11,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s.grid_wrap--reverse > .col_12,
+    .grid_wrap--s.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; } }
+
+/* line 244, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_wrap--s .col_adunit300x250 {
+  flex: 0 1 100%;
+  margin-right: 0;
+  max-width: 100%; }
+  @media (min-width: 32.5em) {
+    /* line 244, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--s .col_adunit300x250 {
+      margin-left: 0;
+      margin-right: 0;
+      max-width: 310px; } }
+
+@media (max-width: 20em) {
+  /* line 259, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--s {
+    padding: 0 0.85rem; } }
+
+@media (max-width: 32.49em) {
+  /* line 259, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--s {
+    padding: 0 1.1rem; } }
+
+@media (min-width: 32.5em) {
+  /* line 272, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .hide_from--s {
+    display: none !important; } }
+
+@media (max-width: 32.49em) {
+  /* line 282, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .hide_until--s {
+    display: none !important; } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_1--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(8.33333% - 16.13333px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_2--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(16.66667% - 14.66667px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_3--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(25% - 13.2px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_4--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(33.33333% - 11.73333px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_5--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(41.66667% - 10.26667px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_6--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(50% - 8.8px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_7--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(58.33333% - 7.33333px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_8--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(66.66667% - 5.86667px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_9--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(75% - 4.4px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_10--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(83.33333% - 2.93333px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_11--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(91.66667% - 1.46667px); } }
+
+@media (min-width: 40.625em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_12--m {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(100% - 0px); } }
+
+@media (max-width: 40.615em) {
+  /* line 151, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_separator--until_m {
+    margin-bottom: 1.1rem; } }
+
+@media (max-width: 40.615em) {
+  /* line 157, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--until_m {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 162, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--until_m > :last-child {
+      margin-right: 0; } }
+
+@media (min-width: 40.625em) {
+  /* line 168, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--from_m {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 173, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--from_m > :last-child {
+      margin-right: 0; } }
+
+@media (min-width: 40.625em) and (max-width: 52.8125em) {
+  /* line 179, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--m_to_l {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 184, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--m_to_l > :last-child {
+      margin-right: 0; } }
+
+/**
+    Use the following two classes in tandem,
+    probably with .col and .col_adunit300x250
+    together in a row. It flips the order
+    at different breakpoints, which can be
+    useful when stacking.
+  */
+/* line 197, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_order--secondary--until_m {
+  order: 1; }
+  @media (max-width: 40.615em) {
+    /* line 197, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_order--secondary--until_m {
+      order: 2; } }
+
+/* line 205, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_order--primary--until_m {
+  order: 2; }
+  @media (max-width: 40.615em) {
+    /* line 205, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_order--primary--until_m {
+      order: 1; } }
+
+@media (max-width: 40.615em) {
+  /* line 215, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_wrap--m {
+    flex-wrap: wrap; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_1,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_2,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_3,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_4,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_5,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_6,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_7,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_8,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_9,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_10,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_11,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m > .col_12,
+    .grid_wrap--m > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; } }
+
+@media (max-width: 40.615em) {
+  /* line 229, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_wrap--m.grid_wrap--reverse {
+    flex-wrap: wrap-reverse; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_1,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_2,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_3,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_4,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_5,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_6,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_7,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_8,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_9,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_10,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_11,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m.grid_wrap--reverse > .col_12,
+    .grid_wrap--m.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; } }
+
+/* line 244, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_wrap--m .col_adunit300x250 {
+  flex: 0 1 100%;
+  margin-right: 0;
+  max-width: 100%; }
+  @media (min-width: 40.625em) {
+    /* line 244, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--m .col_adunit300x250 {
+      margin-left: 0;
+      margin-right: 0;
+      max-width: 310px; } }
+
+@media (max-width: 20em) {
+  /* line 259, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--m {
+    padding: 0 0.85rem; } }
+
+@media (max-width: 40.615em) {
+  /* line 259, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--m {
+    padding: 0 1.1rem; } }
+
+@media (min-width: 40.625em) {
+  /* line 272, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .hide_from--m {
+    display: none !important; } }
+
+@media (max-width: 40.615em) {
+  /* line 282, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .hide_until--m {
+    display: none !important; } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_1--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(8.33333% - 16.13333px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_2--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(16.66667% - 14.66667px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_3--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(25% - 13.2px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_4--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(33.33333% - 11.73333px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_5--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(41.66667% - 10.26667px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_6--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(50% - 8.8px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_7--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(58.33333% - 7.33333px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_8--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(66.66667% - 5.86667px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_9--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(75% - 4.4px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_10--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(83.33333% - 2.93333px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_11--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(91.66667% - 1.46667px); } }
+
+@media (min-width: 52.8125em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_12--l {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(100% - 0px); } }
+
+@media (max-width: 52.8025em) {
+  /* line 151, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_separator--until_l {
+    margin-bottom: 1.1rem; } }
+
+@media (max-width: 52.8025em) {
+  /* line 157, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--until_l {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 162, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--until_l > :last-child {
+      margin-right: 0; } }
+
+@media (min-width: 52.8125em) {
+  /* line 168, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--from_l {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 173, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--from_l > :last-child {
+      margin-right: 0; } }
+
+@media (min-width: 40.625em) and (max-width: 52.8125em) {
+  /* line 179, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--m_to_l {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 184, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--m_to_l > :last-child {
+      margin-right: 0; } }
+
+/**
+    Use the following two classes in tandem,
+    probably with .col and .col_adunit300x250
+    together in a row. It flips the order
+    at different breakpoints, which can be
+    useful when stacking.
+  */
+/* line 197, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_order--secondary--until_l {
+  order: 1; }
+  @media (max-width: 52.8025em) {
+    /* line 197, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_order--secondary--until_l {
+      order: 2; } }
+
+/* line 205, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_order--primary--until_l {
+  order: 2; }
+  @media (max-width: 52.8025em) {
+    /* line 205, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_order--primary--until_l {
+      order: 1; } }
+
+@media (max-width: 52.8025em) {
+  /* line 215, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_wrap--l {
+    flex-wrap: wrap; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_1,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_2,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_3,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_4,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_5,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_6,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_7,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_8,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_9,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_10,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_11,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l > .col_12,
+    .grid_wrap--l > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; } }
+
+@media (max-width: 52.8025em) {
+  /* line 229, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_wrap--l.grid_wrap--reverse {
+    flex-wrap: wrap-reverse; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_1,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_2,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_3,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_4,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_5,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_6,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_7,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_8,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_9,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_10,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_11,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l.grid_wrap--reverse > .col_12,
+    .grid_wrap--l.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; } }
+
+/* line 244, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_wrap--l .col_adunit300x250 {
+  flex: 0 1 100%;
+  margin-right: 0;
+  max-width: 100%; }
+  @media (min-width: 52.8125em) {
+    /* line 244, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--l .col_adunit300x250 {
+      margin-left: 0;
+      margin-right: 0;
+      max-width: 310px; } }
+
+@media (max-width: 20em) {
+  /* line 259, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--l {
+    padding: 0 0.85rem; } }
+
+@media (max-width: 52.8025em) {
+  /* line 259, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--l {
+    padding: 0 1.1rem; } }
+
+@media (min-width: 52.8125em) {
+  /* line 272, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .hide_from--l {
+    display: none !important; } }
+
+@media (max-width: 52.8025em) {
+  /* line 282, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .hide_until--l {
+    display: none !important; } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_1--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(8.33333% - 16.13333px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_2--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(16.66667% - 14.66667px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_3--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(25% - 13.2px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_4--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(33.33333% - 11.73333px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_5--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(41.66667% - 10.26667px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_6--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(50% - 8.8px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_7--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(58.33333% - 7.33333px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_8--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(66.66667% - 5.86667px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_9--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(75% - 4.4px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_10--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(83.33333% - 2.93333px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_11--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(91.66667% - 1.46667px); } }
+
+@media (min-width: 67.5em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_12--xl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(100% - 0px); } }
+
+@media (max-width: 67.49em) {
+  /* line 151, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_separator--until_xl {
+    margin-bottom: 1.1rem; } }
+
+@media (max-width: 67.49em) {
+  /* line 157, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--until_xl {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 162, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--until_xl > :last-child {
+      margin-right: 0; } }
+
+@media (min-width: 67.5em) {
+  /* line 168, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--from_xl {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 173, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--from_xl > :last-child {
+      margin-right: 0; } }
+
+@media (min-width: 40.625em) and (max-width: 52.8125em) {
+  /* line 179, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--m_to_l {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 184, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--m_to_l > :last-child {
+      margin-right: 0; } }
+
+/**
+    Use the following two classes in tandem,
+    probably with .col and .col_adunit300x250
+    together in a row. It flips the order
+    at different breakpoints, which can be
+    useful when stacking.
+  */
+/* line 197, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_order--secondary--until_xl {
+  order: 1; }
+  @media (max-width: 67.49em) {
+    /* line 197, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_order--secondary--until_xl {
+      order: 2; } }
+
+/* line 205, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_order--primary--until_xl {
+  order: 2; }
+  @media (max-width: 67.49em) {
+    /* line 205, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_order--primary--until_xl {
+      order: 1; } }
+
+@media (max-width: 67.49em) {
+  /* line 215, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_wrap--xl {
+    flex-wrap: wrap; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_1,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_2,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_3,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_4,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_5,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_6,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_7,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_8,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_9,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_10,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_11,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl > .col_12,
+    .grid_wrap--xl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; } }
+
+@media (max-width: 67.49em) {
+  /* line 229, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_wrap--xl.grid_wrap--reverse {
+    flex-wrap: wrap-reverse; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_1,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_2,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_3,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_4,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_5,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_6,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_7,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_8,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_9,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_10,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_11,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl.grid_wrap--reverse > .col_12,
+    .grid_wrap--xl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; } }
+
+/* line 244, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_wrap--xl .col_adunit300x250 {
+  flex: 0 1 100%;
+  margin-right: 0;
+  max-width: 100%; }
+  @media (min-width: 67.5em) {
+    /* line 244, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xl .col_adunit300x250 {
+      margin-left: 0;
+      margin-right: 0;
+      max-width: 310px; } }
+
+@media (max-width: 20em) {
+  /* line 259, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--xl {
+    padding: 0 0.85rem; } }
+
+@media (max-width: 67.49em) {
+  /* line 259, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--xl {
+    padding: 0 1.1rem; } }
+
+@media (min-width: 67.5em) {
+  /* line 272, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .hide_from--xl {
+    display: none !important; } }
+
+@media (max-width: 67.49em) {
+  /* line 282, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .hide_until--xl {
+    display: none !important; } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_1--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(8.33333% - 16.13333px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_2--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(16.66667% - 14.66667px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_3--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(25% - 13.2px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_4--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(33.33333% - 11.73333px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_5--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(41.66667% - 10.26667px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_6--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(50% - 8.8px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_7--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(58.33333% - 7.33333px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_8--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(66.66667% - 5.86667px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_9--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(75% - 4.4px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_10--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(83.33333% - 2.93333px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_11--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(91.66667% - 1.46667px); } }
+
+@media (min-width: 81.25em) {
+  /* line 141, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .col_12--xxl {
+    flex: 0 1 auto;
+    margin-right: 1.1rem;
+    overflow: hidden;
+    width: calc(100% - 0px); } }
+
+@media (max-width: 81.24em) {
+  /* line 151, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_separator--until_xxl {
+    margin-bottom: 1.1rem; } }
+
+@media (max-width: 81.24em) {
+  /* line 157, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--until_xxl {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 162, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--until_xxl > :last-child {
+      margin-right: 0; } }
+
+@media (min-width: 81.25em) {
+  /* line 168, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--from_xxl {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 173, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--from_xxl > :last-child {
+      margin-right: 0; } }
+
+@media (min-width: 40.625em) and (max-width: 52.8125em) {
+  /* line 179, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_row--m_to_l {
+    display: flex;
+    flex-wrap: nowrap; }
+    /* line 184, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_row--m_to_l > :last-child {
+      margin-right: 0; } }
+
+/**
+    Use the following two classes in tandem,
+    probably with .col and .col_adunit300x250
+    together in a row. It flips the order
+    at different breakpoints, which can be
+    useful when stacking.
+  */
+/* line 197, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_order--secondary--until_xxl {
+  order: 1; }
+  @media (max-width: 81.24em) {
+    /* line 197, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_order--secondary--until_xxl {
+      order: 2; } }
+
+/* line 205, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_order--primary--until_xxl {
+  order: 2; }
+  @media (max-width: 81.24em) {
+    /* line 205, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_order--primary--until_xxl {
+      order: 1; } }
+
+@media (max-width: 81.24em) {
+  /* line 215, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_wrap--xxl {
+    flex-wrap: wrap; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_1,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_2,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_3,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_4,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_5,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_6,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_7,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_8,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_9,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_10,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_11,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 220, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl > .col_12,
+    .grid_wrap--xxl > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; } }
+
+@media (max-width: 81.24em) {
+  /* line 229, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_wrap--xxl.grid_wrap--reverse {
+    flex-wrap: wrap-reverse; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_1,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_2,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_3,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_4,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_5,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_6,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_7,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_8,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_9,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_10,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_11,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; }
+    /* line 234, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl.grid_wrap--reverse > .col_12,
+    .grid_wrap--xxl.grid_wrap--reverse > .col {
+      flex: 0 1 100%;
+      margin-right: 0;
+      max-width: 100%; } }
+
+/* line 244, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.grid_wrap--xxl .col_adunit300x250 {
+  flex: 0 1 100%;
+  margin-right: 0;
+  max-width: 100%; }
+  @media (min-width: 81.25em) {
+    /* line 244, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+    .grid_wrap--xxl .col_adunit300x250 {
+      margin-left: 0;
+      margin-right: 0;
+      max-width: 310px; } }
+
+@media (max-width: 20em) {
+  /* line 259, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--xxl {
+    padding: 0 0.85rem; } }
+
+@media (max-width: 81.24em) {
+  /* line 259, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .grid_padded--xxl {
+    padding: 0 1.1rem; } }
+
+@media (min-width: 81.25em) {
+  /* line 272, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .hide_from--xxl {
+    display: none !important; } }
+
+@media (max-width: 81.24em) {
+  /* line 282, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+  .hide_until--xxl {
+    display: none !important; } }
+
+/* line 290, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_grid.scss */
+.col_omega {
+  margin-right: 0; }
+
+@media (min-width: 32.5em) {
+  /* line 10, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_multicol.scss */
+  .l-multicol {
+    -moz-columns: 2;
+         columns: 2; } }
+
+/* line 12, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_width.scss */
+.l-width-full {
+  width: 100%; }
+
+/* line 16, node_modules/@texastribune/queso-ui/assets/scss/7-layout/_width.scss */
+.l-width-max {
+  max-width: 100%; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-black {
+  background-color: #000; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-black-off {
+  background-color: #222; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-white {
+  background-color: #fff; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-white-off {
+  background-color: #f3f3f3; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-teal {
+  background-color: #539bae; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-gray {
+  background-color: #797979; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-gray-light {
+  background-color: #d0d0d0; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-gray-dark {
+  background-color: #4a4a4a; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-yellow {
+  background-color: #ffc200; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-blue {
+  background-color: #a1d2df; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-blue-dark {
+  background-color: #223136; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-error {
+  background-color: #f51c1c; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-sponsor {
+  background-color: #3366cc; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-twitter {
+  background-color: #55acee; }
+
+/* line 89, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-bg-facebook {
+  background-color: #2d60c4; }
+
+@media (min-width: 40.625em) {
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-black:hover {
+    color: #000; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-black-off:hover {
+    color: #222; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-white:hover {
+    color: #fff; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-white-off:hover {
+    color: #f3f3f3; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-teal:hover {
+    color: #539bae; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-gray:hover {
+    color: #797979; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-gray-light:hover {
+    color: #d0d0d0; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-gray-dark:hover {
+    color: #4a4a4a; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-yellow:hover {
+    color: #ffc200; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-blue:hover {
+    color: #a1d2df; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-blue-dark:hover {
+    color: #223136; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-error:hover {
+    color: #f51c1c; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-sponsor:hover {
+    color: #3366cc; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-twitter:hover {
+    color: #55acee; }
+  /* line 96, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+  .has-text-hover-facebook:hover {
+    color: #2d60c4; } }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-black {
+  color: #000; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-black-off {
+  color: #222; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-white {
+  color: #fff; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-white-off {
+  color: #f3f3f3; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-teal {
+  color: #539bae; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-gray {
+  color: #797979; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-gray-light {
+  color: #d0d0d0; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-gray-dark {
+  color: #4a4a4a; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-yellow {
+  color: #ffc200; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-blue {
+  color: #a1d2df; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-blue-dark {
+  color: #223136; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-error {
+  color: #f51c1c; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-sponsor {
+  color: #3366cc; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-twitter {
+  color: #55acee; }
+
+/* line 103, node_modules/@texastribune/queso-ui/assets/scss/utilities/_color-helpers.scss */
+.has-text-facebook {
+  color: #2d60c4; }
+
+/* line 28, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+.is-hidden,
+.hidden {
+  display: none !important; }
+
+/* line 34, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+.is-transparent {
+  opacity: 0;
+  z-index: -1; }
+
+@media print {
+  /* line 39, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-print {
+    display: none !important; } }
+
+@media (min-width: 20em) {
+  /* line 46, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-from-bp-xs {
+    display: none !important; } }
+
+@media (max-width: 19.99em) {
+  /* line 52, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-until-bp-xs {
+    display: none !important; } }
+
+@media (min-width: 32.5em) {
+  /* line 46, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-from-bp-s {
+    display: none !important; } }
+
+@media (max-width: 32.49em) {
+  /* line 52, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-until-bp-s {
+    display: none !important; } }
+
+@media (min-width: 40.625em) {
+  /* line 46, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-from-bp-m {
+    display: none !important; } }
+
+@media (max-width: 40.615em) {
+  /* line 52, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-until-bp-m {
+    display: none !important; } }
+
+@media (min-width: 52.8125em) {
+  /* line 46, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-from-bp-l {
+    display: none !important; } }
+
+@media (max-width: 52.8025em) {
+  /* line 52, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-until-bp-l {
+    display: none !important; } }
+
+@media (min-width: 67.5em) {
+  /* line 46, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-from-bp-xl {
+    display: none !important; } }
+
+@media (max-width: 67.49em) {
+  /* line 52, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-until-bp-xl {
+    display: none !important; } }
+
+@media (min-width: 81.25em) {
+  /* line 46, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-from-bp-xxl {
+    display: none !important; } }
+
+@media (max-width: 81.24em) {
+  /* line 52, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-until-bp-xxl {
+    display: none !important; } }
+
+@media (min-width: 60em) {
+  /* line 46, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-from-bp-default {
+    display: none !important; } }
+
+@media (max-width: 59.99em) {
+  /* line 52, node_modules/@texastribune/queso-ui/assets/scss/utilities/_hidden.scss */
+  .is-hidden-until-bp-default {
+    display: none !important; } }
+
+/* line 14, node_modules/@texastribune/queso-ui/assets/scss/utilities/_notch.scss */
+.has-notch {
+  clear: both;
+  height: 5px;
+  text-align: left;
+  width: 40px; }
+  /* line 20, node_modules/@texastribune/queso-ui/assets/scss/utilities/_notch.scss */
+  .has-notch--short {
+    height: 3px;
+    width: 25px; }
+  /* line 25, node_modules/@texastribune/queso-ui/assets/scss/utilities/_notch.scss */
+  .has-notch--thin {
+    height: 2px; }
+  /* line 29, node_modules/@texastribune/queso-ui/assets/scss/utilities/_notch.scss */
+  .has-notch--full {
+    width: 100%; }
+
+/* line 9, node_modules/@texastribune/queso-ui/assets/scss/utilities/_shadows.scss */
+.has-box-shadow {
+  box-shadow: 0px 0px 3px 0px rgba(171, 168, 168, 0.75); }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-xxxl-btm-marg {
+  margin-bottom: 3rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-giant-btm-marg {
+  margin-bottom: 2.5rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-xxl-btm-marg {
+  margin-bottom: 2rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-xl-btm-marg {
+  margin-bottom: 1.75rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-l-btm-marg {
+  margin-bottom: 1.5rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-m-btm-marg {
+  margin-bottom: 1.2rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-b-btm-marg {
+  margin-bottom: 1.1rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-s-btm-marg {
+  margin-bottom: 0.92rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-xs-btm-marg {
+  margin-bottom: 0.85rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-xxs-btm-marg {
+  margin-bottom: 0.7rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-xxxs-btm-marg {
+  margin-bottom: 0.55rem; }
+
+/* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-tiny-btm-marg {
+  margin-bottom: 0.275rem; }
+
+/* line 45, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-padding {
+  padding: 1.1rem; }
+
+/* line 49, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-xs-padding {
+  padding: 0.85rem; }
+
+/* line 53, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-xl-padding {
+  padding: 1.75rem; }
+
+/* line 57, node_modules/@texastribune/queso-ui/assets/scss/utilities/_spacing.scss */
+.has-reset-padding {
+  padding: 0; }
+
+/* line 16, node_modules/@texastribune/queso-ui/assets/scss/utilities/_vert-bar.scss */
+.has-vert-bar {
+  border-left: 0.3125rem solid currentColor;
+  padding-left: 1.1rem; }
+  /* line 20, node_modules/@texastribune/queso-ui/assets/scss/utilities/_vert-bar.scss */
+  .has-vert-bar--thin {
+    border-left-width: 0.25rem;
+    padding-left: 2rem; }
+  @media (max-width: 32.49em) {
+    /* line 26, node_modules/@texastribune/queso-ui/assets/scss/utilities/_vert-bar.scss */
+    .has-vert-bar--from-bp-s {
+      padding-left: 0;
+      border-left: 0; } }
+
+/* line 8, node_modules/@texastribune/queso-ui/assets/scss/6-components/full-page-loader/_full-page-loader.scss */
+.c-full-page-loader {
+  background-color: rgba(247, 247, 247, 0.9);
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999; }
+  /* line 20, node_modules/@texastribune/queso-ui/assets/scss/6-components/full-page-loader/_full-page-loader.scss */
+  .c-full-page-loader--opaque {
+    background-color: #f7f7f7; }
+
+/* line 8, node_modules/@texastribune/queso-ui/assets/scss/6-components/info-list/_info-list.scss */
+.c-info-list {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[3];
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+  list-style: none; }
+  @media (max-width: 32.49em) {
+    /* line 8, node_modules/@texastribune/queso-ui/assets/scss/6-components/info-list/_info-list.scss */
+    .c-info-list {
+      -ms-grid-columns: 1fr;
+      grid-template-columns: 1fr; } }
+
+/* line 14, node_modules/@texastribune/queso-ui/assets/scss/6-components/loading/_loading.scss */
+.c-loading {
+  position: relative; }
+  /* line 17, node_modules/@texastribune/queso-ui/assets/scss/6-components/loading/_loading.scss */
+  .c-loading:before {
+    -webkit-animation: spinner 1s linear infinite;
+            animation: spinner 1s linear infinite;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: #d0d0d0;
+    border-top-color: #ffc200;
+    box-sizing: border-box;
+    content: '';
+    left: 50%;
+    position: absolute;
+    top: 50%; }
+  /* line 30, node_modules/@texastribune/queso-ui/assets/scss/6-components/loading/_loading.scss */
+  .c-loading--xs {
+    height: 40px; }
+    /* line 33, node_modules/@texastribune/queso-ui/assets/scss/6-components/loading/_loading.scss */
+    .c-loading--xs:before {
+      border-width: 3px;
+      height: 20px;
+      margin-left: -10px;
+      margin-top: -10px;
+      width: 20px; }
+  /* line 42, node_modules/@texastribune/queso-ui/assets/scss/6-components/loading/_loading.scss */
+  .c-loading--s {
+    height: 250px; }
+    /* line 45, node_modules/@texastribune/queso-ui/assets/scss/6-components/loading/_loading.scss */
+    .c-loading--s:before {
+      border-width: 5px;
+      height: 50px;
+      margin-left: -25px;
+      margin-top: -25px;
+      width: 50px; }
+  /* line 54, node_modules/@texastribune/queso-ui/assets/scss/6-components/loading/_loading.scss */
+  .c-loading--tight {
+    height: 50px; }
+    /* line 57, node_modules/@texastribune/queso-ui/assets/scss/6-components/loading/_loading.scss */
+    .c-loading--tight:before {
+      border-width: 5px;
+      height: 50px;
+      margin-left: -25px;
+      margin-top: -25px;
+      width: 50px; }
+
+@-webkit-keyframes spinner {
+  to {
+    transform: rotate(360deg); } }
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg); } }
+
+/* line 1, static/sass/ds/6-components/_appeal.scss */
+.c-appeal {
+  list-style: none;
+  padding-bottom: 2.5rem; }
+  @media (max-width: 52.8025em) {
+    /* line 1, static/sass/ds/6-components/_appeal.scss */
+    .c-appeal {
+      padding-top: 2rem; } }
+  /* line 9, static/sass/ds/6-components/_appeal.scss */
+  .c-appeal__item {
+    display: flex; }
+    /* line 12, static/sass/ds/6-components/_appeal.scss */
+    .c-appeal__item .c-icon {
+      margin-right: 0.7rem;
+      margin-top: 0.25rem; }
+    /* line 17, static/sass/ds/6-components/_appeal.scss */
+    .c-appeal__item--no {
+      opacity: .5; }
+
+/* line 1, static/sass/ds/6-components/_payments.scss */
+.c-payments {
+  position: relative; }
+  /* line 5, static/sass/ds/6-components/_payments.scss */
+  .c-payments.has-more:after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, white 100%);
+    bottom: 0;
+    content: '';
+    height: 30%;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    z-index: 1; }
+  /* line 18, static/sass/ds/6-components/_payments.scss */
+  .c-payments > .c-table {
+    table-layout: fixed; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-payments > .c-table thead tr:first-child > th:nth-child(1),
+    .c-payments > .c-table tbody tr:first-child > td:nth-child(1) {
+      width: 33%; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-payments > .c-table thead tr:first-child > th:nth-child(2),
+    .c-payments > .c-table tbody tr:first-child > td:nth-child(2) {
+      width: 33%; }
+    /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+    .c-payments > .c-table thead tr:first-child > th:nth-child(3),
+    .c-payments > .c-table tbody tr:first-child > td:nth-child(3) {
+      width: 33%; }
+  /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+  .c-payments--receipts > .c-table thead tr:first-child > th:nth-child(1),
+  .c-payments--receipts > .c-table tbody tr:first-child > td:nth-child(1) {
+    width: 25%; }
+  /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+  .c-payments--receipts > .c-table thead tr:first-child > th:nth-child(2),
+  .c-payments--receipts > .c-table tbody tr:first-child > td:nth-child(2) {
+    width: 25%; }
+  /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+  .c-payments--receipts > .c-table thead tr:first-child > th:nth-child(3),
+  .c-payments--receipts > .c-table tbody tr:first-child > td:nth-child(3) {
+    width: 30%; }
+  /* line 5, node_modules/@texastribune/queso-ui/assets/scss/6-components/table/_table.scss */
+  .c-payments--receipts > .c-table thead tr:first-child > th:nth-child(4),
+  .c-payments--receipts > .c-table tbody tr:first-child > td:nth-child(4) {
+    width: 20%; }
+  /* line 29, static/sass/ds/6-components/_payments.scss */
+  .c-payments > .c-button {
+    bottom: 0;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, 50%);
+    z-index: 2; }
+
+@media (min-width: 52.8125em) {
+  /* line 1, static/sass/ds/6-components/_detail-box.scss */
+  .c-detail-box {
+    border-bottom: 2px solid #f3f3f3;
+    padding-bottom: 2rem; } }
+
+/* line 1, static/sass/ds/6-components/_link-list.scss */
+.c-link-list {
+  list-style: none; }
+  /* line 4, static/sass/ds/6-components/_link-list.scss */
+  .c-link-list__arrow {
+    margin-right: .3rem; }
+
+/* line 2, static/sass/ds/6-components/_messages.scss */
+.c-messages .c-message {
+  margin-bottom: 2rem; }
+  /* line 5, static/sass/ds/6-components/_messages.scss */
+  .c-messages .c-message:last-child {
+    margin-bottom: 0; }
+
+/* line 1, static/sass/ds/6-components/_message.scss */
+.c-message {
+  border-radius: 3px;
+  position: relative;
+  padding: 1.1rem; }
+  @media (max-width: 52.8025em) {
+    /* line 1, static/sass/ds/6-components/_message.scss */
+    .c-message {
+      border-bottom: 1px solid #d0d0d0;
+      border-radius: 0px;
+      padding: 1.1rem 0; } }
+  /* line 12, static/sass/ds/6-components/_message.scss */
+  .c-message__top {
+    align-items: center;
+    display: flex; }
+    /* line 16, static/sass/ds/6-components/_message.scss */
+    .c-message__top .c-icon {
+      margin-right: 0.7rem; }
+  /* line 21, static/sass/ds/6-components/_message.scss */
+  .c-message__close {
+    border: 1px solid #f3f3f3;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: .25rem .45rem;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translate(50%, -50%); }
+    @media (max-width: 52.8025em) {
+      /* line 21, static/sass/ds/6-components/_message.scss */
+      .c-message__close {
+        background: none;
+        border: none;
+        transform: initial; } }
+
+@media (max-width: 52.8025em) {
+  /* line 2, static/sass/ds/6-components/_help.scss */
+  .c-help--has-top-padding {
+    padding-top: 2rem; } }
+
+/* line 1, static/sass/ds/6-components/_home-route-loader.scss */
+.c-home-route-loader {
+  min-height: 80vh;
+  position: relative; }
+
+/* line 1, static/sass/ds/6-components/_side-nav.scss */
+.c-side-nav {
+  padding: 2.5rem 2rem;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0; }
+  /* line 6, static/sass/ds/6-components/_side-nav.scss */
+  .c-side-nav ul {
+    list-style: none; }
+  /* line 10, static/sass/ds/6-components/_side-nav.scss */
+  .c-side-nav a {
+    transition: all .3s;
+    font-weight: bold; }
+    /* line 14, static/sass/ds/6-components/_side-nav.scss */
+    .c-side-nav a.is-active {
+      color: #797979;
+      font-weight: normal; }
+  /* line 21, static/sass/ds/6-components/_side-nav.scss */
+  .c-side-nav__outer > li > a {
+    border-left-color: #f3f3f3;
+    border-left-style: solid;
+    border-left-width: 3px;
+    display: block;
+    padding: 0.85rem 0 0.85rem 1.1rem; }
+    /* line 28, static/sass/ds/6-components/_side-nav.scss */
+    .c-side-nav__outer > li > a.is-active {
+      border-left-color: #ffc200; }
+
+/* line 2, static/sass/ds/6-components/_site-footer.scss */
+.c-site-footer__inner {
+  display: -ms-grid;
+  display: grid;
+  gap: 1.1rem;
+  grid-gap: 1.1rem;
+  -ms-grid-columns: (1fr)[3];
+  grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 32.49em) {
+    /* line 2, static/sass/ds/6-components/_site-footer.scss */
+    .c-site-footer__inner {
+      -ms-grid-columns: 1fr;
+      grid-template-columns: 1fr; } }
+
+/* line 14, static/sass/ds/6-components/_site-footer.scss */
+.c-site-footer__links li {
+  /*
+        Apply margin like this instead of with helpers directly on the
+        list items because the links are conditional based on user
+        (i.e. whether some is a Blast subscriber), and applying conditional
+        helpers via template logic in our Vue components sounds gross.
+      */
+  margin-bottom: 0.55rem; }
+  /* line 23, static/sass/ds/6-components/_site-footer.scss */
+  .c-site-footer__links li:last-child {
+    margin-bottom: 0; }
+
+/* line 1, static/sass/ds/6-components/_summary-box.scss */
+.c-summary-box {
+  border-bottom: 2px solid #f3f3f3;
+  padding-bottom: 2rem; }
+  @media (max-width: 52.8025em) {
+    /* line 1, static/sass/ds/6-components/_summary-box.scss */
+    .c-summary-box {
+      border: 1px solid #d0d0d0;
+      border-radius: 3px;
+      padding-bottom: 0; }
+      /* line 10, static/sass/ds/6-components/_summary-box.scss */
+      .c-summary-box.is-expired {
+        border: 2px solid #f51c1c; }
+      /* line 14, static/sass/ds/6-components/_summary-box.scss */
+      .c-summary-box__top {
+        padding: 1.75rem 1.1rem; }
+      /* line 18, static/sass/ds/6-components/_summary-box.scss */
+      .c-summary-box__bottom {
+        border-top: 1px solid #d0d0d0;
+        padding: 1.1rem; } }
+
+/* line 2, static/sass/ds/6-components/_summary-boxes.scss */
+.c-summary-boxes > .c-summary-box {
+  margin-bottom: 1.75rem; }
+  /* line 5, static/sass/ds/6-components/_summary-boxes.scss */
+  .c-summary-boxes > .c-summary-box:last-child {
+    margin-bottom: 0; }
+
+@media (min-width: 52.8125em) {
+  /* line 1, static/sass/ds/7-utilities/_bg.scss */
+  .has-white-bg-from-bp-l {
+    background-color: #fff; } }
+
+@media (max-width: 52.8025em) {
+  /* line 7, static/sass/ds/7-utilities/_bg.scss */
+  .has-white-off-bg-until-bp-l {
+    background-color: #f3f3f3; } }
+
+/*
+  Use these to add consistent padding to elements
+  contained within .l-ump-grid__content
+*/
+/* line 6, static/sass/ds/7-utilities/_spacing.scss */
+.has-ump-side-padding {
+  padding-left: 2.5rem;
+  padding-right: 2.5rem; }
+  @media (max-width: 52.8025em) {
+    /* line 6, static/sass/ds/7-utilities/_spacing.scss */
+    .has-ump-side-padding {
+      padding-left: 1.1rem;
+      padding-right: 1.1rem; } }
+
+/* line 16, static/sass/ds/7-utilities/_spacing.scss */
+.has-ump-top-padding {
+  padding-top: 2.5rem; }
+
+/* line 20, static/sass/ds/7-utilities/_spacing.scss */
+.has-ump-btm-padding {
+  padding-bottom: 2.5rem; }
+
+/* line 3, static/sass/ds/7-utilities/_transitions.scss */
+.has-fade-enter-active, .has-fade-leave-active {
+  transition: opacity .5s; }
+
+/* line 7, static/sass/ds/7-utilities/_transitions.scss */
+.has-fade-enter, .has-fade-leave-to {
+  opacity: 0; }
+
+/* line 1, static/sass/ds/8-layout/_containers.scss */
+.l-ump-container {
+  max-width: 70rem; }
+
+/* line 1, static/sass/ds/8-layout/_grid.scss */
+.l-ump-grid {
+  display: -ms-grid;
+  display: grid;
+      grid-template-areas: 'side content';
+  -ms-grid-columns: 20rem 1fr;
+  grid-template-columns: 20rem 1fr; }
+  /* line 6, static/sass/ds/8-layout/_grid.scss */
+  .l-ump-grid__side {
+    -ms-grid-row: 1;
+    -ms-grid-column: 1;
+    grid-area: side; }
+  /* line 10, static/sass/ds/8-layout/_grid.scss */
+  .l-ump-grid__content {
+    -ms-grid-row: 1;
+    -ms-grid-column: 2;
+    grid-area: content; }
+  @media (min-width: 52.8125em) {
+    /* line 1, static/sass/ds/8-layout/_grid.scss */
+    .l-ump-grid {
+      min-height: 80vh; } }
+  @media (max-width: 52.8025em) {
+    /* line 1, static/sass/ds/8-layout/_grid.scss */
+    .l-ump-grid {
+          grid-template-areas: 'content';
+      -ms-grid-columns: 1fr;
+      grid-template-columns: 1fr; }
+    .l-ump-grid__content {
+    -ms-grid-row: 1;
+    -ms-grid-column: 1; } }
+
+/* line 1, static/sass/ds/8-layout/_minimal.scss */
+.l-minimal {
+  align-items: center;
+  display: flex;
+  height: 70vh;
+  justify-content: center;
+  min-height: 20rem; }
+  /* line 8, static/sass/ds/8-layout/_minimal.scss */
+  .l-minimal__content {
+    flex: 0 1 50rem; }
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0YXRpYy9zYXNzL2FjY291bnQuc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzLzMtcmVzZXRzL19ib3gtc2l6aW5nLnNjc3MiLCJub2RlX21vZHVsZXMvbm9ybWFsaXplLmNzcy9ub3JtYWxpemUuY3NzIiwibm9kZV9tb2R1bGVzL0B0ZXhhc3RyaWJ1bmUvcXVlc28tdWkvYXNzZXRzL3Njc3MvNC1lbGVtZW50cy9fYWxsLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy8xLXNldHRpbmdzL19mb250cy5zY3NzIiwibm9kZV9tb2R1bGVzL3Nhc3MtbXEvX21xLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy8yLXRvb2xzL19taXhpbnMuc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzLzEtc2V0dGluZ3MvX2NvbG9ycy5zY3NzIiwibm9kZV9tb2R1bGVzL0B0ZXhhc3RyaWJ1bmUvcXVlc28tdWkvYXNzZXRzL3Njc3MvNS10eXBvZ3JhcGh5L19ieWxpbmUuc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzLzEtc2V0dGluZ3MvX21lYXN1cmVzLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy81LXR5cG9ncmFwaHkvX2Rlc2NyaXB0aW9uLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy81LXR5cG9ncmFwaHkvX2ZvbnQtZmFtaWxpZXMuc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzLzUtdHlwb2dyYXBoeS9faGVhZGxpbmUuc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzLzUtdHlwb2dyYXBoeS9fbGlua3N0eWxlLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy81LXR5cG9ncmFwaHkvX3Byb3NlLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy81LXR5cG9ncmFwaHkvX3NlY3Rpb25oZWFkLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy81LXR5cG9ncmFwaHkvX3NtYWxsY2Fwcy5zY3NzIiwibm9kZV9tb2R1bGVzL0B0ZXhhc3RyaWJ1bmUvcXVlc28tdWkvYXNzZXRzL3Njc3MvNS10eXBvZ3JhcGh5L190LWhlbHBlcnMuc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzLzUtdHlwb2dyYXBoeS9fdC1zaXplLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy82LWNvbXBvbmVudHMvaWNvbi9faWNvbi5zY3NzIiwibm9kZV9tb2R1bGVzL0B0ZXhhc3RyaWJ1bmUvcXVlc28tdWkvYXNzZXRzL3Njc3MvNi1jb21wb25lbnRzL25hdmJhci9fbmF2YmFyLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy82LWNvbXBvbmVudHMvc2l0ZS1mb290ZXIvX3NpdGUtZm9vdGVyLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy82LWNvbXBvbmVudHMvYWQvX2FkLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy82LWNvbXBvbmVudHMvYmFjay10by10b3AvX2JhY2stdG8tdG9wLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy82LWNvbXBvbmVudHMvYnV0dG9uL19idXR0b24uc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzLzYtY29tcG9uZW50cy9jYXJkL19jYXJkLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy82LWNvbXBvbmVudHMvdGFibGUvX3RhYmxlLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy82LWNvbXBvbmVudHMvdGFicy9fdGFicy5zY3NzIiwibm9kZV9tb2R1bGVzL0B0ZXhhc3RyaWJ1bmUvcXVlc28tdWkvYXNzZXRzL3Njc3MvNy1sYXlvdXQvX2FsaWduLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy83LWxheW91dC9fY29udGFpbmVyLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy8yLXRvb2xzL19mdW5jdGlvbnMuc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzLzctbGF5b3V0L19kaXNwbGF5LnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy83LWxheW91dC9fZ3JpZC5zY3NzIiwibm9kZV9tb2R1bGVzL0B0ZXhhc3RyaWJ1bmUvcXVlc28tdWkvYXNzZXRzL3Njc3MvNy1sYXlvdXQvX211bHRpY29sLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy83LWxheW91dC9fd2lkdGguc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzL3V0aWxpdGllcy9fY29sb3ItaGVscGVycy5zY3NzIiwibm9kZV9tb2R1bGVzL0B0ZXhhc3RyaWJ1bmUvcXVlc28tdWkvYXNzZXRzL3Njc3MvdXRpbGl0aWVzL19oaWRkZW4uc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzL3V0aWxpdGllcy9fbm90Y2guc2NzcyIsIm5vZGVfbW9kdWxlcy9AdGV4YXN0cmlidW5lL3F1ZXNvLXVpL2Fzc2V0cy9zY3NzL3V0aWxpdGllcy9fc2hhZG93cy5zY3NzIiwibm9kZV9tb2R1bGVzL0B0ZXhhc3RyaWJ1bmUvcXVlc28tdWkvYXNzZXRzL3Njc3MvdXRpbGl0aWVzL19zcGFjaW5nLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy91dGlsaXRpZXMvX3ZlcnQtYmFyLnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy82LWNvbXBvbmVudHMvZnVsbC1wYWdlLWxvYWRlci9fZnVsbC1wYWdlLWxvYWRlci5zY3NzIiwibm9kZV9tb2R1bGVzL0B0ZXhhc3RyaWJ1bmUvcXVlc28tdWkvYXNzZXRzL3Njc3MvNi1jb21wb25lbnRzL2luZm8tbGlzdC9faW5mby1saXN0LnNjc3MiLCJub2RlX21vZHVsZXMvQHRleGFzdHJpYnVuZS9xdWVzby11aS9hc3NldHMvc2Nzcy82LWNvbXBvbmVudHMvbG9hZGluZy9fbG9hZGluZy5zY3NzIiwic3RhdGljL3Nhc3MvZHMvNi1jb21wb25lbnRzL19hcHBlYWwuc2NzcyIsInN0YXRpYy9zYXNzL2RzLzYtY29tcG9uZW50cy9fcGF5bWVudHMuc2NzcyIsInN0YXRpYy9zYXNzL2RzLzYtY29tcG9uZW50cy9fZGV0YWlsLWJveC5zY3NzIiwic3RhdGljL3Nhc3MvZHMvNi1jb21wb25lbnRzL19saW5rLWxpc3Quc2NzcyIsInN0YXRpYy9zYXNzL2RzLzYtY29tcG9uZW50cy9fbWVzc2FnZXMuc2NzcyIsInN0YXRpYy9zYXNzL2RzLzYtY29tcG9uZW50cy9fbWVzc2FnZS5zY3NzIiwic3RhdGljL3Nhc3MvZHMvNi1jb21wb25lbnRzL19oZWxwLnNjc3MiLCJzdGF0aWMvc2Fzcy9kcy82LWNvbXBvbmVudHMvX2hvbWUtcm91dGUtbG9hZGVyLnNjc3MiLCJzdGF0aWMvc2Fzcy9kcy82LWNvbXBvbmVudHMvX3NpZGUtbmF2LnNjc3MiLCJzdGF0aWMvc2Fzcy9kcy82LWNvbXBvbmVudHMvX3NpdGUtZm9vdGVyLnNjc3MiLCJzdGF0aWMvc2Fzcy9kcy82LWNvbXBvbmVudHMvX3N1bW1hcnktYm94LnNjc3MiLCJzdGF0aWMvc2Fzcy9kcy82LWNvbXBvbmVudHMvX3N1bW1hcnktYm94ZXMuc2NzcyIsInN0YXRpYy9zYXNzL2RzLzctdXRpbGl0aWVzL19iZy5zY3NzIiwic3RhdGljL3Nhc3MvZHMvNy11dGlsaXRpZXMvX3NwYWNpbmcuc2NzcyIsInN0YXRpYy9zYXNzL2RzLzctdXRpbGl0aWVzL190cmFuc2l0aW9ucy5zY3NzIiwic3RhdGljL3Nhc3MvZHMvOC1sYXlvdXQvX2NvbnRhaW5lcnMuc2NzcyIsInN0YXRpYy9zYXNzL2RzLzgtbGF5b3V0L19ncmlkLnNjc3MiLCI8bm8gc291cmNlPiIsInN0YXRpYy9zYXNzL2RzLzgtbGF5b3V0L19taW5pbWFsLnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsc0ZBQXNGO0FDR3RGO0VBQ0Usc0JBQXNCLEVBQUE7O0FEQXhCLHNGQUFzRjtBQ0d0Rjs7O0VBR0UsbUJBQW1CLEVBQUE7O0FDVnJCLDJFQUFBO0FBRUE7K0VGVStFO0FFUC9FOzs7RUZXRTtBQUNGLHNEQUFzRDtBQ2R0RDtFQ1FFLGlCQUFpQjtFQUFFLE1BQUE7RUFDbkIsOEJBQThCO0VBQUUsTUFBQSxFQUFPOztBQUd6QzsrRUZVK0U7QUVQL0U7O0VGVUU7QUFDRixzREFBc0Q7QUVQdEQ7RUFDRSxTQUFTLEVBQUE7O0FBR1g7O0VGU0U7QUFDRixzREFBc0Q7QUVOdEQ7RUFDRSxjQUFjLEVBQUE7O0FBR2hCOzs7RUZTRTtBQUNGLHNEQUFzRDtBRUx0RDtFQUNFLGNBQWM7RUFDZCxnQkFBZ0IsRUFBQTs7QUFHbEI7K0VGTStFO0FFSC9FOzs7RUZPRTtBQUNGLHNEQUFzRDtBRUh0RDtFQUNFLHVCQUF1QjtFQUFFLE1BQUE7RUFDekIsU0FBUztFQUFFLE1BQUE7RUFDWCxpQkFBaUI7RUFBRSxNQUFBLEVBQU87O0FBRzVCOzs7RUZTRTtBQUNGLHNEQUFzRDtBRUx0RDtFQUNFLGlDQUFpQztFQUFFLE1BQUE7RUFDbkMsY0FBYztFQUFFLE1BQUEsRUFBTzs7QUFHekI7K0VGUStFO0FFTC9FOztFRlFFO0FBQ0Ysc0RBQXNEO0FFTHREO0VBQ0UsNkJBQTZCLEVBQUE7O0FBRy9COzs7RUZRRTtBQUNGLHNEQUFzRDtBRUp0RDtFQUNFLG1CQUFtQjtFQUFFLE1BQUE7RUFDckIsMEJBQTBCO0VBQUUsTUFBQTtFQUM1Qix5Q0FBaUM7VUFBakMsaUNBQWlDO0VBQUUsTUFBQSxFQUFPOztBQUc1Qzs7RUZTRTtBQUNGLHNEQUFzRDtBRU50RDs7RUFFRSxtQkFBbUIsRUFBQTs7QUFHckI7OztFRlNFO0FBQ0YsdURBQXVEO0FFTHZEOzs7RUFHRSxpQ0FBaUM7RUFBRSxNQUFBO0VBQ25DLGNBQWM7RUFBRSxNQUFBLEVBQU87O0FBR3pCOztFRlNFO0FBQ0YsdURBQXVEO0FFTnZEO0VBQ0UsY0FBYyxFQUFBOztBQUdoQjs7O0VGU0U7QUFDRix1REFBdUQ7QUVMdkQ7O0VBRUUsY0FBYztFQUNkLGNBQWM7RUFDZCxrQkFBa0I7RUFDbEIsd0JBQXdCLEVBQUE7O0FGUTFCLHVEQUF1RDtBRUx2RDtFQUNFLGVBQWUsRUFBQTs7QUZRakIsdURBQXVEO0FFTHZEO0VBQ0UsV0FBVyxFQUFBOztBQUdiOytFRk0rRTtBRUgvRTs7RUZNRTtBQUNGLHVEQUF1RDtBRUh2RDtFQUNFLGtCQUFrQixFQUFBOztBQUdwQjsrRUZJK0U7QUVEL0U7OztFRktFO0FBQ0YsdURBQXVEO0FFRHZEOzs7OztFQUtFLG9CQUFvQjtFQUFFLE1BQUE7RUFDdEIsZUFBZTtFQUFFLE1BQUE7RUFDakIsaUJBQWlCO0VBQUUsTUFBQTtFQUNuQixTQUFTO0VBQUUsTUFBQSxFQUFPOztBQUdwQjs7O0VGUUU7QUFDRix1REFBdUQ7QUVKdkQ7O0VBQ1EsTUFBQTtFQUNOLGlCQUFpQixFQUFBOztBQUduQjs7O0VGUUU7QUFDRix1REFBdUQ7QUVKdkQ7O0VBQ1MsTUFBQTtFQUNQLG9CQUFvQixFQUFBOztBQUd0Qjs7RUZPRTtBQUNGLHVEQUF1RDtBRUp2RDs7OztFQUlFLDBCQUEwQixFQUFBOztBQUc1Qjs7RUZNRTtBQUNGLHVEQUF1RDtBRUh2RDs7OztFQUlFLGtCQUFrQjtFQUNsQixVQUFVLEVBQUE7O0FBR1o7O0VGS0U7QUFDRix1REFBdUQ7QUVGdkQ7Ozs7RUFJRSw4QkFBOEIsRUFBQTs7QUFHaEM7O0VGSUU7QUFDRix1REFBdUQ7QUVEdkQ7RUFDRSw4QkFBOEIsRUFBQTs7QUFHaEM7Ozs7O0VGTUU7QUFDRix1REFBdUQ7QUVBdkQ7RUFDRSxzQkFBc0I7RUFBRSxNQUFBO0VBQ3hCLGNBQWM7RUFBRSxNQUFBO0VBQ2hCLGNBQWM7RUFBRSxNQUFBO0VBQ2hCLGVBQWU7RUFBRSxNQUFBO0VBQ2pCLFVBQVU7RUFBRSxNQUFBO0VBQ1osbUJBQW1CO0VBQUUsTUFBQSxFQUFPOztBQUc5Qjs7RUZRRTtBQUNGLHVEQUF1RDtBRUx2RDtFQUNFLHdCQUF3QixFQUFBOztBQUcxQjs7RUZPRTtBQUNGLHVEQUF1RDtBRUp2RDtFQUNFLGNBQWMsRUFBQTs7QUFHaEI7OztFRk9FO0FBQ0YsdURBQXVEO0FBQ3ZEOztFRUZFLHNCQUFzQjtFQUFFLE1BQUE7RUFDeEIsVUFBVTtFQUFFLE1BQUEsRUFBTzs7QUFHckI7O0VGT0U7QUFDRix1REFBdUQ7QUFDdkQ7O0VFSEUsWUFBWSxFQUFBOztBQUdkOzs7RUZPRTtBQUNGLHVEQUF1RDtBQUN2RDtFRUhFLDZCQUE2QjtFQUFFLE1BQUE7RUFDL0Isb0JBQW9CO0VBQUUsTUFBQSxFQUFPOztBQUcvQjs7RUZPRTtBQUNGLHVEQUF1RDtBQUN2RDtFRUpFLHdCQUF3QixFQUFBOztBQUcxQjs7O0VGT0U7QUFDRix1REFBdUQ7QUVIdkQ7RUFDRSwwQkFBMEI7RUFBRSxNQUFBO0VBQzVCLGFBQWE7RUFBRSxNQUFBLEVBQU87O0FBR3hCOytFRk0rRTtBRUgvRTs7RUZNRTtBQUNGLHVEQUF1RDtBRUh2RDtFQUNFLGNBQWMsRUFBQTs7QUFHaEI7O0VGS0U7QUFDRix1REFBdUQ7QUVGdkQ7RUFDRSxrQkFBa0IsRUFBQTs7QUFHcEI7K0VGRytFO0FFQS9FOztFRkdFO0FBQ0YsdURBQXVEO0FFQXZEO0VBQ0UsYUFBYSxFQUFBOztBQUdmOztFRkVFO0FBQ0YsdURBQXVEO0FBQ3ZEO0VFQ0UsYUFBYSxFQUFBOztBRkVmLGlGQUFpRjtBQzFWakY7RUVGRSxlQ3dCYyxFQUFBO0VDd05SO0lMZ0hKLGlGQUFpRjtJQzlWckY7TUVBSSxlQ3dCbUIsRUFBQSxFRHRCdEI7O0FIZ1dELGlGQUFpRjtBRS9VakY7RUlOSSwyREZIeUU7RURKM0UsV0lnQ29CLEVBQUE7RVBnVXBCLGtGQUFrRjtFTXZWaEY7SUFDRSx3RUZSTSxFQUFBOztBSmtXWixrRkFBa0Y7QUdoV2xGOzs7Ozs7Ozs7Ozs7Ozs7O0VBZ0JFLFNBQVM7RUFDVCxVQUFVLEVBQUE7O0FIbVdaLGtGQUFrRjtBRXRUbEY7RUN6Q0UscUJBQXFCLEVBQUE7O0FIbVd2QixrRkFBa0Y7QUcvVmxGO0VBQ0Usa0JBQWtCLEVBQUE7O0FIa1dwQixrRkFBa0Y7QUcvVmxGO0VBQ0UsZ0JBQWdCO0VBQ2hCLFlBQVk7RUFDWixVQUFVLEVBQUE7O0FIa1daLGtGQUFrRjtBRzlWbEY7RUFDRSxnQkFBZ0IsRUFBQTs7QUhpV2xCLGtGQUFrRjtBRS9WbEY7RUNFRSx5QkloQndCLEVBQUE7O0FQaVgxQix1RkFBdUY7QVE5WXZGO0VBQ0Usc0JKdUM0QjtFSXRDNUIsbUJBQXFCO0VBQ3JCLHlCQUF5QixFQUFBO0VSZ1p6Qix1RkFBdUY7RVE5WXZGO0lBQ0UscUJBQXFCO0lBQ3JCLHFCQzREVyxFQUFBOztBVHFWZiwyRkFBMkY7QVV6WjNGO0VBRUUsY0g2QnlCO0VHNUJ6QixrQkRrRWEsRUFBQTtFVHdWYixrRkFBa0Y7RU1yV2xGO0lBekJFLGdDQ3hCc0I7SUR5QnRCLG9DQ3pCc0I7SUQyQnhCLG9CQUFvQjtJQUNwQixjQUFjO0lBQ2Qsd0JBQXdCLEVBQUE7SU5nWXRCLGtGQUFrRjtJTTlYcEY7TUFFRSxnQ0MvQnFCO01EZ0NyQixvQ0NoQ3FCO01EaUNyQixxQkFBcUIsRUFBQTtFTitYdkIsNEZBQTRGO0VVemE5RjtJQU1JLGtCRGdFWSxFQUFBOztBRTlFaEI7RUFDRSx1QkFBdUI7RUFDdkIsbUtBQytFO0VBQy9FLGdCQUFnQjtFQUNoQixrQkFBa0IsRUFBQTs7QUFHcEI7RUFDRSx1QkFBdUI7RUFDdkIsNkpBQzRFO0VBQzVFLGdCQUFnQjtFQUNoQixrQkFBa0IsRUFBQTs7QUFHcEI7RUFDRSx1QkFBdUI7RUFDdkIsaUtBQzhFO0VBQzlFLGdCQUFnQjtFQUNoQixrQkFBa0IsRUFBQTs7QUFHcEI7RUFDRSx1QkFBdUI7RUFDdkIseUtBQ2tGO0VBQ2xGLGdCQUFnQjtFQUNoQixrQkFBa0IsRUFBQTs7QUFHcEI7RUFDRSx3QkFBd0I7RUFDeEIscUtBQ2dGO0VBQ2hGLGdCQUFnQjtFQUNoQixrQkFBa0IsRUFBQTs7QUFHcEI7RUFDRSx3QkFBd0I7RUFDeEIsK0pBQzZFO0VBQzdFLGdCQUFnQjtFQUNoQixrQkFBa0IsRUFBQTs7QUFHcEI7RUFDRSx3QkFBd0I7RUFDeEIsbUtBQytFO0VBQy9FLGdCQUFnQjtFQUNoQixrQkFBa0IsRUFBQTs7QUFHcEI7RUFDRSx3QkFBd0I7RUFDeEIsMktBQ21GO0VBQ25GLGdCQUFnQjtFQUNoQixrQkFBa0IsRUFBQTs7QVh3YXBCLHlGQUF5RjtBWTNkekY7RU5BSSwyQkZJMkM7RVFEN0MsV0w0Qm9CO0VLM0JwQixnQkFBZ0IsRUFBQTtFWjRkaEIsa0ZBQWtGO0VNOWRoRjtJQUNFLHVDRkQ0QyxFQUFBO0VKaWVoRCxrRkFBa0Y7RU03YWxGO0lBdEJBLG9CQUFvQjtJQUNwQixjQUFjO0lBQ2Qsd0JBQXdCLEVBQUE7SU5zY3RCLGtGQUFrRjtJTXBjcEY7TUFFRSxnQ0NqQ3NCO01Ea0N0QixvQ0NsQ3NCO01EbUN0QixxQkFBcUIsRUFBQTs7QU5zY3pCLDBGQUEwRjtBYTVlMUY7RUFFSSxjTkdxQjtFTUZyQixpQkFBaUIsRUFBQTs7QWI4ZXJCLDBGQUEwRjtBYWpmMUY7RUFPSSwwQkFBMEIsRUFBQTs7QWI4ZTlCLDBGQUEwRjtBYTNldkY7RUFFRyxjTlJtQixFQUFBOztBUHFmekIsa0ZBQWtGO0FNcmNoRjtFQXpCRSxnQ0N4QnNCO0VEeUJ0QixvQ0N6QnNCO0VEMkJ4QixvQkFBb0I7RUFDcEIsY0FBYztFQUNkLHdCQUF3QixFQUFBO0VOZ2V4QixrRkFBa0Y7RU05ZGxGO0lBRUUsZ0NDL0JxQjtJRGdDckIsb0NDaENxQjtJRGlDckIscUJBQXFCLEVBQUE7O0FOZ2V6QixrRkFBa0Y7QU1sZGhGO0VBdEJBLG9CQUFvQjtFQUNwQixjQUFjO0VBQ2Qsd0JBQXdCLEVBQUE7RU4yZXhCLGtGQUFrRjtFTXplbEY7SUFFRSxnQ0NqQ3NCO0lEa0N0QixvQ0NsQ3NCO0lEbUN0QixxQkFBcUIsRUFBQTs7QU4yZXpCLDBGQUEwRjtBTTdkdkY7RU9sQkQsWUFBWTtFQUNaLGdCQUFnQixFQUFBO0Via2ZoQiwwRkFBMEY7RWFwZjVGO0lBTUksU0FBUztJQUNULHFCQUFxQixFQUFBOztBYmtmekIsc0ZBQXNGO0FjOWhCdEY7RVJFSSwyQkZJMkM7RVVGM0MsV1A2QmtCO0VPNUJsQixnQkFBZ0I7RUFDaEIsZ0JBQWlCLEVBQUE7RWQ4aEJuQixrRkFBa0Y7RU1oaUJoRjtJQUNFLHVDRkQ0QyxFQUFBO0VKbWlCaEQsa0ZBQWtGO0VNL2VsRjtJQXpCRSxnQ0N4QnNCO0lEeUJ0QixvQ0N6QnNCO0lEMkJ4QixvQkFBb0I7SUFDcEIsY0FBYztJQUNkLHdCQUF3QixFQUFBO0lOMGdCdEIsa0ZBQWtGO0lNeGdCcEY7TUFFRSxnQ0MvQnFCO01EZ0NyQixvQ0NoQ3FCO01EaUNyQixxQkFBcUIsRUFBQTtFTnlnQnZCLHNGQUFzRjtFY25qQnhGO0lBU00sa0JMMkRTLEVBQUE7O0FUbWZmLDJGQUEyRjtBZXZqQjNGO0VBQ0UsZ0NSOEJ5QjtFUTdCekIsZ0JBQWdCO0VBQ2hCLHNCWHFDeUI7RVdwQ3pCLHdCQUF5QixFQUFBOztBZjBqQjNCLDBGQUEwRjtBZ0J4akIxRjtFQUNFLGdCQUFnQjtFQUNoQixzQlpnQ3lCO0VZL0J6QixnQkFBZ0I7RUFDaEIseUJBQXlCLEVBQUE7RWhCMGpCekIsMEZBQTBGO0VnQnZqQjFGO0lBQ0Usa0JQd0RZO0lPdkRaLGdCQUFnQjtJQUNoQixzQlp5QjBCLEVBQUE7SUNnTXRCO01MaVdGLDBGQUEwRjtNZ0I3akI5RjtRQU1JLGtCUGtEUyxFQUFBLEVPaERaO0VoQndqQkQsMEZBQTBGO0VnQnRqQjFGO0lBQ0Usa0JQNkNXO0lPNUNYLHVCQUF3QixFQUFBO0VoQndqQjFCLDBGQUEwRjtFZ0JyakIxRjtJQUNFLDBCVElrQixFQUFBOztBUG9qQnRCLDBGQUEwRjtBaUJsbEIxRjtFWERJLDJCRkkyQyxFQUFBO0VKa2xCN0Msa0ZBQWtGO0VNcGxCaEY7SUFDRSx1Q0ZENEMsRUFBQTs7QUp3bEJsRCwwRkFBMEY7QWlCcmxCMUY7RVhDSSwyREZIeUUsRUFBQTtFSjBsQjNFLGtGQUFrRjtFTXJsQmhGO0lBQ0Usd0VGUk0sRUFBQTs7QUpnbUJaLDBGQUEwRjtBaUIza0IxRjtFQUNFLDBCQUEwQixFQUFBOztBakI4a0I1QiwwRkFBMEY7QWlCM2tCMUY7RUFDRSx5QkFBeUIsRUFBQTtFakI2a0J6QiwwRkFBMEY7RWlCM2tCMUY7SUFDRSxzQmJRdUIsRUFBQTtFSnFrQnpCLDBGQUEwRjtFaUIxa0IxRjtJQUNFLHNCYkswQixFQUFBOztBSndrQjlCLDBGQUEwRjtBaUI1akIxRjtFQUNFLGdCQUFnQixFQUFBOztBakIrakJsQiwwRkFBMEY7QWlCNWpCMUY7RUFDRSxrQkFBa0IsRUFBQTs7QWpCK2pCcEIsMEZBQTBGO0FpQjVqQjFGO0VBQ0UsaUJBQWlCLEVBQUE7O0FqQitqQm5CLDBGQUEwRjtBaUJyaUJ4RjtFQUNFLGNBUlEsRUFBQTs7QWpCZ2pCWiwwRkFBMEY7QWlCemlCeEY7RUFDRSxpQkFQYSxFQUFBOztBakJtakJqQiwwRkFBMEY7QWlCN2lCeEY7RUFDRSxnQkFOWSxFQUFBOztBakJzakJoQiwwRkFBMEY7QWlCampCeEY7RUFDRSxjQUxVLEVBQUE7O0FqQnlqQmQsMkZBQTJGO0FpQnRpQjNGO0VBQ0UscUJBQXFCLEVBQUE7O0FqQnlpQnZCLHVGQUF1RjtBa0Jsb0JyRjtFQUNFLGVUOENZLEVBQUE7O0FUdWxCaEIsdUZBQXVGO0FrQnRvQnJGO0VBQ0UsaUJUK0NlLEVBQUE7O0FUMGxCbkIsdUZBQXVGO0FrQjFvQnJGO0VBQ0UsZVRnRFcsRUFBQTs7QVQ2bEJmLHVGQUF1RjtBa0I5b0JyRjtFQUNFLGtCVGlEYSxFQUFBOztBVGdtQmpCLHVGQUF1RjtBa0JscEJyRjtFQUNFLGlCVGtEVyxFQUFBOztBVG1tQmYsdUZBQXVGO0FrQnRwQnJGO0VBQ0UsaUJUbURXLEVBQUE7O0FUc21CZix1RkFBdUY7QWtCMXBCckY7RUFDRSxpQlRvRFcsRUFBQTs7QVR5bUJmLHVGQUF1RjtBa0I5cEJyRjtFQUNFLGtCVHFEVyxFQUFBOztBVDRtQmYsdUZBQXVGO0FrQmxxQnJGO0VBQ0Usa0JUc0RZLEVBQUE7O0FUK21CaEIsdUZBQXVGO0FrQnRxQnJGO0VBQ0UsaUJUdURZLEVBQUE7O0FUa25CaEIsdUZBQXVGO0FrQjFxQnJGO0VBQ0Usa0JUd0RjLEVBQUE7O0FUcW5CbEIsMEZBQTBGO0FtQjNyQjFGO0VBQ0Usb0JBQW9CLEVBQUE7RW5CNnJCcEIsMEZBQTBGO0VtQjlyQjVGO0lBSUksa0JBQWtCO0lBQ2xCLGFBQWE7SUFDYixZQUFZLEVBQUE7RW5CNnJCZCwwRkFBMEY7RW1CMXJCekY7SUFFRyxrQkFBa0I7SUFDbEIsWUFBWSxFQUFBO0VuQjJyQmhCLDBGQUEwRjtFbUJ0ckJ6RjtJQUVHLGFaZndCLEVBQUE7O0FQdXNCOUIsNkZBQTZGO0FvQjdzQjdGO0VBQ0UsYUFBYTtFQUNiLGlCWGtFYSxFQUFBO0VKcUtQO0lMeWVKLDZGQUE2RjtJb0JsdEJqRztNQUtJLGVBQWUsRUFBQSxFQW9NbEI7RXBCNGdCQyw4RkFBOEY7RW9CN3NCOUY7SUFDRSxzQmJtQm1CO0lhbEJuQixnQ2JtQnFCLEVBQUE7SVA0ckJyQiw4RkFBOEY7SW9CanRCL0Y7TUFLRyxXYm9CZ0IsRUFBQTtFUDJyQnBCLDhGQUE4RjtFb0Izc0I5RjtJQUNFLHNCYmVrQixFQUFBO0lQOHJCbEIsOEZBQThGO0lvQjlzQi9GO01BSUcsY2Jmd0IsRUFBQTtFUDR0QjVCLDhGQUE4RjtFb0J6c0I5RjtJQUNFLGNBQWM7SUFDZCxhQUFhO0lBQ2IsWUFBWTtJQUNaLDhCQUE4QjtJQUM5QixpQkFBaUI7SUFDakIsa0JBQWtCLEVBQUE7SXBCMnNCbEIsOEZBQThGO0lvQnhzQjlGO01BQ0UsdUJBQXVCO01BQ3ZCLGtCQUFrQixFQUFBO0VwQjBzQnRCLDhGQUE4RjtFb0J0c0I5RjtJQUNFLGVBQWUsRUFBQTtJcEJ3c0JmLDhGQUE4RjtJb0J6c0IvRjtNQUlHLGNBQWMsRUFBQTtFcEJ3c0JsQiw4RkFBOEY7RW9CcHNCOUY7SUFDRSxhQUFhLEVBQUE7SXBCc3NCYiw4RkFBOEY7SW9CbnNCOUY7TUFDRSxjQUFjO01BQ2QsOEJBQThCLEVBQUE7RXBCcXNCbEMsOEZBQThGO0VvQmpzQjlGO0lBQ0UsYUFBYTtJQUNiLGdCQUFnQixFQUFBO0VwQm1zQmxCLDhGQUE4RjtFb0Joc0I5RjtJQUNFLGFBQWEsRUFBQTtJcEJrc0JiLDhGQUE4RjtJb0Joc0I5RjtNQUNFLG9CWEFTLEVBQUE7SVRrc0JYLDhGQUE4RjtJb0IvckI5RjtNQUNFLG9CWFJhLEVBQUE7RVR5c0JqQiw4RkFBOEY7RW9CN3JCOUY7SUFDRSxtQkFBbUI7SUFDbkIsWUFBWTtJQUNaLGVBQWU7SUFDZixhQUFhO0lBQ2IsVUFBVTtJQUNWLGtCQUFrQjtJQUNsQixxQkFBcUI7SUFDckIscUJBQXFCLEVBQUE7SXBCK3JCckIsOEZBQThGO0lvQjdyQjlGO01BQ0Usc0JiMURpQjtNYTJEakIsV2J0RGdCLEVBQUE7SVBxdkJsQiw4RkFBOEY7SW9CNXJCOUY7TUFDRSxzQmIxRGdCO01hMkRoQixjYjlEb0IsRUFBQTtNUDR2QnBCLCtGQUErRjtNb0Joc0JqRztRQU9JLFdickVlLEVBQUE7SUY2TWY7TUxxakJGLCtGQUErRjtNb0J6ckJoRztRQUlPLHlCYm5Ha0IsRUFBQSxFYW9HbkI7SXBCdXJCUCwrRkFBK0Y7SW9CdHRCaEc7TUFzQ0sseUJiM0dzQixFQUFBO0lQOHhCMUIsK0ZBQStGO0lvQnp0QmhHO01BMkNHLFdBQVc7TUFDWCxXQUFXO01BQ1gsT0FBTztNQUNQLGtCQUFrQjtNQUNsQixTQUFTO01BQ1QsV0FBVztNQUNYLGtDQUFrQyxFQUFBO01mNkdoQztRTHFrQkEsK0ZBQStGO1FvQm51QnBHO1VBb0RLLFNBQVM7VUFDVCxTQUFTLEVBQUEsRUFFWjtFcEJnckJILCtGQUErRjtFb0I3cUIvRjtJQUNFLGFBQWE7SUFDYixjQUFjO0lBQ2QsZUFBZTtJQUNmLHNCQUF3QixFQUFBO0VwQitxQjFCLCtGQUErRjtFb0I1cUIvRjtJQUNFLGFBQWE7SUFDYixlQUFlO0lBQ2YsZ0JBQWdCLEVBQUE7RXBCOHFCbEIsK0ZBQStGO0VvQjNxQi9GO0lBQ0Usb0JYaEZXO0lXaUZYLHFCWGpGVyxFQUFBO0VUOHZCYiwrRkFBK0Y7RW9CdHFCL0Y7SUFDRSxzQmIzSGtCO0lhNEhsQixXQUFXO0lBQ1gsYUFBYTtJQUNiLGtCQUFrQjtJQUNsQixnQkFBZ0I7SUFDaEIsUUFBUTtJQUNSLE1BQU07SUFDTixXQUFXO0lBQ1gsVUFBVSxFQUFBO0lmcUVOO01Mb21CRiwrRkFBK0Y7TW9CbHJCbkc7UUFZSSxlQUFlLEVBQUEsRUFFbEI7RXBCdXFCRCwrRkFBK0Y7RW9CcnFCL0Y7SUFDRSxhQUFhO0lBQ2IsY0FBYyxFQUFBO0VwQnVxQmhCLCtGQUErRjtFb0JwcUIvRjtJQUNFLHNCYmhKa0I7SWFpSmxCLFNBQVM7SUFDVCxnQ0FBZ0M7SUFDaEMsY2J0SnNCO0lhdUp0QixjQUFjO0lBQ2QsVUFBVSxFQUFBO0lwQnNxQlYsK0ZBQStGO0lvQjVxQmhHO01BU0csY0FBYyxFQUFBO0lBVGpCO01BU0csY0FBYyxFQUFBO0lBVGpCO01BU0csY0FBYyxFQUFBO0lBVGpCO01BU0csY0FBYyxFQUFBO0lBVGpCO01BU0csY0FBYyxFQUFBO0lwQnNxQmhCLCtGQUErRjtJb0IvcUJoRztNQWFHLGFBQWEsRUFBQTtFcEJxcUJqQiwrRkFBK0Y7RW9CanFCL0Y7SUFDRSxvQlg5SFcsRUFBQTtFVGl5QmIsK0ZBQStGO0VvQmhxQi9GO0lBQ0UsYUFBYTtJQUNiLGdCQUFnQixFQUFBOztBcEJtcUJwQix1R0FBdUc7QXFCMTJCdkc7RUFDRSw4QlorRGEsRUFBQTtFVDZ5QmIsd0dBQXdHO0VxQjEyQnhHO0lBQ0UscUJBQXFCLEVBQUE7RXJCNDJCdkIsd0dBQXdHO0VxQnoyQnhHO0lBQ0UscUJaZ0VjLEVBQUE7RVQyeUJoQix3R0FBd0c7RXFCbjNCMUc7SUFZSSxjQUFjO0lBQ2QscUJBQXFCLEVBQUE7SXJCMDJCckIsd0dBQXdHO0lxQnYzQjVHO01BZ0JNLDBCQUEwQixFQUFBOztBckIyMkJoQyxzRkFBc0Y7QXNCejNCdEY7RUFDRSxrQkFBa0IsRUFBQTtFdEIyM0JsQixzRkFBc0Y7RXNCejNCdEY7SUFDRSxxQkFBcUIsRUFBQTtFdEIyM0J2QixzRkFBc0Y7RXNCeDNCdEY7SUFDRSxnQkFBaUIsRUFBQTtFdEIwM0JuQixzRkFBc0Y7RXNCdjNCdEY7SUFDRSxjQUFjO0lBQ2QsZ0JBQWdCO0lBQ2hCLHlCYnNEWSxFQUFBOztBVG8wQmhCLHVHQUF1RztBdUIxNEJ2RztFQUNFLGVkb0VhO0VjbkViLFVBQVU7RUFDVixVQUFVO0VBQ1Ysc0JkaUVhO0VjaEViLHdCQUFnQjtFQUFoQixnQkFBZ0I7RUFDaEIsdUJBQXVCLEVBQUE7O0F2QjY0QnpCLHdHQUF3RztBdUJ6NEJ4RztFQUNFLGFBQWE7RUFDYixPQUFPO0VBQ1AsTUFBTTtFQUNOLGtCQUFrQjtFQUNsQixRQUFRO0VBQ1IsV0FBVztFQUNYLFdBQ0YsRUFBQTs7QXZCMjRCQSw4RkFBOEY7QXdCeDVCOUY7RUFDRSx5QmpCQ3dCO0VpQkF4QixZQUFZO0VBQ1osZUFBZTtFQUNmLGdCQUFnQjtFQUNoQixrQmY0RGM7RWUzRGQsc0JwQjZCeUI7RW9CNUJ6QixnQmYwRGM7RWV6RGQsa0JBQWtCO0VBQ2xCLHlCQUF5QjtFQUN6Qix3QkFBd0IsRUFBQTtFQUV4QjtJeEJ5NUJFLDhGQUE4RjtJd0JyNkJsRztNQWVNLFlBQVksRUFBQSxFQUNiO0V4Qnc1QkgsOEZBQThGO0V3QnI1QjlGO0lBQ0UsaUJmeUNXO0lleENYLGVmd0NXLEVBQUE7RVQrMkJiLDhGQUE4RjtFd0JwNUI5RjtJQUNFLGlCZnlDWTtJZXhDWixlZndDWSxFQUFBO0VUODJCZCw4RkFBOEY7RXdCbjVCOUY7SUFDRSxrQmZxQ2M7SWVwQ2QsZ0Jmb0NjLEVBQUE7RVRpM0JoQiw4RkFBOEY7RXdCbDVCOUY7SUFDRSxrQkFBa0I7SUFDbEIsV0FBVztJQUNYLFlBQVk7SUFDWixrQkFBa0IsRUFBQTtFeEJvNUJwQiw4RkFBOEY7RXdCajVCOUY7SUFDRSxXQUFXLEVBQUE7RXhCbTVCYiw4RkFBOEY7RXdCaDVCOUY7SUFDRSw4QkFBOEI7SUFDOUIsaUNBQWlDLEVBQUE7SUFFakM7TXhCaTVCRSw4RkFBOEY7TXdCcjVCakc7UUFPSyxzQkFBc0I7UUFDdEIsbUJBQW1CO1FBQ25CLFVBQVUsRUFBQTtReEJpNUJWLDhGQUE4RjtRd0IxNUJuRztVQVlPLG1CQUFtQixFQUFBLEVBQ3BCOztBeEJpNUJULDhGQUE4RjtBd0JuNEI5RjtFbEI5Q0ksZ0NDeEJzQjtFRHlCdEIsb0NDekJzQjtFRDJCeEIsb0JBQW9CO0VBQ3BCLGNBQWM7RUFDZCx3QkFBd0I7RWtCMkN4QixlQUFlO0VBQ2YsbUJBQW1CLEVBQUE7RXhCeTRCbkIsa0ZBQWtGO0VNbjdCbEY7SUFFRSxnQ0MvQnFCO0lEZ0NyQixvQ0NoQ3FCO0lEaUNyQixxQkFBcUIsRUFBQTs7QU5xN0J6QiwwRkFBMEY7QXlCNTlCeEY7RUFFRSxrQkFBa0IsRUFBQTs7QXpCODlCdEIsMEZBQTBGO0F5QjM5QnhGO0VBRUUsa0JBQXFCLEVBQUE7O0F6QjY5QnpCLDBGQUEwRjtBeUIxOUJ4RjtFQUNFLGlCaEJxRFc7RWdCcERYLHVCQUF1QjtFQUN2QixnQkFBZ0IsRUFBQTtFekI0OUJsQiwwRkFBMEY7RXlCMTlCeEY7SUFDRSxrQmhCOENXLEVBQUE7O0FUKzZCakIsMEZBQTBGO0F5Qno5QnhGO0VBQ0Usa0JBQWtCO0VBQ2xCLE1BQU07RUFDTixPQUFPO0VBQ1AsY2hCNENZO0VnQjNDWixnQmhCNENjLEVBQUE7O0FKaUtWO0VMZ3hCTiwwRkFBMEY7RXlCejlCeEY7SUFDRSx1REFBdUQ7SUFDdkQsa0JBQWtCO0lBQ2xCLFdsQlBpQjtJa0JRakIsV0FBVztJQUNYLFlBQVk7SUFDWixPQUFPO0lBQ1AsTUFBTTtJQUNOLGVoQitCVTtJZ0I5QlYscUJBQXFCLEVBQUE7RXpCMjlCekIsMEZBQTBGO0V5Qng5QnhGO0lBQ0UsV2xCakJpQixFQUFBLEVrQmtCbEI7O0FwQjJMRztFTGd5Qk4sMEZBQTBGO0V5QmpnQzFGO0lBNENJLGlCQUFhO0lBQWIsYUFBYTtJQUNiLDRCQUFpQztJQUFqQyxpQ0FBaUM7SUFDakMsVUFBVSxFQUFBLEVBQ1g7O0FwQmtMRztFTHV5Qk4sMEZBQTBGO0V5Qm5nQzFGO0lBK0NJLGlCaEJNUyxFQUFBO0lUaTlCWCwwRkFBMEY7SXlCamdDMUY7TUE2Q0ksZWhCQ08sRUFBQSxFZ0JBUjs7QXpCdTlCUCw0RkFBNEY7QTBCeGdDNUY7RUFDRSx5QkFBeUIsRUFBQTtFMUIwZ0N6Qiw0RkFBNEY7RTBCM2dDOUY7O0lBTUksY0FBYyxFQUFBO0UxQnlnQ2hCLDRGQUE0RjtFMEJ0Z0M1RjtJQUVFLG1CQUFtQixFQUFBO0kxQnVnQ25CLDJGQUEyRjtJMEJyaUMzRjs7TUFFRSxVQTJCNkIsRUFBQTtJMUI0Z0MvQiwyRkFBMkY7STBCemlDM0Y7O01BRUUsVUEyQmlDLEVBQUE7STFCZ2hDbkMsMkZBQTJGO0kwQjdpQzNGOztNQUVFLFVBMkJxQyxFQUFBO0UxQm9oQ3pDLDRGQUE0RjtFMEJoaEM1RjtJQUVFLG1CQUFtQixFQUFBO0kxQmloQ25CLDJGQUEyRjtJMEJwakMzRjs7TUFFRSxVQWdDNkIsRUFBQTtJMUJzaEMvQiwyRkFBMkY7STBCeGpDM0Y7O01BRUUsVUFnQ2lDLEVBQUE7RTFCMGhDckMsNEZBQTRGO0UwQnRoQzVGO0lBRUUsbUJBQW1CLEVBQUE7STFCdWhDbkIsMkZBQTJGO0kwQi9qQzNGOztNQUVFLFVBcUM2QixFQUFBO0kxQjRoQy9CLDJGQUEyRjtJMEJua0MzRjs7TUFFRSxVQXFDaUMsRUFBQTtJMUJnaUNuQywyRkFBMkY7STBCdmtDM0Y7O01BRUUsVUFxQ3FDLEVBQUE7RTFCb2lDekMsNEZBQTRGO0UwQmhpQzNGO0lBR0cseUJBQXlCLEVBQUE7RTFCZ2lDN0IsNEZBQTRGO0UwQjVoQzNGO0lBRUcsNkJuQm5CbUIsRUFBQTs7QVBpakN6Qix5RkFBeUY7QTJCL2tDekY7RUFDRSxxQkFBcUI7RUFDckIsYUFBYTtFQUNiLGVBQWU7RUFDZixnQkFBZ0I7RUFDaEIsZ0NwQkU0QixFQUFBO0VQK2tDNUIsMEZBQTBGO0UyQjlrQ3hGO0lBQ0UsZUFBZSxFQUFBO0UzQmdsQ25CLDBGQUEwRjtFMkI1a0MxRjtJQUNFLHNCcEJvQmtCO0lvQm5CbEIsV3BCY21CO0lvQmJuQixjQUFjO0lBQ2QsNEJBQTRCO0lBQzVCLGdCbEJvRFc7SWtCbkRYLGtCQUFrQixFQUFBO0kzQjhrQ2xCLDBGQUEwRjtJMkI1a0MxRjtNQUNFLGdCbEJtRFksRUFBQTtJVDJoQ2QsMEZBQTBGO0kyQjNrQzFGO01BQ0UseUJwQm5Cd0I7TW9Cb0J4QixXcEJPZ0I7TW9CTmhCLGdCQUFnQixFQUFBOztBM0I4a0N0QiwwRkFBMEY7QTJCdGtDeEY7RUFDRSxhQUFhLEVBQUE7RTNCd2tDZiwwRkFBMEY7RTJCdGtDeEY7SUFDRSxjQUFjLEVBQUE7O0EzQnlrQ3BCLGtGQUFrRjtBNEIzbUNsRjtFQUNFLGlCQUFpQjtFQUNqQixrQkFBa0IsRUFBQTs7QTVCOG1DcEIsa0ZBQWtGO0E0QjNtQ2xGO0VBQ0UsT0FBTztFQUNQLGtCQUFrQjtFQUNsQixRQUFRO0VBQ1IsMkJBQTJCO0VBQzNCLFdBQVc7RUFDWCxVQUFVLEVBQUE7O0E1QjhtQ1osa0ZBQWtGO0E0QjFtQ2xGO0VBQ0UsMEJBQWtCO01BQWxCLGtCQUFrQixFQUFBOztBNUI2bUNwQixrRkFBa0Y7QTRCMW1DbEY7RUFDRSxtQkFBbUI7RUFDbkIsYUFBYTtFQUNiLHVCQUF1QixFQUFBOztBNUI2bUN6QixzRkFBc0Y7QTZCbG9DdEY7RUFDRSxnQkNnQnVDO0VEZnZDLGlCQUFpQjtFQUNqQixrQkFBa0IsRUFBQTs7QTdCcW9DcEIsc0ZBQXNGO0E2Qi9uQ2xGO0VBQ0UsZ0JDT21DLEVBQUE7O0E5QjJuQ3pDLHNGQUFzRjtBNkJub0NsRjtFQUNFLGtCQ09tQyxFQUFBOztBOUIrbkN6QyxzRkFBc0Y7QTZCdm9DbEY7RUFDRSxvQkNPbUMsRUFBQTs7QTlCbW9DekMsc0ZBQXNGO0E2QjNvQ2xGO0VBQ0UscUJDT21DLEVBQUE7O0E5QnVvQ3pDLHNGQUFzRjtBNkIvb0NsRjtFQUNFLGtCQ09tQyxFQUFBOztBOUIyb0N6QyxzRkFBc0Y7QTZCbnBDbEY7RUFDRSxtQkNPbUMsRUFBQTs7QTlCK29DekMsc0ZBQXNGO0E2QnZwQ2xGO0VBQ0UsZ0JDT21DLEVBQUE7O0E5Qm1wQ3pDLG9GQUFvRjtBK0J0cUNwRjtFQUNFLHFCQUFxQixFQUFBOztBL0J5cUN2QixvRkFBb0Y7QStCdHFDcEY7RUFDRSxjQUFjLEVBQUE7O0EvQnlxQ2hCLG9GQUFvRjtBK0J0cUNwRjtFQUVJLFdBQVc7RUFDWCxjQUFjO0VBQ2QsV0FBVyxFQUFBOztBL0J3cUNmLGlGQUFpRjtBZ0M3cENqRjtFQUNFLGFBQWEsRUFBQTtFaEMrcENiLGlGQUFpRjtFZ0M3cENqRjtJQUNFLGVBQWUsRUFBQTs7QWhDZ3FDbkIsaUZBQWlGO0FnQzVwQ2pGO0VBQ0UsY0FBYztFQUNkLG9CdkIrQmE7RXVCOUJiLGVBQWUsRUFBQTs7QWhDK3BDakIsaUZBQWlGO0FnQ3ZwQy9FO0VBQ0UsY0FBYztFQUNkLG9CdkJvQlcsRUFBQTs7QVRzb0NmLGlGQUFpRjtBZ0NocEMvRTtFQUNFLGNBQWM7RUFDZCxvQnZCUVc7RXVCUFgsZ0JBQWdCO0VBQ2hCLGtDQUFrRCxFQUFBOztBaENtcEN0RCxpRkFBaUY7QWdDdnBDL0U7RUFDRSxjQUFjO0VBQ2Qsb0J2QlFXO0V1QlBYLGdCQUFnQjtFQUNoQixtQ0FBa0QsRUFBQTs7QWhDMHBDdEQsaUZBQWlGO0FnQzlwQy9FO0VBQ0UsY0FBYztFQUNkLG9CdkJRVztFdUJQWCxnQkFBZ0I7RUFDaEIseUJBQWtELEVBQUE7O0FoQ2lxQ3RELGlGQUFpRjtBZ0NycUMvRTtFQUNFLGNBQWM7RUFDZCxvQnZCUVc7RXVCUFgsZ0JBQWdCO0VBQ2hCLG1DQUFrRCxFQUFBOztBaEN3cUN0RCxpRkFBaUY7QWdDNXFDL0U7RUFDRSxjQUFjO0VBQ2Qsb0J2QlFXO0V1QlBYLGdCQUFnQjtFQUNoQixtQ0FBa0QsRUFBQTs7QWhDK3FDdEQsaUZBQWlGO0FnQ25yQy9FO0VBQ0UsY0FBYztFQUNkLG9CdkJRVztFdUJQWCxnQkFBZ0I7RUFDaEIsd0JBQWtELEVBQUE7O0FoQ3NyQ3RELGlGQUFpRjtBZ0MxckMvRTtFQUNFLGNBQWM7RUFDZCxvQnZCUVc7RXVCUFgsZ0JBQWdCO0VBQ2hCLGtDQUFrRCxFQUFBOztBaEM2ckN0RCxpRkFBaUY7QWdDanNDL0U7RUFDRSxjQUFjO0VBQ2Qsb0J2QlFXO0V1QlBYLGdCQUFnQjtFQUNoQixrQ0FBa0QsRUFBQTs7QWhDb3NDdEQsaUZBQWlGO0FnQ3hzQy9FO0VBQ0UsY0FBYztFQUNkLG9CdkJRVztFdUJQWCxnQkFBZ0I7RUFDaEIsd0JBQWtELEVBQUE7O0FoQzJzQ3RELGlGQUFpRjtBZ0Mvc0MvRTtFQUNFLGNBQWM7RUFDZCxvQnZCUVc7RXVCUFgsZ0JBQWdCO0VBQ2hCLGtDQUFrRCxFQUFBOztBaENrdEN0RCxpRkFBaUY7QWdDdHRDL0U7RUFDRSxjQUFjO0VBQ2Qsb0J2QlFXO0V1QlBYLGdCQUFnQjtFQUNoQixrQ0FBa0QsRUFBQTs7QWhDeXRDdEQsaUZBQWlGO0FnQzd0Qy9FO0VBQ0UsY0FBYztFQUNkLG9CdkJRVztFdUJQWCxnQkFBZ0I7RUFDaEIsdUJBQWtELEVBQUE7O0FoQ2d1Q3RELGlGQUFpRjtBZ0N2dENqRjtFQUVFLGVBQWU7RUFDZixnQkFBZ0IsRUFBQTs7QWhDeXRDbEIsaUZBQWlGO0FnQ3R0Q2pGO0VBQ0UsYUFBYTtFQUNiLGVBQWUsRUFBQTtFaEN3dENmLGlGQUFpRjtFZ0NwdENqRjtJQUVFLGlCQUFpQixFQUFBO0VoQ3F0Q25CLGlGQUFpRjtFZ0NodENqRjtJQUNFLGtCdkJyQlksRUFBQTtJSm1LUjtNTHFrQ0YsaUZBQWlGO01nQ3B0Q3JGO1FBSUksaUJ2QjFCUyxFQUFBLEV1QmdDWjtJM0JxSUs7TUx5a0NGLGlGQUFpRjtNZ0N4dENyRjtRQVFJLFVBQVUsRUFBQSxFQUViO0VoQ2l0Q0Qsa0ZBQWtGO0VnQzdzQ2xGO0lBQ0UsVUFBVSxFQUFBO0kzQmdJTjtNTGdsQ0Ysa0ZBQWtGO01nQ2p0Q3RGO1FBSUksaUJ2QnhDUyxFQUFBLEV1QjBDWjtFaEM4c0NELGtGQUFrRjtFZ0Mzc0NoRjtJQUNFLFNBQVMsRUFBQTtFaEM2c0NiLGtGQUFrRjtFZ0Mxc0NoRjtJQUNFLFFBQVEsRUFBQTtFaEM0c0NaLGtGQUFrRjtFZ0N2c0NsRjtJQUNFLHNCQUFzQixFQUFBOztBM0I2R2xCO0VMOGxDTixrRkFBa0Y7RWdDbnNDaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUxzbUNOLGtGQUFrRjtFZ0Mzc0NoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsbUNBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTDhtQ04sa0ZBQWtGO0VnQ250Q2hGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix5QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMc25DTixrRkFBa0Y7RWdDM3RDaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLG1DQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUw4bkNOLGtGQUFrRjtFZ0NudUNoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsbUNBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTHNvQ04sa0ZBQWtGO0VnQzN1Q2hGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix3QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMOG9DTixrRkFBa0Y7RWdDbnZDaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUxzcENOLGtGQUFrRjtFZ0MzdkNoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsa0NBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTDhwQ04sa0ZBQWtGO0VnQ253Q2hGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix3QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMc3FDTixrRkFBa0Y7RWdDM3dDaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUw4cUNOLGtGQUFrRjtFZ0NueENoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsa0NBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTHNyQ04sa0ZBQWtGO0VnQzN4Q2hGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix1QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMOHJDTixrRkFBa0Y7RWdDenhDbEY7SUFFSSxxQnZCNUVTLEVBQUEsRXVCOEVaOztBM0J1Rks7RUxtc0NOLGtGQUFrRjtFZ0N4eENsRjtJQUVJLGFBQWE7SUFDYixpQkFBaUIsRUFBQTtJaEN5eENuQixrRkFBa0Y7SWdDNXhDcEY7TUFNTSxlQUFlLEVBQUEsRUFDaEI7O0EzQjhFQztFTDRzQ04sa0ZBQWtGO0VnQ3R4Q2xGO0lBRUksYUFBYTtJQUNiLGlCQUFpQixFQUFBO0loQ3V4Q25CLGtGQUFrRjtJZ0MxeENwRjtNQU1NLGVBQWUsRUFBQSxFQUNoQjs7QTNCbUVDO0VMcXRDTixrRkFBa0Y7RWdDcHhDbEY7SUFFSSxhQUFhO0lBQ2IsaUJBQWlCLEVBQUE7SWhDcXhDbkIsa0ZBQWtGO0lnQ3h4Q3BGO01BTU0sZUFBZSxFQUFBLEVBQ2hCOztBQUlMOzs7Ozs7R2hDdXhDQztBQUNILGtGQUFrRjtBZ0NqeENoRjtFQUNFLFFBQVEsRUFBQTtFM0I0Q0o7SUx3dUNKLGtGQUFrRjtJZ0NyeENwRjtNQUlJLFFBQVEsRUFBQSxFQUVYOztBaENteENILGtGQUFrRjtBZ0NqeENoRjtFQUNFLFFBQVEsRUFBQTtFM0JvQ0o7SUxndkNKLGtGQUFrRjtJZ0NyeENwRjtNQUlJLFFBQVEsRUFBQSxFQUVYOztBM0IrQks7RUxxdkNOLGtGQUFrRjtFZ0NoeENsRjtJQUVJLGVBQWUsRUFBQTtJaENpeENqQixrRkFBa0Y7SWdDbnhDcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDZ3hDckIsa0ZBQWtGO0lnQ3p4Q3BGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3N4Q3JCLGtGQUFrRjtJZ0MveENwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEM0eENyQixrRkFBa0Y7SWdDcnlDcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDa3lDckIsa0ZBQWtGO0lnQzN5Q3BGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3d5Q3JCLGtGQUFrRjtJZ0NqekNwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEM4eUNyQixrRkFBa0Y7SWdDdnpDcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDb3pDckIsa0ZBQWtGO0lnQzd6Q3BGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzB6Q3JCLGtGQUFrRjtJZ0NuMENwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENnMENyQixrRkFBa0Y7SWdDejBDcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDczBDckIsa0ZBQWtGO0lnQy8wQ3BGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzQwQ3JCLGtGQUFrRjtJZ0NyMUNwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQSxFQUNoQjs7QTNCaUJEO0VMazBDTixrRkFBa0Y7RWdDNzFDbEY7SUFnQk0sdUJBQXVCLEVBQUE7SWhDZzFDM0Isa0ZBQWtGO0lnQ2gyQ3BGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEMrMEN2QixrRkFBa0Y7SWdDdDJDcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3ExQ3ZCLGtGQUFrRjtJZ0M1MkNwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDMjFDdkIsa0ZBQWtGO0lnQ2wzQ3BGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENpMkN2QixrRkFBa0Y7SWdDeDNDcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3UyQ3ZCLGtGQUFrRjtJZ0M5M0NwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDNjJDdkIsa0ZBQWtGO0lnQ3A0Q3BGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENtM0N2QixrRkFBa0Y7SWdDMTRDcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3kzQ3ZCLGtGQUFrRjtJZ0NoNUNwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDKzNDdkIsa0ZBQWtGO0lnQ3Q1Q3BGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENxNEN2QixrRkFBa0Y7SWdDNTVDcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzI0Q3ZCLGtGQUFrRjtJZ0NsNkNwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUEsRUFDaEI7O0FoQ2k1Q1gsa0ZBQWtGO0FnQ3o2Q2hGO0VBOEJJLGNBQWM7RUFDZCxlQUFlO0VBQ2YsZUFBZSxFQUFBO0UzQkxiO0lMbzVDSixrRkFBa0Y7SWdDLzZDcEY7TUFtQ00sY0FBYztNQUNkLGVBQWU7TUFDZixnQkFBZ0IsRUFBQSxFQUVuQjs7QTNCWkc7RUwyNUNOLGtGQUFrRjtFZ0MxNENsRjtJQUVJLGtCdkJ0TFUsRUFBQSxFdUI0TGI7O0EzQnpCSztFTGc2Q04sa0ZBQWtGO0VnQy80Q2xGO0lBTUksaUJ2QjVMUyxFQUFBLEV1QjhMWjs7QTNCekJLO0VMcTZDTixrRkFBa0Y7RWdDdjRDaEY7SUFFSSx3QkFBd0IsRUFBQSxFQUUzQjs7QTNCbENHO0VMMDZDTixrRkFBa0Y7RWdDbDRDaEY7SUFFSSx3QkFBd0IsRUFBQSxFQUUzQjs7QTNCNUNHO0VMKzZDTixrRkFBa0Y7RWdDcGhEaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUx1N0NOLGtGQUFrRjtFZ0M1aERoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsbUNBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTCs3Q04sa0ZBQWtGO0VnQ3BpRGhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix5QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMdThDTixrRkFBa0Y7RWdDNWlEaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLG1DQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUwrOENOLGtGQUFrRjtFZ0NwakRoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsbUNBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTHU5Q04sa0ZBQWtGO0VnQzVqRGhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix3QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMKzlDTixrRkFBa0Y7RWdDcGtEaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUx1K0NOLGtGQUFrRjtFZ0M1a0RoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsa0NBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTCsrQ04sa0ZBQWtGO0VnQ3BsRGhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix3QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMdS9DTixrRkFBa0Y7RWdDNWxEaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUwrL0NOLGtGQUFrRjtFZ0NwbURoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsa0NBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTHVnRE4sa0ZBQWtGO0VnQzVtRGhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix1QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMK2dETixrRkFBa0Y7RWdDMW1EbEY7SUFFSSxxQnZCNUVTLEVBQUEsRXVCOEVaOztBM0J1Rks7RUxvaEROLGtGQUFrRjtFZ0N6bURsRjtJQUVJLGFBQWE7SUFDYixpQkFBaUIsRUFBQTtJaEMwbURuQixrRkFBa0Y7SWdDN21EcEY7TUFNTSxlQUFlLEVBQUEsRUFDaEI7O0EzQjhFQztFTDZoRE4sa0ZBQWtGO0VnQ3ZtRGxGO0lBRUksYUFBYTtJQUNiLGlCQUFpQixFQUFBO0loQ3dtRG5CLGtGQUFrRjtJZ0MzbURwRjtNQU1NLGVBQWUsRUFBQSxFQUNoQjs7QTNCbUVDO0VMc2lETixrRkFBa0Y7RWdDcm1EbEY7SUFFSSxhQUFhO0lBQ2IsaUJBQWlCLEVBQUE7SWhDc21EbkIsa0ZBQWtGO0lnQ3ptRHBGO01BTU0sZUFBZSxFQUFBLEVBQ2hCOztBQUlMOzs7Ozs7R2hDd21EQztBQUNILGtGQUFrRjtBZ0NsbURoRjtFQUNFLFFBQVEsRUFBQTtFM0I0Q0o7SUx5akRKLGtGQUFrRjtJZ0N0bURwRjtNQUlJLFFBQVEsRUFBQSxFQUVYOztBaENvbURILGtGQUFrRjtBZ0NsbURoRjtFQUNFLFFBQVEsRUFBQTtFM0JvQ0o7SUxpa0RKLGtGQUFrRjtJZ0N0bURwRjtNQUlJLFFBQVEsRUFBQSxFQUVYOztBM0IrQks7RUxza0ROLGtGQUFrRjtFZ0NqbURsRjtJQUVJLGVBQWUsRUFBQTtJaENrbURqQixrRkFBa0Y7SWdDcG1EcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDaW1EckIsa0ZBQWtGO0lnQzFtRHBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3VtRHJCLGtGQUFrRjtJZ0NobkRwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEM2bURyQixrRkFBa0Y7SWdDdG5EcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDbW5EckIsa0ZBQWtGO0lnQzVuRHBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3luRHJCLGtGQUFrRjtJZ0Nsb0RwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEMrbkRyQixrRkFBa0Y7SWdDeG9EcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDcW9EckIsa0ZBQWtGO0lnQzlvRHBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzJvRHJCLGtGQUFrRjtJZ0NwcERwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENpcERyQixrRkFBa0Y7SWdDMXBEcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDdXBEckIsa0ZBQWtGO0lnQ2hxRHBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzZwRHJCLGtGQUFrRjtJZ0N0cURwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQSxFQUNoQjs7QTNCaUJEO0VMbXBETixrRkFBa0Y7RWdDOXFEbEY7SUFnQk0sdUJBQXVCLEVBQUE7SWhDaXFEM0Isa0ZBQWtGO0lnQ2pyRHBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENncUR2QixrRkFBa0Y7SWdDdnJEcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3NxRHZCLGtGQUFrRjtJZ0M3ckRwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDNHFEdkIsa0ZBQWtGO0lnQ25zRHBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENrckR2QixrRkFBa0Y7SWdDenNEcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3dyRHZCLGtGQUFrRjtJZ0Mvc0RwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDOHJEdkIsa0ZBQWtGO0lnQ3J0RHBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENvc0R2QixrRkFBa0Y7SWdDM3REcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzBzRHZCLGtGQUFrRjtJZ0NqdURwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDZ3REdkIsa0ZBQWtGO0lnQ3Z1RHBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENzdER2QixrRkFBa0Y7SWdDN3VEcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzR0RHZCLGtGQUFrRjtJZ0NudkRwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUEsRUFDaEI7O0FoQ2t1RFgsa0ZBQWtGO0FnQzF2RGhGO0VBOEJJLGNBQWM7RUFDZCxlQUFlO0VBQ2YsZUFBZSxFQUFBO0UzQkxiO0lMcXVESixrRkFBa0Y7SWdDaHdEcEY7TUFtQ00sY0FBYztNQUNkLGVBQWU7TUFDZixnQkFBZ0IsRUFBQSxFQUVuQjs7QTNCWkc7RUw0dUROLGtGQUFrRjtFZ0MzdERsRjtJQUVJLGtCdkJ0TFUsRUFBQSxFdUI0TGI7O0EzQnpCSztFTGl2RE4sa0ZBQWtGO0VnQ2h1RGxGO0lBTUksaUJ2QjVMUyxFQUFBLEV1QjhMWjs7QTNCekJLO0VMc3ZETixrRkFBa0Y7RWdDeHREaEY7SUFFSSx3QkFBd0IsRUFBQSxFQUUzQjs7QTNCbENHO0VMMnZETixrRkFBa0Y7RWdDbnREaEY7SUFFSSx3QkFBd0IsRUFBQSxFQUUzQjs7QTNCNUNHO0VMZ3dETixrRkFBa0Y7RWdDcjJEaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUx3d0ROLGtGQUFrRjtFZ0M3MkRoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsbUNBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTGd4RE4sa0ZBQWtGO0VnQ3IzRGhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix5QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMd3hETixrRkFBa0Y7RWdDNzNEaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLG1DQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUxneUROLGtGQUFrRjtFZ0NyNERoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsbUNBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTHd5RE4sa0ZBQWtGO0VnQzc0RGhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix3QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMZ3pETixrRkFBa0Y7RWdDcjVEaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUx3ekROLGtGQUFrRjtFZ0M3NURoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsa0NBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTGcwRE4sa0ZBQWtGO0VnQ3I2RGhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix3QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMdzBETixrRkFBa0Y7RWdDNzZEaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUxnMUROLGtGQUFrRjtFZ0NyN0RoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsa0NBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTHcxRE4sa0ZBQWtGO0VnQzc3RGhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix1QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMZzJETixrRkFBa0Y7RWdDMzdEbEY7SUFFSSxxQnZCNUVTLEVBQUEsRXVCOEVaOztBM0J1Rks7RUxxMkROLGtGQUFrRjtFZ0MxN0RsRjtJQUVJLGFBQWE7SUFDYixpQkFBaUIsRUFBQTtJaEMyN0RuQixrRkFBa0Y7SWdDOTdEcEY7TUFNTSxlQUFlLEVBQUEsRUFDaEI7O0EzQjhFQztFTDgyRE4sa0ZBQWtGO0VnQ3g3RGxGO0lBRUksYUFBYTtJQUNiLGlCQUFpQixFQUFBO0loQ3k3RG5CLGtGQUFrRjtJZ0M1N0RwRjtNQU1NLGVBQWUsRUFBQSxFQUNoQjs7QTNCbUVDO0VMdTNETixrRkFBa0Y7RWdDdDdEbEY7SUFFSSxhQUFhO0lBQ2IsaUJBQWlCLEVBQUE7SWhDdTdEbkIsa0ZBQWtGO0lnQzE3RHBGO01BTU0sZUFBZSxFQUFBLEVBQ2hCOztBQUlMOzs7Ozs7R2hDeTdEQztBQUNILGtGQUFrRjtBZ0NuN0RoRjtFQUNFLFFBQVEsRUFBQTtFM0I0Q0o7SUwwNERKLGtGQUFrRjtJZ0N2N0RwRjtNQUlJLFFBQVEsRUFBQSxFQUVYOztBaENxN0RILGtGQUFrRjtBZ0NuN0RoRjtFQUNFLFFBQVEsRUFBQTtFM0JvQ0o7SUxrNURKLGtGQUFrRjtJZ0N2N0RwRjtNQUlJLFFBQVEsRUFBQSxFQUVYOztBM0IrQks7RUx1NUROLGtGQUFrRjtFZ0NsN0RsRjtJQUVJLGVBQWUsRUFBQTtJaENtN0RqQixrRkFBa0Y7SWdDcjdEcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDazdEckIsa0ZBQWtGO0lnQzM3RHBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3c3RHJCLGtGQUFrRjtJZ0NqOERwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEM4N0RyQixrRkFBa0Y7SWdDdjhEcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDbzhEckIsa0ZBQWtGO0lnQzc4RHBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzA4RHJCLGtGQUFrRjtJZ0NuOURwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENnOURyQixrRkFBa0Y7SWdDejlEcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDczlEckIsa0ZBQWtGO0lnQy85RHBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzQ5RHJCLGtGQUFrRjtJZ0NyK0RwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENrK0RyQixrRkFBa0Y7SWdDMytEcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDdytEckIsa0ZBQWtGO0lnQ2ovRHBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzgrRHJCLGtGQUFrRjtJZ0N2L0RwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQSxFQUNoQjs7QTNCaUJEO0VMbytETixrRkFBa0Y7RWdDLy9EbEY7SUFnQk0sdUJBQXVCLEVBQUE7SWhDay9EM0Isa0ZBQWtGO0lnQ2xnRXBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENpL0R2QixrRkFBa0Y7SWdDeGdFcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3UvRHZCLGtGQUFrRjtJZ0M5Z0VwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDNi9EdkIsa0ZBQWtGO0lnQ3BoRXBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENtZ0V2QixrRkFBa0Y7SWdDMWhFcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3lnRXZCLGtGQUFrRjtJZ0NoaUVwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDK2dFdkIsa0ZBQWtGO0lnQ3RpRXBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENxaEV2QixrRkFBa0Y7SWdDNWlFcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzJoRXZCLGtGQUFrRjtJZ0NsakVwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDaWlFdkIsa0ZBQWtGO0lnQ3hqRXBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEN1aUV2QixrRkFBa0Y7SWdDOWpFcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzZpRXZCLGtGQUFrRjtJZ0Nwa0VwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUEsRUFDaEI7O0FoQ21qRVgsa0ZBQWtGO0FnQzNrRWhGO0VBOEJJLGNBQWM7RUFDZCxlQUFlO0VBQ2YsZUFBZSxFQUFBO0UzQkxiO0lMc2pFSixrRkFBa0Y7SWdDamxFcEY7TUFtQ00sY0FBYztNQUNkLGVBQWU7TUFDZixnQkFBZ0IsRUFBQSxFQUVuQjs7QTNCWkc7RUw2akVOLGtGQUFrRjtFZ0M1aUVsRjtJQUVJLGtCdkJ0TFUsRUFBQSxFdUI0TGI7O0EzQnpCSztFTGtrRU4sa0ZBQWtGO0VnQ2pqRWxGO0lBTUksaUJ2QjVMUyxFQUFBLEV1QjhMWjs7QTNCekJLO0VMdWtFTixrRkFBa0Y7RWdDemlFaEY7SUFFSSx3QkFBd0IsRUFBQSxFQUUzQjs7QTNCbENHO0VMNGtFTixrRkFBa0Y7RWdDcGlFaEY7SUFFSSx3QkFBd0IsRUFBQSxFQUUzQjs7QTNCNUNHO0VMaWxFTixrRkFBa0Y7RWdDdHJFaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUx5bEVOLGtGQUFrRjtFZ0M5ckVoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsbUNBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTGltRU4sa0ZBQWtGO0VnQ3RzRWhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix5QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMeW1FTixrRkFBa0Y7RWdDOXNFaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLG1DQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUxpbkVOLGtGQUFrRjtFZ0N0dEVoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsbUNBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTHluRU4sa0ZBQWtGO0VnQzl0RWhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix3QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMaW9FTixrRkFBa0Y7RWdDdHVFaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUx5b0VOLGtGQUFrRjtFZ0M5dUVoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsa0NBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTGlwRU4sa0ZBQWtGO0VnQ3R2RWhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix3QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMeXBFTixrRkFBa0Y7RWdDOXZFaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUxpcUVOLGtGQUFrRjtFZ0N0d0VoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsa0NBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTHlxRU4sa0ZBQWtGO0VnQzl3RWhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix1QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMaXJFTixrRkFBa0Y7RWdDNXdFbEY7SUFFSSxxQnZCNUVTLEVBQUEsRXVCOEVaOztBM0J1Rks7RUxzckVOLGtGQUFrRjtFZ0Mzd0VsRjtJQUVJLGFBQWE7SUFDYixpQkFBaUIsRUFBQTtJaEM0d0VuQixrRkFBa0Y7SWdDL3dFcEY7TUFNTSxlQUFlLEVBQUEsRUFDaEI7O0EzQjhFQztFTCtyRU4sa0ZBQWtGO0VnQ3p3RWxGO0lBRUksYUFBYTtJQUNiLGlCQUFpQixFQUFBO0loQzB3RW5CLGtGQUFrRjtJZ0M3d0VwRjtNQU1NLGVBQWUsRUFBQSxFQUNoQjs7QTNCbUVDO0VMd3NFTixrRkFBa0Y7RWdDdndFbEY7SUFFSSxhQUFhO0lBQ2IsaUJBQWlCLEVBQUE7SWhDd3dFbkIsa0ZBQWtGO0lnQzN3RXBGO01BTU0sZUFBZSxFQUFBLEVBQ2hCOztBQUlMOzs7Ozs7R2hDMHdFQztBQUNILGtGQUFrRjtBZ0Nwd0VoRjtFQUNFLFFBQVEsRUFBQTtFM0I0Q0o7SUwydEVKLGtGQUFrRjtJZ0N4d0VwRjtNQUlJLFFBQVEsRUFBQSxFQUVYOztBaENzd0VILGtGQUFrRjtBZ0Nwd0VoRjtFQUNFLFFBQVEsRUFBQTtFM0JvQ0o7SUxtdUVKLGtGQUFrRjtJZ0N4d0VwRjtNQUlJLFFBQVEsRUFBQSxFQUVYOztBM0IrQks7RUx3dUVOLGtGQUFrRjtFZ0Nud0VsRjtJQUVJLGVBQWUsRUFBQTtJaENvd0VqQixrRkFBa0Y7SWdDdHdFcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDbXdFckIsa0ZBQWtGO0lnQzV3RXBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3l3RXJCLGtGQUFrRjtJZ0NseEVwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEMrd0VyQixrRkFBa0Y7SWdDeHhFcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDcXhFckIsa0ZBQWtGO0lnQzl4RXBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzJ4RXJCLGtGQUFrRjtJZ0NweUVwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENpeUVyQixrRkFBa0Y7SWdDMXlFcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDdXlFckIsa0ZBQWtGO0lnQ2h6RXBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzZ5RXJCLGtGQUFrRjtJZ0N0ekVwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENtekVyQixrRkFBa0Y7SWdDNXpFcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDeXpFckIsa0ZBQWtGO0lnQ2wwRXBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQyt6RXJCLGtGQUFrRjtJZ0N4MEVwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQSxFQUNoQjs7QTNCaUJEO0VMcXpFTixrRkFBa0Y7RWdDaDFFbEY7SUFnQk0sdUJBQXVCLEVBQUE7SWhDbTBFM0Isa0ZBQWtGO0lnQ24xRXBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENrMEV2QixrRkFBa0Y7SWdDejFFcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3cwRXZCLGtGQUFrRjtJZ0MvMUVwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDODBFdkIsa0ZBQWtGO0lnQ3IyRXBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENvMUV2QixrRkFBa0Y7SWdDMzJFcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzAxRXZCLGtGQUFrRjtJZ0NqM0VwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDZzJFdkIsa0ZBQWtGO0lnQ3YzRXBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENzMkV2QixrRkFBa0Y7SWdDNzNFcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzQyRXZCLGtGQUFrRjtJZ0NuNEVwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDazNFdkIsa0ZBQWtGO0lnQ3o0RXBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEN3M0V2QixrRkFBa0Y7SWdDLzRFcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzgzRXZCLGtGQUFrRjtJZ0NyNUVwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUEsRUFDaEI7O0FoQ280RVgsa0ZBQWtGO0FnQzU1RWhGO0VBOEJJLGNBQWM7RUFDZCxlQUFlO0VBQ2YsZUFBZSxFQUFBO0UzQkxiO0lMdTRFSixrRkFBa0Y7SWdDbDZFcEY7TUFtQ00sY0FBYztNQUNkLGVBQWU7TUFDZixnQkFBZ0IsRUFBQSxFQUVuQjs7QTNCWkc7RUw4NEVOLGtGQUFrRjtFZ0M3M0VsRjtJQUVJLGtCdkJ0TFUsRUFBQSxFdUI0TGI7O0EzQnpCSztFTG01RU4sa0ZBQWtGO0VnQ2w0RWxGO0lBTUksaUJ2QjVMUyxFQUFBLEV1QjhMWjs7QTNCekJLO0VMdzVFTixrRkFBa0Y7RWdDMTNFaEY7SUFFSSx3QkFBd0IsRUFBQSxFQUUzQjs7QTNCbENHO0VMNjVFTixrRkFBa0Y7RWdDcjNFaEY7SUFFSSx3QkFBd0IsRUFBQSxFQUUzQjs7QTNCNUNHO0VMazZFTixrRkFBa0Y7RWdDdmdGaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUwwNkVOLGtGQUFrRjtFZ0MvZ0ZoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsbUNBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTGs3RU4sa0ZBQWtGO0VnQ3ZoRmhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix5QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMMDdFTixrRkFBa0Y7RWdDL2hGaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLG1DQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUxrOEVOLGtGQUFrRjtFZ0N2aUZoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsbUNBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTDA4RU4sa0ZBQWtGO0VnQy9pRmhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix3QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMazlFTixrRkFBa0Y7RWdDdmpGaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUwwOUVOLGtGQUFrRjtFZ0MvakZoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsa0NBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTGsrRU4sa0ZBQWtGO0VnQ3ZrRmhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix3QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMMCtFTixrRkFBa0Y7RWdDL2tGaEY7SUFFSSxjQUFjO0lBQ2Qsb0J2Qm5FTztJdUJvRVAsZ0JBQWdCO0lBQ2hCLGtDQUFrRCxFQUFBLEVBRXJEOztBM0I4Rkc7RUxrL0VOLGtGQUFrRjtFZ0N2bEZoRjtJQUVJLGNBQWM7SUFDZCxvQnZCbkVPO0l1Qm9FUCxnQkFBZ0I7SUFDaEIsa0NBQWtELEVBQUEsRUFFckQ7O0EzQjhGRztFTDAvRU4sa0ZBQWtGO0VnQy9sRmhGO0lBRUksY0FBYztJQUNkLG9CdkJuRU87SXVCb0VQLGdCQUFnQjtJQUNoQix1QkFBa0QsRUFBQSxFQUVyRDs7QTNCOEZHO0VMa2dGTixrRkFBa0Y7RWdDN2xGbEY7SUFFSSxxQnZCNUVTLEVBQUEsRXVCOEVaOztBM0J1Rks7RUx1Z0ZOLGtGQUFrRjtFZ0M1bEZsRjtJQUVJLGFBQWE7SUFDYixpQkFBaUIsRUFBQTtJaEM2bEZuQixrRkFBa0Y7SWdDaG1GcEY7TUFNTSxlQUFlLEVBQUEsRUFDaEI7O0EzQjhFQztFTGdoRk4sa0ZBQWtGO0VnQzFsRmxGO0lBRUksYUFBYTtJQUNiLGlCQUFpQixFQUFBO0loQzJsRm5CLGtGQUFrRjtJZ0M5bEZwRjtNQU1NLGVBQWUsRUFBQSxFQUNoQjs7QTNCbUVDO0VMeWhGTixrRkFBa0Y7RWdDeGxGbEY7SUFFSSxhQUFhO0lBQ2IsaUJBQWlCLEVBQUE7SWhDeWxGbkIsa0ZBQWtGO0lnQzVsRnBGO01BTU0sZUFBZSxFQUFBLEVBQ2hCOztBQUlMOzs7Ozs7R2hDMmxGQztBQUNILGtGQUFrRjtBZ0NybEZoRjtFQUNFLFFBQVEsRUFBQTtFM0I0Q0o7SUw0aUZKLGtGQUFrRjtJZ0N6bEZwRjtNQUlJLFFBQVEsRUFBQSxFQUVYOztBaEN1bEZILGtGQUFrRjtBZ0NybEZoRjtFQUNFLFFBQVEsRUFBQTtFM0JvQ0o7SUxvakZKLGtGQUFrRjtJZ0N6bEZwRjtNQUlJLFFBQVEsRUFBQSxFQUVYOztBM0IrQks7RUx5akZOLGtGQUFrRjtFZ0NwbEZsRjtJQUVJLGVBQWUsRUFBQTtJaENxbEZqQixrRkFBa0Y7SWdDdmxGcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDb2xGckIsa0ZBQWtGO0lnQzdsRnBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzBsRnJCLGtGQUFrRjtJZ0NubUZwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENnbUZyQixrRkFBa0Y7SWdDem1GcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDc21GckIsa0ZBQWtGO0lnQy9tRnBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzRtRnJCLGtGQUFrRjtJZ0NybkZwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENrbkZyQixrRkFBa0Y7SWdDM25GcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDd25GckIsa0ZBQWtGO0lnQ2pvRnBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzhuRnJCLGtGQUFrRjtJZ0N2b0ZwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENvb0ZyQixrRkFBa0Y7SWdDN29GcEY7O01BT1EsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDMG9GckIsa0ZBQWtGO0lnQ25wRnBGOztNQU9RLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ2dwRnJCLGtGQUFrRjtJZ0N6cEZwRjs7TUFPUSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQSxFQUNoQjs7QTNCaUJEO0VMc29GTixrRkFBa0Y7RWdDanFGbEY7SUFnQk0sdUJBQXVCLEVBQUE7SWhDb3BGM0Isa0ZBQWtGO0lnQ3BxRnBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENtcEZ2QixrRkFBa0Y7SWdDMXFGcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQ3lwRnZCLGtGQUFrRjtJZ0NockZwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDK3BGdkIsa0ZBQWtGO0lnQ3RyRnBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaENxcUZ2QixrRkFBa0Y7SWdDNXJGcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzJxRnZCLGtGQUFrRjtJZ0Nsc0ZwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDaXJGdkIsa0ZBQWtGO0lnQ3hzRnBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEN1ckZ2QixrRkFBa0Y7SWdDOXNGcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQzZyRnZCLGtGQUFrRjtJZ0NwdEZwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUE7SWhDbXNGdkIsa0ZBQWtGO0lnQzF0RnBGOztNQXFCVSxjQUFjO01BQ2QsZUFBZTtNQUNmLGVBQWUsRUFBQTtJaEN5c0Z2QixrRkFBa0Y7SWdDaHVGcEY7O01BcUJVLGNBQWM7TUFDZCxlQUFlO01BQ2YsZUFBZSxFQUFBO0loQytzRnZCLGtGQUFrRjtJZ0N0dUZwRjs7TUFxQlUsY0FBYztNQUNkLGVBQWU7TUFDZixlQUFlLEVBQUEsRUFDaEI7O0FoQ3F0Rlgsa0ZBQWtGO0FnQzd1RmhGO0VBOEJJLGNBQWM7RUFDZCxlQUFlO0VBQ2YsZUFBZSxFQUFBO0UzQkxiO0lMd3RGSixrRkFBa0Y7SWdDbnZGcEY7TUFtQ00sY0FBYztNQUNkLGVBQWU7TUFDZixnQkFBZ0IsRUFBQSxFQUVuQjs7QTNCWkc7RUwrdEZOLGtGQUFrRjtFZ0M5c0ZsRjtJQUVJLGtCdkJ0TFUsRUFBQSxFdUI0TGI7O0EzQnpCSztFTG91Rk4sa0ZBQWtGO0VnQ250RmxGO0lBTUksaUJ2QjVMUyxFQUFBLEV1QjhMWjs7QTNCekJLO0VMeXVGTixrRkFBa0Y7RWdDM3NGaEY7SUFFSSx3QkFBd0IsRUFBQSxFQUUzQjs7QTNCbENHO0VMOHVGTixrRkFBa0Y7RWdDdHNGaEY7SUFFSSx3QkFBd0IsRUFBQSxFQUUzQjs7QWhDc3NGTCxrRkFBa0Y7QWdDbHNGbEY7RUFDRSxlQUFlLEVBQUE7O0EzQmpEVDtFTHV2Rk4scUZBQXFGO0VpQy85RnZGO0lBRUksZUFBVTtTQUFWLFVBQVUsRUFBQSxFQUViOztBakMrOUZELGtGQUFrRjtBa0NqK0ZsRjtFQUNFLFdBQVcsRUFBQTs7QWxDbytGYixrRkFBa0Y7QWtDaitGbEY7RUFDRSxlQUFlLEVBQUE7O0FsQ28rRmpCLDJGQUEyRjtBbUM1NUZ6RjtFQUNFLHNCNUIvQ21CLEVBQUE7O0FQODhGdkIsMkZBQTJGO0FtQ2g2RnpGO0VBQ0Usc0I1QmhEa0IsRUFBQTs7QVBtOUZ0QiwyRkFBMkY7QW1DcDZGekY7RUFDRSxzQjVCckRtQixFQUFBOztBUDQ5RnZCLDJGQUEyRjtBbUN4NkZ6RjtFQUNFLHlCNUJwRHFCLEVBQUE7O0FQKzlGekIsMkZBQTJGO0FtQzU2RnpGO0VBQ0UseUI1QnhFcUIsRUFBQTs7QVB1L0Z6QiwyRkFBMkY7QW1DaDdGekY7RUFDRSx5QjVCbER1QixFQUFBOztBUHErRjNCLDJGQUEyRjtBbUNwN0Z6RjtFQUNFLHlCNUJuRHNCLEVBQUE7O0FQMCtGMUIsMkZBQTJGO0FtQ3g3RnpGO0VBQ0UseUI1QmpEcUIsRUFBQTs7QVA0K0Z6QiwyRkFBMkY7QW1DNTdGekY7RUFDRSx5QjVCM0UwQixFQUFBOztBUDBnRzlCLDJGQUEyRjtBbUNoOEZ6RjtFQUNFLHlCNUIxRXNCLEVBQUE7O0FQNmdHMUIsMkZBQTJGO0FtQ3A4RnpGO0VBQ0UseUI1QnpFcUIsRUFBQTs7QVBnaEd6QiwyRkFBMkY7QW1DeDhGekY7RUFDRSx5QjVCbEJpQixFQUFBOztBUDY5RnJCLDJGQUEyRjtBbUM1OEZ6RjtFQUNFLHlCNUJmbUIsRUFBQTs7QVA4OUZ2QiwyRkFBMkY7QW1DaDlGekY7RUFDRSx5QjVCbENtQixFQUFBOztBUHEvRnZCLDJGQUEyRjtBbUNwOUZ6RjtFQUNFLHlCNUJuQ29CLEVBQUE7O0FGMkxoQjtFTGcwRk4sMkZBQTJGO0VtQ2w5RnpGO0lBQ0UsVzVCdERpQixFQUFBO0VQMGdHckIsMkZBQTJGO0VtQ3I5RnpGO0lBQ0UsVzVCdkRnQixFQUFBO0VQOGdHcEIsMkZBQTJGO0VtQ3g5RnpGO0lBQ0UsVzVCNURpQixFQUFBO0VQc2hHckIsMkZBQTJGO0VtQzM5RnpGO0lBQ0UsYzVCM0RtQixFQUFBO0VQd2hHdkIsMkZBQTJGO0VtQzk5RnpGO0lBQ0UsYzVCL0VtQixFQUFBO0VQK2lHdkIsMkZBQTJGO0VtQ2orRnpGO0lBQ0UsYzVCekRxQixFQUFBO0VQNGhHekIsMkZBQTJGO0VtQ3ArRnpGO0lBQ0UsYzVCMURvQixFQUFBO0VQZ2lHeEIsMkZBQTJGO0VtQ3YrRnpGO0lBQ0UsYzVCeERtQixFQUFBO0VQaWlHdkIsMkZBQTJGO0VtQzErRnpGO0lBQ0UsYzVCbEZ3QixFQUFBO0VQOGpHNUIsMkZBQTJGO0VtQzcrRnpGO0lBQ0UsYzVCakZvQixFQUFBO0VQZ2tHeEIsMkZBQTJGO0VtQ2gvRnpGO0lBQ0UsYzVCaEZtQixFQUFBO0VQa2tHdkIsMkZBQTJGO0VtQ24vRnpGO0lBQ0UsYzVCekJlLEVBQUE7RVA4Z0duQiwyRkFBMkY7RW1DdC9GekY7SUFD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NkN4RFY7O0F0RDBsSEwsNERBQTREO0F1RDltSDVEO0VBRUksc0I5Q3VFYSxFQUFBO0VUd2lIZiw0REFBNEQ7RXVEam5IOUQ7SUFLTSxnQkFBZ0IsRUFBQTs7QWxENE9kO0VMcTRHTixnREFBZ0Q7RXdEdG5IbEQ7SUFFSSxzQmpEa0NtQixFQUFBLEVpRGhDdEI7O0FuRDZPTztFTDA0R04sZ0RBQWdEO0V3RHJuSGxEO0lBRUkseUJqRDZCcUIsRUFBQSxFaUQzQnhCOztBQ1ZEOzs7Q3pEa29IQztBQUNELHFEQUFxRDtBeUQ5bkhyRDtFQUNFLG9CaERpRWlCO0VnRGhFakIscUJoRGdFaUIsRUFBQTtFSjBLWDtJTHU1R0oscURBQXFEO0l5RG5vSHpEO01BS0ksb0JoRGtFVztNZ0RqRVgscUJoRGlFVyxFQUFBLEVnRC9EZDs7QXpEZ29IRCxzREFBc0Q7QXlEOW5IdEQ7RUFDRSxtQmhEdURpQixFQUFBOztBVDBrSG5CLHNEQUFzRDtBeUQ5bkh0RDtFQUNFLHNCaERtRGlCLEVBQUE7O0FUOGtIbkIseURBQXlEO0EwRG5wSHpEO0VBQ0UsdUJBQXVCLEVBQUE7O0ExRHNwSHpCLHlEQUF5RDtBMERucEh6RDtFQUNFLFVBQVUsRUFBQTs7QTFEc3BIWixxREFBcUQ7QTJEN3BIckQ7RUFDRSxnQkFBZ0IsRUFBQTs7QTNEZ3FIbEIsK0NBQStDO0E0RGpxSC9DO0VBQ0UsaUJBQWE7RUFBYixhQUFhO01BQ2IsbUNBQW1DO0VBQ25DLDJCQUFnQztFQUFoQyxnQ0FBZ0MsRUFBQTtFNURtcUhoQywrQ0FBK0M7RTREanFIL0M7SUNMRixnQkFBQTtJQUFBLG1CQUFBO0lETUksZUFBZSxFQUFBO0U1RG1xSGpCLGdEQUFnRDtFNERocUhoRDtJQ1RGLGdCQUFBO0lBQUEsbUJBQUE7SURVSSxrQkFBa0IsRUFBQTtFdkR1T2Q7SUw0N0dKLCtDQUErQztJNEQ3cUhuRDtNQWNJLGdCQUFnQixFQUFBLEVBT25CO0V2RDROTztJTGc4R0osK0NBQStDO0k0RGpySG5EO1VBa0JJLDhCQUE4QjtNQUM5QixxQkFBMEI7TUFBMUIsMEJBQTBCLEVBQUE7SUFWNUI7SUNURixnQkFBQTtJQUFBLG1CQUFBLENEVXNCLEVBV3JCOztBNURpcUhELGtEQUFrRDtBOER0ckhsRDtFQUNFLG1CQUFtQjtFQUNuQixhQUFhO0VBQ2IsWUFBWTtFQUNaLHVCQUF1QjtFQUN2QixpQkFBaUIsRUFBQTtFOUR3ckhqQixrREFBa0Q7RThEdHJIbEQ7SUFDRSxlQUFlLEVBQUEiLCJmaWxlIjoic3RhdGljL3Nhc3MvYWNjb3VudC5zY3NzIn0= */
