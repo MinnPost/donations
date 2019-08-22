@@ -398,6 +398,7 @@ def give_form():
         message = "The page you requested can't be found."
         return render_template('error.html', message=message)
 
+    # frequency
     frequency = request.args.get('frequency')
     if frequency is None:
         frequency = DEFAULT_FREQUENCY
@@ -406,26 +407,136 @@ def give_form():
     else:
         yearly = 1
 
+    # salesforce campaign
     if request.args.get('campaign'):
         campaign = request.args.get('campaign')
     else:
         campaign = ''
 
+    # stripe customer id
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
     else:
         customer_id = ''
 
+    # show ach fields
+    if request.args.get('show_ach'):
+        show_ach = request.args.get('show_ach')
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = app.config["SHOW_ACH"]
+
+    # user first name
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    else:
+        first_name = ''
+
+    # user last name
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    else:
+        last_name = ''
+
+    # user email
+    if request.args.get('email'):
+        email = request.args.get('email')
+    else:
+        email = ''
+
+    # user address
+
+    # street
+    if request.args.get('billing_street'):
+        billing_street = request.args.get('billing_street')
+    else:
+        billing_street = ''
+
+    # city
+    if request.args.get('billing_city'):
+        billing_city = request.args.get('billing_city')
+    else:
+        billing_city = ''
+
+    # state
+    if request.args.get('billing_state'):
+        billing_state = request.args.get('billing_state')
+    else:
+        billing_state = ''
+
+    # zip
+    if request.args.get('billing_zip'):
+        billing_zip = request.args.get('billing_zip')
+    else:
+        billing_zip = ''
+
+    # country
+    if request.args.get('billing_country'):
+        billing_country = request.args.get('billing_country')
+    else:
+        billing_country = ''
+
+    # thank you gifts
+
+    # swag item
+    if request.args.get('swag'):
+        swag = request.args.get('swag')
+    else:
+        swag = ''
+
+    # atlantic subscription
+    if request.args.get('atlantic_subscription'):
+        atlantic_subscription = request.args.get('atlantic_subscription')
+        if atlantic_subscription != 'true':
+            atlantic_subscription = ''
+    else:
+        atlantic_subscription = ''
+
+    # existing atlantic subscriber
+    if request.args.get('atlantic_id'):
+        atlantic_id = request.args.get('atlantic_id')
+    else:
+        atlantic_id = ''
+
+    # url for atlantic
+    atlantic_id_url = ''
+    if atlantic_id != '':
+        atlantic_id_url = '&amp;' + atlantic_id
+
+    # new york times subscription
+    if request.args.get('nyt_subscription'):
+        nyt_subscription = request.args.get('nyt_subscription')
+    else:
+        nyt_subscription = ''
+
+    # decline all benefits
+    if request.args.get('decline_benefits'):
+        decline_benefits = request.args.get('decline_benefits')
+        if decline_benefits == 'true':
+            swag = ''
+            atlantic_subscription = ''
+            atlantic_id = ''
+            nyt_subscription = ''
+    else:
+        decline_benefits = ''
+
     # fees
     fees = calculate_amount_fees(amount, 'visa')
+
     if request.method == "POST":
         return validate_form(DonateForm, template=template)
+
+    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
 
     return render_template(
         template,
         form=form,
         amount=amount_formatted, frequency=frequency, yearly=yearly,
         campaign=campaign, customer_id=customer_id,
+        minnpost_root = app.config["MINNPOST_ROOT"], step_one_url = step_one_url,
         key=app.config["STRIPE_KEYS"]["publishable_key"]
     )
 

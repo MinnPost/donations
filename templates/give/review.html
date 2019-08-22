@@ -2,7 +2,7 @@
   <div class="support support--summary">
     <fieldset class="amount">
       <ul class="actions actions--edit-amount clear-block">
-        <li><a href="https://www.minnpost.com/support/" id="edit_url">Edit</a></li>
+        <a href="{{ step_one_url }}" id="edit_url">Edit Amount</a>
       </ul>
       <h1>$<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency.title() }}</span> Donation</h1> <!-- load server-side from parsing querystring -->
     </fieldset>
