@@ -1,0 +1,12 @@
+// Palette function,
+@function palette($palette, $tone: 'base') {
+    @return map-get(map-get($palettes, $palette), $tone);
+}
+
+// used this way
+//a {
+    //color: palette(purple);
+    //&:hover {
+        //color: palette(purple, light);
+    //}
+//}

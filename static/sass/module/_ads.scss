@@ -1,0 +1,42 @@
+.region-leaderboard {
+	background: $gray-lightest;
+	text-align: center;
+	margin-bottom: 1px;
+	padding: 10px 0 9px 0;
+	border-bottom: 2px solid $white;
+	line-height: normal;
+	//box-sizing: content-box;
+}
+#leaderboard-top-inner {
+	@include outer-container($max-width);
+}
+#block-minnpost_ads-TopLeft {
+    height: 22px;
+    left: 0;
+    max-width: 500px;
+    overflow: hidden;
+    position: absolute;
+    text-align: left;
+    top: 0;
+    width: 330px;
+}
+#block-minnpost_ads-TopRight {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: auto;
+	height: auto;
+	max-width: 228px;
+}
+#block-minnpost_ads-Top {
+	float: left;
+}
+#block-menu-menu-support {
+	background-color: $minnpost-black;
+}
+#block-menu-menu-support {
+	width: 228px;
+	min-height: 90px;
+	float: right;
+	text-align: left;
+}

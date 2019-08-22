@@ -1,0 +1,17 @@
+.well {
+	background-color: lighten($gray-lightest, 10%);
+	max-width: none;
+	border: $gray-lightest;
+	margin: 0 0 $h4-space;
+	padding: $base-spacing;
+	h3 {
+		font-size: $h5-size;
+	}
+	&.error {
+	    color: $minnpost-red-error;
+	    border: 1px solid $minnpost-red-error;
+	  }
+}
+.well p:last-of-type {
+	margin-bottom: $quarter-space;
+}

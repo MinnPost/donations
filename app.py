@@ -207,34 +207,6 @@ def index_html_route():
     return redirect("/donate", code=302)
 
 
-"""
-Read the Webpack assets manifest and then provide the
-scripts, including cache-busting hache, as template context.
-
-For Heroku to compile assets on deploy, the directory it
-builds to needs to already exist. Hence /static/js/prod/.gitkeep.
-We don't want to version control development builds, which is
-why they're compiled to /static/js/build/ instead.
-"""
-
-
-def get_bundles(entry):
-    root_dir = os.path.dirname(os.getcwd())
-    build_dir = os.path.join("static", "build")
-    asset_path = "/static/build/"
-    bundles = {"css": "", "js": []}
-    manifest_path = os.path.join(build_dir, "assets.json")
-    css_manifest_path = os.path.join(build_dir, "styles.json")
-    with open(manifest_path) as manifest:
-        assets = json.load(manifest)
-    entrypoint = assets["entrypoints"][entry]
-    for bundle in entrypoint["js"]:
-        bundles["js"].append(asset_path + bundle)
-    with open(css_manifest_path) as manifest:
-        css_assets = json.load(manifest)
-    bundles["css"] = asset_path + css_assets[entry]
-    return bundles
-
 
 def apply_card_details(rdo=None, customer=None):
 
@@ -327,7 +299,7 @@ def add_donation(form=None, customer=None, donation_type=None):
     return True
 
 
-def do_charge_or_show_errors(template, bundles, function, donation_type):
+def do_charge_or_show_errors(template, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")
 
     email = request.form["stripeEmail"]
@@ -345,7 +317,6 @@ def do_charge_or_show_errors(template, bundles, function, donation_type):
 
         return render_template(
             template,
-            bundles=bundles,
             key=app.config["STRIPE_KEYS"]["publishable_key"],
             message=message,
             form_data=form_data,
@@ -356,10 +327,10 @@ def do_charge_or_show_errors(template, bundles, function, donation_type):
         "event_value": amount,
         "event_label": "once" if installment_period == "None" else installment_period,
     }
-    return render_template("charge.html", gtm=gtm, bundles=get_bundles("charge"))
+    return render_template("charge.html", gtm=gtm)
 
 
-def validate_form(FormType, bundles, template, function=add_donation.delay):
+def validate_form(FormType, template, function=add_donation.delay):
     app.logger.info(pformat(request.form))
 
     form = FormType(request.form)
@@ -379,17 +350,16 @@ def validate_form(FormType, bundles, template, function=add_donation.delay):
     if not validate_email(email):
         message = "There was an issue saving your email address."
         return render_template(
-            "error.html", message=message, bundles=get_bundles("old")
+            "error.html", message=message
         )
     if not form.validate():
         app.logger.error(f"Form validation errors: {form.errors}")
         message = "There was an issue saving your donation information."
         return render_template(
-            "error.html", message=message, bundles=get_bundles("old")
+            "error.html", message=message
         )
 
     return do_charge_or_show_errors(
-        bundles=bundles,
         template=template,
         function=function,
         donation_type=donation_type,
@@ -564,27 +534,22 @@ def submit_blast():
 
 @app.route("/error")
 def error():
-    bundles = get_bundles("old")
     message = "Something went wrong!"
-    return render_template("error.html", message=message, bundles=bundles)
+    return render_template("error.html", message=message)
 
 
 @app.errorhandler(404)
 def page_not_found(error):
-    bundles = get_bundles("old")
     message = "The page you requested can't be found."
-    return render_template("error.html", message=message, bundles=bundles), 404
+    return render_template("error.html", message=message), 404
 
 
-@app.route("/.well-known/apple-developer-merchantid-domain-association")
-def merchantid():
+@app.route('/.well-known/apple-developer-merchantid-domain-association')
+def apple_developer_domain_verification():
     """
     This is here to verify our domain so Stripe can support Apple Pay.
     """
-    root_dir = os.path.dirname(os.getcwd())
-    return send_from_directory(
-        os.path.join(root_dir, "app"), "apple-developer-merchantid-domain-association"
-    )
+    return send_from_directory(app.static_folder, 'apple-developer-merchantid-domain-association');
 
 
 # TODO why do I have to set the name here?
