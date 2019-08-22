@@ -1,10 +1,4 @@
 {% extends "layout.html" %}
-{% block title %}
-  {{ super() }}
-{% endblock %}
-{% block extra_script %}
-  {{ super() }}
-{% endblock %}
 
 {% block content %}
 <section class="progress progress--donation">
@@ -12,16 +6,16 @@
     <ol>
       <li class="panel--choose"><span>Choose</span></li>
       <li class="panel--pay"><span>Payment</span></li>
-      <li class="panel--confirmation"><span>Thank You</span></li>
+      <li class="panel--confirmation"><span class="active">Thank You</span></li>
     </ol>
   </div>
 </section>
 
 <main>
   <div class="wrapper support--forms">
-    <section id="panel--error" class="panel--error">
-      <h1>Sorry, there has been an issue</h1>
-      <p>{{ message }}</p>
+    <section id="panel--confirmation" class="panel panel--form">
+  	 <h1>Thank you for supporting MinnPost</h1>
+  	 <p>You're all done. Thanks again for your support of MinnPost.</p>
     </section>
   </div>
 </main>
