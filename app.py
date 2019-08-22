@@ -10,6 +10,7 @@ import logging
 import os
 import re
 from config import (
+    DEFAULT_FREQUENCY,
     FLASK_SECRET_KEY,
     LOG_LEVEL,
     TIMEZONE,
@@ -381,16 +382,49 @@ def donate_form():
     )
 
 
+@app.route("/give/", methods=["GET", "POST"])
+def give_form():
+    template = "give.html"
+    form     = DonateForm()
 
+    # amount is the bare minimum to work
+    if request.args.get('amount'):
+        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
+        if (amount).is_integer():
+            amount_formatted = int(amount)
+        else:
+            amount_formatted = format(amount, ',.2f')
     else:
+        message = "The page you requested can't be found."
+        return render_template('error.html', message=message)
+
+    frequency = request.args.get('frequency')
+    if frequency is None:
+        frequency = DEFAULT_FREQUENCY
+    if frequency == 'monthly':
+        yearly = 12
     else:
+        yearly = 1
 
-
+    if request.args.get('campaign'):
+        campaign = request.args.get('campaign')
     else:
+        campaign = ''
 
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    else:
+        customer_id = ''
+
+    if request.method == "POST":
+        return validate_form(DonateForm, template=template)
 
     return render_template(
+        template,
         form=form,
+        amount=amount_formatted, frequency=frequency, yearly=yearly,
+        campaign=campaign, customer_id=customer_id,
+        key=app.config["STRIPE_KEYS"]["publishable_key"]
     )
 
 

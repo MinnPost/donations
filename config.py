@@ -39,6 +39,8 @@ CELERYBEAT_SCHEDULE = {
 }
 REDIS_URL = os.getenv("REDIS_URL")
 
+DEFAULT_FREQUENCY = os.getenv('DEFAULT_FREQUENCY', 'one-time')
+
 ######
 # SMTP
 #
