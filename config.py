@@ -12,13 +12,15 @@ def bool_env(val):
 
 TIMEZONE = os.getenv("TIMEZONE", "US/Central")
 
-#######
-# Flask
+########
+# Amazon
 #
-FLASK_SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
-FLASK_DEBUG = os.getenv("FLASK_DEBUG", 0)
-WTF_CSRF_ENABLED = False
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+MWS_ACCESS_KEY = os.getenv("MWS_ACCESS_KEY", "")
+MWS_SECRET_KEY = os.getenv("MWS_SECRET_KEY", "")
+AMAZON_MERCHANT_ID = os.getenv("AMAZON_MERCHANT_ID", "")
+AMAZON_SANDBOX = bool_env("AMAZON_SANDBOX")
+AMAZON_CAMPAIGN_ID = os.getenv("AMAZON_CAMPAIGN_ID", "")
+
 
 ########
 # Celery
@@ -39,7 +41,62 @@ CELERYBEAT_SCHEDULE = {
 }
 REDIS_URL = os.getenv("REDIS_URL")
 
-DEFAULT_FREQUENCY = os.getenv('DEFAULT_FREQUENCY', 'one-time')
+
+#######
+# Flask
+#
+FLASK_SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
+FLASK_DEBUG = os.getenv("FLASK_DEBUG", 0)
+WTF_CSRF_ENABLED = False
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+
+
+########
+# Plaid (for ACH)
+#
+
+PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')
+PLAID_SECRET = os.getenv('PLAID_SECRET')
+PLAID_PUBLIC_KEY = os.getenv('PLAID_PUBLIC_KEY')
+PLAID_ENVIRONMENT = os.getenv('PLAID_ENVIRONMENT')
+
+
+#######
+# Portal
+#
+ENABLE_PORTAL = bool_env("ENABLE_PORTAL")
+
+
+########
+# Salesforce
+#
+ADVERTISING_CAMPAIGN_ID = os.getenv('ADVERTISING_CAMPAIGN_ID')
+ANNIVERSARY_PARTY_CAMPAIGN_ID = os.getenv('ANNIVERSARY_PARTY_CAMPAIGN_ID')
+COMBINED_EMAIL_FIELD = os.getenv('COMBINED_EMAIL_FIELD', 'Consolidated_EMail__c')
+DEFAULT_CAMPAIGN_ONETIME = os.getenv('DEFAULT_CAMPAIGN_ONETIME')
+DEFAULT_CAMPAIGN_RECURRING = os.getenv('DEFAULT_CAMPAIGN_RECURRING')
+DONATION_RECORDTYPEID = '01216000001IhI9'
+MEMBERSHIP_RECORDTYPEID = '01216000001IhHp'
+MINNROAST_CAMPAIGN_ID = os.getenv('MINNROAST_CAMPAIGN_ID')
+SALESFORCE_CONTACT_ADVERTISING_EMAIL = os.getenv('SALESFORCE_CONTACT_ADVERTISING_EMAIL')
+
+
+########
+# Sentry
+#
+ENABLE_SENTRY = bool_env("ENABLE_SENTRY")
+SENTRY_DSN = os.getenv("SENTRY_DSN")
+SENTRY_ENVIRONMENT = os.getenv("SENTRY_ENVIRONMENT", "unknown")
+REPORT_URI = os.getenv("REPORT_URI")
+
+
+#######
+# Slack
+#
+ENABLE_SLACK = bool_env("ENABLE_SLACK")
+SLACK_CHANNEL = os.getenv("SLACK_CHANNEL", "#stripe")
+SLACK_API_KEY = os.getenv("SLACK_API_KEY")
+
 
 ######
 # SMTP
@@ -56,6 +113,7 @@ MULTIPLE_ACCOUNT_WARNING_MAIL_RECIPIENT = os.getenv(
 ACCOUNTING_MAIL_RECIPIENT = os.getenv("ACCOUNTING_MAIL_RECIPIENT", "")
 BUSINESS_MEMBER_RECIPIENT = os.getenv("BUSINESS_MEMBER_RECIPIENT", "")
 
+
 ########
 # Stripe
 #
@@ -65,36 +123,17 @@ STRIPE_KEYS = {
 }
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 
-#######
-# Slack
-#
-ENABLE_SLACK = bool_env("ENABLE_SLACK")
-SLACK_CHANNEL = os.getenv("SLACK_CHANNEL", "#stripe")
-SLACK_API_KEY = os.getenv("SLACK_API_KEY")
 
-########
-# Sentry
-#
-ENABLE_SENTRY = bool_env("ENABLE_SENTRY")
-SENTRY_DSN = os.getenv("SENTRY_DSN")
-SENTRY_ENVIRONMENT = os.getenv("SENTRY_ENVIRONMENT", "unknown")
-REPORT_URI = os.getenv("REPORT_URI")
-
-#######
-# Portal
-#
-ENABLE_PORTAL = bool_env("ENABLE_PORTAL")
-
-########
-# Amazon
-#
-MWS_ACCESS_KEY = os.getenv("MWS_ACCESS_KEY", "")
-MWS_SECRET_KEY = os.getenv("MWS_SECRET_KEY", "")
-AMAZON_MERCHANT_ID = os.getenv("AMAZON_MERCHANT_ID", "")
-AMAZON_SANDBOX = bool_env("AMAZON_SANDBOX")
-AMAZON_CAMPAIGN_ID = os.getenv("AMAZON_CAMPAIGN_ID", "")
 #######
 # Tasks
 #
-# this is User.username
-CIRCLE_FAILURE_RECIPIENT = os.getenv("CIRCLE_FAILURE_RECIPIENT")
+
+
+########
+# User Interface options
+#
+DEFAULT_FREQUENCY = os.getenv('DEFAULT_FREQUENCY', 'one-time')
+FORM_EMAIL_FIELD = os.getenv('FORM_EMAIL_FIELD', 'email')
+MINNPOST_ROOT = os.getenv('MINNPOST_ROOT')
+SHOW_ACH = os.getenv('SHOW_ACH', False)
+
