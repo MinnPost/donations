@@ -1,7 +1,7 @@
 import calendar
 import logging
 from decimal import Decimal
-from config import STRIPE_KEYS, CIRCLE_FAILURE_RECIPIENT
+from config import STRIPE_KEYS
 from npsp import User, Task
 from util import send_slack_message
 
@@ -18,14 +18,41 @@ def amount_to_charge(opportunity):
     to pay fees or not. If they did then we add that to the amount charged.
     Stripe charges 2.2% + $0.30.
 
-    https://support.stripe.com/questions/can-i-charge-my-stripe-fees-to-my-customers
+    Stripe wants the amount to charge in cents. So we multiply by 100 and
+    return that.
+    
+    Fees are different for ACH, and also for Amex.
+
     """
     amount = float(opportunity.amount)
-    if opportunity.agreed_to_pay_fees:
-        total = (amount + 0.30) / (1 - 0.022)
+    if opportunity.Stripe_Agreed_to_pay_fees__c:
+        payment_type = opportunity.payment_type
+        if opportunity.payment_type == 'American Express' or opportunity.Card_type__c == 'American Express':
+            payment_type = 'American Express'
+        elif opportunity.payment_type == 'ach' or opportunity.Stripe_Bank_Account__c is not None:
+            payment_type = 'ach'
+        fees = calculate_amount_fees(amount, payment_type)
     else:
-        total = amount
+        fees = 0
+    total = amount + fees
     return quantize(total)
+
+
+def calculate_amount_fees(amount, payment_type):
+    amount = float(amount)
+    processing_percent = 0.022
+    fixed_fee = 0.3
+    if payment_type == 'American Express' or payment_type == 'amex':
+        processing_percent = 0.035
+        fixed_fee = 0
+    elif payment_type == 'ach':
+        processing_percent = 0.008
+        fixed_fee = 0
+    new_amount = (amount + fixed_fee) / (1 - processing_percent)
+    processing_fee = new_amount - amount
+    fees = round(processing_fee, 2)
+
+    return fees
 
 
 def quantize(amount):
@@ -64,18 +91,6 @@ def charge(opportunity):
         logging.debug(
             f"Opportunity set to '{opportunity.stage_name}' with reason: {opportunity.closed_lost_reason}"
         )
-        if opportunity.type == "Giving Circle":
-            user = User.get(CIRCLE_FAILURE_RECIPIENT)
-            subject = "Credit card charge failed for Circle member"
-            task = Task(owner_id=user.id, what_id=opportunity.id, subject=subject)
-            task.save()
-            send_slack_message(
-                {
-                    "channel": "#circle-failures",
-                    "text": f"Circle charge failed for {opportunity.name} [{opportunity.closed_lost_reason}]",
-                    "icon_emoji": ":x:",
-                }
-            )
         return
 
     except stripe.error.InvalidRequestError as e:

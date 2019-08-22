@@ -37,7 +37,7 @@ from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask import Flask, redirect, render_template, request, send_from_directory
+from flask import Flask, jsonify, redirect, render_template, request, session, send_from_directory
 from forms import (
     DonateForm,
 )
@@ -52,7 +52,7 @@ from util import (
     send_multiple_account_warning,
 )
 from validate_email import validate_email
-from charges import charge
+from charges import charge, calculate_amount_fees
 
 ZONE = timezone(TIMEZONE)
 
@@ -416,6 +416,8 @@ def give_form():
     else:
         customer_id = ''
 
+    # fees
+    fees = calculate_amount_fees(amount, 'visa')
     if request.method == "POST":
         return validate_form(DonateForm, template=template)
 
@@ -426,6 +428,23 @@ def give_form():
         campaign=campaign, customer_id=customer_id,
         key=app.config["STRIPE_KEYS"]["publishable_key"]
     )
+
+
+# used to calculate the fees Stripe will charge based on the payment type/amount
+# called by ajax
+@app.route('/calculate-fees/', methods=['POST'])
+def calculate_fees():
+
+    amount = float(request.form['amount'])
+    fees = ''
+    
+    # get fee amount to send to stripe
+    if 'payment_type' in request.form:
+        payment_type = request.form['payment_type']
+        fees = calculate_amount_fees(amount, payment_type)
+
+    ret_data = {"fees": fees}
+    return jsonify(ret_data)
 
 
 @app.route("/error")
