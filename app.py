@@ -47,6 +47,8 @@ from pytz import timezone
 
 import celery
 import stripe
+from plaid import Client
+from plaid.errors import APIError, ItemError
 from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
@@ -550,9 +552,33 @@ def give_form():
         form=form,
         amount=amount_formatted, frequency=frequency, yearly=yearly,
         campaign=campaign, customer_id=customer_id,
-        minnpost_root = app.config["MINNPOST_ROOT"], step_one_url = step_one_url,
+        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         key=app.config["STRIPE_KEYS"]["publishable_key"]
     )
+
+
+## this is a minnpost url. use this when sending a request to plaid
+## if successful, this returns the access token and bank account token for stripe from plaid
+@app.route('/plaid_token/', methods=['POST'])
+def plaid_token():
+
+    form = DonateForm(request.form)
+    public_token = request.form['public_token']
+    account_id = request.form['account_id']
+
+    client = Client(client_id=app.config["PLAID_CLIENT_ID"], secret=app.config["PLAID_SECRET"], public_key=app.config["PLAID_PUBLIC_KEY"], environment=app.config["PLAID_ENVIRONMENT"])
+    exchange_token_response = client.Item.public_token.exchange(public_token)
+    access_token = exchange_token_response['access_token']
+
+    stripe_response = client.Processor.stripeBankAccountTokenCreate(access_token, account_id)
+
+    if 'stripe_bank_account_token' in stripe_response:
+        response = stripe_response
+    else:
+        response = {'error' : 'We were unable to connect to your account. Please try again.'}
+    
+    return jsonify(response)
 
 
 # used to calculate the fees Stripe will charge based on the payment type/amount
