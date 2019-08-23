@@ -427,7 +427,7 @@
         data: data
       }).done(function( data ) {
         if ($(data.fees).length > 0) {
-          $(that.options.fee_amount).text(data.fees);
+          $(that.options.fee_amount).text(parseFloat(data.fees).toFixed(2));
           that.creditCardFeeCheckbox($(that.options.pay_cc_processing_selector));
         }
       });

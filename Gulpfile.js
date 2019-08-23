@@ -69,7 +69,7 @@ function mainscripts() {
     .pipe(babel({
       presets: ['@babel/preset-env']
     }))
-    .pipe('main.js') // Concatenate
+    .pipe(concat('main.js')) // Name the JS file
     .pipe(sourcemaps.write())
     .pipe(gulp.dest(config.scripts.dest))
     .pipe(browserSync.stream());
