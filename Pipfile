@@ -26,6 +26,7 @@ Flask-Limiter = "==1.0.1"
 amazon_pay = "==2.5.2"
 python-dotenv = "*"
 plaid-python = "==3.4.0"
+simplejson = "==3.16.0"
 
 [requires]
 python_version = "3.7"

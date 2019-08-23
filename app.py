@@ -4,7 +4,7 @@ run', 'python app.py' or via a WSGI server like gunicorn or uwsgi.
 
 """
 import calendar
-import json
+import simplejson as json
 import locale
 import logging
 import os

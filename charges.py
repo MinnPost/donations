@@ -49,7 +49,7 @@ def calculate_amount_fees(amount, payment_type):
         processing_percent = 0.008
         fixed_fee = 0
     new_amount = (amount + fixed_fee) / (1 - processing_percent)
-    processing_fee = new_amount - amount
+    processing_fee = quantize(new_amount - amount)
     fees = round(processing_fee, 2)
 
     return fees
