@@ -1046,7 +1046,7 @@ global.Payment = Payment;
       this.amountAsRadio(this.element, this.options); // if the amount field is a radio button
 
       if ($(this.options.pay_cc_processing_selector).length > 0) {
-        this.creditCardProcessingFees(this.options, reset); // processing fees
+        this.creditCardProcessingFees(this.options); // processing fees
       }
 
       if ($(this.options.details_step_selector).length > 0 || $(this.options.review_step_selector).length > 0) {
@@ -1245,11 +1245,27 @@ global.Payment = Payment;
     amountAsRadio: function(element, options) {
       // when amount field is a radio button, we need to check it whenever it changes
       var that = this;
+      var payment_type = $(options.choose_payment + ' input').val();
       $(options.original_amount_selector, element).change(function() {
         if ($(this).is(':radio')) {
             options.original_amount = parseInt($(options.original_amount_selector + ':checked', element).val(), 10);
+            if ( payment_type === 'ach' ) {
+              that.calculateFees(that.options.original_amount, 'ach');
+            } else {
+              that.calculateFees(that.options.original_amount, 'visa');
+            }
           }
       });
+      if ($(options.additional_amount_field, element).length > 0 ) {
+        $(options.additional_amount_field, element).on('change paste keyup', function() {
+          options.original_amount += parseInt($(options.additional_amount_field).val(), 10);
+          if ( payment_type === 'ach' ) {
+            that.calculateFees(that.options.original_amount, 'ach');
+          } else {
+            that.calculateFees(that.options.original_amount, 'visa');
+          }
+        });
+      }
     }, // amountAsRadio
 
     calculateFees: function(amount, payment_type) {
@@ -1271,7 +1287,7 @@ global.Payment = Payment;
       });
     }, // calculateFees
 
-    creditCardProcessingFees: function(options, reset) {
+    creditCardProcessingFees: function(options) {
       // this adds or subtracts the fee to the original amount when the user indicates they do or do not want to pay the fees
       var that = this;
       that.creditCardFeeCheckbox($(this.options.pay_cc_processing_selector));
