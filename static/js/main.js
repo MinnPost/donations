@@ -1043,6 +1043,7 @@ global.Payment = Payment;
 
       this.paymentPanels(query_panel); // tabs
 
+      // when amount field is a radio button, we need to check it whenever it changes
       var that = this;
       $(this.options.original_amount_selector, this.element).change(function() {
         if ($(this).is(':radio')) {
@@ -1757,8 +1758,6 @@ global.Payment = Payment;
     choosePaymentMethod: function(element, options) {
 
       var that = this;
-
-      console.log( 'amount is ' + that.options.original_amount );
 
       if ($(options.choose_payment).length > 0) {      
         if ($(options.choose_payment + ' input').is(':checked')) {
