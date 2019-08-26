@@ -1,18 +1,18 @@
-{% extends "anniversary-sponsorship/layout.html" %}
+{% extends "anniversary-patron/layout.html" %}
 
 {% block content %}
 
 <main>
   <div class="wrapper support--forms">
 
-  	<img src="/static/img/campaigns/anniversaryheader2018.png" alt="MinnPost 11th Anniversary Celebration" class="anniversary-sponsorship-image" />
+  	<img src="https://www.minnpost.com/wp-content/uploads/2019/08/MainEventSiteHeader1375x460.png?strip=all" alt="MinnPost 12th Anniversary Celebration" class="anniversary-sponsorship-image" />
 
   	<form>
   		<input type="hidden" name="flask_id" id="flask_id" value="{{ session['flask_id'] }}">
   		<input type="hidden" name="sf_type" id="sf_type" value="{{ session['sf_type'] }}">
 	    <section id="panel--confirmation" class="panel panel--form">
 	  	 <h1>Thank you for sponsoring the MinnPost Anniversary Celebration</h1>
-	  	 <p>Thank you for sponsoring MinnPost's 11th Anniversary Celebration at the ${{ amount }} level{% if session['additional_donation'] != '' %} and for your additional ${{ session['additional_donation'] }} donation{% endif %}. We're looking forward to this year's event!</p>
+	  	 <p>Thank you for sponsoring MinnPost's 12th Anniversary Celebration at the ${{ amount }} level{% if session['additional_donation'] != '' %} and for your additional ${{ session['additional_donation'] }} donation{% endif %}. We're looking forward to this year's event!</p>
 	  	 <p>Check your email for your payment confirmation and more details regarding your Anniversary Celebration sponsorship.</p>
 	    </section>
 	</form>

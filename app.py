@@ -1194,10 +1194,17 @@ def minnpost_donation_cancel_form():
 
 # used at support.minnpost.com/anniversary-sponsorship
 @app.route('/anniversary-sponsorship/')
-def anniversary_sponsorship_form():
+def minnroast_sponsorship_form():
+    full_url = url_for('anniversary_patron_form', **request.args)
+    return redirect(full_url)
+
+
+# used at support.minnpost.com/anniversary-patron
+@app.route('/anniversary-patron/')
+def anniversary_patron_form():
     form = MinnPostForm()
 
-    redirect_url = 'anniversary-sponsorship-thanks'
+    redirect_url = 'anniversary-patron-thanks'
 
     now = datetime.now()
     year = now.year
@@ -1241,7 +1248,7 @@ def anniversary_sponsorship_form():
     else:
         additional_donation = ''
     return render_template(
-        'anniversary-sponsorship.html',
+        'anniversary-patron.html',
         form=form, year=year, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
@@ -1835,8 +1842,8 @@ def minnroast_pledge_confirm():
         )
 
 # this is a minnpost url
-@app.route('/anniversary-sponsorship-confirm/', methods=['POST'])
-def anniversary_sponsorship_confirm():
+@app.route('/anniversary-patron-confirm/', methods=['POST'])
+def anniversary_patron_confirm():
 
     form = ConfirmForm(request.form)
     amount = float(request.form['amount'])
@@ -1848,7 +1855,7 @@ def anniversary_sponsorship_confirm():
     if flask_id:
         result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
         return render_template(
-            'anniversary-sponsorship/finish.html',
+            'anniversary-patron/finish.html',
             amount=amount_formatted, session=session,
             key = app.config['STRIPE_KEYS']['publishable_key']
         )
