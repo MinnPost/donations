@@ -1043,6 +1043,14 @@ global.Payment = Payment;
 
       this.paymentPanels(query_panel); // tabs
 
+      var that = this;
+      $(this.options.original_amount_selector, this.element).change(function() {
+        if ($(this).is(':radio')) {
+            that.options.original_amount = parseInt($(that.options.original_amount_selector + ':checked', that.element).val(), 10);
+            that.choosePaymentMethod(that.element, that.options); // amount changed
+          }
+      });
+
       if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options, reset); // processing fees
       }
@@ -1749,6 +1757,8 @@ global.Payment = Payment;
     choosePaymentMethod: function(element, options) {
 
       var that = this;
+
+      console.log( 'amount is ' + that.options.original_amount );
 
       if ($(options.choose_payment).length > 0) {      
         if ($(options.choose_payment + ' input').is(':checked')) {

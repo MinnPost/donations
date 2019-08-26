@@ -74,6 +74,7 @@
     // call plugin and pass options if need be
     $('.support--forms').minnpost_giving({
       'stripe_publishable_key' : '{{key}}',
+      'original_amount_selector' : 'input[name="amount"]',
       'tabs' : false,{% if show_ach == True %}
       'plaid_env' : '{{plaid_env}}',
       'plaid_public_key' : '{{plaid_public_key}}',{% endif %}

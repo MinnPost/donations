@@ -217,6 +217,15 @@
 
       this.paymentPanels(query_panel); // tabs
 
+      // when amount field is a radio button, we need to check it whenever it changes
+      var that = this;
+      $(this.options.original_amount_selector, this.element).change(function() {
+        if ($(this).is(':radio')) {
+            that.options.original_amount = parseInt($(that.options.original_amount_selector + ':checked', that.element).val(), 10);
+            that.choosePaymentMethod(that.element, that.options); // amount changed
+          }
+      });
+
       if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options, reset); // processing fees
       }
