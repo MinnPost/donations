@@ -1,13 +1,13 @@
-{% extends "anniversary-sponsorship/layout.html" %}
+{% extends "anniversary-patron/layout.html" %}
 
 {% block content %}
 
 <main>
   <div class="wrapper support--forms">
 
-    <img src="/static/img/campaigns/anniversaryheader2018.png" alt="MinnPost 11th Anniversary Celebration" class="anniversary-sponsorship-image" />
+    <img src="https://www.minnpost.com/wp-content/uploads/2019/08/MainEventSiteHeader1375x460.png?strip=all" alt="MinnPost 12th Anniversary Celebration" class="anniversary-sponsorship-image" />
 
-    <form action="/anniversary-sponsorship-confirm/" method="post" class="support support--donate" id="donate">
+    <form action="/anniversary-patron-confirm/" method="post" class="support support--donate" id="donate">
       {{ form.csrf_token }}
 
       <input type="hidden" name="recurring" id="recurring" value="one-time">
@@ -24,8 +24,8 @@
       <input type="hidden" name="billing_zip_geocode" id="billing_zip_geocode" value="" maxlength="10">
       <input type="hidden" name="billing_country_geocode" id="billing_country_geocode" value="" maxlength="50">
 
-      {% include 'anniversary-sponsorship/includes/details.html' %}
-      {% include 'anniversary-sponsorship/includes/pay.html' %}
+      {% include 'anniversary-patron/includes/details.html' %}
+      {% include 'anniversary-patron/includes/pay.html' %}
 
     </form>
   </div>
