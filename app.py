@@ -1194,7 +1194,7 @@ def minnpost_donation_cancel_form():
 
 # used at support.minnpost.com/anniversary-sponsorship
 @app.route('/anniversary-sponsorship/')
-def minnroast_sponsorship_form():
+def anniversary_sponsorship_form():
     full_url = url_for('anniversary_patron_form', **request.args)
     return redirect(full_url)
 
