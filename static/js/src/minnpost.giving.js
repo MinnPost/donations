@@ -217,14 +217,7 @@
 
       this.paymentPanels(query_panel); // tabs
 
-      // when amount field is a radio button, we need to check it whenever it changes
-      var that = this;
-      $(this.options.original_amount_selector, this.element).change(function() {
-        if ($(this).is(':radio')) {
-            that.options.original_amount = parseInt($(that.options.original_amount_selector + ':checked', that.element).val(), 10);
-            that.choosePaymentMethod(that.element, that.options); // amount changed
-          }
-      });
+      this.amountAsRadio(this.element, this.options); // if the amount field is a radio button
 
       if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options, reset); // processing fees
@@ -422,6 +415,16 @@
       ga('send', 'pageview', window.location.pathname);
 
     }, // analyticsTrackingStep
+
+    amountAsRadio: function(element, options) {
+      // when amount field is a radio button, we need to check it whenever it changes
+      var that = this;
+      $(options.original_amount_selector, element).change(function() {
+        if ($(this).is(':radio')) {
+            options.original_amount = parseInt($(options.original_amount_selector + ':checked', element).val(), 10);
+          }
+      });
+    }, // amountAsRadio
 
     calculateFees: function(amount, payment_type) {
       // this sends the amount and payment type to python; get the fee and display it to the user on the checkbox label
@@ -1185,7 +1188,6 @@
             $(options.payment_method_selector).prepend('<p class="error">You are required to enter credit card information, or to authorize MinnPost to charge your bank account, to make a payment.</p>');
           }
         }
-
         if (valid === true) {
           // 1. process donation to stripe
           that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), true);
