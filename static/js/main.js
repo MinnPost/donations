@@ -1045,6 +1045,7 @@ global.Payment = Payment;
       this.paymentPanels(query_panel); // tabs
 
       this.amountAsRadio(this.element, this.options); // if the amount field is a radio button
+      this.amountUpdated(this.element, this.options); // if the amount text field can change
 
       if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options); // processing fees
