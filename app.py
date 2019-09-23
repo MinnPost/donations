@@ -19,7 +19,7 @@ from forms import MinnPostForm, ConfirmForm
 #from sassutils.wsgi import SassMiddleware # mp put this into grunt instead
 import stripe
 from validate_email import validate_email
-from helpers import checkLevel, amount_to_charge, calculate_amount_fees
+from helpers import checkLevel, amount_to_charge, calculate_amount_fees, dir_last_updated
 
 from flask_sslify import SSLify
 
@@ -325,7 +325,7 @@ def minnpost_form():
         separate_swag_minimum_level = app.separate_swag_minimum_level,
         main_swag_minimum_level = app.main_swag_minimum_level,
         show_thankyou_lists = app.show_thankyou_lists, maximum_choose_multiple_int = maximum_choose_multiple_int, maximum_choose_multiple_level_text = maximum_choose_multiple_level_text,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root = app.minnpost_root, step_one_url = step_one_url,
         key=app.config['STRIPE_KEYS']['publishable_key']
     )
@@ -428,7 +428,7 @@ def minnpost_event_form():
         first_name = first_name,last_name = last_name, email=email,
         promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,
         quantity=quantity, single_unit_price = single_unit_price, starting_amount = starting_amount,
-        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
+        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key']
     )
 
@@ -605,7 +605,7 @@ def minnpost_advertising_form():
         form=form, amount=amount_formatted, invoice=invoice, campaign=campaign, customer_id=customer_id,
         opp_type = opp_type, opp_subtype = opp_subtype,
         organization=organization, first_name = first_name,last_name = last_name, email=email,
-        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
+        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key']
     )
 
@@ -670,7 +670,7 @@ def minnroast_patron_form():
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key']
     )
 
@@ -843,7 +843,7 @@ def minnpost_pledge_payment():
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
         stage=stage, close_date=close_date,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key']
     )
 
@@ -1078,7 +1078,7 @@ def minnpost_donation_update_form():
         additional_donation = additional_donation,
         pay_fees = pay_fees,
         stage=stage, close_date=close_date,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key']
     )
 
@@ -1253,7 +1253,7 @@ def anniversary_patron_form():
         opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key']
     )
 

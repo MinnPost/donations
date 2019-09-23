@@ -1,3 +1,4 @@
+import os
 def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
     thisyear = amount * yearly
     level = ''
@@ -92,3 +93,8 @@ def calculate_amount_fees(amount, payment_type):
     fees = round(processing_fee, 2)
 
     return fees
+
+def dir_last_updated(folder):
+    return str(max(os.path.getmtime(os.path.join(root_path, f))
+        for root_path, dirs, files in os.walk(folder)
+        for f in files))
