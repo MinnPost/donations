@@ -33,6 +33,8 @@ from config import DEFAULT_CAMPAIGN_ONETIME
 from config import DEFAULT_CAMPAIGN_RECURRING
 from config import MINNROAST_CAMPAIGN_ID
 from config import ANNIVERSARY_PARTY_CAMPAIGN_ID
+from config import MINNROAST_OPPORTUNITY_SUBTYPE
+from config import ANNIVERSARY_PARTY_OPPORTUNITY_SUBTYPE
 from config import SHOW_UPSELL
 from config import ALLOW_DONATION_NOTIFICATION
 
@@ -87,6 +89,8 @@ app.default_campaign_onetime = DEFAULT_CAMPAIGN_ONETIME
 app.default_campaign_recurring = DEFAULT_CAMPAIGN_RECURRING
 app.minnroast_campaign_id = MINNROAST_CAMPAIGN_ID
 app.anniversary_party_campaign_id = ANNIVERSARY_PARTY_CAMPAIGN_ID
+app.minnroast_opportunity_subtype = MINNROAST_OPPORTUNITY_SUBTYPE
+app.anniversary_party_opportunity_subtype = ANNIVERSARY_PARTY_OPPORTUNITY_SUBTYPE
 app.show_upsell = SHOW_UPSELL
 app.allow_donation_notification = ALLOW_DONATION_NOTIFICATION
 app.top_swag_minimum_level = TOP_SWAG_MINIMUM_LEVEL
@@ -646,7 +650,7 @@ def minnroast_patron_form():
     if request.args.get('opp_subtype'):
         opp_subtype = request.args.get('opp_subtype')
     else:
-        opp_subtype = 'Sponsorship: Event (individual)'
+        opp_subtype = MINNROAST_OPPORTUNITY_SUBTYPE
 
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
@@ -1229,7 +1233,7 @@ def anniversary_patron_form():
     if request.args.get('opp_subtype'):
         opp_subtype = request.args.get('opp_subtype')
     else:
-        opp_subtype = 'Sponsorship: Event (individual)'
+        opp_subtype = ANNIVERSARY_PARTY_OPPORTUNITY_SUBTYPE
 
     if request.args.get('firstname'):
         first_name = request.args.get('firstname')
