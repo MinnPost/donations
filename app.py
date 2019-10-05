@@ -398,8 +398,10 @@ def donate_form():
 
 @app.route("/give/", methods=["GET", "POST"])
 def give_form():
-    template = "give.html"
-    form     = DonateForm()
+    template    = "give.html"
+    form        = DonateForm()
+    #form_action = '/thanks/' # previous version
+    form_action = '/give'
 
     # amount is the bare minimum to work
     if request.args.get('amount'):
@@ -548,6 +550,7 @@ def give_form():
     return render_template(
         template,
         form=form,
+        form_action=form_action,
         amount=amount_formatted, frequency=frequency, yearly=yearly,
         campaign=campaign, customer_id=customer_id,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
