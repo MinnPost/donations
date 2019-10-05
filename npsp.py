@@ -230,7 +230,7 @@ class Opportunity(SalesforceObject):
 
     def __init__(
         self,
-        record_type_name="Membership",
+        record_type_name=DEFAULT_RDO_TYPE,
         contact=None,
         stage_name="Pledged",
         account=None,
@@ -242,13 +242,15 @@ class Opportunity(SalesforceObject):
             raise SalesforceException("Account and Contact can't both be specified")
 
         today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
+        now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
 
+        # set defaults for default opportunity fields
         if account is not None:
             self.account_id = account.id
             self.name = None
         elif contact is not None:
             self.account_id = contact.account_id
-            self.name = f"{contact.first_name} {contact.last_name} ({contact.email})"
+            self.name = f"{contact.first_name} {contact.last_name}"
         else:
             self.name = None
             self.account_id = None
@@ -256,25 +258,60 @@ class Opportunity(SalesforceObject):
         self.id = None
         self._amount = 0
         self.close_date = today
-        self.campaign_id = None
-        self.record_type_name = record_type_name
-        self.stage_name = stage_name
-        self.type = "Single"
-        self.stripe_customer = None
-        self.referral_id = None
-        self.lead_source = None
         self.description = None
-        self.agreed_to_pay_fees = False
-        self.encouraged_by = None
-        self.stripe_card = None
-        self.stripe_card_brand = None
-        self.stripe_card_last_4 = None
-        self.stripe_card_expiration = None
-        self.stripe_transaction_id = None
-        self.expected_giving_date = None
+        self.lead_source = "Stripe"
+        self.record_type_name = record_type_name
+        self.campaign_id = None
+        self.stage_name = stage_name
+        self.type = "Donation"
+
+        # set defaults for custom opportunity fields
+        self.anonymous = None
+        self.card_type = None
         self.closed_lost_reason = None
-        self.amazon_order_id = None
         self.created = False
+        self.credited_as = None
+        self.client_organization = None
+        self.donor_first_name = None
+        self.donor_last_name = None
+        self.donor_email = None
+        self.donor_address_one = None
+        self.donor_city = None
+        self.donor_state = None
+        self.donor_zip = None
+        self.donor_country = None
+        self.email_notify = False
+        self.email_cancel = False
+        self.event_attendees = None
+        self.event_ticket_quantity = None
+        self.fair_market_value = None
+        self.include_amount_in_notification = False
+        self.in_honor_memory = None
+        self.in_honor_memory_of = None
+        self.notify_someone = False
+        self.member_benefit_request_swag = None
+        self.member_benefit_request_nyt = None
+        self.member_benefit_request_atlantic = None
+        self.member_benefit_request_atlantic_id = None
+        self.member_benefit_request_thank_you_list = None
+        self.minnpost_invoice = None
+        self.mrpledge_id = None
+        self.subtype = None
+        self.payment_url = None
+        self.payment_type = "Stripe"
+        self.referring_page = None
+        self.shipping_name = None
+        self.shipping_street = None
+        self.shipping_city = None
+        self.shipping_state = None
+        self.shipping_zip = None
+        self.shipping_country = None
+        self.stripe_agreed_to_pay_fees = False
+        self.stripe_bank_account = None
+        self.stripe_card = None
+        self.stripe_customer_id = None
+        self.stripe_transaction_id = None
+        self.ticket_count = 0
 
     @classmethod
     def list(
@@ -293,40 +330,46 @@ class Opportunity(SalesforceObject):
 
         if stripe_customer_id is None:
             where = f"""
-            WHERE Expected_Giving_Date__c <= {end}
-            AND Expected_Giving_Date__c >= {begin}
+            WHERE CloseDate <= {end}
+            AND CloseDate >= {begin}
             AND StageName = '{stage_name}'
         """
         else:
             where = f"""
                 WHERE Stripe_Customer_ID__c = '{stripe_customer_id}'
+                AND CloseDate <= {end}
+                AND CloseDate >= {begin}
                 AND StageName = '{stage_name}'
             """
 
         query = f"""
             SELECT
-                Id,
+                AccountId,
                 Amount,
-                Name,
-                Stripe_Customer_ID__c,
-                Description,
-                Stripe_Agreed_to_pay_fees__c,
                 CloseDate,
                 CampaignId,
-                RecordType.Name,
-                Type,
-                Referral_ID__c,
+                Description,
+                Id,
                 LeadSource,
-                Encouraged_to_contribute_by__c,
-                Stripe_Transaction_ID__c,
-                Stripe_Card__c,
-                AccountId,
+                Name,
+                RecordType.Name,
+                StageName,
+                Type,
+                Card_type__c,
                 npsp__Closed_Lost_Reason__c,
-                Expected_Giving_Date__c,
-                Stripe_Card_Brand__c,
-                Stripe_Card_Expiration__c,
-                Stripe_Card_Last_4__c,
-                Amazon_Order_Id__c
+                Referring_page__c,
+                Shipping_address_name__c,
+                Shipping_address_street__c,
+                Shipping_address_city__c,
+                Shipping_address_state__c,
+                Shipping_address_ZIP__c,
+                Shipping_address_country__c,
+                Stripe_Agreed_to_pay_fees__c,
+                Stripe_Bank_Account__c,
+                Stripe_Card__c,
+                Stripe_Customer_Id__c,
+                Stripe_Error_Message__c,
+                Stripe_Transaction_ID__c
             FROM Opportunity
             {where}
         """
@@ -337,29 +380,32 @@ class Opportunity(SalesforceObject):
         results = list()
         for item in response:
             y = cls()
-            y.id = item["Id"]
-            y.name = item["Name"]
-            y.amount = item["Amount"]
-            y.stripe_customer = item["Stripe_Customer_ID__c"]
-            y.description = item["Description"]
-            y.agreed_to_pay_fees = item["Stripe_Agreed_to_pay_fees__c"]
-            y.stage_name = "Pledged"
-            y.close_date = item["CloseDate"]
-            y.record_type_name = item["RecordType"]["Name"]
-            y.expected_giving_date = item["Expected_Giving_Date__c"]
-            y.campaign_id = item["CampaignId"]
-            y.type = item["Type"]
-            y.referral_id = item["Referral_ID__c"]
-            y.lead_source = item["LeadSource"]
-            y.encouraged_by = item["Encouraged_to_contribute_by__c"]
-            y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
-            y.stripe_card = item["Stripe_Card__c"]
             y.account_id = item["AccountId"]
+            y.amount = item["Amount"]
+            y.close_date = item["CloseDate"]
+            y.campaign_id = item["CampaignId"]
+            y.description = item["Description"]
+            y.id = item["Id"]
+            y.lead_source = item["LeadSource"]
+            y.name = item["Name"]
+            y.record_type_name = item["RecordType"]["Name"]
+            y.stage_name = "Pledged"
+            y.type = item["Type"]
+            y.card_type = item["Card_type__c"]
             y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
-            y.stripe_card_brand = item["Stripe_Card_Brand__c"]
-            y.stripe_card_expiration = item["Stripe_Card_Expiration__c"]
-            y.stripe_card_last_4 = item["Stripe_Card_Last_4__c"]
-            y.amazon_order_id = item["Amazon_Order_Id__c"]
+            y.referring_page = item["Referring_page__c"]
+            y.shipping_name = item["Shipping_address_name__c"]
+            y.shipping_street = item["Shipping_address_street__c"]
+            y.shipping_city = item["Shipping_address_city__c"]
+            y.shipping_state = item["Shipping_address_state__c"]
+            y.shipping_zip = item["Shipping_address_ZIP__c"]
+            y.shipping_country = item["Shipping_address_country__c"]
+            y.agreed_to_pay_fees = item["Stripe_Agreed_to_pay_fees__c"]
+            y.stripe_bank_account = item["Stripe_Bank_Account__c"]
+            y.stripe_card = item["Stripe_Card__c"]
+            y.stripe_customer_id = item["Stripe_Customer_ID__c"]
+            y.stripe_error_message = item["Stripe_Error_Message__c"]
+            y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
             y.created = False
             results.append(y)
 
@@ -379,23 +425,28 @@ class Opportunity(SalesforceObject):
             "Amount": self.amount,
             "CloseDate": self.close_date,
             "CampaignId": self.campaign_id,
-            "RecordType": {"Name": self.record_type_name},
+            "Description": self.description,
+            "Id": self.id,
+            "LeadSource": self.lead_source,
             "Name": self.name,
+            "RecordType": {"Name": self.record_type_name},
             "StageName": self.stage_name,
             "Type": self.type,
-            "Stripe_Customer_ID__c": self.stripe_customer,
-            "Referral_ID__c": self.referral_id,
-            "LeadSource": self.lead_source,
-            "Description": self.description,
-            "Stripe_Agreed_to_pay_fees__c": self.agreed_to_pay_fees,
-            "Encouraged_to_contribute_by__c": self.encouraged_by,
-            "Stripe_Transaction_ID__c": self.stripe_transaction_id,
-            "Stripe_Card__c": self.stripe_card,
+            "Card_type__c": self.card_type,
             "npsp__Closed_Lost_Reason__c": self.closed_lost_reason,
-            "Stripe_Card_Brand__c": self.stripe_card_brand,
-            "Stripe_Card_Expiration__c": self.stripe_card_expiration,
-            "Stripe_Card_Last_4__c": self.stripe_card_last_4,
-            "Amazon_Order_Id__c": self.amazon_order_id,
+            "Referring_page__c": self.referring_page,
+            "Shipping_address_name__c": self.shipping_name,
+            "Shipping_address_street__c": self.shipping_street,
+            "Shipping_address_city__c": self.shipping_city,
+            "Shipping_address_state__c": self.shipping_state,
+            "Shipping_address_ZIP__c": self.shipping_zip,
+            "Shipping_address_country__c": self.shipping_country,
+            "Stripe_Agreed_to_pay_fees__c": self.agreed_to_pay_fees,
+            "Stripe_Bank_Account__c": self.stripe_bank_account,
+            "Stripe_Card__c": self.stripe_card,
+            "Stripe_Customer_ID__c": self.stripe_customer,
+            "Stripe_Error_Message__c": self.stripe_error_message,
+            "Stripe_Transaction_ID__c": self.stripe_transaction_id,
         }
 
     @classmethod
@@ -428,10 +479,10 @@ class Opportunity(SalesforceObject):
                     logging.warning("bad campaign ID; retrying...")
                     self.campaign_id = None
                     self.save()
-                elif e.content["fields"][0] == "Referral_ID__c":
-                    logging.warning("bad referral ID; retrying...")
-                    self.referral_id = None
-                    self.save()
+                #elif e.content["fields"][0] == "Referral_ID__c":
+                #    logging.warning("bad referral ID; retrying...")
+                #    self.referral_id = None
+                #    self.save()
                 else:
                     raise
             else:
@@ -538,7 +589,7 @@ class RDO(SalesforceObject):
             RecordType.Name, Type, Referral_ID__c, LeadSource,
             Encouraged_to_contribute_by__c, Stripe_Transaction_ID__c,
             Stripe_Card__c, AccountId, npsp__Closed_Lost_Reason__c,
-            Expected_Giving_Date__c, Stripe_Card_Brand__c,
+            Stripe_Card_Brand__c,
             Stripe_Card_Expiration__c, Stripe_Card_Last_4__c
             FROM Opportunity
             WHERE npe03__Recurring_Donation__c = '{self.id}'
@@ -551,13 +602,12 @@ class RDO(SalesforceObject):
             y.id = item["Id"]
             y.name = item["Name"]
             y.amount = item["Amount"]
-            y.stripe_customer = item["Stripe_Customer_ID__c"]
+            y.stripe_customer_id = item["Stripe_Customer_ID__c"]
             y.description = item["Description"]
             y.agreed_to_pay_fees = item["Stripe_Agreed_to_pay_fees__c"]
             y.stage_name = "Pledged"
             y.close_date = item["CloseDate"]
             y.record_type_name = item["RecordType"]["Name"]
-            y.expected_giving_date = item["Expected_Giving_Date__c"]
             y.campaign_id = item["CampaignId"]
             y.type = item["Type"]
             y.referral_id = item["Referral_ID__c"]
