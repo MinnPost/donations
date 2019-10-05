@@ -403,6 +403,9 @@ def give_form():
     #form_action = '/thanks/' # previous version
     form_action = '/give'
 
+    if request.method == "POST":
+        return validate_form(DonateForm, template=template)
+
     # amount is the bare minimum to work
     if request.args.get('amount'):
         amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
@@ -541,9 +544,6 @@ def give_form():
 
     # fees
     fees = calculate_amount_fees(amount, 'visa')
-
-    if request.method == "POST":
-        return validate_form(DonateForm, template=template)
 
     step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
 
