@@ -1329,7 +1329,7 @@
       // Submit the form
       //supportform.submit();
       $.ajax({
-        url:'/donate/',
+        url:'/give/',
         cache: false,
         data: $(supportform).serialize(),
         type: 'POST'
