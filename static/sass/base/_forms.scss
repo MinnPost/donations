@@ -96,6 +96,12 @@ label {
 
 }
 
+// honeypot
+.m-user-field-shift {
+    left: -9999px;
+    position: absolute;
+}
+
 .form-group--recognition {
   margin-bottom: $small-spacing;
   .additional-option {
