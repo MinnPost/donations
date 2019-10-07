@@ -9,6 +9,8 @@ from num2words import num2words
 from flask import Flask, redirect, render_template, request, session, url_for, jsonify, json, send_from_directory, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from core import db
 from models import Transaction
@@ -80,6 +82,11 @@ import batch
 from pprint import pprint
 
 app = Flask(__name__)
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "25 per hour"]
+)
 
 if 'DYNO' in os.environ:
     sslify = SSLify(app) # only trigger SSLify if the app is running on Heroku
