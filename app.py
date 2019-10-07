@@ -1387,11 +1387,11 @@ def charge_ajax():
                 print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
             except stripe.error.CardError as e: # stripe returned an error on the credit card
                 body = e.json_body
-                print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
+                print('Stripe returned a credit card error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
                 return jsonify(errors=body)
             except Exception as e:
                 body = e.json_body
-                print('Stripe returned an error before creating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
+                print('Stripe returned an unknown error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
                 return jsonify(errors=body)
         elif customer_id is not None and customer_id != '': # this is an existing customer
             customer = stripe.Customer.retrieve(customer_id)
@@ -1422,11 +1422,11 @@ def charge_ajax():
                     return jsonify(errors=body)
             except stripe.error.CardError as e: # stripe returned an error on the credit card
                 body = e.json_body
-                print('Stripe returned an error before updating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
+                print('Stripe returned a credit card error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
                 return jsonify(errors=body)
             except Exception as e:
                 body = e.json_body
-                print('Stripe returned an error before updating customer: {} {} {} {}'.format(email, first_name, last_name, e.json_body))
+                print('Stripe returned an unknown error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
                 return jsonify(errors=body)
             print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
         else: # the email was invalid
