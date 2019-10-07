@@ -98,3 +98,10 @@ def dir_last_updated(folder):
     return str(max(os.path.getmtime(os.path.join(root_path, f))
         for root_path, dirs, files in os.walk(folder)
         for f in files))
+
+def honeypot_checker(form):
+    allowed = True
+    if 'mhp_name' in form or 'mhp_email' in form or 'mhp_comment' in form:
+        if form['mhp_name'] is not '' or form['mhp_email'] is not '' or form['mhp_comment'] is not '':
+            allowed = False
+    return allowed
