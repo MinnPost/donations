@@ -6,7 +6,7 @@ from pytz import timezone
 
 from num2words import num2words
 
-from flask import Flask, redirect, render_template, request, session, url_for, jsonify, json, send_from_directory
+from flask import Flask, redirect, render_template, request, session, url_for, jsonify, json, send_from_directory, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 
@@ -27,6 +27,7 @@ from plaid import Client
 from plaid.errors import APIError, ItemError
 
 from config import TIMEZONE
+from config import IP_BAN_LIST
 from config import MINNPOST_ROOT
 from config import FLASK_SECRET_KEY
 from config import DEFAULT_CAMPAIGN_ONETIME
@@ -130,6 +131,15 @@ LOGGING = {
 
 #if app.config['ENABLE_SENTRY']:
 #    sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
+
+ip_ban_list = IP_BAN_LIST
+
+@app.before_request
+def block_method():
+    ip = request.environ.get('REMOTE_ADDR')
+    if ip in ip_ban_list:
+        print('error: block from ban list. IP is {}'.format(ip))
+        abort(403)
 
 @app.route('/')
 def minnpost_support():
