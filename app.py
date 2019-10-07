@@ -85,7 +85,7 @@ app = Flask(__name__)
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=["100 per day", "10 per hour"]
+    default_limits=["200 per day", "25 per hour"]
 )
 
 if 'DYNO' in os.environ:
