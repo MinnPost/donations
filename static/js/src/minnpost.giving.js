@@ -1230,10 +1230,10 @@
           var full_name = '';
           if ($('#full_name').length > 0) {
             full_name = $('#full_name').val();
-            tokenData.name = full_name;
           } else {
             full_name = $('#first_name').val() + ' ' + $('#last_name').val();
           }
+          tokenData.name = full_name;
 
           var street = 'None';
           if ($('input[name="full_address"]').val() != '') {
