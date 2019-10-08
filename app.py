@@ -1402,9 +1402,35 @@ def charge_ajax():
                     )
                     stripe_bank_account = customer.default_source
                 print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
-            except stripe.error.CardError as e: # stripe returned an error on the credit card
+            except stripe.error.CardError as e:
+                # stripe returned an error on the credit card
                 body = e.json_body
                 print('Stripe returned a credit card error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+                return jsonify(errors=body)
+            except stripe.error.RateLimitError as e:
+                # Too many requests made to the API too quickly
+                body = e.json_body
+                print('Stripe returned a rate limit error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+                return jsonify(errors=body)
+            except stripe.error.InvalidRequestError as e:
+                # Invalid parameters were supplied to Stripe's API
+                body = e.json_body
+                print('Stripe returned an invalid request error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+                return jsonify(errors=body)
+            except stripe.error.AuthenticationError as e:
+                # Authentication with Stripe's API failed
+                body = e.json_body
+                print('Stripe returned an authentication error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+                return jsonify(errors=body)
+            except stripe.error.APIConnectionError as e:
+                # Network communication with Stripe failed
+                body = e.json_body
+                print('There was a network error communicating with Stripe before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+                return jsonify(errors=body)
+            except stripe.error.StripeError as e:
+                # Generic stripe error
+                body = e.json_body
+                print('There was a generic Stripe error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
                 return jsonify(errors=body)
             except Exception as e:
                 body = e.json_body
@@ -1435,11 +1461,31 @@ def charge_ajax():
                             stripe_bank_account = source.id
                             #print('reuse the bank account already on the Stripe customer')
                 else:
-                    print('Stripe error is {}'.format(error))
+                    print('Stripe returned an invalid request error before updating customer. It is {}'.format(error))
                     return jsonify(errors=body)
             except stripe.error.CardError as e: # stripe returned an error on the credit card
                 body = e.json_body
                 print('Stripe returned a credit card error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+                return jsonify(errors=body)
+            except stripe.error.RateLimitError as e:
+                # Too many requests made to the API too quickly
+                body = e.json_body
+                print('Stripe returned a rate limit error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+                return jsonify(errors=body)
+            except stripe.error.AuthenticationError as e:
+                # Authentication with Stripe's API failed
+                body = e.json_body
+                print('Stripe returned an authentication error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+                return jsonify(errors=body)
+            except stripe.error.APIConnectionError as e:
+                # Network communication with Stripe failed
+                body = e.json_body
+                print('There was a network error communicating with Stripe before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+                return jsonify(errors=body)
+            except stripe.error.StripeError as e:
+                # Generic stripe error
+                body = e.json_body
+                print('There was a generic Stripe error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
                 return jsonify(errors=body)
             except Exception as e:
                 body = e.json_body
@@ -1455,7 +1501,6 @@ def charge_ajax():
                 message = 'Your email address is required'
             body.append({'field': 'email', 'message': message})
             return jsonify(errors=body)
-
         if form.validate():
             # add a row to the heroku database so we can track it
             transaction = Transaction('NULL', 'NULL')
