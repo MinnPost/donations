@@ -2051,12 +2051,15 @@ global.Payment = Payment;
           // 1. process donation to stripe
           that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), true);
 
+          var tokenData = {};
+
           var full_name = '';
           if ($('#full_name').length > 0) {
             full_name = $('#full_name').val();
           } else {
             full_name = $('#first_name').val() + ' ' + $('#last_name').val();
           }
+          tokenData.name = full_name;
 
           var street = 'None';
           if ($('input[name="full_address"]').val() != '') {
@@ -2064,27 +2067,32 @@ global.Payment = Payment;
             if ($('input[name="billing_street"]').val() != '') {
               street = $('input[name="billing_street"]').val();
             }
+            tokenData.address_line1 = street;
           }
 
           var city = 'None';
           if ($('input[name="billing_city"]').val() != '') {
             city = $('input[name="billing_city"]').val();
+            tokenData.address_city = city;
           }
 
           var state = 'None';
           if ($('input[name="billing_state"]').val() != '') {
             state = $('input[name="billing_state"]').val();
+            tokenData.address_state = state;
           }
 
           var zip = 'None';
           if ($('input[name="billing_zip"]').val() != '') {
             zip = $('input[name="billing_zip"]').val();
+            tokenData.address_zip = zip;
           }
 
           var country = 'US';
           if ($('input[name="billing_country"]').val() != '') {
             country = $('input[name="billing_country"]').val();
           }
+          tokenData.address_country = country;
 
           // 2. create minnpost account if specified
           if (options.create_account === true) {
@@ -2116,7 +2124,7 @@ global.Payment = Payment;
 
           if ($('input[name="bankToken"]').length == 0) {
             // finally, get a token from stripe, and try to charge it if it is not ach
-            that.createToken(that.cardNumberElement);
+            that.createToken(that.cardNumberElement, tokenData);
           } else {
             // if it is ach, we already have a token so pass it to stripe.
             that.stripeTokenHandler( $('#bankToken').val(), 'ach' );
@@ -2148,9 +2156,9 @@ global.Payment = Payment;
       }
     }, // stripeErrorDisplay
 
-    createToken: function(card) {
+    createToken: function(card, tokenData) {
       var that = this;
-      that.stripe.createToken(card).then(function(result) {
+      that.stripe.createToken(card, tokenData).then(function(result) {
         if (result.error) {
           // Show the errors on the form
           that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
