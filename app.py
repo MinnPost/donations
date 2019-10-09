@@ -1348,316 +1348,296 @@ def charge_ajax():
 
     #next_page_template = 'thanks.html'
 
-    # honeypot checker
-    if honeypot_checker(request.form):
-        amount = float(request.form['amount'])
-        customer_id = request.form['customer_id']
-        if 'opp_id' in form:
-            opp_id = request.form['opp_id']
+    amount = float(request.form['amount'])
+    customer_id = request.form['customer_id']
+    if 'opp_id' in form:
+        opp_id = request.form['opp_id']
 
-        #if (amount).is_integer():
-        #    amount_formatted = float(request.form['amount'])
-        #else:
-        amount_formatted = format(amount, ',.2f')
+    #if (amount).is_integer():
+    #    amount_formatted = float(request.form['amount'])
+    #else:
+    amount_formatted = format(amount, ',.2f')
 
-        frequency = request.form['recurring']
-        if frequency is None:
-            frequency = 'one-time'
-        if frequency == 'monthly':
-            yearly = 12
-        else:
-            yearly = 1
-        level = checkLevel(amount, frequency, yearly)
+    frequency = request.form['recurring']
+    if frequency is None:
+        frequency = 'one-time'
+    if frequency == 'monthly':
+        yearly = 12
+    else:
+        yearly = 1
+    level = checkLevel(amount, frequency, yearly)
 
-        payment_type = ''
-        if 'pay_fees' in request.form:
-            pay_fees = request.form['pay_fees']
-            if pay_fees == '1':
-                # get fee amount to send to stripe; user does not see this
-                if 'payment_type' in request.form:
-                    payment_type = request.form['payment_type']
-                    session['payment_type'] = payment_type
+    payment_type = ''
+    if 'pay_fees' in request.form:
+        pay_fees = request.form['pay_fees']
+        if pay_fees == '1':
+            # get fee amount to send to stripe; user does not see this
+            if 'payment_type' in request.form:
+                payment_type = request.form['payment_type']
+                session['payment_type'] = payment_type
 
-        email = request.form['email']
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        email_is_valid = validate_email(email)
+    email = request.form['email']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    email_is_valid = validate_email(email)
 
-        stripe_card = ''
-        stripe_bank_account = ''
+    stripe_card = ''
+    stripe_bank_account = ''
 
-        if email_is_valid and customer_id is '': # this is a new customer
-        # if it is a new customer, assume they only have one payment method and it should be the default
-            try:
-                if 'stripeToken' in request.form:
-                    customer = stripe.Customer.create(
-                            email=email,
-                            card=request.form['stripeToken'] 
-                    )
-                    stripe_card = customer.default_source
-                elif 'bankToken' in request.form:
-                    customer = stripe.Customer.create(
+    if email_is_valid and customer_id is '': # this is a new customer
+    # if it is a new customer, assume they only have one payment method and it should be the default
+        try:
+            if 'stripeToken' in request.form:
+                customer = stripe.Customer.create(
                         email=email,
-                        source=request.form['bankToken']
-                    )
-                    stripe_bank_account = customer.default_source
-                print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
-            except stripe.error.CardError as e:
-                # stripe returned an error on the credit card
-                body = e.json_body
-                print('Stripe returned a credit card error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except stripe.error.RateLimitError as e:
-                # Too many requests made to the API too quickly
-                body = e.json_body
-                print('Stripe returned a rate limit error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except stripe.error.InvalidRequestError as e:
-                # Invalid parameters were supplied to Stripe's API
-                body = e.json_body
-                print('Stripe returned an invalid request error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except stripe.error.AuthenticationError as e:
-                # Authentication with Stripe's API failed
-                body = e.json_body
-                print('Stripe returned an authentication error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except stripe.error.APIConnectionError as e:
-                # Network communication with Stripe failed
-                body = e.json_body
-                print('There was a network error communicating with Stripe before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except stripe.error.StripeError as e:
-                # Generic stripe error
-                body = e.json_body
-                print('There was a generic Stripe error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except Exception as e:
-                body = e.json_body
-                print('Stripe returned an unknown error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-        elif customer_id is not None and customer_id != '': # this is an existing customer
-            customer = stripe.Customer.retrieve(customer_id)
-            customer.email = email
-            customer.save()
-            # since this is an existing customer, add the current payment method to the list.
-            # this does not change the default payment method.
-            # todo: build a checkbox or something that lets users indicate that we should update their default method
-            try:
-                if 'stripeToken' in request.form:
-                    card = customer.sources.create(source=request.form['stripeToken'])
-                    stripe_card = card.id
-                elif 'bankToken' in request.form:
-                    bank_account = customer.sources.create(source=request.form['bankToken'])
-                    stripe_bank_account = bank_account.id
-            except stripe.error.InvalidRequestError as e: # stripe returned a bank account error
-                body = e.json_body
-                error = body['error']
-                if error['message'] == 'A bank account with that routing number and account number already exists for this customer.':
-                    # use the account they already have, since it is identical
-                    sources = customer.sources
-                    for source in sources:
-                        if source.object == 'bank_account':
-                            stripe_bank_account = source.id
-                            #print('reuse the bank account already on the Stripe customer')
-                else:
-                    print('Stripe returned an invalid request error before updating customer. It is {}'.format(error))
-                    return jsonify(errors=body)
-            except stripe.error.CardError as e: # stripe returned an error on the credit card
-                body = e.json_body
-                print('Stripe returned a credit card error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except stripe.error.RateLimitError as e:
-                # Too many requests made to the API too quickly
-                body = e.json_body
-                print('Stripe returned a rate limit error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except stripe.error.AuthenticationError as e:
-                # Authentication with Stripe's API failed
-                body = e.json_body
-                print('Stripe returned an authentication error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except stripe.error.APIConnectionError as e:
-                # Network communication with Stripe failed
-                body = e.json_body
-                print('There was a network error communicating with Stripe before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except stripe.error.StripeError as e:
-                # Generic stripe error
-                body = e.json_body
-                print('There was a generic Stripe error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            except Exception as e:
-                body = e.json_body
-                print('Stripe returned an unknown error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
-                return jsonify(errors=body)
-            print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
-        else: # the email was invalid
-            print('Error saving update for customer {} {} {}; showed error'.format(email, first_name, last_name))        
-            body = []
-            if email != '':
-                message = 'Please enter a valid email address; {} is not valid.'.format(email)
-            else:
-                message = 'Your email address is required'
-            body.append({'field': 'email', 'message': message})
+                        card=request.form['stripeToken'] 
+                )
+                stripe_card = customer.default_source
+            elif 'bankToken' in request.form:
+                customer = stripe.Customer.create(
+                    email=email,
+                    source=request.form['bankToken']
+                )
+                stripe_bank_account = customer.default_source
+            print('Create Stripe customer {} {} {} and charge amount {} with frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
+        except stripe.error.CardError as e:
+            # stripe returned an error on the credit card
+            body = e.json_body
+            print('Stripe returned a credit card error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
             return jsonify(errors=body)
-        if form.validate():
-            # add a row to the heroku database so we can track it
-            transaction = Transaction('NULL', 'NULL')
-            db.session.add(transaction)
-            db.session.commit()
-            print('add a transaction show me the id. then do sf method.')
-            print(transaction.id)
-            flask_id = str(transaction.id)
-            session['flask_id'] = flask_id
-            print('session flask id is {}'.format(session['flask_id']))
-            if frequency == 'one-time':
-                session['sf_type'] = 'Opportunity'
+        except stripe.error.RateLimitError as e:
+            # Too many requests made to the API too quickly
+            body = e.json_body
+            print('Stripe returned a rate limit error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except stripe.error.InvalidRequestError as e:
+            # Invalid parameters were supplied to Stripe's API
+            body = e.json_body
+            print('Stripe returned an invalid request error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except stripe.error.AuthenticationError as e:
+            # Authentication with Stripe's API failed
+            body = e.json_body
+            print('Stripe returned an authentication error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except stripe.error.APIConnectionError as e:
+            # Network communication with Stripe failed
+            body = e.json_body
+            print('There was a network error communicating with Stripe before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except stripe.error.StripeError as e:
+            # Generic stripe error
+            body = e.json_body
+            print('There was a generic Stripe error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except Exception as e:
+            body = e.json_body
+            print('Stripe returned an unknown error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+    elif customer_id is not None and customer_id != '': # this is an existing customer
+        customer = stripe.Customer.retrieve(customer_id)
+        customer.email = email
+        customer.save()
+        # since this is an existing customer, add the current payment method to the list.
+        # this does not change the default payment method.
+        # todo: build a checkbox or something that lets users indicate that we should update their default method
+        try:
+            if 'stripeToken' in request.form:
+                card = customer.sources.create(source=request.form['stripeToken'])
+                stripe_card = card.id
+            elif 'bankToken' in request.form:
+                bank_account = customer.sources.create(source=request.form['bankToken'])
+                stripe_bank_account = bank_account.id
+        except stripe.error.InvalidRequestError as e: # stripe returned a bank account error
+            body = e.json_body
+            error = body['error']
+            if error['message'] == 'A bank account with that routing number and account number already exists for this customer.':
+                # use the account they already have, since it is identical
+                sources = customer.sources
+                for source in sources:
+                    if source.object == 'bank_account':
+                        stripe_bank_account = source.id
+                        #print('reuse the bank account already on the Stripe customer')
             else:
-                session['sf_type'] = 'npe03__Recurring_Donation__c'
+                print('Stripe returned an invalid request error before updating customer. It is {}'.format(error))
+                return jsonify(errors=body)
+        except stripe.error.CardError as e: # stripe returned an error on the credit card
+            body = e.json_body
+            print('Stripe returned a credit card error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except stripe.error.RateLimitError as e:
+            # Too many requests made to the API too quickly
+            body = e.json_body
+            print('Stripe returned a rate limit error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except stripe.error.AuthenticationError as e:
+            # Authentication with Stripe's API failed
+            body = e.json_body
+            print('Stripe returned an authentication error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except stripe.error.APIConnectionError as e:
+            # Network communication with Stripe failed
+            body = e.json_body
+            print('There was a network error communicating with Stripe before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except stripe.error.StripeError as e:
+            # Generic stripe error
+            body = e.json_body
+            print('There was a generic Stripe error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        except Exception as e:
+            body = e.json_body
+            print('Stripe returned an unknown error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
+            return jsonify(errors=body)
+        print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
+    else: # the email was invalid
+        print('Error saving update for customer {} {} {}; showed error'.format(email, first_name, last_name))        
+        body = []
+        if email != '':
+            message = 'Please enter a valid email address; {} is not valid.'.format(email)
+        else:
+            message = 'Your email address is required'
+        body.append({'field': 'email', 'message': message})
+        return jsonify(errors=body)
+    if form.validate():
+        # add a row to the heroku database so we can track it
+        transaction = Transaction('NULL', 'NULL')
+        db.session.add(transaction)
+        db.session.commit()
+        print('add a transaction show me the id. then do sf method.')
+        print(transaction.id)
+        flask_id = str(transaction.id)
+        session['flask_id'] = flask_id
+        print('session flask id is {}'.format(session['flask_id']))
+        if frequency == 'one-time':
+            session['sf_type'] = 'Opportunity'
+        else:
+            session['sf_type'] = 'npe03__Recurring_Donation__c'
 
-            extra_values = {}
+        extra_values = {}
 
-            # if we have a new source, add it to extra values
-            if stripe_card != '':
-                extra_values['stripe_card'] = stripe_card
-            elif stripe_bank_account != '':
-                extra_values['stripe_bank_account'] = stripe_bank_account
+        # if we have a new source, add it to extra values
+        if stripe_card != '':
+            extra_values['stripe_card'] = stripe_card
+        elif stripe_bank_account != '':
+            extra_values['stripe_bank_account'] = stripe_bank_account
 
-            # if we need to set the payment type before charging, add it to extra values
-            if payment_type != '':
-                extra_values['payment_type'] = payment_type
+        # if we need to set the payment type before charging, add it to extra values
+        if payment_type != '':
+            extra_values['payment_type'] = payment_type
 
-            # if we specify opportunity type and/or subtype, put it in the session
-            if 'opp_type' in request.form:
-                session['opp_type'] = request.form['opp_type']
+        # if we specify opportunity type and/or subtype, put it in the session
+        if 'opp_type' in request.form:
+            session['opp_type'] = request.form['opp_type']
 
-                if request.form['opp_type'] == 'Sponsorship':
-                    if amount == 300:
-                        fair_market_value = 100
-                    elif amount == 500:
-                        fair_market_value = 100
-                    elif amount == 600:
-                        fair_market_value = 200
-                    elif amount == 1200:
-                        fair_market_value = 300
-                    elif amount == 1500:
-                        fair_market_value = 300
-                    elif amount == 2400:
-                        fair_market_value = 400
-                    elif amount == 3000:
-                        fair_market_value = 400
-                    elif amount == 5000:
-                        fair_market_value = 500
-                    elif amount == 8000:
-                        fair_market_value = 600
-                    else:
-                        fair_market_value = ''
+            if request.form['opp_type'] == 'Sponsorship':
+                if amount == 300:
+                    fair_market_value = 100
+                elif amount == 500:
+                    fair_market_value = 100
+                elif amount == 600:
+                    fair_market_value = 200
+                elif amount == 1200:
+                    fair_market_value = 300
+                elif amount == 1500:
+                    fair_market_value = 300
+                elif amount == 2400:
+                    fair_market_value = 400
+                elif amount == 3000:
+                    fair_market_value = 400
+                elif amount == 5000:
+                    fair_market_value = 500
+                elif amount == 8000:
+                    fair_market_value = 600
+                else:
+                    fair_market_value = ''
 
-                    extra_values['fair_market_value'] = fair_market_value
-
-                elif request.form['opp_type'] == 'Sales':
-                    if 'quantity' in request.form:              
-                        quantity = int(request.form['quantity'])
-                        #attendees = []
-                        opportunity_attendees = ''
-                        if quantity > 1:
-                            for x in range(quantity):
-                                attendee_id = x + 1
-                                opportunity_attendees += request.form['attendee_name_' + str(attendee_id)] + ': ' + request.form['attendee_email_' + str(attendee_id)] + ';'
-
-                                #attendee = {'name' : request.form['attendee_name_' + str(attendee_id)], 'email' : request.form['attendee_email_' + str(attendee_id)]}
-                                #attendees.append(attendee)
-                        elif quantity == 1:
-                            opportunity_attendees += request.form['attendee_name_1'] + ': ' + request.form['attendee_email_1'] + ';'
-                            #attendee = {'name' : request.form['attendee_name_1'], 'email' : request.form['attendee_email_1']}
-                            #attendees.append(attendee)
-                        #extra_values['attendees'] = attendees
-                        extra_values['attendees'] = opportunity_attendees
-
-            if 'opp_subtype' in request.form:
-                opp_subtype = request.form['opp_subtype']
-                session['opp_subtype'] = opp_subtype
-                if opp_subtype == 'Sales: Tickets':
-
-                    if request.form['event']:
-                        event = request.form['event']
-                        if event == '1':
-                            single_unit_fair_market_value = float(EVENT_1_SINGLE_UNIT_FAIR_MARKET_VALUE)
-                        elif event == '2':
-                            single_unit_fair_market_value = float(EVENT_2_SINGLE_UNIT_FAIR_MARKET_VALUE)
-                        else:
-                            single_unit_fair_market_value = float(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
-                    else:
-                        event = '1'
-                        single_unit_fair_market_value = float(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
-                    fair_market_value = quantity * single_unit_fair_market_value
-                elif opp_subtype == 'Sales: Advertising':
-                    fair_market_value = amount
-                    extra_values['invoice'] = request.form['invoice']
-                    extra_values['organization'] = request.form['organization']
                 extra_values['fair_market_value'] = fair_market_value
 
-            if 'additional_donation' in request.form:
-                if request.form['additional_donation'] != '':
-                    additional_donation = float(request.form['additional_donation'])
-                    extra_values['additional_donation'] = additional_donation
-                    session['additional_donation'] = format(additional_donation, ',.2f')
+            elif request.form['opp_type'] == 'Sales':
+                if 'quantity' in request.form:              
+                    quantity = int(request.form['quantity'])
+                    #attendees = []
+                    opportunity_attendees = ''
+                    if quantity > 1:
+                        for x in range(quantity):
+                            attendee_id = x + 1
+                            opportunity_attendees += request.form['attendee_name_' + str(attendee_id)] + ': ' + request.form['attendee_email_' + str(attendee_id)] + ';'
+
+                            #attendee = {'name' : request.form['attendee_name_' + str(attendee_id)], 'email' : request.form['attendee_email_' + str(attendee_id)]}
+                            #attendees.append(attendee)
+                    elif quantity == 1:
+                        opportunity_attendees += request.form['attendee_name_1'] + ': ' + request.form['attendee_email_1'] + ';'
+                        #attendee = {'name' : request.form['attendee_name_1'], 'email' : request.form['attendee_email_1']}
+                        #attendees.append(attendee)
+                    #extra_values['attendees'] = attendees
+                    extra_values['attendees'] = opportunity_attendees
+
+        if 'opp_subtype' in request.form:
+            opp_subtype = request.form['opp_subtype']
+            session['opp_subtype'] = opp_subtype
+            if opp_subtype == 'Sales: Tickets':
+
+                if request.form['event']:
+                    event = request.form['event']
+                    if event == '1':
+                        single_unit_fair_market_value = float(EVENT_1_SINGLE_UNIT_FAIR_MARKET_VALUE)
+                    elif event == '2':
+                        single_unit_fair_market_value = float(EVENT_2_SINGLE_UNIT_FAIR_MARKET_VALUE)
+                    else:
+                        single_unit_fair_market_value = float(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
                 else:
-                    session['additional_donation'] = ''
+                    event = '1'
+                    single_unit_fair_market_value = float(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
+                fair_market_value = quantity * single_unit_fair_market_value
+            elif opp_subtype == 'Sales: Advertising':
+                fair_market_value = amount
+                extra_values['invoice'] = request.form['invoice']
+                extra_values['organization'] = request.form['organization']
+            extra_values['fair_market_value'] = fair_market_value
+
+        if 'additional_donation' in request.form:
+            if request.form['additional_donation'] != '':
+                additional_donation = float(request.form['additional_donation'])
+                extra_values['additional_donation'] = additional_donation
+                session['additional_donation'] = format(additional_donation, ',.2f')
             else:
                 session['additional_donation'] = ''
-
-            if 'quantity' in request.form:
-                quantity = int(request.form['quantity'])
-                extra_values['quantity'] = quantity
-                session['quantity'] = quantity
-            else:
-                session['quantity'] = ''
-
-            # this adds the contact and the opportunity to salesforce
-            add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
-            print('Done with contact and opportunity {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
-            # the payment type here won't work because it doesn't get sent to the method, but to the template       
-            return render_template(
-                'thanks.html',
-                amount=amount_formatted, frequency=frequency, yearly=yearly, level=level,
-                email=email, first_name=first_name, last_name=last_name,
-                session=session, minnpost_root = app.minnpost_root,
-                key = app.config['STRIPE_KEYS']['publishable_key']
-            )
-
-            #body = transaction.id
-            #return jsonify(body)
         else:
-            print('donate form did not validate: error below')
-            print(form.errors)
+            session['additional_donation'] = ''
 
-            body = []
-            for field in form.errors:
-                body.append({'field': field, 'message': form.errors[field]})
-            return jsonify(errors=body)
+        if 'quantity' in request.form:
+            quantity = int(request.form['quantity'])
+            extra_values['quantity'] = quantity
+            session['quantity'] = quantity
+        else:
+            session['quantity'] = ''
 
-            print('Form validation errors: {}'.format(form.errors))
-            print('Did not validate form of customer {} {} {}'.format(email, first_name, last_name))
-            #return render_template('error.html', message=message)
-            body = {'error' : 'full', 'message' : 'We were unable to process your donation. Please try again.'}
-            return jsonify(errors=body)
+        # this adds the contact and the opportunity to salesforce
+        add_customer_and_charge.delay(form=request.form, customer=customer, flask_id=flask_id, extra_values=extra_values)
+        print('Done with contact and opportunity {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
+        # the payment type here won't work because it doesn't get sent to the method, but to the template       
+        return render_template(
+            'thanks.html',
+            amount=amount_formatted, frequency=frequency, yearly=yearly, level=level,
+            email=email, first_name=first_name, last_name=last_name,
+            session=session, minnpost_root = app.minnpost_root,
+            key = app.config['STRIPE_KEYS']['publishable_key']
+        )
+
+        #body = transaction.id
+        #return jsonify(body)
     else:
-        email = request.form['email']
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        mhp_name = request.form['mhp_name']
-        mhp_email = request.form['mhp_email']
-        mhp_comment = request.form['mhp_comment']
-        print('Error: expected spammer. Legit user info fields: {} {} {}. Spam user info fields: {} {} {}'.format(email, first_name, last_name, mhp_name, mhp_email, mhp_comment))
+        print('donate form did not validate: error below')
+        print(form.errors)
 
         body = []
-        #for field in form.errors:
-        #    body.append({'field': field, 'message': form.errors[field]})
-        #return jsonify(errors=body)
+        for field in form.errors:
+            body.append({'field': field, 'message': form.errors[field]})
+        return jsonify(errors=body)
 
-        print('Form validation spam: {}'.format(form.errors))
+        print('Form validation errors: {}'.format(form.errors))
+        print('Did not validate form of customer {} {} {}'.format(email, first_name, last_name))
         #return render_template('error.html', message=message)
         body = {'error' : 'full', 'message' : 'We were unable to process your donation. Please try again.'}
         return jsonify(errors=body)
