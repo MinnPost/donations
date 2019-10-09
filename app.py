@@ -1644,7 +1644,10 @@ def charge_ajax():
             body = {'error' : 'full', 'message' : 'We were unable to process your donation. Please try again.'}
             return jsonify(errors=body)
     else:
-        print('donate form did not validate: spam')
+        mhp_name = request.form['mhp_name']
+        mhp_email = request.form['mhp_email']
+        mhp_comment = request.form['mhp_comment']
+        print('Error: expected spammer. Legit user info fields: {} {} {}. Spam user info fields: {} {} {}'.format(email, first_name, last_name, mhp_name, mhp_email, mhp_comment))
 
         body = []
         #for field in form.errors:
