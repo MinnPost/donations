@@ -1644,6 +1644,9 @@ def charge_ajax():
             body = {'error' : 'full', 'message' : 'We were unable to process your donation. Please try again.'}
             return jsonify(errors=body)
     else:
+        email = request.form['email']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
         mhp_name = request.form['mhp_name']
         mhp_email = request.form['mhp_email']
         mhp_comment = request.form['mhp_comment']
