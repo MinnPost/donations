@@ -417,19 +417,6 @@ def robots_txt():
     return send_from_directory(os.path.join(root_dir, "app"), "robots.txt")
 
 
-@app.route("/donate", methods=["GET", "POST"])
-def donate_form():
-    bundles = get_bundles("donate")
-    template = "donate-form.html"
-
-    if request.method == "POST":
-        return validate_form(DonateForm, bundles=bundles, template=template)
-
-    return render_template(
-        template, bundles=bundles, key=app.config["STRIPE_KEYS"]["publishable_key"]
-    )
-
-
 @app.route("/give/", methods=["GET", "POST"])
 def give_form():
     template    = "give.html"
