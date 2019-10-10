@@ -66,7 +66,7 @@ from util import (
     send_multiple_account_warning,
 )
 from validate_email import validate_email
-from charges import charge, calculate_amount_fees
+from charges import charge, calculate_amount_fees, check_level
 
 ZONE = timezone(TIMEZONE)
 
@@ -281,7 +281,7 @@ def add_donation(form=None, customer=None, donation_type=None):
     if contact.duplicate_found:
         send_multiple_account_warning(contact)
 
-    if period is None:
+    if frequency is None:
         logging.info("----Creating one time payment...")
         opportunity = add_opportunity(contact=contact, form=form, customer=customer)
         charge(opportunity)
@@ -313,9 +313,19 @@ def add_donation(form=None, customer=None, donation_type=None):
 def do_charge_or_show_errors(template, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")
 
-    email = request.form["stripeEmail"]
-    installment_period = request.form["installment_period"]
-    amount = request.form["amount"]
+    amount = float(request.form['amount'])
+    frequency = request.form['recurring']
+    email = request.form["email"]
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+
+    if frequency is None:
+        frequency = app.config["DEFAULT_FREQUENCY"]
+    if frequency == 'monthly':
+        yearly = 12
+    else:
+        yearly = 1
+    level = check_level(amount, frequency, yearly)
 
     try:
         customer = stripe.Customer.create(email=email, card=request.form["stripeToken"])
@@ -598,6 +608,23 @@ def calculate_fees():
     ret_data = {"fees": fees}
     return jsonify(ret_data)
 
+
+    amount = float(request.form['amount'])
+    customer_id = request.form['customer_id']
+    amount_formatted = format(amount, ',.2f')
+
+    frequency = request.form['recurring']
+    email = request.form["email"]
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+
+    if frequency is None:
+        frequency = app.config["DEFAULT_FREQUENCY"]
+    if frequency == 'monthly':
+        yearly = 12
+    else:
+        yearly = 1
+    level = check_level(amount, frequency, yearly)
 
 @app.route("/error")
 def error():
