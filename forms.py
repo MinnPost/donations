@@ -36,21 +36,23 @@ class BaseForm(FlaskForm):
             validators.NumberRange(min=1),
         ],
     )
-    stripeEmail = EmailField(
+    email = EmailField(
         "Email address", [validators.DataRequired(), validators.Email()]
     )
+    billing_zip = StringField(u"ZIP Code", [validators.Length(max=5)])
     stripeToken = HiddenField(u"Stripe token", [validators.InputRequired()])
     description = HiddenField(u"Description", [validators.InputRequired()])
-    pay_fees_value = HiddenField(
-        u"Pay Fees Value", [validators.AnyOf(["True", "False"])]
-    )
     reason = StringField(u"Encouraged to give by", [validators.Length(max=255)])
     campaign_id = HiddenField("Campaign ID", [validators.Length(max=18)])
     referral_id = HiddenField("Referral ID", [validators.Length(max=18)])
 
 
 class DonateForm(BaseForm):
-    installment_period = StringField(
-        u"Installment Period", [validators.AnyOf(["yearly", "monthly", "None"])]
+    recurring = StringField(
+        u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
     )
-    zipcode = StringField(u"ZIP Code", [validators.Length(max=5)])
+    # this acts as required if it's not present
+    #pay_fees = StringField(
+    #    u"Pay Fees Value", [validators.AnyOf(["True", "1", "None"])]
+    #)
+    #billing_zip = StringField(u"ZIP Code", [validators.Length(max=5)])

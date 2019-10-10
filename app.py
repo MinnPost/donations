@@ -247,8 +247,8 @@ def add_donation(form=None, customer=None, donation_type=None):
     form = clean(form)
     first_name = form["first_name"]
     last_name = form["last_name"]
-    period = form["installment_period"]
-    email = form["stripeEmail"]
+    frequency = form["frequency"]
+    email = form["email"]
     zipcode = form["zipcode"]
 
     logging.info("----Getting contact....")
@@ -361,7 +361,7 @@ def validate_form(FormType, template, function=add_donation.delay):
     else:
         raise Exception("Unrecognized form type")
 
-    email = request.form["stripeEmail"]
+    email = request.form["email"]
 
     if not validate_email(email):
         message = "There was an issue saving your email address."
@@ -557,6 +557,8 @@ def give_form():
         form=form,
         form_action=form_action,
         amount=amount_formatted, frequency=frequency, yearly=yearly,
+        first_name=first_name, last_name=last_name, email=email,
+        billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
@@ -969,7 +971,7 @@ def add_business_membership(
 
     first_name = form["first_name"]
     last_name = form["last_name"]
-    email = form["stripeEmail"]
+    email = form["email"]
 
     website = form["website"]
     business_name = form["business_name"]
@@ -1083,7 +1085,7 @@ def add_blast_subscription(form=None, customer=None):
     now = datetime.now(tz=ZONE).strftime("%Y-%m-%d %I:%M:%S %p %Z")
     rdo.name = f"{first_name} {last_name} - {now} - The Blast"
     rdo.type = "The Blast"
-    rdo.billing_email = form["stripeEmail"]
+    rdo.billing_email = form["email"]
     rdo.blast_subscription_email = form["subscriber_email"]
 
     logging.info("----Saving RDO....")
