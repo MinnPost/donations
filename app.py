@@ -208,14 +208,9 @@ make_celery(app)
 Redirects.
 """
 
-
-@app.route("/levels.html")
-@app.route("/faq.html")
 @app.route("/index.html")
-@app.route("/memberform")
-@app.route("/donateform")
 def index_html_route():
-    return redirect("/donate", code=302)
+    return redirect("/give/", code=302)
 
 
 
