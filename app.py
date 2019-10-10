@@ -323,7 +323,20 @@ def do_charge_or_show_errors(template, function, donation_type):
     level = check_level(amount, frequency, yearly)
 
     try:
-        customer = stripe.Customer.create(email=email, card=request.form["stripeToken"])
+        if 'stripeToken' in request.form:
+            customer = stripe.Customer.create(
+                    email=email,
+                    card=request.form['stripeToken'] 
+            )
+            stripe_card = customer.default_source
+        elif 'bankToken' in request.form:
+            customer = stripe.Customer.create(
+                email=email,
+                source=request.form['bankToken']
+            )
+            stripe_bank_account = customer.default_source
+        amount_formatted = format(amount, ',.2f')
+        app.logger.info(f"Create Stripe Customer: {customer.id} {email} {first_name} {last_name} and charge amount {amount_formatted} with frequency {frequency}")
     except stripe.error.CardError as e:
         body = e.json_body
         err = body.get("error", {})
@@ -337,13 +350,29 @@ def do_charge_or_show_errors(template, function, donation_type):
             message=message,
             form_data=form_data,
         )
+    except stripe.error.InvalidRequestError as e:
+        body = e.json_body
+        err = body.get("error", {})
+        message = err.get("message", "")
+        form_data = request.form.to_dict()
+        del form_data["stripeToken"]
+
+        return render_template(
+            template,
+            key=app.config["STRIPE_KEYS"]["publishable_key"],
+            message=message,
+            form=form_data,
+        )
     app.logger.info(f"Customer id: {customer.id}")
     function(customer=customer, form=clean(request.form), donation_type=donation_type)
-    gtm = {
-        "event_value": amount,
-        "event_label": "once" if installment_period == "None" else installment_period,
-    }
-    return render_template("charge.html", gtm=gtm)
+    return render_template(
+        'thanks.html',
+        amount=amount, frequency=frequency, yearly=yearly, level=level,
+        email=email, first_name=first_name, last_name=last_name,
+        #session=session,
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        key = app.config['STRIPE_KEYS']['publishable_key']
+    )
 
 
 def validate_form(FormType, template, function=add_donation.delay):
@@ -405,8 +434,8 @@ def donate_form():
 def give_form():
     template    = "give.html"
     form        = DonateForm()
-    #form_action = '/thanks/' # previous version
-    form_action = '/give'
+    form_action = '/thanks/' # previous version
+    #form_action = '/give/'
 
     if request.method == "POST":
         return validate_form(DonateForm, template=template)
@@ -425,7 +454,7 @@ def give_form():
     # frequency
     frequency = request.args.get('frequency')
     if frequency is None:
-        frequency = DEFAULT_FREQUENCY
+        frequency = app.config["DEFAULT_FREQUENCY"]
     if frequency == 'monthly':
         yearly = 12
     else:
@@ -605,6 +634,15 @@ def calculate_fees():
     ret_data = {"fees": fees}
     return jsonify(ret_data)
 
+
+@app.route('/thanks/', methods=['POST'])
+def thanks():
+    template    = "thanks.html"
+    form        = DonateForm()
+    form_action = '/thanks/'
+
+    if request.method == "POST":
+        return validate_form(DonateForm, template=template)
 
     amount = float(request.form['amount'])
     customer_id = request.form['customer_id']
