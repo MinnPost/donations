@@ -51,7 +51,7 @@ from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask import Flask, jsonify, redirect, render_template, request, session, send_from_directory
+from flask import Flask, redirect, render_template, request, send_from_directory, jsonify, session
 from forms import (
     DonateForm,
 )
@@ -182,7 +182,7 @@ if 'DYNO' in os.environ:
 Talisman(
     app,
     content_security_policy={},
-    content_security_policy_report_only=False,
+    content_security_policy_report_only=True,
     content_security_policy_report_uri=REPORT_URI,
 )
 
@@ -350,7 +350,7 @@ def do_charge_or_show_errors(template, function, donation_type):
 
         return render_template(
             template,
-            key=app.config["STRIPE_KEYS"]["publishable_key"],
+            stripe=app.config["STRIPE_KEYS"]["publishable_key"],
             message=message,
             form_data=form_data,
         )
@@ -363,7 +363,7 @@ def do_charge_or_show_errors(template, function, donation_type):
 
         return render_template(
             template,
-            key=app.config["STRIPE_KEYS"]["publishable_key"],
+            stripe=app.config["STRIPE_KEYS"]["publishable_key"],
             message=message,
             form=form_data,
         )
@@ -375,7 +375,7 @@ def do_charge_or_show_errors(template, function, donation_type):
         email=email, first_name=first_name, last_name=last_name,
         #session=session,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        key = app.config['STRIPE_KEYS']['publishable_key']
+        stripe=app.config['STRIPE_KEYS']['publishable_key']
     )
 
 
@@ -684,12 +684,14 @@ def page_not_found(error):
     return render_template("error.html", message=message), 404
 
 
-@app.route('/.well-known/apple-developer-merchantid-domain-association')
-def apple_developer_domain_verification():
+@app.route("/.well-known/apple-developer-merchantid-domain-association")
+def merchantid():
     """
     This is here to verify our domain so Stripe can support Apple Pay.
     """
-    return send_from_directory(app.static_folder, 'apple-developer-merchantid-domain-association');
+    return send_from_directory(
+        app.static_folder, 'apple-developer-merchantid-domain-association'
+    )
 
 
 # TODO why do I have to set the name here?

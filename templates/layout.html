@@ -81,7 +81,7 @@
   $(document).ready(function() {
     // call plugin and pass options if need be
     $('.support--forms').minnpost_giving({
-      'stripe_publishable_key' : '{{key}}',{% if show_ach == 'True' %}
+      'stripe_publishable_key' : '{{stripe}}',{% if show_ach == 'True' %}
       'plaid_env' : '{{plaid_env}}',
       'plaid_public_key' : '{{plaid_public_key}}',{% endif %}
       'minnpost_root' : '{{minnpost_root}}',
