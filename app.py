@@ -4,39 +4,26 @@ run', 'python app.py' or via a WSGI server like gunicorn or uwsgi.
 
 """
 import calendar
-import simplejson as json
+import json
 import locale
 import logging
 import os
 import re
 from config import (
+    FLASK_SECRET_KEY,
+    LOG_LEVEL,
     TIMEZONE,
+    STRIPE_WEBHOOK_SECRET,
+    SENTRY_DSN,
+    SENTRY_ENVIRONMENT,
+    ENABLE_SENTRY,
+    ENABLE_PORTAL,
+    REPORT_URI,
+    MWS_ACCESS_KEY,
+    MWS_SECRET_KEY,
     AMAZON_MERCHANT_ID,
     AMAZON_SANDBOX,
     AMAZON_CAMPAIGN_ID,
-    MWS_ACCESS_KEY,
-    MWS_SECRET_KEY,
-    DEFAULT_FREQUENCY,
-    FLASK_SECRET_KEY,
-    FLASK_DEBUG,
-    WTF_CSRF_ENABLED,
-    LOG_LEVEL,
-    PLAID_SECRET,
-    PLAID_PUBLIC_KEY,
-    PLAID_ENVIRONMENT,
-    ENABLE_PORTAL,
-    ADVERTISING_CAMPAIGN_ID,
-    ANNIVERSARY_PARTY_CAMPAIGN_ID,
-    COMBINED_EMAIL_FIELD,
-    DEFAULT_CAMPAIGN_ONETIME,
-    DEFAULT_CAMPAIGN_RECURRING,
-    MINNROAST_CAMPAIGN_ID,
-    SALESFORCE_CONTACT_ADVERTISING_EMAIL,
-    ENABLE_SENTRY,
-    SENTRY_DSN,
-    SENTRY_ENVIRONMENT,
-    REPORT_URI,
-    STRIPE_WEBHOOK_SECRET,
 )
 from datetime import datetime
 from pprint import pformat
@@ -45,15 +32,17 @@ from pytz import timezone
 
 import celery
 import stripe
-from plaid import Client
-from plaid.errors import APIError, ItemError
 from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask import Flask, jsonify, redirect, render_template, request, session, send_from_directory
+from flask import Flask, redirect, render_template, request, send_from_directory
 from forms import (
+    BlastForm,
+    BlastPromoForm,
     DonateForm,
+    BusinessMembershipForm,
+    CircleForm,
 )
 from npsp import RDO, Contact, Opportunity, Affiliation, Account
 from amazon_pay.ipn_handler import IpnHandler
@@ -66,7 +55,7 @@ from util import (
     send_multiple_account_warning,
 )
 from validate_email import validate_email
-from charges import charge, calculate_amount_fees
+from charges import charge
 
 ZONE = timezone(TIMEZONE)
 
@@ -178,7 +167,7 @@ app = Flask(__name__)
 Talisman(
     app,
     content_security_policy={},
-    content_security_policy_report_only=False,
+    content_security_policy_report_only=True,
     content_security_policy_report_uri=REPORT_URI,
 )
 
@@ -205,10 +194,19 @@ make_celery(app)
 
 
 """
-Redirects.
+Redirects, including for URLs that used to be
+part of the old donations app that lived at
+support.texastribune.org.
 """
 
 
+@app.route("/blast-vip")
+# @app.route("/blast-promo")
+def the_blastvip_form():
+    return redirect("/blastform", code=302)
+
+
+@app.route("/")
 @app.route("/levels.html")
 @app.route("/faq.html")
 @app.route("/index.html")
@@ -217,6 +215,41 @@ Redirects.
 def index_html_route():
     return redirect("/donate", code=302)
 
+
+@app.route("/circle.html")
+@app.route("/circleform")
+def circle_html_route():
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/circle?%s" % query_string, code=302)
+
+
+"""
+Read the Webpack assets manifest and then provide the
+scripts, including cache-busting hache, as template context.
+
+For Heroku to compile assets on deploy, the directory it
+builds to needs to already exist. Hence /static/js/prod/.gitkeep.
+We don't want to version control development builds, which is
+why they're compiled to /static/js/build/ instead.
+"""
+
+
+def get_bundles(entry):
+    root_dir = os.path.dirname(os.getcwd())
+    build_dir = os.path.join("static", "build")
+    asset_path = "/static/build/"
+    bundles = {"css": "", "js": []}
+    manifest_path = os.path.join(build_dir, "assets.json")
+    css_manifest_path = os.path.join(build_dir, "styles.json")
+    with open(manifest_path) as manifest:
+        assets = json.load(manifest)
+    entrypoint = assets["entrypoints"][entry]
+    for bundle in entrypoint["js"]:
+        bundles["js"].append(asset_path + bundle)
+    with open(css_manifest_path) as manifest:
+        css_assets = json.load(manifest)
+    bundles["css"] = asset_path + css_assets[entry]
+    return bundles
 
 
 def apply_card_details(rdo=None, customer=None):
@@ -310,7 +343,7 @@ def add_donation(form=None, customer=None, donation_type=None):
     return True
 
 
-def do_charge_or_show_errors(template, function, donation_type):
+def do_charge_or_show_errors(template, bundles, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")
 
     email = request.form["stripeEmail"]
@@ -328,7 +361,9 @@ def do_charge_or_show_errors(template, function, donation_type):
 
         return render_template(
             template,
-            key=app.config["STRIPE_KEYS"]["publishable_key"],
+            bundles=bundles,
+            stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             message=message,
             form_data=form_data,
         )
@@ -338,10 +373,10 @@ def do_charge_or_show_errors(template, function, donation_type):
         "event_value": amount,
         "event_label": "once" if installment_period == "None" else installment_period,
     }
-    return render_template("charge.html", gtm=gtm)
+    return render_template("charge.html", gtm=gtm, bundles=get_bundles("charge"))
 
 
-def validate_form(FormType, template, function=add_donation.delay):
+def validate_form(FormType, bundles, template, function=add_donation.delay):
     app.logger.info(pformat(request.form))
 
     form = FormType(request.form)
@@ -361,16 +396,17 @@ def validate_form(FormType, template, function=add_donation.delay):
     if not validate_email(email):
         message = "There was an issue saving your email address."
         return render_template(
-            "error.html", message=message
+            "error.html", message=message, bundles=get_bundles("old")
         )
     if not form.validate():
         app.logger.error(f"Form validation errors: {form.errors}")
         message = "There was an issue saving your donation information."
         return render_template(
-            "error.html", message=message
+            "error.html", message=message, bundles=get_bundles("old")
         )
 
     return do_charge_or_show_errors(
+        bundles=bundles,
         template=template,
         function=function,
         donation_type=donation_type,
@@ -383,6 +419,14 @@ def robots_txt():
     return send_from_directory(os.path.join(root_dir, "app"), "robots.txt")
 
 
+if ENABLE_PORTAL:
+
+    @app.route("/account/", defaults={"path": ""})
+    @app.route("/account/<path>/")
+    def account(path):
+        return render_template("account.html", bundles=get_bundles("account"))
+
+
 @app.route("/donate", methods=["GET", "POST"])
 def donate_form():
     bundles = get_bundles("donate")
@@ -392,228 +436,181 @@ def donate_form():
         return validate_form(DonateForm, bundles=bundles, template=template)
 
     return render_template(
-        template, bundles=bundles, key=app.config["STRIPE_KEYS"]["publishable_key"]
+        template,
+        bundles=bundles,
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
 
 
-@app.route("/give/", methods=["GET", "POST"])
-def give_form():
-    template = "give.html"
-    form     = DonateForm()
-
-    # amount is the bare minimum to work
-    if request.args.get('amount'):
-        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
-        if (amount).is_integer():
-            amount_formatted = int(amount)
-        else:
-            amount_formatted = format(amount, ',.2f')
-    else:
-        message = "The page you requested can't be found."
-        return render_template('error.html', message=message)
-
-    # frequency
-    frequency = request.args.get('frequency')
-    if frequency is None:
-        frequency = DEFAULT_FREQUENCY
-    if frequency == 'monthly':
-        yearly = 12
-    else:
-        yearly = 1
-
-    # salesforce campaign
-    if request.args.get('campaign'):
-        campaign = request.args.get('campaign')
-    else:
-        campaign = ''
-
-    # stripe customer id
-    if request.args.get('customer_id'):
-        customer_id = request.args.get('customer_id')
-    else:
-        customer_id = ''
-
-    # show ach fields
-    if request.args.get('show_ach'):
-        show_ach = request.args.get('show_ach')
-        if show_ach == 'true':
-            show_ach = True
-        else:
-            show_ach = False
-    else:
-        show_ach = app.config["SHOW_ACH"]
-
-    # user first name
-    if request.args.get('firstname'):
-        first_name = request.args.get('firstname')
-    else:
-        first_name = ''
-
-    # user last name
-    if request.args.get('lastname'):
-        last_name = request.args.get('lastname')
-    else:
-        last_name = ''
-
-    # user email
-    if request.args.get('email'):
-        email = request.args.get('email')
-    else:
-        email = ''
-
-    # user address
-
-    # street
-    if request.args.get('billing_street'):
-        billing_street = request.args.get('billing_street')
-    else:
-        billing_street = ''
-
-    # city
-    if request.args.get('billing_city'):
-        billing_city = request.args.get('billing_city')
-    else:
-        billing_city = ''
-
-    # state
-    if request.args.get('billing_state'):
-        billing_state = request.args.get('billing_state')
-    else:
-        billing_state = ''
-
-    # zip
-    if request.args.get('billing_zip'):
-        billing_zip = request.args.get('billing_zip')
-    else:
-        billing_zip = ''
-
-    # country
-    if request.args.get('billing_country'):
-        billing_country = request.args.get('billing_country')
-    else:
-        billing_country = ''
-
-    # thank you gifts
-
-    # swag item
-    if request.args.get('swag'):
-        swag = request.args.get('swag')
-    else:
-        swag = ''
-
-    # atlantic subscription
-    if request.args.get('atlantic_subscription'):
-        atlantic_subscription = request.args.get('atlantic_subscription')
-        if atlantic_subscription != 'true':
-            atlantic_subscription = ''
-    else:
-        atlantic_subscription = ''
-
-    # existing atlantic subscriber
-    if request.args.get('atlantic_id'):
-        atlantic_id = request.args.get('atlantic_id')
-    else:
-        atlantic_id = ''
-
-    # url for atlantic
-    atlantic_id_url = ''
-    if atlantic_id != '':
-        atlantic_id_url = '&amp;' + atlantic_id
-
-    # new york times subscription
-    if request.args.get('nyt_subscription'):
-        nyt_subscription = request.args.get('nyt_subscription')
-    else:
-        nyt_subscription = ''
-
-    # decline all benefits
-    if request.args.get('decline_benefits'):
-        decline_benefits = request.args.get('decline_benefits')
-        if decline_benefits == 'true':
-            swag = ''
-            atlantic_subscription = ''
-            atlantic_id = ''
-            nyt_subscription = ''
-    else:
-        decline_benefits = ''
-
-    # fees
-    fees = calculate_amount_fees(amount, 'visa')
+@app.route("/circle", methods=["GET", "POST"])
+def circle_form():
+    bundles = get_bundles("circle")
+    template = "circle-form.html"
 
     if request.method == "POST":
-        return validate_form(DonateForm, template=template)
-
-    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
+        return validate_form(CircleForm, bundles=bundles, template=template)
 
     return render_template(
         template,
-        form=form,
-        amount=amount_formatted, frequency=frequency, yearly=yearly,
-        campaign=campaign, customer_id=customer_id,
-        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
-        minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
-        key=app.config["STRIPE_KEYS"]["publishable_key"]
+        bundles=bundles,
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
 
 
-## this is a minnpost url. use this when sending a request to plaid
-## if successful, this returns the access token and bank account token for stripe from plaid
-@app.route('/plaid_token/', methods=['POST'])
-def plaid_token():
+@app.route("/business", methods=["GET", "POST"])
+def business_form():
+    bundles = get_bundles("business")
+    template = "business-form.html"
 
-    form = DonateForm(request.form)
-    public_token = request.form['public_token']
-    account_id = request.form['account_id']
+    if request.method == "POST":
+        return validate_form(
+            BusinessMembershipForm,
+            bundles=bundles,
+            template=template,
+            function=add_business_membership.delay,
+        )
 
-    client = Client(client_id=app.config["PLAID_CLIENT_ID"], secret=app.config["PLAID_SECRET"], public_key=app.config["PLAID_PUBLIC_KEY"], environment=app.config["PLAID_ENVIRONMENT"])
-    exchange_token_response = client.Item.public_token.exchange(public_token)
-    access_token = exchange_token_response['access_token']
+    return render_template(
+        template,
+        bundles=bundles,
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+    )
 
-    stripe_response = client.Processor.stripeBankAccountTokenCreate(access_token, account_id)
 
-    if 'stripe_bank_account_token' in stripe_response:
-        response = stripe_response
+@app.route("/blast-promo")
+def the_blast_promo_form():
+    bundles = get_bundles("old")
+    form = BlastPromoForm()
+
+    campaign_id = request.args.get("campaignId", default="")
+    referral_id = request.args.get("referralId", default="")
+
+    return render_template(
+        "blast-promo.html",
+        form=form,
+        campaign_id=campaign_id,
+        referral_id=referral_id,
+        installment_period="yearly",
+        key=app.config["STRIPE_KEYS"]["publishable_key"],
+        bundles=bundles,
+    )
+
+
+@app.route("/submit-blast-promo", methods=["POST"])
+def submit_blast_promo():
+    bundles = get_bundles("old")
+    app.logger.info(pformat(request.form))
+    form = BlastPromoForm(request.form)
+
+    email_is_valid = validate_email(request.form["stripeEmail"])
+
+    if email_is_valid:
+        customer = stripe.Customer.create(
+            email=request.form["stripeEmail"], card=request.form["stripeToken"]
+        )
+        app.logger.info(f"Customer id: {customer.id}")
     else:
-        response = {'error' : 'We were unable to connect to your account. Please try again.'}
-    
-    return jsonify(response)
+        message = "There was an issue saving your email address."
+        return render_template("error.html", message=message, bundles=bundles)
+    if form.validate():
+        app.logger.info("----Adding Blast subscription...")
+        add_blast_subscription.delay(customer=customer, form=clean(request.form))
+        gtm = {"event_value": "200", "event_label": "annual discounted"}
+        return render_template("blast-charge.html", bundles=bundles, gtm=gtm)
+    else:
+        app.logger.error("Failed to validate form")
+        message = "There was an issue saving your donation information."
+        return render_template("error.html", message=message, bundles=bundles)
 
 
-# used to calculate the fees Stripe will charge based on the payment type/amount
-# called by ajax
-@app.route('/calculate-fees/', methods=['POST'])
-def calculate_fees():
+@app.route("/blastform")
+def the_blast_form():
+    bundles = get_bundles("old")
+    form = BlastForm()
+    if request.args.get("amount"):
+        amount = request.args.get("amount")
+    else:
+        amount = 349
+    installment_period = request.args.get("installmentPeriod")
 
-    amount = float(request.form['amount'])
-    fees = ''
-    
-    # get fee amount to send to stripe
-    if 'payment_type' in request.form:
-        payment_type = request.form['payment_type']
-        fees = calculate_amount_fees(amount, payment_type)
+    campaign_id = request.args.get("campaignId", default="")
+    referral_id = request.args.get("referralId", default="")
 
-    ret_data = {"fees": fees}
-    return jsonify(ret_data)
+    return render_template(
+        "blast-form.html",
+        form=form,
+        campaign_id=campaign_id,
+        referral_id=referral_id,
+        installment_period=installment_period,
+        amount=amount,
+        key=app.config["STRIPE_KEYS"]["publishable_key"],
+        bundles=bundles,
+    )
+
+
+@app.route("/submit-blast", methods=["POST"])
+def submit_blast():
+    bundles = get_bundles("old")
+    app.logger.info(pformat(request.form))
+    form = BlastForm(request.form)
+
+    email_is_valid = validate_email(request.form["stripeEmail"])
+    amount = request.form["amount"]
+
+    if email_is_valid:
+        customer = stripe.Customer.create(
+            email=request.form["stripeEmail"], card=request.form["stripeToken"]
+        )
+        app.logger.info(f"Customer id: {customer.id}")
+    else:
+        message = "There was an issue saving your email address."
+        return render_template("error.html", message=message, bundles=bundles)
+    if form.validate():
+        app.logger.info("----Adding Blast subscription...")
+        add_blast_subscription.delay(customer=customer, form=clean(request.form))
+
+        if amount == "349":
+            event_label = "annual"
+        elif amount == "40":
+            event_label = "monthly"
+        elif amount == "325":
+            event_label = "annual tax exempt"
+
+        gtm = {"event_value": amount, "event_label": event_label}
+
+        return render_template("blast-charge.html", bundles=bundles, gtm=gtm)
+    else:
+        app.logger.error("Failed to validate form")
+        message = "There was an issue saving your donation information."
+        return render_template("error.html", message=message, bundles=bundles)
 
 
 @app.route("/error")
 def error():
+    bundles = get_bundles("old")
     message = "Something went wrong!"
-    return render_template("error.html", message=message)
+    return render_template("error.html", message=message, bundles=bundles)
 
 
 @app.errorhandler(404)
 def page_not_found(error):
+    bundles = get_bundles("old")
     message = "The page you requested can't be found."
-    return render_template("error.html", message=message), 404
+    return render_template("error.html", message=message, bundles=bundles), 404
 
 
-@app.route('/.well-known/apple-developer-merchantid-domain-association')
-def apple_developer_domain_verification():
+@app.route("/.well-known/apple-developer-merchantid-domain-association")
+def merchantid():
     """
     This is here to verify our domain so Stripe can support Apple Pay.
     """
-    return send_from_directory(app.static_folder, 'apple-developer-merchantid-domain-association');
+    root_dir = os.path.dirname(os.getcwd())
+    return send_from_directory(
+        os.path.join(root_dir, "app"), "apple-developer-merchantid-domain-association"
+    )
 
 
 # TODO why do I have to set the name here?

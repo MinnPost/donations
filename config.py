@@ -122,6 +122,14 @@ STRIPE_KEYS = {
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 
 
+########
+# Recaptcha
+#
+RECAPTCHA_KEYS = {
+    "secret_key": os.getenv("RECAPTCHA_SECRET_KEY"),
+    "site_key": os.getenv("RECAPTCHA_SITE_KEY"),
+}
+
 #######
 # Tasks
 #
