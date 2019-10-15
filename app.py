@@ -425,8 +425,7 @@ def robots_txt():
 def give_form():
     template    = "give.html"
     form        = DonateForm()
-    form_action = '/thanks/' # previous version
-    #form_action = '/give/'
+    form_action = '/thanks/'
 
     if request.method == "POST":
         return validate_form(DonateForm, template=template)
@@ -632,8 +631,6 @@ def thanks():
     form        = DonateForm()
     form_action = '/thanks/'
 
-    if request.method == "POST":
-        return validate_form(DonateForm, template=template)
 
     amount = float(request.form['amount'])
     customer_id = request.form['customer_id']
@@ -666,7 +663,7 @@ def thanks():
         first_name=first_name,
         last_name=last_name,
         session=session,
-        minnpost_root=app.minnpost_root,
+        minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config['STRIPE_KEYS']['publishable_key']
     )
     #else:
