@@ -582,7 +582,7 @@ def give_form():
         campaign=campaign, customer_id=customer_id,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
-        key=app.config["STRIPE_KEYS"]["publishable_key"]
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
     )
 
 
@@ -658,7 +658,16 @@ def thanks():
     #    update_account.delay(form=request.form, account = {'levelint' : level.get('levelint', 0), 'level' : 'MinnPost {}'.format(level.get('level', '--None--').title())})
     return render_template(
         'thanks.html',
-        amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, minnpost_root = app.minnpost_root, key = app.config['STRIPE_KEYS']['publishable_key']
+        amount=amount_formatted,
+        frequency=frequency,
+        yearly=yearly,
+        level=level,
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+        session=session,
+        minnpost_root=app.minnpost_root,
+        stripe=app.config['STRIPE_KEYS']['publishable_key']
     )
     #else:
     #    print('ajax result donate form did not validate: error below')
