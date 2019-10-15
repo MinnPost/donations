@@ -253,7 +253,7 @@ def add_donation(form=None, customer=None, donation_type=None):
     last_name = form["last_name"]
     frequency = form["frequency"]
     email = form["email"]
-    zipcode = form["zipcode"]
+    zipcode = form["billing_zip"]
 
     logging.info("----Getting contact....")
     contact = Contact.get_or_create(
