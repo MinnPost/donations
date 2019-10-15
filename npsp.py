@@ -21,6 +21,8 @@ SALESFORCE_USERNAME = os.environ.get("SALESFORCE_USERNAME", "")
 SALESFORCE_PASSWORD = os.environ.get("SALESFORCE_PASSWORD", "")
 SALESFORCE_HOST = os.environ.get("SALESFORCE_HOST", "")
 
+COMBINED_EMAIL_FIELD = os.environ.get("COMBINED_EMAIL_FIELD", "")
+
 TWOPLACES = Decimal(10) ** -2  # same as Decimal('0.01')
 
 # this should match whatever record type Salesforce's NPSP is
@@ -242,7 +244,7 @@ class Opportunity(SalesforceObject):
             raise SalesforceException("Account and Contact can't both be specified")
 
         today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
-        now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
+        #now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
 
         # set defaults for default opportunity fields
         if account is not None:
@@ -307,6 +309,7 @@ class Opportunity(SalesforceObject):
         self.shipping_zip = None
         self.shipping_country = None
         self.stripe_agreed_to_pay_fees = False
+        self.stripe_error_message = None
         self.stripe_bank_account = None
         self.stripe_card = None
         self.stripe_customer_id = None
@@ -479,12 +482,20 @@ class Opportunity(SalesforceObject):
                     logging.warning("bad campaign ID; retrying...")
                     self.campaign_id = None
                     self.save()
+                else:
+                    raise
+            elif e.content["errorCode"] == "INVALID_FIELD":
+                logging.warning(f"Invalid field: posted content is {self}")
+                #if e.content["fields"][0] == "npsp__Closed_Lost_Reason__c":
+                #    logging.warning(f"bad closed lost reason: {self.closed_lost_reason}; retrying...")
+                #    self.closed_lost_reason = None
+                #    self.save()
                 #elif e.content["fields"][0] == "Referral_ID__c":
                 #    logging.warning("bad referral ID; retrying...")
                 #    self.referral_id = None
                 #    self.save()
-                else:
-                    raise
+                #else:
+                #    raise
             else:
                 raise
 
@@ -817,7 +828,7 @@ class Contact(SalesforceObject):
         """
         filtered_results = list()
         for item in results:
-            all_email = item["All_In_One_EMail__c"].lower()
+            all_email = item[COMBINED_EMAIL_FIELD].lower()
             buffer = StringIO(all_email)
             reader = csv.reader(buffer, skipinitialspace=True)
             if email.lower() in list(reader)[0]:
@@ -881,9 +892,9 @@ class Contact(SalesforceObject):
             return contact
 
         query = f"""
-                SELECT Id, AccountId, FirstName, LastName, LeadSource, MailingPostalCode, All_In_One_EMail__c, Email, npe01__WorkEmail__c
+                SELECT Id, AccountId, FirstName, LastName, LeadSource, MailingPostalCode, {COMBINED_EMAIL_FIELD}, Email, npe01__WorkEmail__c
                 FROM Contact
-                WHERE All_In_One_EMail__c
+                WHERE {COMBINED_EMAIL_FIELD}
                 LIKE '%{email}%'
                 """
 

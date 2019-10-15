@@ -301,7 +301,7 @@ def add_donation(form=None, customer=None, donation_type=None):
     opp = [
         opportunity
         for opportunity in opportunities
-        if opportunity.expected_giving_date == today
+        if opportunity.close_date == today
     ][0]
     charge(opp)
     logging.info(rdo)
@@ -631,7 +631,6 @@ def thanks():
     form        = DonateForm()
     form_action = '/thanks/'
 
-
     amount = float(request.form['amount'])
     customer_id = request.form['customer_id']
     amount_formatted = format(amount, ',.2f')
@@ -894,9 +893,9 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.amount = form.get("amount", 0)
     opportunity.stripe_customer = customer["id"]
     opportunity.campaign_id = form["campaign_id"]
-    opportunity.referral_id = form["referral_id"]
+    #opportunity.referral_id = form["referral_id"] we don't have a referral id field
     opportunity.description = "Texas Tribune Membership"
-    opportunity.agreed_to_pay_fees = form["pay_fees_value"]
+    opportunity.agreed_to_pay_fees = form["pay_fees"]
     opportunity.encouraged_by = form["reason"]
     opportunity.lead_source = "Stripe"
 
@@ -1082,7 +1081,7 @@ def add_business_membership(
     opp = [
         opportunity
         for opportunity in opportunities
-        if opportunity.expected_giving_date == today
+        if opportunity.close_date == today
     ][0]
     charge(opp)
     notify_slack(account=account, contact=contact, rdo=rdo)
@@ -1155,7 +1154,7 @@ def add_blast_subscription(form=None, customer=None):
     opp = [
         opportunity
         for opportunity in opportunities
-        if opportunity.expected_giving_date == today
+        if opportunity.close_date == today
     ][0]
     charge(opp)
 

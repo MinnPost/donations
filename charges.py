@@ -25,11 +25,11 @@ def amount_to_charge(opportunity):
 
     """
     amount = float(opportunity.amount)
-    if opportunity.Stripe_Agreed_to_pay_fees__c:
+    if opportunity.agreed_to_pay_fees:
         payment_type = opportunity.payment_type
-        if opportunity.payment_type == 'American Express' or opportunity.Card_type__c == 'American Express':
+        if opportunity.payment_type == 'American Express' or opportunity.card_type == 'American Express':
             payment_type = 'American Express'
-        elif opportunity.payment_type == 'ach' or opportunity.Stripe_Bank_Account__c is not None:
+        elif opportunity.payment_type == 'ach' or opportunity.stripe_bank_account is not None:
             payment_type = 'ach'
         fees = calculate_amount_fees(amount, payment_type)
     else:
