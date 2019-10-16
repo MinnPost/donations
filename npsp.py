@@ -252,7 +252,7 @@ class Opportunity(SalesforceObject):
             self.name = None
         elif contact is not None:
             self.account_id = contact.account_id
-            self.name = f"{contact.first_name} {contact.last_name}"
+            self.name = f"{contact.first_name} {contact.last_name} {DEFAULT_RDO_TYPE} {today}"
         else:
             self.name = None
             self.account_id = None
@@ -465,8 +465,8 @@ class Opportunity(SalesforceObject):
     def save(self):
 
         # TODO this will fail if name hasn't been set
-        # truncate to 80 chars:
-        self.name = self.name[:80]
+        # truncate to 120 chars:
+        self.name = self.name[:120]
 
         if self.account_id is None:
             raise SalesforceException("Account ID must be specified")
