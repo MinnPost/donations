@@ -482,20 +482,12 @@ class Opportunity(SalesforceObject):
                     logging.warning("bad campaign ID; retrying...")
                     self.campaign_id = None
                     self.save()
-                else:
-                    raise
-            elif e.content["errorCode"] == "INVALID_FIELD":
-                logging.warning(f"Invalid field: posted content is {self}")
-                #if e.content["fields"][0] == "npsp__Closed_Lost_Reason__c":
-                #    logging.warning(f"bad closed lost reason: {self.closed_lost_reason}; retrying...")
-                #    self.closed_lost_reason = None
-                #    self.save()
                 #elif e.content["fields"][0] == "Referral_ID__c":
                 #    logging.warning("bad referral ID; retrying...")
                 #    self.referral_id = None
                 #    self.save()
-                #else:
-                #    raise
+                else:
+                    raise
             else:
                 raise
 
