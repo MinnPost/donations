@@ -431,6 +431,8 @@ def give_form():
     if request.method == "POST":
         return validate_form(DonateForm, template=template)
 
+    # fields from URL
+
     # amount is the bare minimum to work
     if request.args.get('amount'):
         amount = Decimal(re.sub('[^\d\.]','',request.args.get('amount')))
@@ -888,6 +890,8 @@ def add_opportunity(contact=None, form=None, customer=None):
     logging.info("----Adding opportunity...")
 
     opportunity = Opportunity(contact=contact)
+
+    # posted form fields
     opportunity.amount = form.get("amount", 0)
     opportunity.stripe_customer = customer["id"]
     opportunity.campaign_id = form["campaign_id"]
