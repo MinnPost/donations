@@ -39,6 +39,7 @@ from config import (
     STRIPE_WEBHOOK_SECRET,
 )
 from datetime import datetime
+from decimal import Decimal, ROUND_HALF_UP
 from pprint import pformat
 
 from pytz import timezone
@@ -312,7 +313,7 @@ def add_donation(form=None, customer=None, donation_type=None):
 def do_charge_or_show_errors(template, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")
 
-    amount = float(request.form['amount'])
+    amount = Decimal(request.form['amount'])
     frequency = request.form['recurring']
     email = request.form["email"]
     first_name = request.form['first_name']
@@ -432,11 +433,8 @@ def give_form():
 
     # amount is the bare minimum to work
     if request.args.get('amount'):
-        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
-        if (amount).is_integer():
-            amount_formatted = int(amount)
-        else:
-            amount_formatted = format(amount, ',.2f')
+        amount = Decimal(re.sub('[^\d\.]','',request.args.get('amount')))
+        amount_formatted = format(amount, ',.2f')
     else:
         message = "The page you requested can't be found."
         return render_template('error.html', message=message)
@@ -613,7 +611,7 @@ def plaid_token():
 @app.route('/calculate-fees/', methods=['POST'])
 def calculate_fees():
 
-    amount = float(request.form['amount'])
+    amount = Decimal(request.form['amount'])
     fees = ''
     
     # get fee amount to send to stripe
@@ -631,7 +629,7 @@ def thanks():
     form        = DonateForm()
     form_action = '/thanks/'
 
-    amount = float(request.form['amount'])
+    amount = Decimal(request.form['amount'])
     customer_id = request.form['customer_id']
     amount_formatted = format(amount, ',.2f')
 
@@ -895,7 +893,7 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.campaign_id = form["campaign_id"]
     #opportunity.referral_id = form["referral_id"] we don't have a referral id field
     opportunity.description = "Texas Tribune Membership"
-    opportunity.agreed_to_pay_fees = form["pay_fees"]
+    opportunity.agreed_to_pay_fees = form.get("pay_fees", False)
     opportunity.encouraged_by = form["reason"]
     opportunity.lead_source = "Stripe"
 
@@ -1134,7 +1132,7 @@ def add_blast_subscription(form=None, customer=None):
     rdo.installments = 0
     rdo.description = "Blast Subscription"
     rdo.open_ended_status = "Open"
-    if int(float(rdo.amount)) == 40:
+    if int(Decimal(rdo.amount)) == 40:
         rdo.installment_period = "monthly"
     else:
         rdo.installment_period = "yearly"

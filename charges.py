@@ -1,6 +1,6 @@
 import calendar
 import logging
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from config import STRIPE_KEYS
 from npsp import User, Task
 from util import send_slack_message
@@ -24,7 +24,7 @@ def amount_to_charge(opportunity):
     Fees are different for ACH, and also for Amex.
 
     """
-    amount = float(opportunity.amount)
+    amount = Decimal(opportunity.amount)
     if opportunity.agreed_to_pay_fees:
         payment_type = opportunity.payment_type
         if opportunity.payment_type == 'American Express' or opportunity.card_type == 'American Express':
@@ -39,7 +39,7 @@ def amount_to_charge(opportunity):
 
 
 def calculate_amount_fees(amount, payment_type):
-    amount = float(amount)
+    amount = Decimal(amount)
     processing_percent = 0.022
     fixed_fee = 0.3
     if payment_type == 'American Express' or payment_type == 'amex':
@@ -48,7 +48,7 @@ def calculate_amount_fees(amount, payment_type):
     elif payment_type == 'ach':
         processing_percent = 0.008
         fixed_fee = 0
-    new_amount = (amount + fixed_fee) / (1 - processing_percent)
+    new_amount = (amount + Decimal(fixed_fee)) / (1 - Decimal(processing_percent))
     processing_fee = quantize(new_amount - amount)
     fees = round(processing_fee, 2)
 
