@@ -232,7 +232,7 @@ class Opportunity(SalesforceObject):
 
     def __init__(
         self,
-        record_type_name=DEFAULT_RDO_TYPE,
+        #record_type_name=DEFAULT_RDO_TYPE,
         contact=None,
         stage_name="Pledged",
         account=None,
@@ -260,8 +260,8 @@ class Opportunity(SalesforceObject):
         self._amount = 0
         self.close_date = today
         self.description = None
-        self.record_type_name = record_type_name
         self.lead_source = None
+        #self.record_type_name = record_type_name
         self.campaign_id = None
         self.stage_name = stage_name
         self.type = "Donation"
@@ -390,7 +390,7 @@ class Opportunity(SalesforceObject):
             y.id = item["Id"]
             y.lead_source = item["LeadSource"]
             y.name = item["Name"]
-            y.record_type_name = item["RecordType"]["Name"]
+            #y.record_type_name = item["RecordType"]["Name"]
             y.stage_name = "Pledged"
             y.type = item["Type"]
             y.card_type = item["Card_type__c"]
@@ -431,7 +431,7 @@ class Opportunity(SalesforceObject):
             "Id": self.id,
             "LeadSource": self.lead_source,
             "Name": self.name,
-            "RecordType": {"Name": self.record_type_name},
+            #"RecordType": {"Name": self.record_type_name},
             "StageName": self.stage_name,
             "Type": self.type,
             "Card_type__c": self.card_type,
@@ -535,7 +535,7 @@ class RDO(SalesforceObject):
         self.encouraged_by = None
         self.blast_subscription_email = None
         self.billing_email = None
-        self.record_type_name = None
+        #self.record_type_name = None
 
         self.stripe_card_brand = None
         self.stripe_card_expiration = None
@@ -609,7 +609,7 @@ class RDO(SalesforceObject):
             y.agreed_to_pay_fees = item["Stripe_Agreed_to_pay_fees__c"]
             y.stage_name = "Pledged"
             y.close_date = item["CloseDate"]
-            y.record_type_name = item["RecordType"]["Name"]
+            #y.record_type_name = item["RecordType"]["Name"]
             y.campaign_id = item["CampaignId"]
             y.type = item["Type"]
             y.referral_id = item["Referral_ID__c"]
