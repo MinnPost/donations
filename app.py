@@ -893,13 +893,48 @@ def add_opportunity(contact=None, form=None, customer=None):
 
     # posted form fields
     opportunity.amount = form.get("amount", 0)
-    opportunity.stripe_customer = customer["id"]
-    opportunity.campaign_id = form["campaign_id"]
+    opportunity.campaign_id = form.get("campaign_id", DEFAULT_CAMPAIGN_ONETIME)
     #opportunity.referral_id = form["referral_id"] we don't have a referral id field
     opportunity.description = "MinnPost Membership"
-    opportunity.agreed_to_pay_fees = form.get("pay_fees", False)
-    opportunity.encouraged_by = form["reason"]
     opportunity.lead_source = "Stripe"
+    opportunity.type = form.get("opp_type", "Donation")
+    
+    opportunity.agreed_to_pay_fees = form.get("pay_fees", False)
+    opportunity.anonymous = form.get("anonymous", False)
+    opportunity.client_organization = form.get("client_organization", None)
+    opportunity.credited_as = form.get("display_as", None)
+    opportunity.donor_first_name = form.get("first_name", "")
+    opportunity.donor_last_name = form.get("last_name", "")
+    opportunity.donor_email = form['email']
+    opportunity.donor_address_one = form.get("billing_street", "")
+    opportunity.donor_city = form.get("billing_city", "")
+    opportunity.donor_state = form.get("billing_state", "")
+    opportunity.donor_zip = form.get("billing_zip", "")
+    opportunity.donor_country = form.get("billing_country", "")
+    opportunity.email_notify = form.get("email_notify", "")
+    opportunity.email_cancel = form.get("email_cancel", False)
+    opportunity.fair_market_value = form.get("fair_market_value", "")
+    opportunity.include_amount_in_notification = form.get("include_amount_in_notification", False)
+    opportunity.in_honor_memory = form.get("in_honor_memory", False)
+    opportunity.in_honor_memory_of = form.get("in_honor_memory_of", "")
+    opportunity.notify_someone = form.get("notify_someone", False)
+    opportunity.member_benefit_request_swag = form.get("member_benefit_request_swag", "")
+    opportunity.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
+    opportunity.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
+    opportunity.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
+    opportunity.member_benefit_request_thank_you_list = form.get("member_benefit_request_thank_you_list", "")
+    opportunity.minnpost_invoice = form.get("minnpost_invoice", "")
+    opportunity.mrpledge_id = form.get("mrpledge_id", "")
+    opportunity.payment_type = "Stripe"
+    opportunity.referring_page = form.get("source", None)
+    opportunity.shipping_name = form.get("shipping_name", "")
+    opportunity.shipping_street = form.get("shipping_street", "")
+    opportunity.shipping_city = form.get("shipping_city", "")
+    opportunity.shipping_state = form.get("shipping_state", "")
+    opportunity.shipping_zip = form.get("shipping_zip", "")
+    opportunity.shipping_country = form.get("shipping_country", "")
+    opportunity.stripe_customer_id = customer["id"]
+    opportunity.subtype = form.get("opp_subtype", "Donation: Individual")
 
     customer = stripe.Customer.retrieve(customer["id"])
     card = customer.sources.retrieve(customer.sources.data[0].id)
@@ -908,7 +943,7 @@ def add_opportunity(contact=None, form=None, customer=None):
     day = calendar.monthrange(year, month)[1]
 
     opportunity.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
-    opportunity.stripe_card_brand = card.brand
+    opportunity.card_type = card.brand
     opportunity.stripe_card_last_4 = card.last4
 
     opportunity.save()

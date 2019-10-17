@@ -114,20 +114,21 @@ def charge(opportunity):
 
     amount = amount_to_charge(opportunity)
     logging.info(
-        f"---- Charging ${amount} to {opportunity.stripe_customer} ({opportunity.name})"
+        f"---- Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
     )
     if opportunity.stage_name != "Pledged":
         raise Exception(f"Opportunity {opportunity.id} is not Pledged")
 
     try:
         card_charge = stripe.Charge.create(
-            customer=opportunity.stripe_customer,
+            customer=opportunity.stripe_customer_id,
             amount=int(amount * 100),
             currency="usd",
             description=opportunity.description,
             metadata={
                 "opportunity_id": opportunity.id,
                 "account_id": opportunity.account_id,
+                "source": opportunity.referring_page,
             },
         )
     except stripe.error.CardError as e:
@@ -136,11 +137,11 @@ def charge(opportunity):
         logging.info(f"The card has been declined:")
         logging.info(f"Message: {error.get('message', '')}")
         logging.info(f"Decline code: {error.get('decline_code', '')}")
-        opportunity.closed_lost_reason = error.get("message", "unknown failure")
-        opportunity.stage_name = "Closed Lost"
+        opportunity.stripe_error_message = error.get("message", "unknown failure")
+        opportunity.stage_name = "Failed"
         opportunity.save()
         logging.debug(
-            f"Opportunity set to '{opportunity.stage_name}' with reason: {opportunity.closed_lost_reason}"
+            f"Opportunity set to '{opportunity.stage_name}' with reason: {opportunity.stripe_error_message}"
         )
         return
 

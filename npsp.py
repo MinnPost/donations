@@ -264,10 +264,10 @@ class Opportunity(SalesforceObject):
         #self.record_type_name = record_type_name
         self.campaign_id = None
         self.stage_name = stage_name
-        self.type = "Donation"
+        self.type = None
 
         # set defaults for custom opportunity fields
-        self.anonymous = None
+        self.anonymous = False
         self.card_type = None
         self.closed_lost_reason = None
         self.created = False
@@ -311,6 +311,8 @@ class Opportunity(SalesforceObject):
         self.stripe_error_message = None
         self.stripe_bank_account = None
         self.stripe_card = None
+        self.stripe_card_expiration = None
+        self.stripe_card_last_4 = None
         self.stripe_customer_id = None
         self.stripe_transaction_id = None
         self.ticket_count = 0
@@ -433,8 +435,35 @@ class Opportunity(SalesforceObject):
             #"RecordType": {"Name": self.record_type_name},
             "StageName": self.stage_name,
             "Type": self.type,
+            "Anonymous__c": self.anonymous,
             "Card_type__c": self.card_type,
             "npsp__Closed_Lost_Reason__c": self.closed_lost_reason,
+            "Credited_as__c": self.credited_as,
+            "Client_Organization__c": self.client_organization,
+            "Donor_first_name__c": self.donor_first_name,
+            "Donor_last_name__c": self.donor_last_name,
+            "Donor_e_mail__c": self.donor_email,
+            "Donor_address_line_1__c": self.donor_address_one,
+            "Donor_city__c": self.donor_city,
+            "Donor_state__c": self.donor_state,
+            "Donor_ZIP__c": self.donor_zip,
+            "Donor_country__c": self.donor_country,
+            "Email_to_notify__c": self.email_notify,
+            "Email_User_When_Canceled__c": self.email_cancel,
+            "Fair_market_value__c": self.fair_market_value,
+            "Include_amount_in_notification__c": self.include_amount_in_notification,
+            "In_Honor_Memory__c": self.in_honor_memory,
+            "In_Honor_of_In_Memory__c": self.in_honor_memory_of,
+            "Notify_someone__c": self.notify_someone,
+            "Member_benefit_request_Swag__c": self.member_benefit_request_swag,
+            "Member_benefit_request_New_York_Times__c": self.member_benefit_request_nyt,
+            "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
+            "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
+            "Member_benefit_special_thank_you_list__c": self.member_benefit_request_thank_you_list,
+            "MinnPost_Invoice__c": self.minnpost_invoice,
+            "MRpledge_com_ID__c": self.mrpledge_id,
+            "Opportunity_Subtype__c": self.subtype,
+            "Payment_Type__c": self.payment_type,
             "Referring_page__c": self.referring_page,
             "Shipping_address_name__c": self.shipping_name,
             "Shipping_address_street__c": self.shipping_street,
@@ -445,7 +474,9 @@ class Opportunity(SalesforceObject):
             "Stripe_Agreed_to_pay_fees__c": self.agreed_to_pay_fees,
             "Stripe_Bank_Account__c": self.stripe_bank_account,
             "Stripe_Card__c": self.stripe_card,
-            "Stripe_Customer_ID__c": self.stripe_customer,
+            "Card_expiration_date__c": self.stripe_card_expiration,
+            "Card_acct_last_4__c": self.stripe_card_last_4,
+            "Stripe_Customer_ID__c": self.stripe_customer_id,
             "Stripe_Error_Message__c": self.stripe_error_message,
             "Stripe_Transaction_ID__c": self.stripe_transaction_id,
         }
@@ -613,7 +644,6 @@ class RDO(SalesforceObject):
             y.type = item["Type"]
             y.referral_id = item["Referral_ID__c"]
             y.lead_source = item["LeadSource"]
-            y.encouraged_by = item["Encouraged_to_contribute_by__c"]
             y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
             y.stripe_card_brand = item["Stripe_Card_Brand__c"]
             y.stripe_card_expiration = item["Stripe_Card_Expiration__c"]
