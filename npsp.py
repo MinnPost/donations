@@ -428,7 +428,6 @@ class Opportunity(SalesforceObject):
             "CloseDate": self.close_date,
             "CampaignId": self.campaign_id,
             "Description": self.description,
-            "Id": self.id,
             "LeadSource": self.lead_source,
             "Name": self.name,
             #"RecordType": {"Name": self.record_type_name},
