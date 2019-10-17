@@ -145,6 +145,7 @@ class SalesforceConnection(object):
         """
 
         url = f"{self.instance_url}{path}"
+        logging.info(f"url is {url} and data is {repr(data)}")
         logging.debug(data)
         resp = requests.patch(url, headers=self.headers, data=json.dumps(data))
         self.check_response(response=resp, expected_status=expected_response)
@@ -267,6 +268,7 @@ class Opportunity(SalesforceObject):
         self.type = None
 
         # set defaults for custom opportunity fields
+        self.agreed_to_pay_fees = False
         self.anonymous = False
         self.card_type = None
         self.closed_lost_reason = None
@@ -307,7 +309,6 @@ class Opportunity(SalesforceObject):
         self.shipping_state = None
         self.shipping_zip = None
         self.shipping_country = None
-        self.stripe_agreed_to_pay_fees = False
         self.stripe_error_message = None
         self.stripe_bank_account = None
         self.stripe_card = None
@@ -359,6 +360,9 @@ class Opportunity(SalesforceObject):
                 RecordType.Name,
                 StageName,
                 Type,
+                Payment_Type__c,
+                Card_acct_last_4__c,
+                Card_expiration_date__c,
                 Card_type__c,
                 npsp__Closed_Lost_Reason__c,
                 Referring_page__c,
@@ -397,6 +401,7 @@ class Opportunity(SalesforceObject):
             y.type = item["Type"]
             y.card_type = item["Card_type__c"]
             y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
+            y.payment_type = item["Payment_Type__c"]
             y.referring_page = item["Referring_page__c"]
             y.shipping_name = item["Shipping_address_name__c"]
             y.shipping_street = item["Shipping_address_street__c"]
@@ -554,24 +559,54 @@ class RDO(SalesforceObject):
         self.open_ended_status = None
         self.installment_period = None
         self.campaign_id = None
-        self.referral_id = None
+        #self.referral_id = None
         self._amount = 0
         self.type = "Recurring Donation"
         self.date_established = today
-        self.stripe_customer = None
         self.lead_source = None
         self.description = None
-        self.agreed_to_pay_fees = False
-        self.encouraged_by = None
-        self.blast_subscription_email = None
-        self.billing_email = None
-        #self.record_type_name = None
 
-        self.stripe_card_brand = None
+        # set defaults for custom rdo fields
+        self.agreed_to_pay_fees = False
+        self.anonymous = False
+        self.card_type = None
+        self.created = False
+        self.credited_as = None
+        self.donor_first_name = None
+        self.donor_last_name = None
+        self.donor_email = None
+        self.donor_address_one = None
+        self.donor_city = None
+        self.donor_state = None
+        self.donor_zip = None
+        self.donor_country = None
+        self.email_notify = False
+        self.email_cancel = False
+        self.include_amount_in_notification = False
+        self.in_honor_memory = None
+        self.in_honor_memory_of = None
+        self.notify_someone = False
+        self.member_benefit_request_swag = None
+        self.member_benefit_request_nyt = None
+        self.member_benefit_request_atlantic = None
+        self.member_benefit_request_atlantic_id = None
+        self.member_benefit_request_thank_you_list = None
+        self.payment_type = None
+        self.referring_page = None
+        self.shipping_name = None
+        self.shipping_street = None
+        self.shipping_city = None
+        self.shipping_state = None
+        self.shipping_zip = None
+        self.shipping_country = None
+        self.stripe_customer_id = None
+        self.stripe_bank_account = None
+        self.stripe_card = None
         self.stripe_card_expiration = None
         self.stripe_card_last_4 = None
-
-        self.created = False
+        self.stripe_customer_id = None
+        self.stripe_transaction_id = None
+        self.ticket_count = 0
 
     def _format(self):
 
@@ -579,31 +614,57 @@ class RDO(SalesforceObject):
         amount = self.amount
 
         # TODO should this be in the client?
-        if self.installments:
-            amount = str(float(self.amount) * int(self.installments))
+        #if self.installments:
+        #    amount = str(float(self.amount) * int(self.installments))
 
         recurring_donation = {
-            "npe03__Organization__c": self.account_id,
-            "Referral_ID__c": self.referral_id,
+            "Name": self.name,
+            "npe03__Amount__c": amount,
             "npe03__Recurring_Donation_Campaign__c": self.campaign_id,
             "npe03__Contact__c": self.contact_id,
-            "npe03__Amount__c": amount,
             "npe03__Date_Established__c": self.date_established,
-            "Name": self.name,
-            "Stripe_Customer_ID__c": self.stripe_customer,
+            "Anonymous__c": self.anonymous,
+            "Credited_as__c": self.credited_as,
+            "Card_type__c": self.card_type,
+            "Donor_first_name__c": self.donor_first_name,
+            "Donor_last_name__c": self.donor_last_name,
+            "Donor_e_mail__c": self.donor_email,
+            "Donor_address_line_1__c": self.donor_address_one,
+            "Donor_city__c": self.donor_city,
+            "Donor_state__c": self.donor_state,
+            "Donor_ZIP__c": self.donor_zip,
+            "Donor_country__c": self.donor_country,
+            "Email_to_notify__c": self.email_notify,
+            "Email_User_When_Canceled__c": self.email_cancel,
+            "Include_amount_in_notification__c": self.include_amount_in_notification,
+            "In_Honor_Memory__c": self.in_honor_memory,
+            "In_honor_memory_of__c": self.in_honor_memory_of,
+            "Notify_someone__c": self.notify_someone,
+            #'npe03__Installments__c': self.installments, # only add this if we need to close it
+            "npe03__Installment_Period__c": self.installment_period, # this has to be there even if it is open ended
             "Lead_Source__c": self.lead_source,
-            "Stripe_Description__c": self.description,
-            "Stripe_Agreed_to_pay_fees__c": self.agreed_to_pay_fees,
-            "Encouraged_to_contribute_by__c": self.encouraged_by,
+            "Member_benefit_request_Swag__c": self.member_benefit_request_swag,
+            "Member_benefit_request_New_York_Times__c": self.member_benefit_request_nyt,
+            "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
+            "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
+            "Member_benefit_special_thank_you_list__c": self.member_benefit_request_thank_you_list,
             "npe03__Open_Ended_Status__c": self.open_ended_status,
-            "npe03__Installments__c": self.installments,
-            "npe03__Installment_Period__c": self.installment_period,
-            "Blast_Subscription_Email__c": self.blast_subscription_email,
-            "Billing_Email__c": self.billing_email,
-            "Type__c": self.type,
-            "Stripe_Card_Brand__c": self.stripe_card_brand,
-            "Stripe_Card_Expiration__c": self.stripe_card_expiration,
-            "Stripe_Card_Last_4__c": self.stripe_card_last_4,
+            "Payment_Type__c": self.payment_type,
+            "Referring_page__c": self.referring_page,
+            "Shipping_address_name__c": self.shipping_name,
+            "Shipping_address_street__c": self.shipping_street,
+            "Shipping_address_city__c": self.shipping_city,
+            "Shipping_address_state__c": self.shipping_state,
+            "Shipping_address_ZIP__c": self.shipping_zip,
+            "Shipping_address_country__c": self.shipping_country,
+            "Stripe_Agreed_to_pay_fees__c": self.agreed_to_pay_fees,
+            "Stripe_Bank_Account__c": self.stripe_bank_account,
+            "Stripe_Card__c": self.stripe_card,
+            "Stripe_Description__c": self.description,
+            "Card_expiration_date__c": self.stripe_card_expiration,
+            "Card_acct_last_4__c": self.stripe_card_last_4,
+            "Stripe_Customer_ID__c": self.stripe_customer_id,
+            "Stripe_Transaction_ID__c": self.stripe_transaction_id,
         }
         return recurring_donation
 
@@ -616,13 +677,36 @@ class RDO(SalesforceObject):
 
     def opportunities(self):
         query = f"""
-            SELECT Id, Amount, Name, Stripe_Customer_ID__c, Description,
-            Stripe_Agreed_to_pay_fees__c, CloseDate, CampaignId,
-            RecordType.Name, Type, Referral_ID__c, LeadSource,
-            Encouraged_to_contribute_by__c, Stripe_Transaction_ID__c,
-            Stripe_Card__c, AccountId, npsp__Closed_Lost_Reason__c,
-            Stripe_Card_Brand__c,
-            Stripe_Card_Expiration__c, Stripe_Card_Last_4__c
+            SELECT
+                AccountId,
+                Amount,
+                CloseDate,
+                CampaignId,
+                Description,
+                Id,
+                LeadSource,
+                Name,
+                RecordType.Name,
+                StageName,
+                Type,
+                Payment_Type__c,
+                Card_acct_last_4__c,
+                Card_expiration_date__c,
+                Card_type__c,
+                npsp__Closed_Lost_Reason__c,
+                Referring_page__c,
+                Shipping_address_name__c,
+                Shipping_address_street__c,
+                Shipping_address_city__c,
+                Shipping_address_state__c,
+                Shipping_address_ZIP__c,
+                Shipping_address_country__c,
+                Stripe_Agreed_to_pay_fees__c,
+                Stripe_Bank_Account__c,
+                Stripe_Card__c,
+                Stripe_Customer_Id__c,
+                Stripe_Error_Message__c,
+                Stripe_Transaction_ID__c
             FROM Opportunity
             WHERE npe03__Recurring_Donation__c = '{self.id}'
         """
@@ -633,23 +717,32 @@ class RDO(SalesforceObject):
             y = Opportunity(sf_connection=self.sf)
             y.id = item["Id"]
             y.name = item["Name"]
-            y.amount = item["Amount"]
-            y.stripe_customer_id = item["Stripe_Customer_ID__c"]
-            y.description = item["Description"]
-            y.agreed_to_pay_fees = item["Stripe_Agreed_to_pay_fees__c"]
-            y.stage_name = "Pledged"
-            y.close_date = item["CloseDate"]
-            #y.record_type_name = item["RecordType"]["Name"]
-            y.campaign_id = item["CampaignId"]
-            y.type = item["Type"]
-            y.referral_id = item["Referral_ID__c"]
-            y.lead_source = item["LeadSource"]
-            y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
-            y.stripe_card_brand = item["Stripe_Card_Brand__c"]
-            y.stripe_card_expiration = item["Stripe_Card_Expiration__c"]
-            y.stripe_card_last_4 = item["Stripe_Card_Last_4__c"]
-            y.stripe_card = item["Stripe_Card__c"]
             y.account_id = item["AccountId"]
+            y.amount = item["Amount"]
+            y.campaign_id = item["CampaignId"]
+            y.close_date = item["CloseDate"]
+            y.description = item["Description"]
+            y.stage_name = "Pledged"
+            y.type = item["Type"]
+            y.payment_type = item["Payment_Type__c"]
+            y.stripe_customer_id = item["Stripe_Customer_ID__c"]
+            y.agreed_to_pay_fees = item["Stripe_Agreed_to_pay_fees__c"]
+            y.card_type = item["Card_type__c"]
+            y.referring_page = item["Referring_page__c"]
+            y.lead_source = item["LeadSource"]
+            y.stripe_error_message = item["Stripe_Error_Message__c"]
+            y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
+            y.stripe_bank_account = item["Stripe_Bank_Account__c"]
+            y.stripe_card = item["Stripe_Card__c"]
+            y.stripe_card_expiration = item["Card_expiration_date__c"]
+            y.stripe_card_last_4 = item["Card_acct_last_4__c"]
+            y.stripe_card = item["Stripe_Card__c"]
+            y.shipping_name = item["Shipping_address_name__c"]
+            y.shipping_street = item["Shipping_address_street__c"]
+            y.shipping_city = item["Shipping_address_city__c"]
+            y.shipping_state = item["Shipping_address_state__c"]
+            y.shipping_zip = item["Shipping_address_ZIP__c"]
+            y.shipping_country = item["Shipping_address_country__c"]
             y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
             y.created = False
             results.append(y)
@@ -699,18 +792,18 @@ class RDO(SalesforceObject):
         # You should fix this through
         # process builder/mass action scheduler or some other process on the
         # SF side
-        if self.record_type_name == DEFAULT_RDO_TYPE or self.record_type_name is None:
-            return
-        if self.open_ended_status == "Open":
-            logging.warning(
-                f"RDO {self} is open-ended so new opportunities won't have type {self.record_type_name}"
-            )
-            return
-        logging.info(
-            f"Setting record type for {self} opportunities to {self.record_type_name}"
-        )
-        update = {"RecordType": {"Name": self.record_type_name}}
-        self.sf.updates(self.opportunities(), update)
+        #if self.record_type_name == DEFAULT_RDO_TYPE or self.record_type_name is None:
+        #    return
+        #if self.open_ended_status == "Open":
+        #    logging.warning(
+        #        f"RDO {self} is open-ended so new opportunities won't have type {self.record_type_name}"
+        #    )
+        #    return
+        #logging.info(
+        #    f"Setting record type for {self} opportunities to {self.record_type_name}"
+        #)
+        #update = {"RecordType": {"Name": self.record_type_name}}
+        #self.sf.updates(self.opportunities(), update)
 
 
 class Account(SalesforceObject):

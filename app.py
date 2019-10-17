@@ -252,7 +252,7 @@ def add_donation(form=None, customer=None, donation_type=None):
     form = clean(form)
     first_name = form["first_name"]
     last_name = form["last_name"]
-    frequency = form["frequency"]
+    frequency = form["installment_period"]
     email = form["email"]
     zipcode = form["billing_zip"]
 
@@ -281,7 +281,7 @@ def add_donation(form=None, customer=None, donation_type=None):
     if contact.duplicate_found:
         send_multiple_account_warning(contact)
 
-    if frequency is None:
+    if frequency == "one-time":
         logging.info("----Creating one time payment...")
         opportunity = add_opportunity(contact=contact, form=form, customer=customer)
         charge(opportunity)
@@ -313,34 +313,32 @@ def add_donation(form=None, customer=None, donation_type=None):
 def do_charge_or_show_errors(template, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")
 
-    amount = Decimal(request.form['amount'])
-    frequency = request.form['recurring']
+    amount = Decimal(request.form["amount"])
     email = request.form["email"]
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
+    first_name = request.form["first_name"]
+    last_name = request.form["last_name"]
 
-    if frequency is None:
-        frequency = app.config["DEFAULT_FREQUENCY"]
-    if frequency == 'monthly':
+    frequency = request.form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    if frequency == "monthly":
         yearly = 12
     else:
         yearly = 1
     level = check_level(amount, frequency, yearly)
 
     try:
-        if 'stripeToken' in request.form:
+        if "stripeToken" in request.form:
             customer = stripe.Customer.create(
                     email=email,
-                    card=request.form['stripeToken'] 
+                    card=request.form["stripeToken"] 
             )
             stripe_card = customer.default_source
-        elif 'bankToken' in request.form:
+        elif "bankToken" in request.form:
             customer = stripe.Customer.create(
                 email=email,
-                source=request.form['bankToken']
+                source=request.form["bankToken"]
             )
             stripe_bank_account = customer.default_source
-        amount_formatted = format(amount, ',.2f')
+        amount_formatted = format(amount, ",.2f")
         app.logger.info(f"Create Stripe Customer: {customer.id} {email} {first_name} {last_name} and charge amount {amount_formatted} with frequency {frequency}")
     except stripe.error.CardError as e:
         body = e.json_body
@@ -371,12 +369,12 @@ def do_charge_or_show_errors(template, function, donation_type):
     app.logger.info(f"Customer id: {customer.id}")
     function(customer=customer, form=clean(request.form), donation_type=donation_type)
     return render_template(
-        'thanks.html',
+        "thanks.html",
         amount=amount, frequency=frequency, yearly=yearly, level=level,
         email=email, first_name=first_name, last_name=last_name,
         #session=session,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config['STRIPE_KEYS']['publishable_key']
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
     )
 
 
@@ -426,7 +424,7 @@ def robots_txt():
 def give_form():
     template    = "give.html"
     form        = DonateForm()
-    form_action = '/thanks/'
+    form_action = "/thanks/"
 
     if request.method == "POST":
         return validate_form(DonateForm, template=template)
@@ -434,37 +432,29 @@ def give_form():
     # fields from URL
 
     # amount is the bare minimum to work
-    if request.args.get('amount'):
-        amount = Decimal(re.sub('[^\d\.]','',request.args.get('amount')))
-        amount_formatted = format(amount, ',.2f')
+    if request.args.get("amount"):
+        amount = Decimal(re.sub('[^\d\.]','',request.args.get("amount")))
+        amount_formatted = format(amount, ",.2f")
     else:
         message = "The page you requested can't be found."
-        return render_template('error.html', message=message)
+        return render_template("error.html", message=message)
 
     # frequency
-    frequency = request.args.get('frequency')
-    if frequency is None:
-        frequency = app.config["DEFAULT_FREQUENCY"]
-    if frequency == 'monthly':
+    frequency = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
+    if frequency == "monthly":
         yearly = 12
     else:
         yearly = 1
 
     # salesforce campaign
-    if request.args.get('campaign'):
-        campaign = request.args.get('campaign')
-    else:
-        campaign = ''
+    campaign = request.args.get("campaign", '')
 
     # stripe customer id
-    if request.args.get('customer_id'):
-        customer_id = request.args.get('customer_id')
-    else:
-        customer_id = ''
+    customer_id = request.args.get("customer_id", "")
 
     # show ach fields
-    if request.args.get('show_ach'):
-        show_ach = request.args.get('show_ach')
+    if request.args.get("show_ach"):
+        show_ach = request.args.get("show_ach")
         if show_ach == 'true':
             show_ach = True
         else:
@@ -473,91 +463,58 @@ def give_form():
         show_ach = app.config["SHOW_ACH"]
 
     # user first name
-    if request.args.get('firstname'):
-        first_name = request.args.get('firstname')
-    else:
-        first_name = ''
+    first_name = request.args.get("firstname", '')
 
     # user last name
-    if request.args.get('lastname'):
-        last_name = request.args.get('lastname')
-    else:
-        last_name = ''
+    last_name = request.args.get("lastname", '')
 
     # user email
-    if request.args.get('email'):
-        email = request.args.get('email')
-    else:
-        email = ''
+    email = request.args.get("email", '')
 
     # user address
 
     # street
-    if request.args.get('billing_street'):
-        billing_street = request.args.get('billing_street')
-    else:
-        billing_street = ''
+    billing_street = request.args.get("billing_street", '')
 
     # city
-    if request.args.get('billing_city'):
-        billing_city = request.args.get('billing_city')
-    else:
-        billing_city = ''
+    billing_city = request.args.get("billing_city", '')
 
     # state
-    if request.args.get('billing_state'):
-        billing_state = request.args.get('billing_state')
-    else:
-        billing_state = ''
+    billing_state = request.args.get("billing_state", '')
 
     # zip
-    if request.args.get('billing_zip'):
-        billing_zip = request.args.get('billing_zip')
-    else:
-        billing_zip = ''
+    billing_zip = request.args.get("billing_zip", '')
 
     # country
-    if request.args.get('billing_country'):
-        billing_country = request.args.get('billing_country')
-    else:
-        billing_country = ''
+    billing_country = request.args.get("billing_country", '')
 
     # thank you gifts
 
     # swag item
-    if request.args.get('swag'):
-        swag = request.args.get('swag')
-    else:
-        swag = ''
+    swag = request.args.get("swag", "")
 
     # atlantic subscription
-    if request.args.get('atlantic_subscription'):
-        atlantic_subscription = request.args.get('atlantic_subscription')
-        if atlantic_subscription != 'true':
-            atlantic_subscription = ''
+    if request.args.get("atlantic_subscription"):
+        atlantic_subscription = request.args.get("atlantic_subscription")
+        if atlantic_subscription != "true":
+            atlantic_subscription = ""
     else:
-        atlantic_subscription = ''
+        atlantic_subscription = ""
 
     # existing atlantic subscriber
-    if request.args.get('atlantic_id'):
-        atlantic_id = request.args.get('atlantic_id')
-    else:
-        atlantic_id = ''
+    atlantic_id = request.args.get("atlantic_id", "")
 
     # url for atlantic
-    atlantic_id_url = ''
-    if atlantic_id != '':
-        atlantic_id_url = '&amp;' + atlantic_id
+    atlantic_id_url = ""
+    if atlantic_id != "":
+        atlantic_id_url = "&amp;" + atlantic_id
 
     # new york times subscription
-    if request.args.get('nyt_subscription'):
-        nyt_subscription = request.args.get('nyt_subscription')
-    else:
-        nyt_subscription = ''
+    nyt_subscription = request.args.get("nyt_subscription", "")
 
     # decline all benefits
-    if request.args.get('decline_benefits'):
-        decline_benefits = request.args.get('decline_benefits')
+    if request.args.get("decline_benefits"):
+        decline_benefits = request.args.get("decline_benefits")
         if decline_benefits == 'true':
             swag = ''
             atlantic_subscription = ''
@@ -567,7 +524,7 @@ def give_form():
         decline_benefits = ''
 
     # fees
-    fees = calculate_amount_fees(amount, 'visa')
+    fees = calculate_amount_fees(amount, "visa")
 
     step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
 
@@ -587,62 +544,60 @@ def give_form():
 
 ## this is a minnpost url. use this when sending a request to plaid
 ## if successful, this returns the access token and bank account token for stripe from plaid
-@app.route('/plaid_token/', methods=['POST'])
+@app.route("/plaid_token/", methods=["POST"])
 def plaid_token():
 
     form = DonateForm(request.form)
-    public_token = request.form['public_token']
-    account_id = request.form['account_id']
+    public_token = request.form["public_token"]
+    account_id = request.form["account_id"]
 
     client = Client(client_id=app.config["PLAID_CLIENT_ID"], secret=app.config["PLAID_SECRET"], public_key=app.config["PLAID_PUBLIC_KEY"], environment=app.config["PLAID_ENVIRONMENT"])
     exchange_token_response = client.Item.public_token.exchange(public_token)
-    access_token = exchange_token_response['access_token']
+    access_token = exchange_token_response["access_token"]
 
     stripe_response = client.Processor.stripeBankAccountTokenCreate(access_token, account_id)
 
-    if 'stripe_bank_account_token' in stripe_response:
+    if "stripe_bank_account_token" in stripe_response:
         response = stripe_response
     else:
-        response = {'error' : 'We were unable to connect to your account. Please try again.'}
+        response = {"error" : "We were unable to connect to your account. Please try again."}
     
     return jsonify(response)
 
 
 # used to calculate the fees Stripe will charge based on the payment type/amount
 # called by ajax
-@app.route('/calculate-fees/', methods=['POST'])
+@app.route("/calculate-fees/", methods=["POST"])
 def calculate_fees():
 
-    amount = Decimal(request.form['amount'])
+    amount = Decimal(request.form["amount"])
     fees = ''
     
     # get fee amount to send to stripe
-    if 'payment_type' in request.form:
-        payment_type = request.form['payment_type']
+    if "payment_type" in request.form:
+        payment_type = request.form["payment_type"]
         fees = calculate_amount_fees(amount, payment_type)
 
     ret_data = {"fees": fees}
     return jsonify(ret_data)
 
 
-@app.route('/thanks/', methods=['POST'])
+@app.route("/thanks/", methods=["POST"])
 def thanks():
     template    = "thanks.html"
     form        = DonateForm()
-    form_action = '/thanks/'
+    form_action = "/thanks/"
 
-    amount = Decimal(request.form['amount'])
-    customer_id = request.form['customer_id']
-    amount_formatted = format(amount, ',.2f')
+    amount = Decimal(request.form["amount"])
+    customer_id = request.form["customer_id"]
+    amount_formatted = format(amount, ",.2f")
 
-    frequency = request.form['recurring']
     email = request.form["email"]
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
+    first_name = request.form["first_name"]
+    last_name = request.form["last_name"]
 
-    if frequency is None:
-        frequency = app.config["DEFAULT_FREQUENCY"]
-    if frequency == 'monthly':
+    frequency = request.form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    if frequency == "monthly":
         yearly = 12
     else:
         yearly = 1
@@ -653,7 +608,7 @@ def thanks():
     #    print('try to update account now')
     #    update_account.delay(form=request.form, account = {'levelint' : level.get('levelint', 0), 'level' : 'MinnPost {}'.format(level.get('level', '--None--').title())})
     return render_template(
-        'thanks.html',
+        "thanks.html",
         amount=amount_formatted,
         frequency=frequency,
         yearly=yearly,
@@ -663,7 +618,7 @@ def thanks():
         last_name=last_name,
         session=session,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config['STRIPE_KEYS']['publishable_key']
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
     )
     #else:
     #    print('ajax result donate form did not validate: error below')
@@ -695,7 +650,7 @@ def merchantid():
     This is here to verify our domain so Stripe can support Apple Pay.
     """
     return send_from_directory(
-        app.static_folder, 'apple-developer-merchantid-domain-association'
+        app.static_folder, "apple-developer-merchantid-domain-association"
     )
 
 
@@ -892,13 +847,15 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity = Opportunity(contact=contact)
 
     # posted form fields
+
+    # default
     opportunity.amount = form.get("amount", 0)
     opportunity.campaign_id = form.get("campaign_id", DEFAULT_CAMPAIGN_ONETIME)
-    #opportunity.referral_id = form["referral_id"] we don't have a referral id field
     opportunity.description = "MinnPost Membership"
     opportunity.lead_source = "Stripe"
     opportunity.type = form.get("opp_type", "Donation")
     
+    # minnpost custom fields
     opportunity.agreed_to_pay_fees = form.get("pay_fees", False)
     opportunity.anonymous = form.get("anonymous", False)
     opportunity.client_organization = form.get("client_organization", None)
@@ -936,6 +893,7 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.stripe_customer_id = customer["id"]
     opportunity.subtype = form.get("opp_subtype", "Donation: Individual")
 
+    # stripe customer handling
     customer = stripe.Customer.retrieve(customer["id"])
     card = customer.sources.retrieve(customer.sources.data[0].id)
     year = card.exp_year
@@ -995,17 +953,47 @@ def add_recurring_donation(contact=None, form=None, customer=None):
 
     rdo = RDO(contact=contact)
 
-    rdo.stripe_customer = customer["id"]
-    rdo.campaign_id = form["campaign_id"]
-    rdo.referral_id = form["referral_id"]
-    rdo.description = "Texas Tribune Sustaining Membership"
-    rdo.agreed_to_pay_fees = form["pay_fees_value"]
-    rdo.encouraged_by = form["reason"]
-    rdo.lead_source = "Stripe"
+    # default
     rdo.amount = form.get("amount", 0)
-    rdo.installments = None
+    rdo.campaign_id = form.get("campaign_id", DEFAULT_CAMPAIGN_ONETIME)
+    rdo.description = "MinnPost Sustaining Membership"
+    rdo.lead_source = "Stripe"
+    
+    # minnpost custom fields
+    rdo.agreed_to_pay_fees = form.get("pay_fees", False)
+    rdo.anonymous = form.get("anonymous", False)
+    rdo.credited_as = form.get("display_as", None)
+    rdo.donor_first_name = form.get("first_name", "")
+    rdo.donor_last_name = form.get("last_name", "")
+    rdo.donor_email = form['email']
+    rdo.donor_address_one = form.get("billing_street", "")
+    rdo.donor_city = form.get("billing_city", "")
+    rdo.donor_state = form.get("billing_state", "")
+    rdo.donor_zip = form.get("billing_zip", "")
+    rdo.donor_country = form.get("billing_country", "")
+    rdo.email_notify = form.get("email_notify", "")
+    rdo.email_cancel = form.get("email_cancel", False)
+    rdo.include_amount_in_notification = form.get("include_amount_in_notification", False)
+    rdo.in_honor_memory = form.get("in_honor_memory", False)
+    rdo.in_honor_memory_of = form.get("in_honor_memory_of", "")
+    rdo.notify_someone = form.get("notify_someone", False)
+    #rdo.installments = None
     rdo.installment_period = form["installment_period"]
+    rdo.member_benefit_request_swag = form.get("member_benefit_request_swag", "")
+    rdo.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
+    rdo.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
+    rdo.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
+    rdo.member_benefit_request_thank_you_list = form.get("member_benefit_request_thank_you_list", "")
     rdo.open_ended_status = "Open"
+    rdo.payment_type = "Stripe"
+    rdo.referring_page = form.get("source", None)
+    rdo.shipping_name = form.get("shipping_name", "")
+    rdo.shipping_street = form.get("shipping_street", "")
+    rdo.shipping_city = form.get("shipping_city", "")
+    rdo.shipping_state = form.get("shipping_state", "")
+    rdo.shipping_zip = form.get("shipping_zip", "")
+    rdo.shipping_country = form.get("shipping_country", "")
+    rdo.stripe_customer_id = customer["id"]
 
     apply_card_details(rdo=rdo, customer=customer)
     rdo.save()

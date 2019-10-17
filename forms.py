@@ -49,7 +49,7 @@ class BaseForm(FlaskForm):
 
 
 class DonateForm(BaseForm):
-    recurring = StringField(
+    installment_period = StringField(
         u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
     )
     pay_fees = BooleanField(

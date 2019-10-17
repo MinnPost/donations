@@ -130,6 +130,8 @@ def charge(opportunity):
                 "account_id": opportunity.account_id,
                 "source": opportunity.referring_page,
             },
+            #shipping=shipping_details,
+            #source=charge_source,
         )
     except stripe.error.CardError as e:
         # look for decline code:
