@@ -892,7 +892,7 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.stripe_customer = customer["id"]
     opportunity.campaign_id = form["campaign_id"]
     #opportunity.referral_id = form["referral_id"] we don't have a referral id field
-    opportunity.description = "Texas Tribune Membership"
+    opportunity.description = "MinnPost Membership"
     opportunity.agreed_to_pay_fees = form.get("pay_fees", False)
     opportunity.encouraged_by = form["reason"]
     opportunity.lead_source = "Stripe"
