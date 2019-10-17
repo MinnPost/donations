@@ -244,7 +244,6 @@ class Opportunity(SalesforceObject):
             raise SalesforceException("Account and Contact can't both be specified")
 
         today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
-        #now = datetime.now(tz=zone).strftime('%Y-%m-%d %I:%M:%S %p %Z')
 
         # set defaults for default opportunity fields
         if account is not None:
@@ -261,8 +260,8 @@ class Opportunity(SalesforceObject):
         self._amount = 0
         self.close_date = today
         self.description = None
-        self.lead_source = "Stripe"
         self.record_type_name = record_type_name
+        self.lead_source = None
         self.campaign_id = None
         self.stage_name = stage_name
         self.type = "Donation"
@@ -300,7 +299,7 @@ class Opportunity(SalesforceObject):
         self.mrpledge_id = None
         self.subtype = None
         self.payment_url = None
-        self.payment_type = "Stripe"
+        self.payment_type = None
         self.referring_page = None
         self.shipping_name = None
         self.shipping_street = None
