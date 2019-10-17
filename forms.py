@@ -52,8 +52,7 @@ class DonateForm(BaseForm):
     recurring = StringField(
         u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
     )
-    # this acts as required if it's not present
-    #pay_fees = StringField(
-    #    u"Pay Fees Value", [validators.AnyOf(["True", "1", "None"])]
-    #)
+    pay_fees = BooleanField(
+        u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
+    )
     #billing_zip = StringField(u"ZIP Code", [validators.Length(max=5)])
