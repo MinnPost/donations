@@ -1,123 +1,43 @@
 {
-  "name": "donations",
-  "description": "Collect donations for nonprofits",
-  "scripts": {
-    "css:dev": "NODE_ENV=development node config/tasks/dev.js",
-    "css:prod": "NODE_ENV=production node config/tasks/build.js",
-    "js:dev": "NODE_ENV=development webpack --config webpack/config.dev.js",
-    "js:prod": "NODE_ENV=production webpack --config webpack/config.prod.js",
-    "dev": "npm-run-all --parallel css:dev js:dev",
-    "postinstall": "yarn run css:prod && yarn run js:prod",
-    "lint": "eslint --ext .js,.vue static/js/src config"
-  },
-  "private": false,
+  "name": "salesforce-stripe",
+  "description": "",
+  "main": "Gulpfile.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/texastribune/donations"
+    "url": "git+https://github.com/MinnPost/salesforce-stripe.git"
   },
+  "license": "GPL-2.0",
   "bugs": {
-    "url": "https://github.com/texastribune/donations/issues"
+    "url": "https://github.com/MinnPost/salesforce-stripe/issues"
   },
-  "dependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.4.3",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/runtime": "^7.4.3",
-    "@sentry/browser": "^5.6.0",
-    "@sentry/integrations": "^5.6.0",
-    "@sentry/webpack-plugin": "^1.6.2",
-    "@texastribune/queso-tools": "1.2.1",
-    "@texastribune/queso-ui": "^4.0.0",
-    "auth0-js": "^9.10.2",
-    "axios": "^0.19.0",
-    "babel-loader": "^8.0.0",
-    "clean-webpack-plugin": "^2.0.2",
-    "css-loader": "^1.0.0",
-    "date-fns": "^1.30.1",
-    "dompurify": "^1.0.10",
-    "es6-promise": "^4.2.4",
-    "fast-async": "7",
-    "file-loader": "^1.1.11",
-    "fontfaceobserver": "^2.1.0",
-    "glob-watcher": "^5.0.3",
-    "jsonwebtoken": "^8.5.1",
-    "jspdf": "^1.5.3",
-    "nodent-runtime": "^3.2.1",
-    "npm-run-all": "^4.1.5",
-    "validate.js": "^0.12.0",
-    "vee-validate": "^2.2.13",
-    "vue": "^2.6.0",
-    "vue-clipboard2": "^0.3.0",
-    "vue-js-modal": "^1.3.31",
-    "vue-loader": "^15.7.0",
-    "vue-router": "^3.0.1",
-    "vue-stripe-elements-plus": "0.2.8",
-    "vue-template-compiler": "^2.6.0",
-    "vuex": "^3.0.1",
-    "webpack": "^4.35.3",
-    "webpack-assets-manifest": "^3.0.1",
-    "webpack-cli": "^3.3.4",
-    "webpack-merge": "^4.1.2",
-    "webpack-sources": "^1.0"
-  },
+  "homepage": "https://github.com/MinnPost/salesforce-stripe#readme",
   "devDependencies": {
-    "eslint": "^5.3.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^3.3.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "vue-eslint-parser": "^4.0.2"
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "autoprefixer": "^9.6.5",
+    "browser-sync": "^2.26.7",
+    "css-mqpacker": "^7.0.0",
+    "cssnano": "^4.1.10",
+    "fs": "0.0.2",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-imagemin": "^6.1.1",
+    "gulp-plumber": "^1.2.1",
+    "gulp-postcss": "^8.0.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sass-glob": "^1.1.0",
+    "gulp-sort": "~2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-svgmin": "^2.2.0",
+    "gulp-uglify": "^3.0.2",
+    "npm-check-updates": "^3.1.24"
   },
-  "license": "MIT",
   "browserslist": [
+    "last 2 version",
     "> 1%",
-    "last 2 versions",
-    "Firefox ESR",
-    "iOS >= 11",
-    "Safari >= 12",
+    "maintained node versions",
     "not dead"
-  ],
-  "eslintConfig": {
-    "env": {
-      "browser": true
-    },
-    "parser": "vue-eslint-parser",
-    "extends": [
-      "plugin:vue/recommended",
-      "airbnb-base",
-      "prettier",
-      "prettier/vue"
-    ],
-    "rules": {
-      "no-console": "error",
-      "vue/component-name-in-template-casing": [
-        "error",
-        "kebab-case"
-      ],
-      "import/no-extraneous-dependencies": [
-        "error",
-        {
-          "devDependencies": true
-        }
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "static/js/src/entry/account/routes/home-exact/containers",
-    "static/js/src/entry/account/routes/membership/containers",
-    "static/js/src/entry/account/routes/home/Index.vue",
-    "static/js/src/entry/account/routes/payments/components/Detail.vue",
-    "static/js/src/entry/account/routes/blast-payments/components/Detail.vue",
-    "static/js/src/entry/account/routes/index.js"
-  ],
-  "prettier": {
-    "bracketSpacing": true,
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "es5"
-  }
+  ]
 }

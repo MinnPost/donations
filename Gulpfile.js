@@ -1,7 +1,6 @@
 // Require our dependencies
 const autoprefixer = require('autoprefixer');
 const babel = require('gulp-babel');
-const bourbon = require( 'bourbon' ).includePaths;
 const browserSync = require('browser-sync').create();
 const concat = require('gulp-concat');
 const cssnano = require('cssnano');
