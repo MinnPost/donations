@@ -252,7 +252,7 @@ class Opportunity(SalesforceObject):
             self.name = None
         elif contact is not None:
             self.account_id = contact.account_id
-            self.name = f"{contact.first_name} {contact.last_name} {DEFAULT_RDO_TYPE} {today}"
+            self.name = f"{contact.first_name} {contact.last_name} Donation {today}"
         else:
             self.name = None
             self.account_id = None
@@ -543,7 +543,7 @@ class RDO(SalesforceObject):
 
         if contact is not None:
             self.contact_id = contact.id
-            self.name = f"{today} for {contact.first_name} {contact.last_name} ({contact.email})"
+            self.name = f"{contact.first_name} {contact.last_name} recurring donation {today}"
             self.account_id = None
         elif account is not None:
             self.account_id = account.id
@@ -758,8 +758,8 @@ class RDO(SalesforceObject):
 
     def save(self):
 
-        # truncate to 80 characters
-        self.name = self.name[:80]
+        # truncate to 120 characters
+        self.name = self.name[:120]
 
         if self.account_id is None and self.contact_id is None:
             raise SalesforceException(
