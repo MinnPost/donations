@@ -55,6 +55,7 @@ from flask_limiter.util import get_remote_address
 from flask import Flask, redirect, render_template, request, send_from_directory, jsonify, session
 from forms import (
     DonateForm,
+    FinishForm,
 )
 from npsp import RDO, Contact, Opportunity, Affiliation, Account
 from amazon_pay.ipn_handler import IpnHandler
@@ -632,6 +633,22 @@ def thanks():
     #        key=app.config['STRIPE_KEYS']['publishable_key']
     #    )
 
+
+@app.route('/finish/', methods=["GET", "POST"])
+def finish():
+
+    template    = "finish.html"
+    form        = FinishForm()
+
+    lock_key = request.form.get("lock_key", "")
+
+    update_donation.delay(request.form)
+    return render_template(
+        template,
+        lock_key=lock_key,
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
+    )
 
 @app.route("/error")
 def error():

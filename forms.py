@@ -6,6 +6,7 @@ from wtforms.fields import (
     HiddenField,
     RadioField,
     StringField,
+    TextAreaField,
 )
 from wtforms.fields.html5 import EmailField
 
@@ -56,3 +57,9 @@ class DonateForm(BaseForm):
         u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
     )
     #billing_zip = StringField(u"ZIP Code", [validators.Length(max=5)])
+
+class FinishForm(FlaskForm):
+    reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
+    reason_shareable = BooleanField(
+        u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
+    )
