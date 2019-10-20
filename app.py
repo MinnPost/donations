@@ -317,6 +317,86 @@ def add_donation(form=None, customer=None, donation_type=None):
     return True
 
 
+@celery.task(name="app.update_donation", bind=True, max_retries=None)
+def update_donation(self,form=None):
+    """
+    Update the post-submit donation info in SF if supplied
+    """
+
+    form = clean(form)
+
+    lock_key = form.get("lock_key", "")
+    post_submit_details = dict()
+
+    # we update all of these fields if any of them have changed because
+    # we don't have these fields already populated; after some time that won't be
+    # important
+
+    reason_for_supporting = form.get("reason_for_supporting", "")
+
+    try:
+        if form["reason_shareable"] == '1':
+            reason_for_supporting_shareable = True
+        else:
+            reason_for_supporting_shareable = False
+    except:
+        reason_for_supporting_shareable = False
+
+    #newsletters = form.getlist('newsletters')
+    #messages = form.getlist('messages')
+
+    #if 'Daily newsletter' in newsletters:
+    #    daily_newsletter = True
+    #else:
+    #    daily_newsletter = False
+
+    #if 'Greater Minnesota newsletter' in newsletters:
+    #    greater_mn_newsletter = True
+    #else:
+    #    greater_mn_newsletter = False
+
+    #if 'Sunday review' in newsletters:
+    #    sunday_review_newsletter = True
+    #else:
+    #    sunday_review_newsletter = False
+
+    #if 'D.C. Memo' in newsletters:
+    #    dc_memo = True
+    #else:
+    #    dc_memo = False
+
+    #if 'Events & member benefits' in messages:
+    #    event_messages = True
+    #else:
+    #    event_messages = False
+
+    #if 'Opportunities to give input/feedback' in messages:
+    #    feedback_messages = True
+    #else:
+    #    feedback_messages = False
+
+    post_submit_details["Reason_for_Gift__c"] = reason_for_supporting
+    post_submit_details["Reason_for_gift_shareable__c"] = reason_for_supporting_shareable
+    #post_submit_details["Daily_newsletter_sign_up__c"] = daily_newsletter
+    #post_submit_details["Greater_MN_newsletter__c"] = greater_mn_newsletter
+    #post_submit_details["Sunday_Review_newsletter__c"] = sunday_review_newsletter
+    #post_submit_details["DC_Memo_sign_up__c"] = dc_memo
+    #post_submit_details["Event_member_benefit_messages__c"] = event_messages
+    #post_submit_details["Input_feedback_messages__c"] = feedback_messages
+
+    opps = Opportunity.load_after_submit(
+        lock_key=lock_key
+    )
+
+    if not opps:
+        print('no sf id here yet. delay and try again.')
+        raise self.retry(countdown=300)
+
+    response = Opportunity.update_post_submit(opps, post_submit_details)
+    logging.info(response)
+    logging.info("post submit updated")
+
+
 def do_charge_or_show_errors(template, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")
 

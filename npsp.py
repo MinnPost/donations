@@ -423,6 +423,61 @@ class Opportunity(SalesforceObject):
 
         return results
 
+
+    @classmethod
+    def load_after_submit(
+        cls,
+        begin=None,
+        end=None,
+        lock_key=None,
+        sf_connection=None,
+    ):
+
+        sf = SalesforceConnection() if sf_connection is None else sf_connection
+
+        if lock_key is None:
+            return False
+
+        where = f"""
+            WHERE Flask_Transaction_ID__c = '{lock_key}'
+        """
+
+        query = f"""
+            SELECT
+                Id,
+                Flask_Transaction_ID__c,
+                Reason_for_Gift__c,
+                Reason_for_gift_shareable__c,
+                Daily_newsletter_sign_up__c,
+                Greater_MN_newsletter__c,
+                Sunday_Review_newsletter__c,
+                DC_Memo_sign_up__c,
+                Event_member_benefit_messages__c,
+                Input_feedback_messages__c
+            FROM Opportunity
+            {where}
+        """
+
+        response = sf.query(query)
+        logging.debug(response)
+
+        results = list()
+        for item in response:
+            y = cls()
+            y.id = item["Id"]
+            y.lock_key = item["Flask_Transaction_ID__c"]
+            y.reason_for_supporting = "Reason_for_Gift__c"
+            y.reason_for_supporting_shareable = "Reason_for_gift_shareable__c"
+            y.daily_newsletter = "Daily_newsletter_sign_up__c"
+            y.greater_mn_newsletter = "Greater_MN_newsletter__c"
+            y.sunday_review_newsletter = "Sunday_Review_newsletter__c"
+            y.dc_memo = "DC_Memo_sign_up__c"
+            y.event_messages = "Event_member_benefit_messages__c"
+            y.feedback_messages = "Input_feedback_messages__c"
+            results.append(y)
+
+        return results
+
     @property
     def amount(self):
         return str(Decimal(self._amount).quantize(TWOPLACES))
@@ -496,6 +551,13 @@ class Opportunity(SalesforceObject):
             raise SalesforceException("at least one Opportunity must be specified")
         sf = SalesforceConnection() if sf_connection is None else sf_connection
         return sf.updates(opportunities, card_details)
+
+    @classmethod
+    def update_post_submit(cls, opportunities, post_submit_details, sf_connection=None):
+        if not opportunities:
+            raise SalesforceException("at least one Opportunity must be specified")
+        sf = SalesforceConnection() if sf_connection is None else sf_connection
+        return sf.updates(opportunities, post_submit_details)
 
     def __str__(self):
         return f"{self.id}: {self.name} for {self.amount} ({self.description})"

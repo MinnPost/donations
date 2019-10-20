@@ -7,6 +7,7 @@ from wtforms.fields import (
     RadioField,
     StringField,
     TextAreaField,
+    SelectMultipleField,
 )
 from wtforms.fields.html5 import EmailField
 
@@ -64,3 +65,5 @@ class FinishForm(FlaskForm):
     reason_shareable = BooleanField(
         u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
     )
+    #newsletters = SelectMultipleField(u'Newsletters')
+    #other_messages = SelectMultipleField(u'Periodic MinnPost Messages')
