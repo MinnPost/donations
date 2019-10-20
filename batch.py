@@ -98,11 +98,11 @@ def charge_cards():
     log.it(f"Found {len(opportunities)} opportunities available to process.")
 
     for opportunity in opportunities:
-        if not opportunity.stripe_customer:
+        if not opportunity.stripe_customer_id:
             continue
         amount = amount_to_charge(opportunity)
         log.it(
-            f"---- Charging ${amount} to {opportunity.stripe_customer} ({opportunity.name})"
+            f"---- Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
         )
         charge(opportunity)
 

@@ -665,7 +665,6 @@ class RDO(SalesforceObject):
         self.shipping_state = None
         self.shipping_zip = None
         self.shipping_country = None
-        self.stripe_customer_id = None
         self.stripe_bank_account = None
         self.stripe_card = None
         self.stripe_card_expiration = None

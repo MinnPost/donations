@@ -45,9 +45,9 @@ class BaseForm(FlaskForm):
     stripeToken = HiddenField(u"Stripe token", [validators.InputRequired()])
     #recaptchaToken = HiddenField(u"Recaptcha token", [validators.InputRequired()])
     description = HiddenField(u"Description", [validators.InputRequired()])
-    reason = StringField(u"Encouraged to give by", [validators.Length(max=255)])
+    #reason = StringField(u"Encouraged to give by", [validators.Length(max=255)])
     campaign_id = HiddenField("Campaign ID", [validators.Length(max=18)])
-    referral_id = HiddenField("Referral ID", [validators.Length(max=18)])
+    #referral_id = HiddenField("Referral ID", [validators.Length(max=18)])
 
 
 class DonateForm(BaseForm):
