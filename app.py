@@ -63,7 +63,6 @@ from nameparser import HumanName
 from util import (
     clean,
     notify_slack,
-    send_email_new_business_membership,
     send_multiple_account_warning,
 )
 from validate_email import validate_email
@@ -288,10 +287,6 @@ def add_donation(form=None, customer=None, donation_type=None):
         logging.info(opportunity)
         notify_slack(contact=contact, opportunity=opportunity)
         return True
-
-    elif donation_type == "circle":
-        logging.info("----Creating circle payment...")
-        rdo = add_circle_membership(contact=contact, form=form, customer=customer)
     else:
         logging.info("----Creating recurring payment...")
         rdo = add_recurring_donation(contact=contact, form=form, customer=customer)
@@ -384,12 +379,6 @@ def validate_form(FormType, template, function=add_donation.delay):
     form = FormType(request.form)
     if FormType is DonateForm:
         donation_type = "membership"
-    elif FormType is CircleForm:
-        donation_type = "circle"
-    elif FormType is BlastForm:
-        donation_type = "blast"
-    elif FormType is BusinessMembershipForm:
-        donation_type = "business_membership"
     else:
         raise Exception("Unrecognized form type")
 
@@ -616,7 +605,7 @@ def thanks():
         email=email,
         first_name=first_name,
         last_name=last_name,
-        session=session,
+        #session=session,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"]
     )
@@ -677,9 +666,9 @@ def customer_source_updated(event):
         month = event["data"]["object"]["exp_month"]
         day = calendar.monthrange(year, month)[1]
         expiration = f"{year}-{month:02d}-{day:02d}"
-        card_details["Stripe_Card_Expiration__c"] = expiration
-        card_details["Stripe_Card_Brand__c"] = event["data"]["object"]["brand"]
-        card_details["Stripe_Card_Last_4__c"] = event["data"]["object"]["last4"]
+        card_details["Card_expiration_date__c"] = expiration
+        card_details["Card_type__c"] = event["data"]["object"]["brand"]
+        card_details["Card_acct_last_4__c"] = event["data"]["object"]["last4"]
     else:
         logging.info("Event not relevant; discarding.")
         return
@@ -908,41 +897,6 @@ def add_opportunity(contact=None, form=None, customer=None):
     return opportunity
 
 
-def add_circle_membership(contact=None, form=None, customer=None):
-
-    """
-    This will add Circle membership to Salesforce.
-    """
-
-    if form["installment_period"] is None:
-        raise Exception("installment_period must have a value")
-
-    rdo = RDO(contact=contact)
-
-    rdo.type = "Giving Circle"
-    rdo.stripe_customer = customer["id"]
-    rdo.campaign_id = form["campaign_id"]
-    rdo.referral_id = form["referral_id"]
-    rdo.description = "Texas Tribune Circle Membership"
-    rdo.agreed_to_pay_fees = form["pay_fees_value"]
-    rdo.encouraged_by = form["reason"]
-    rdo.lead_source = "Stripe"
-    rdo.amount = form.get("amount", 0)
-    installment_period = form["installment_period"]
-    if installment_period == "monthly":
-        rdo.installments = 36
-    else:
-        rdo.installments = 3
-
-    rdo.installment_period = installment_period
-    rdo.open_ended_status = "None"
-
-    apply_card_details(rdo=rdo, customer=customer)
-    rdo.save()
-
-    return rdo
-
-
 def add_recurring_donation(contact=None, form=None, customer=None):
     """
     This will add a recurring donation to Salesforce.
@@ -995,195 +949,11 @@ def add_recurring_donation(contact=None, form=None, customer=None):
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
 
-    apply_card_details(rdo=rdo, customer=customer)
-    rdo.save()
-
-    return rdo
-
-
-def add_business_rdo(account=None, form=None, customer=None):
-    """
-    Adds a recurring business membership to Salesforce.
-    """
-
-    if form["installment_period"] is None:
-        raise Exception("installment_period must have a value")
-
-    year = datetime.now(tz=ZONE).strftime("%Y")
-
-    rdo = RDO(account=account)
-    rdo.name = f"{year} Business {account.name} Recurring"
-    rdo.type = "Business Membership"
-    rdo.record_type_name = "Business Membership"
-    rdo.stripe_customer = customer["id"]
-    rdo.campaign_id = form["campaign_id"]
-    rdo.referral_id = form["referral_id"]
-    rdo.description = "Texas Tribune Business Membership"
-    rdo.agreed_to_pay_fees = form["pay_fees_value"]
-    rdo.encouraged_by = form["reason"]
-    rdo.lead_source = "Stripe"
-    rdo.amount = form.get("amount", 0)
-    rdo.installments = None
-    rdo.open_ended_status = "Open"
-    rdo.installment_period = form["installment_period"]
 
     apply_card_details(rdo=rdo, customer=customer)
     rdo.save()
 
     return rdo
-
-
-@celery.task(name="app.add_business_membership")
-def add_business_membership(
-    form=None, customer=None, donation_type="business_membership"
-):
-    """
-    Adds a business membership. Both single and recurring.
-
-    It will look for a matching Contact (or create one). Then it will look for a
-    matching Account (or create one). Then it will add the single or recurring donation
-    to the Account. Then it will add an Affiliation to link the Contact with the
-    Account. It sends a notification to Slack (if configured). It will send email
-    notification about the new membership.
-
-    """
-
-    form = clean(form)
-
-    first_name = form["first_name"]
-    last_name = form["last_name"]
-    email = form["email"]
-
-    website = form["website"]
-    business_name = form["business_name"]
-    shipping_city = form["shipping_city"]
-    shipping_street = form["shipping_street"]
-    shipping_state = form["shipping_state"]
-    shipping_postalcode = form["shipping_postalcode"]
-
-    logging.info("----Getting contact....")
-    contact = Contact.get_or_create(
-        email=email, first_name=first_name, last_name=last_name
-    )
-    if contact.work_email is None:
-        contact.work_email = email
-        contact.save()
-    logging.info(contact)
-
-    if contact.first_name == "Subscriber" and contact.last_name == "Subscriber":
-        logging.info(f"Changing name of contact to {first_name} {last_name}")
-        contact.first_name = first_name
-        contact.last_name = last_name
-        contact.save()
-
-    if contact.first_name != first_name or contact.last_name != last_name:
-        logging.info(
-            f"Contact name doesn't match: {contact.first_name} {contact.last_name}"
-        )
-
-    logging.info("----Getting account....")
-
-    account = Account.get_or_create(
-        record_type_name="Organization",
-        website=website,
-        name=business_name,
-        shipping_street=shipping_street,
-        shipping_city=shipping_city,
-        shipping_state=shipping_state,
-        shipping_postalcode=shipping_postalcode,
-    )
-    logging.info(account)
-
-    if form["installment_period"] not in ["yearly", "monthly"]:
-        raise Exception("Business membership must be either yearly or monthly")
-
-    logging.info("----Creating recurring business membership...")
-    rdo = add_business_rdo(account=account, form=form, customer=customer)
-    logging.info(rdo)
-    # get opportunities
-    opportunities = rdo.opportunities()
-    today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
-    opp = [
-        opportunity
-        for opportunity in opportunities
-        if opportunity.close_date == today
-    ][0]
-    charge(opp)
-    notify_slack(account=account, contact=contact, rdo=rdo)
-
-    logging.info("----Getting affiliation...")
-
-    affiliation = Affiliation.get_or_create(
-        account=account, contact=contact, role="Business Member Donor"
-    )
-    logging.info(affiliation)
-
-    send_email_new_business_membership(account=account, contact=contact)
-
-    if contact.duplicate_found:
-        send_multiple_account_warning(contact)
-
-    return True
-
-
-@celery.task(name="app.add_blast_subcription")
-def add_blast_subscription(form=None, customer=None):
-    """
-    Adds a Blast subscription. Blast subscriptions are always recurring. They have two
-    email addresses: one for billing and one for the newsletter subscription.
-
-    """
-
-    form = clean(form)
-
-    first_name = form["first_name"]
-    last_name = form["last_name"]
-    email = form["subscriber_email"]
-
-    logging.info("----Getting contact...")
-    contact = Contact.get_or_create(
-        email=email, first_name=first_name, last_name=last_name
-    )
-    logging.info(contact)
-
-    rdo = RDO(contact=contact)
-
-    rdo.stripe_customer = customer["id"]
-    rdo.campaign_id = form["campaign_id"]
-    rdo.referral_id = form["referral_id"]
-    rdo.lead_source = "Stripe"
-    rdo.amount = form.get("amount", 0)
-    rdo.agreed_to_pay_fees = form["pay_fees_value"]
-
-    # Blast specific:
-    rdo.installments = 0
-    rdo.description = "Blast Subscription"
-    rdo.open_ended_status = "Open"
-    if int(Decimal(rdo.amount)) == 40:
-        rdo.installment_period = "monthly"
-    else:
-        rdo.installment_period = "yearly"
-    now = datetime.now(tz=ZONE).strftime("%Y-%m-%d %I:%M:%S %p %Z")
-    rdo.name = f"{first_name} {last_name} - {now} - The Blast"
-    rdo.type = "The Blast"
-    rdo.billing_email = form["email"]
-    rdo.blast_subscription_email = form["subscriber_email"]
-
-    logging.info("----Saving RDO....")
-    apply_card_details(rdo=rdo, customer=customer)
-    rdo.save()
-    logging.info(rdo)
-    # get opportunities
-    opportunities = rdo.opportunities()
-    today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
-    opp = [
-        opportunity
-        for opportunity in opportunities
-        if opportunity.close_date == today
-    ][0]
-    charge(opp)
-
-    return True
 
 
 if __name__ == "__main__":
