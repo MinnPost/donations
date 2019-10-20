@@ -586,7 +586,7 @@ def calculate_fees():
 def thanks():
     template    = "thanks.html"
     form        = DonateForm()
-    form_action = "/thanks/"
+    form_action = "/finish/"
 
     amount = Decimal(request.form["amount"])
     customer_id = request.form["customer_id"]
@@ -608,7 +608,8 @@ def thanks():
     #    print('try to update account now')
     #    update_account.delay(form=request.form, account = {'levelint' : level.get('levelint', 0), 'level' : 'MinnPost {}'.format(level.get('level', '--None--').title())})
     return render_template(
-        "thanks.html",
+        template,
+        form_action=form_action,
         amount=amount_formatted,
         frequency=frequency,
         yearly=yearly,

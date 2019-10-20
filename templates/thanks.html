@@ -13,7 +13,7 @@
 
 <main>
   <div class="wrapper support--forms">
-    <form class="support support--confirm" method="post" id="confirm" action="/confirm/">
+    <form class="support support--confirm" method="post" id="confirm" action="{{ form_action }}">
       <input type="hidden" name="amount" id="amount" value="{{ amount }}">
       <input type="hidden" name="recurring" id="recurring" value="{{ frequency }}">
       <input type="hidden" name="email" id="edit-email" value="{{ email }}">
