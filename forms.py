@@ -59,6 +59,7 @@ class DonateForm(BaseForm):
     #billing_zip = StringField(u"ZIP Code", [validators.Length(max=5)])
 
 class FinishForm(FlaskForm):
+    lock_key = HiddenField(u"Lock Key", [validators.InputRequired()])
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(
         u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")

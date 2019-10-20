@@ -9,6 +9,8 @@ import locale
 import logging
 import os
 import re
+import uuid
+from batch import Lock
 from config import (
     TIMEZONE,
     AMAZON_MERCHANT_ID,
@@ -286,6 +288,8 @@ def add_donation(form=None, customer=None, donation_type=None):
         logging.info("----Creating one time payment...")
         opportunity = add_opportunity(contact=contact, form=form, customer=customer)
         charge(opportunity)
+        lock = Lock(key=opportunity.lock_key)
+        lock.append(key=opportunity.lock_key, value=opportunity.id)
         logging.info(opportunity)
         notify_slack(contact=contact, opportunity=opportunity)
         return True
@@ -296,6 +300,8 @@ def add_donation(form=None, customer=None, donation_type=None):
     else:
         logging.info("----Creating recurring payment...")
         rdo = add_recurring_donation(contact=contact, form=form, customer=customer)
+        lock = Lock(key=rdo.lock_key)
+        lock.append(key=rdo.lock_key, value=rdo.id)
 
     # get opportunities
     opportunities = rdo.opportunities()
@@ -529,6 +535,11 @@ def give_form():
 
     step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
 
+    # make a uuid for redis and lock it
+    lock_key = str(uuid.uuid4())
+    lock = Lock(key=lock_key)
+    lock.acquire()
+
     return render_template(
         template,
         form=form,
@@ -539,6 +550,7 @@ def give_form():
         campaign=campaign, customer_id=customer_id,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
+        lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"]
     )
 
@@ -604,6 +616,8 @@ def thanks():
         yearly = 1
     level = check_level(amount, frequency, yearly)
 
+    lock_key = request.form["lock_key"]
+
     #if form.validate():
     #    print('Done with stripe processing {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
     #    print('try to update account now')
@@ -619,6 +633,7 @@ def thanks():
         first_name=first_name,
         last_name=last_name,
         session=session,
+        lock_key=lock_key,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"]
     )
@@ -911,6 +926,8 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.stripe_customer_id = customer["id"]
     opportunity.subtype = form.get("opp_subtype", "Donation: Individual")
 
+    opportunity.lock_key = form.get("lock_key", "")
+
     # stripe customer handling
     customer = stripe.Customer.retrieve(customer["id"])
     card = customer.sources.retrieve(customer.sources.data[0].id)
@@ -1044,6 +1061,7 @@ def add_business_rdo(account=None, form=None, customer=None):
     rdo.installments = None
     rdo.open_ended_status = "Open"
     rdo.installment_period = form["installment_period"]
+    rdo.lock_key = form.get("lock_key", "")
 
     apply_card_details(rdo=rdo, customer=customer)
     rdo.save()

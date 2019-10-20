@@ -317,6 +317,7 @@ class Opportunity(SalesforceObject):
         self.stripe_customer_id = None
         self.stripe_transaction_id = None
         self.ticket_count = 0
+        self.lock_key = None
 
     @classmethod
     def list(
@@ -360,6 +361,7 @@ class Opportunity(SalesforceObject):
                 RecordType.Name,
                 StageName,
                 Type,
+                Flask_Transaction_ID__c,
                 Payment_Type__c,
                 Card_acct_last_4__c,
                 Card_expiration_date__c,
@@ -415,6 +417,7 @@ class Opportunity(SalesforceObject):
             y.stripe_customer_id = item["Stripe_Customer_ID__c"]
             y.stripe_error_message = item["Stripe_Error_Message__c"]
             y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
+            y.lock_key = item["Flask_Transaction_ID__c"]
             y.created = False
             results.append(y)
 
@@ -484,6 +487,7 @@ class Opportunity(SalesforceObject):
             "Stripe_Customer_ID__c": self.stripe_customer_id,
             "Stripe_Error_Message__c": self.stripe_error_message,
             "Stripe_Transaction_ID__c": self.stripe_transaction_id,
+            "Flask_Transaction_ID__c": self.lock_key,
         }
 
     @classmethod
@@ -608,6 +612,8 @@ class RDO(SalesforceObject):
         self.stripe_transaction_id = None
         self.ticket_count = 0
 
+        self.lock_key = None
+
     def _format(self):
 
         # TODO be sure to reverse this on deserialization
@@ -665,6 +671,7 @@ class RDO(SalesforceObject):
             "Card_acct_last_4__c": self.stripe_card_last_4,
             "Stripe_Customer_ID__c": self.stripe_customer_id,
             "Stripe_Transaction_ID__c": self.stripe_transaction_id,
+            "Flask_Transaction_ID__c": self.lock_key,
         }
         return recurring_donation
 
@@ -693,6 +700,7 @@ class RDO(SalesforceObject):
                 Card_acct_last_4__c,
                 Card_expiration_date__c,
                 Card_type__c,
+                Flask_Transaction_ID__c,
                 npsp__Closed_Lost_Reason__c,
                 Referring_page__c,
                 Shipping_address_name__c,
@@ -744,6 +752,7 @@ class RDO(SalesforceObject):
             y.shipping_zip = item["Shipping_address_ZIP__c"]
             y.shipping_country = item["Shipping_address_country__c"]
             y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
+            y.lock_key = item["Flask_Transaction_ID__c"]
             y.created = False
             results.append(y)
         return results
