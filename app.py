@@ -117,6 +117,12 @@ app.config.update(
         CELERY_ALWAYS_EAGER=False,
         CELERY_IMPORTS=('app', 'salesforce', 'batch'),
         )
+app.config['RECAPTCHA_USE_SSL'] = False
+if 'DYNO' in os.environ:
+    app.config['RECAPTCHA_USE_SSL'] = True
+app.config['RECAPTCHA_PUBLIC_KEY'] = app.config["RECAPTCHA_KEYS"]["site_key"]
+app.config['RECAPTCHA_PRIVATE_KEY'] = app.config["RECAPTCHA_KEYS"]["secret_key"]
+app.config['RECAPTCHA_OPTIONS'] = {'theme':'white'}
 stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 
 celery = make_celery(app)
