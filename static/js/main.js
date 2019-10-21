@@ -1869,6 +1869,8 @@ global.Payment = Payment;
       that.cardNumberElement.on('change', function(event) {
         // error handling
         that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
+        // if it changed, reset the button
+        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
         // Switch brand logo
         if (event.brand) {
           that.calculateFees(that.options.original_amount, event.brand);
@@ -1880,11 +1882,15 @@ global.Payment = Payment;
       that.cardExpiryElement.on('change', function(event) {
         // error handling
         that.stripeErrorDisplay(event, $(options.cc_exp_selector, element), element, options );
+        // if it changed, reset the button
+        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
       });
 
       that.cardCvcElement.on('change', function(event) {
         // error handling
         that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
+        // if it changed, reset the button
+        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
       });
 
       // this is the method to create a single card field and mount it
@@ -2239,6 +2245,7 @@ global.Payment = Payment;
             }
 
             if (typeof error !== 'undefined') {
+              that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
               if (error.code == 'invalid_number' || error.code == 'incorrect_number' || error.code == 'card_declined' || error.code == 'processing_error') {
                 // error handling
                 that.stripeErrorDisplay(response.errors, $(that.options.cc_num_selector), that.element, that.options );
