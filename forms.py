@@ -71,7 +71,7 @@ class MinnPostForm(FlaskForm):
     additional_donation = DecimalField(u'Additional Donation', validators=[validators.Optional()])
 
 
-class MinnPostFormRecaptcha(FlaskForm):
+class MinnPostFormRecaptcha(MinnPostForm):
     recaptcha = RecaptchaField()
 
 
