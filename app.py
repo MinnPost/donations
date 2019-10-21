@@ -1411,7 +1411,11 @@ def calculate_fees():
 @app.route('/charge_ajax/', methods=['POST'])
 def charge_ajax():
 
-    form = MinnPostForm(request.form)
+    #form = MinnPostForm(request.form)
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha(request.form)
+    else:
+        form = MinnPostForm(request.form)
     #pprint('Request: {}'.format(request))
 
     #next_page_template = 'thanks.html'
