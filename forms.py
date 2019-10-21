@@ -1,4 +1,4 @@
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, RecaptchaField
 
 from wtforms.fields import StringField, HiddenField, BooleanField, DecimalField, TextAreaField, SelectMultipleField
 from wtforms.fields import RadioField, SelectField
@@ -71,12 +71,16 @@ class MinnPostForm(FlaskForm):
     additional_donation = DecimalField(u'Additional Donation', validators=[validators.Optional()])
 
 
+class MinnPostFormRecaptcha(MinnPostForm):
+    recaptcha = RecaptchaField()
+
+
 class ConfirmForm(FlaskForm):
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(u'Reason Shareable?')
     newsletters = SelectMultipleField(u'Newsletters')
     other_messages = SelectMultipleField(u'Periodic MinnPost Messages')
-    
+
 
 class MemberForm(BaseForm):
     openended_status = RadioField(u'Membership Duration',

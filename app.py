@@ -15,13 +15,12 @@ from flask_limiter.util import get_remote_address
 from core import db
 from models import Transaction
 
-#from forms import DonateForm, MinnPostForm, ConfirmForm, TexasWeeklyForm
-from forms import MinnPostForm, ConfirmForm
+from forms import MinnPostForm, ConfirmForm, MinnPostFormRecaptcha
 #from raven.contrib.flask import Sentry
 #from sassutils.wsgi import SassMiddleware # mp put this into grunt instead
 import stripe
 from validate_email import validate_email
-from helpers import checkLevel, amount_to_charge, calculate_amount_fees, dir_last_updated, honeypot_checker
+from helpers import checkLevel, amount_to_charge, calculate_amount_fees, dir_last_updated, is_known_spam_email, is_known_spam_ip
 
 from flask_sslify import SSLify
 
@@ -93,6 +92,7 @@ if 'DYNO' in os.environ:
 
 app.minnpost_root = MINNPOST_ROOT
 app.secret_key = FLASK_SECRET_KEY
+app.use_recaptcha = False
 app.default_campaign_onetime = DEFAULT_CAMPAIGN_ONETIME
 app.default_campaign_recurring = DEFAULT_CAMPAIGN_RECURRING
 app.minnroast_campaign_id = MINNROAST_CAMPAIGN_ID
@@ -117,6 +117,12 @@ app.config.update(
         CELERY_ALWAYS_EAGER=False,
         CELERY_IMPORTS=('app', 'salesforce', 'batch'),
         )
+app.config['RECAPTCHA_USE_SSL'] = False
+if 'DYNO' in os.environ:
+    app.config['RECAPTCHA_USE_SSL'] = True
+app.config['RECAPTCHA_PUBLIC_KEY'] = app.config["RECAPTCHA_KEYS"]["site_key"]
+app.config['RECAPTCHA_PRIVATE_KEY'] = app.config["RECAPTCHA_KEYS"]["secret_key"]
+app.config['RECAPTCHA_OPTIONS'] = {'theme':'white'}
 stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 
 celery = make_celery(app)
@@ -147,10 +153,17 @@ def block_method():
     if ip in ip_ban_list:
         print('error: block from ban list. IP is {}'.format(ip))
         abort(403)
+    if is_known_spam_ip(ip):
+        print('error: IP {} found in stopforumspam database. Recaptcha was shown.'.format(ip))
+        app.use_recaptcha = True
 
 @app.route('/')
 def minnpost_support():
-    form = MinnPostForm()
+    
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha()
+    else:
+        form = MinnPostForm()
 
     if request.args.get('amount'):
         amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
@@ -207,13 +220,20 @@ def minnpost_support():
         yearly=yearly,
         level=level,
         first_name = first_name,last_name = last_name, email=email,
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # used at support.minnpost.com/give
 @app.route('/give/')
 def minnpost_form():
-    form = MinnPostForm()
+    
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha()
+    else:
+        form = MinnPostForm()
+
     if request.args.get('amount'):
         amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
         if (amount).is_integer():
@@ -348,14 +368,20 @@ def minnpost_form():
         show_thankyou_lists = app.show_thankyou_lists, maximum_choose_multiple_int = maximum_choose_multiple_int, maximum_choose_multiple_level_text = maximum_choose_multiple_level_text,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root = app.minnpost_root, step_one_url = step_one_url,
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 
 # used at support.minnpost.com/event-register
 @app.route('/event-register/')
 def minnpost_event_form():
-    form = MinnPostForm()
+
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha()
+    else:
+        form = MinnPostForm()
 
     if request.args.get('event'):
         event = request.args.get('event')
@@ -450,7 +476,9 @@ def minnpost_event_form():
         promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,
         quantity=quantity, single_unit_price = single_unit_price, starting_amount = starting_amount,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # used to validate event promo codes to assign users discount
@@ -561,7 +589,11 @@ def campaign_report():
 # used at support.minnpost.com/minnpost-advertising
 @app.route('/minnpost-advertising/')
 def minnpost_advertising_form():
-    form = MinnPostForm()
+    
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha()
+    else:
+        form = MinnPostForm()
 
     now = datetime.now()
     year = now.year
@@ -627,7 +659,9 @@ def minnpost_advertising_form():
         opp_type = opp_type, opp_subtype = opp_subtype,
         organization=organization, first_name = first_name,last_name = last_name, email=email,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # used at support.minnpost.com/minnroast-sponsorship
@@ -640,7 +674,11 @@ def minnroast_sponsorship_form():
 # used at support.minnpost.com/minnroast-patron/
 @app.route('/minnroast-patron/')
 def minnroast_patron_form():
-    form = MinnPostForm()
+    
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha()
+    else:
+        form = MinnPostForm()
 
     redirect_url = 'minnroast-patron-thanks'
 
@@ -692,7 +730,9 @@ def minnroast_patron_form():
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # used at support.minnpost.com/minnroast-pledge
@@ -705,7 +745,11 @@ def minnroast_pledge_form():
 # used at support.minnpost.com/pledge-payment
 @app.route('/pledge-payment/')
 def minnpost_pledge_payment():
-    form = MinnPostForm()
+    
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha()
+    else:
+        form = MinnPostForm()
 
     confirm_url = '/pledge-confirm/'
     redirect_url = 'pledge-thanks'
@@ -865,7 +909,9 @@ def minnpost_pledge_payment():
         additional_donation = additional_donation,
         stage=stage, close_date=close_date,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 
@@ -880,7 +926,10 @@ def minnpost_recurring_donation_update_form():
 @app.route('/donation-update/')
 def minnpost_donation_update_form():
 
-    form = MinnPostForm()
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha()
+    else:
+        form = MinnPostForm()
 
     confirm_url = '/donation-update-confirm/'
     redirect_url = 'donation-update-thanks'
@@ -1100,14 +1149,20 @@ def minnpost_donation_update_form():
         pay_fees = pay_fees,
         stage=stage, close_date=close_date,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 
 # used at support.minnpost.com/donation-cancel
 @app.route('/donation-cancel/')
 def minnpost_donation_cancel_form():
-    form = MinnPostForm()
+    
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha()
+    else:
+        form = MinnPostForm()
 
     confirm_url = '/donation-cancel-confirm/'
     redirect_url = 'donation-cancel-thanks'
@@ -1210,7 +1265,9 @@ def minnpost_donation_cancel_form():
         sf_type=sf_type, sf_id=sf_id,
         first_name = first_name,last_name = last_name, email=email,
         minnpost_root = app.minnpost_root,
-        key = app.config['STRIPE_KEYS']['publishable_key']
+        key = app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # used at support.minnpost.com/anniversary-sponsorship
@@ -1223,7 +1280,11 @@ def anniversary_sponsorship_form():
 # used at support.minnpost.com/anniversary-patron
 @app.route('/anniversary-patron/')
 def anniversary_patron_form():
-    form = MinnPostForm()
+    
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha()
+    else:
+        form = MinnPostForm()
 
     redirect_url = 'anniversary-patron-thanks'
 
@@ -1275,7 +1336,9 @@ def anniversary_patron_form():
         first_name = first_name,last_name = last_name, email=email,
         additional_donation = additional_donation,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # generalized error with a specific template
@@ -1285,7 +1348,9 @@ def error():
     return render_template(
         'error.html',
         message=message,
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # generalized error with a specific template
@@ -1295,7 +1360,9 @@ def page_not_found(error):
     return render_template(
         'error.html',
         message=message,
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 ## this is a minnpost url. use this when sending a request to plaid
@@ -1304,6 +1371,7 @@ def page_not_found(error):
 def plaid_token():
 
     form = MinnPostForm(request.form)
+
     public_token = request.form['public_token']
     account_id = request.form['account_id']
 
@@ -1343,7 +1411,11 @@ def calculate_fees():
 @app.route('/charge_ajax/', methods=['POST'])
 def charge_ajax():
 
-    form = MinnPostForm(request.form)
+    #form = MinnPostForm(request.form)
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha(request.form)
+    else:
+        form = MinnPostForm(request.form)
     #pprint('Request: {}'.format(request))
 
     #next_page_template = 'thanks.html'
@@ -1380,11 +1452,12 @@ def charge_ajax():
     first_name = request.form['first_name']
     last_name = request.form['last_name']
     email_is_valid = validate_email(email)
+    email_is_spam = is_known_spam_email(email)
 
     stripe_card = ''
     stripe_bank_account = ''
 
-    if email_is_valid and customer_id is '': # this is a new customer
+    if email_is_valid and email_is_spam is False and customer_id is '': # this is a new customer
     # if it is a new customer, assume they only have one payment method and it should be the default
         try:
             if 'stripeToken' in request.form:
@@ -1434,7 +1507,7 @@ def charge_ajax():
             body = e.json_body
             print('Stripe returned an unknown error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
             return jsonify(errors=body)
-    elif customer_id is not None and customer_id != '': # this is an existing customer
+    elif email_is_valid and email_is_spam is False and customer_id is not None and customer_id != '': # this is an existing customer
         customer = stripe.Customer.retrieve(customer_id)
         customer.email = email
         customer.save()
@@ -1490,6 +1563,12 @@ def charge_ajax():
             print('Stripe returned an unknown error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
             return jsonify(errors=body)
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
+    elif email_is_spam is True: # email was a spammer
+        print('Error: email found in spam database. {} {} {}; showed error'.format(email, first_name, last_name))        
+        body = []
+        message = 'Please ensure you have a valid email address. {} has been flagged as a possible spam email address.'.format(email)
+        body.append({'field': 'email', 'message': message})
+        return jsonify(errors=body)
     else: # the email was invalid
         print('Error saving update for customer {} {} {}; showed error'.format(email, first_name, last_name))        
         body = []
@@ -1622,7 +1701,9 @@ def charge_ajax():
             amount=amount_formatted, frequency=frequency, yearly=yearly, level=level,
             email=email, first_name=first_name, last_name=last_name,
             session=session, minnpost_root = app.minnpost_root,
-            key = app.config['STRIPE_KEYS']['publishable_key']
+            key = app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
         #body = transaction.id
@@ -1680,6 +1761,10 @@ def thanks():
     first_name = request.form['first_name']
     last_name = request.form['last_name']
     email_is_valid = validate_email(email)
+    email_is_spam = is_known_spam_email(email)
+
+    if email_is_spam is True:
+        app.use_recaptcha = True
 
     if form.validate():
         print('Done with stripe processing {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
@@ -1697,7 +1782,9 @@ def thanks():
         return render_template(
             'error.html',
             message=message,
-            key=app.config['STRIPE_KEYS']['publishable_key']
+            key=app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 
@@ -1706,6 +1793,7 @@ def thanks():
 def confirm():
 
     form = ConfirmForm(request.form)
+
     #pprint('Request: {}'.format(request))
 
     flask_id = request.form['flask_id']
@@ -1728,7 +1816,9 @@ def confirm():
         return render_template(
             'error.html',
             message=message,
-            key=app.config['STRIPE_KEYS']['publishable_key']
+            key=app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -1736,6 +1826,7 @@ def confirm():
 def minnpost_advertising_confirm():
 
     form = ConfirmForm(request.form)
+
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
     amount_formatted = format(amount, ',.2f')
@@ -1759,7 +1850,9 @@ def minnpost_advertising_confirm():
         return render_template(
             'error.html',
             message=message,
-            key=app.config['STRIPE_KEYS']['publishable_key']
+            key=app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -1789,7 +1882,9 @@ def minnroast_patron_confirm():
         return render_template(
             'error.html',
             message=message,
-            key=app.config['STRIPE_KEYS']['publishable_key']
+            key=app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 
@@ -1798,6 +1893,7 @@ def minnroast_patron_confirm():
 def minnpost_pledge_confirm():
 
     form = ConfirmForm(request.form)
+
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
     amount_formatted = format(amount, ',.2f')
@@ -1824,7 +1920,9 @@ def minnpost_pledge_confirm():
         return render_template(
             'error.html',
             message=message,
-            key=app.config['STRIPE_KEYS']['publishable_key']
+            key=app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -1832,6 +1930,7 @@ def minnpost_pledge_confirm():
 def minnpost_donation_update_confirm():
 
     form = ConfirmForm(request.form)
+
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
     amount_formatted = format(amount, ',.2f')
@@ -1858,7 +1957,9 @@ def minnpost_donation_update_confirm():
         return render_template(
             'error.html',
             message=message,
-            key=app.config['STRIPE_KEYS']['publishable_key']
+            key=app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -1870,7 +1971,9 @@ def minnpost_donation_cancel_confirm():
     result = change_donation_status.delay(object_name=sf_type, sf_id=sf_id, form=request.form)
     return render_template(
         'minnpost-cancel/finish.html',
-        key=app.config['STRIPE_KEYS']['publishable_key']
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 
@@ -1879,6 +1982,7 @@ def minnpost_donation_cancel_confirm():
 def minnroast_pledge_confirm():
 
     form = ConfirmForm(request.form)
+
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
     amount_formatted = format(amount, ',.2f')
@@ -1904,7 +2008,9 @@ def minnroast_pledge_confirm():
         return render_template(
             'error.html',
             message=message,
-            key=app.config['STRIPE_KEYS']['publishable_key']
+            key=app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -1912,6 +2018,7 @@ def minnroast_pledge_confirm():
 def anniversary_patron_confirm():
 
     form = ConfirmForm(request.form)
+
     amount = float(request.form['amount'])
     amount_formatted = format(amount, ',.2f')
 
@@ -1933,7 +2040,9 @@ def anniversary_patron_confirm():
         return render_template(
             'error.html',
             message=message,
-            key=app.config['STRIPE_KEYS']['publishable_key']
+            key=app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -1941,6 +2050,7 @@ def anniversary_patron_confirm():
 def minnroast_event_confirm():
 
     form = ConfirmForm(request.form)
+
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
     amount_formatted = format(amount, ',.2f')
@@ -1971,7 +2081,9 @@ def minnroast_event_confirm():
         return render_template(
             'error.html',
             message=message,
-            key=app.config['STRIPE_KEYS']['publishable_key']
+            key=app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 

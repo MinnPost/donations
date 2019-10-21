@@ -1043,6 +1043,8 @@
       that.cardNumberElement.on('change', function(event) {
         // error handling
         that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
+        // if it changed, reset the button
+        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
         // Switch brand logo
         if (event.brand) {
           that.calculateFees(that.options.original_amount, event.brand);
@@ -1054,11 +1056,15 @@
       that.cardExpiryElement.on('change', function(event) {
         // error handling
         that.stripeErrorDisplay(event, $(options.cc_exp_selector, element), element, options );
+        // if it changed, reset the button
+        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
       });
 
       that.cardCvcElement.on('change', function(event) {
         // error handling
         that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
+        // if it changed, reset the button
+        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
       });
 
       // this is the method to create a single card field and mount it
@@ -1175,6 +1181,10 @@
     },
 
     buttonStatus: function(options, button, disabled) {
+      // remove the old token so we can generate a new one
+      var supportform = $(options.donate_form_selector);
+      $('input[name="stripeToken"]', supportform).remove();
+      $('input[name="payment_type"]', supportform).remove();
       button.prop('disabled', disabled);
       if (disabled === false) {
         button.text(options.button_text);
@@ -1213,6 +1223,8 @@
         }
         $(options.choose_payment + ' input').change(function() {
           $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
+          // if it changed, reset the button
+          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
         });
 
         if (payment_method === 'ach') {
@@ -1225,48 +1237,7 @@
           // 1. process donation to stripe
           that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), true);
 
-          var tokenData = {};
-
-          var full_name = '';
-          if ($('#full_name').length > 0) {
-            full_name = $('#full_name').val();
-          } else {
-            full_name = $('#first_name').val() + ' ' + $('#last_name').val();
-          }
-          tokenData.name = full_name;
-
-          var street = 'None';
-          if ($('input[name="full_address"]').val() != '') {
-            street = $('#full_address').val();
-            if ($('input[name="billing_street"]').val() != '') {
-              street = $('input[name="billing_street"]').val();
-            }
-            tokenData.address_line1 = street;
-          }
-
-          var city = 'None';
-          if ($('input[name="billing_city"]').val() != '') {
-            city = $('input[name="billing_city"]').val();
-            tokenData.address_city = city;
-          }
-
-          var state = 'None';
-          if ($('input[name="billing_state"]').val() != '') {
-            state = $('input[name="billing_state"]').val();
-            tokenData.address_state = state;
-          }
-
-          var zip = 'None';
-          if ($('input[name="billing_zip"]').val() != '') {
-            zip = $('input[name="billing_zip"]').val();
-            tokenData.address_zip = zip;
-          }
-
-          var country = 'US';
-          if ($('input[name="billing_country"]').val() != '') {
-            country = $('input[name="billing_country"]').val();
-          }
-          tokenData.address_country = country;
+          var tokenData = that.generateTokenData();
 
           // 2. create minnpost account if specified
           if (options.create_account === true) {
@@ -1329,6 +1300,53 @@
         $(options.cc_cvv_selector, element).parent().removeClass('error');
       }
     }, // stripeErrorDisplay
+
+    generateTokenData: function() {
+      var tokenData = {};
+
+      var full_name = '';
+      if ($('#full_name').length > 0) {
+        full_name = $('#full_name').val();
+      } else {
+        full_name = $('#first_name').val() + ' ' + $('#last_name').val();
+      }
+      tokenData.name = full_name;
+
+      var street = 'None';
+      if ($('input[name="full_address"]').val() != '') {
+        street = $('#full_address').val();
+        if ($('input[name="billing_street"]').val() != '') {
+          street = $('input[name="billing_street"]').val();
+        }
+        tokenData.address_line1 = street;
+      }
+
+      var city = 'None';
+      if ($('input[name="billing_city"]').val() != '') {
+        city = $('input[name="billing_city"]').val();
+        tokenData.address_city = city;
+      }
+
+      var state = 'None';
+      if ($('input[name="billing_state"]').val() != '') {
+        state = $('input[name="billing_state"]').val();
+        tokenData.address_state = state;
+      }
+
+      var zip = 'None';
+      if ($('input[name="billing_zip"]').val() != '') {
+        zip = $('input[name="billing_zip"]').val();
+        tokenData.address_zip = zip;
+      }
+
+      var country = 'US';
+      if ($('input[name="billing_country"]').val() != '') {
+        country = $('input[name="billing_country"]').val();
+      }
+      tokenData.address_country = country;
+
+      return tokenData;
+    }, // generateTokenData
 
     createToken: function(card, tokenData) {
       var that = this;
@@ -1399,13 +1417,14 @@
             } else {
               message = error.message[0];
             }
-            if ($(field).length > 0) {
-              $(options[field]).addClass('error');
-              $(options[field]).prev().addClass('error');
-              $(options[field]).after('<span class="check-field invalid">' + message + '</span>');
+            if ($(that.options[field]).length > 0) {
+              $(that.options[field]).addClass('error');
+              $(that.options[field]).prev().addClass('error');
+              $(that.options[field]).after('<span class="check-field invalid">' + message + '</span>');
             }
 
             if (typeof error !== 'undefined') {
+              that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
               if (error.code == 'invalid_number' || error.code == 'incorrect_number' || error.code == 'card_declined' || error.code == 'processing_error') {
                 // error handling
                 that.stripeErrorDisplay(response.errors, $(that.options.cc_num_selector), that.element, that.options );

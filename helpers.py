@@ -1,4 +1,6 @@
 import os
+from datetime import datetime, timedelta
+from stopforumspam_api import query
 def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
     thisyear = amount * yearly
     level = ''
@@ -99,9 +101,18 @@ def dir_last_updated(folder):
         for root_path, dirs, files in os.walk(folder)
         for f in files))
 
-def honeypot_checker(form):
-    allowed = True
-    if 'mhp_name' in form or 'mhp_email' in form or 'mhp_comment' in form:
-        if form['mhp_name'] is not '' or form['mhp_email'] is not '' or form['mhp_comment'] is not '':
-            allowed = False
-    return allowed
+def is_known_spam_email(email):
+    response = query(email=email)
+    if response.email.appears:
+        difference = datetime.utcnow() - response.email.lastseen
+        if response.email.frequency > 8 and difference.days < 60:
+            return True
+    return False
+
+def is_known_spam_ip(ip):
+    response = query(ip=ip)
+    if response.ip.appears:
+        difference = datetime.utcnow() - response.ip.lastseen
+        if response.ip.frequency > 8 and difference.days < 60:
+            return True
+    return False
