@@ -5,6 +5,8 @@ from wtforms.fields import RadioField, SelectField
 from wtforms import validators
 from wtforms.fields.html5 import EmailField
 
+from recaptcha3 import Recaptcha3Field
+
 
 class BaseForm(FlaskForm):
     first_name = StringField(u'First name',
@@ -71,11 +73,19 @@ class MinnPostForm(FlaskForm):
     additional_donation = DecimalField(u'Additional Donation', validators=[validators.Optional()])
 
 
+class MinnPostFormRecaptcha(FlaskForm):
+    recaptcha = Recaptcha3Field(action="TestAction", execute_on_load=True)
+
+
 class ConfirmForm(FlaskForm):
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(u'Reason Shareable?')
     newsletters = SelectMultipleField(u'Newsletters')
     other_messages = SelectMultipleField(u'Periodic MinnPost Messages')
+
+
+class ConfirmFormRecaptcha(FlaskForm):
+    recaptcha = Recaptcha3Field(action="TestAction", execute_on_load=True)
     
 
 class MemberForm(BaseForm):

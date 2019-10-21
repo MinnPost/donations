@@ -135,6 +135,14 @@ PLAID_ENVIRONMENT = os.getenv('PLAID_ENVIRONMENT')
 SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+########
+# Recaptcha
+#
+RECAPTCHA_KEYS = {
+    "secret_key": os.getenv("RECAPTCHA_SECRET_KEY"),
+    "site_key": os.getenv("RECAPTCHA_SITE_KEY"),
+}
+
 #######
 # Slack
 #
