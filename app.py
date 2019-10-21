@@ -1370,10 +1370,7 @@ def page_not_found(error):
 @app.route('/plaid_token/', methods=['POST'])
 def plaid_token():
 
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha(request.form)
-    else:
-        form = MinnPostForm(request.form)
+    form = MinnPostForm(request.form)
 
     public_token = request.form['public_token']
     account_id = request.form['account_id']
@@ -1414,10 +1411,7 @@ def calculate_fees():
 @app.route('/charge_ajax/', methods=['POST'])
 def charge_ajax():
 
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha(request.form)
-    else:
-        form = MinnPostForm(request.form)
+    form = MinnPostForm(request.form)
     #pprint('Request: {}'.format(request))
 
     #next_page_template = 'thanks.html'
@@ -1727,10 +1721,7 @@ def charge_ajax():
 @app.route('/thanks/', methods=['POST'])
 def thanks():
 
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha(request.form)
-    else:
-        form = MinnPostForm(request.form)
+    form = MinnPostForm(request.form)
     #pprint('Request: {}'.format(request))
 
     amount = float(request.form['amount'])
