@@ -1405,11 +1405,8 @@
           // do not submit. there is an error.
           that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
           // regenerate the token from stripe
-          if ($('input[name="bankToken"]').length == 0) {
-            // finally, get a token from stripe, and try to charge it if it is not ach
-            var tokenData = that.generateTokenData();
-            that.createToken(that.cardNumberElement, tokenData);
-          }
+          // remove the old token so we can generate a new one
+          supportform.remove($('input[name="stripeToken"]'));
           // add some error messages and styles
           $.each(response.errors, function( index, error ) {
             var field = error.field + '_field_selector';
