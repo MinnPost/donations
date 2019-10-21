@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c9d3e1dbcb4f309aeb78abd8f03ca6ef9fe69f0db43694025519d5aedccb54d9"
+            "sha256": "cb6f44159dcad94d22c49c6bb3cde0af7f7e57c510c3ed7b2e4f5165337b17f1"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -93,10 +93,10 @@
         },
         "contextlib2": {
             "hashes": [
-                "sha256:7197aa736777caac513dbd800944c209a49765bf1979b12b037dce0277077ed3",
-                "sha256:9d2c67f18c1f9b6db1b46317f7f784aa82789d2ee5dea5d9c0f0f2a764eb862e"
+                "sha256:01f490098c18b19d2bd5bb5dc445b2054d2fa97f09a4280ba2c5f3c394c8162e",
+                "sha256:3355078a159fbb44ee60ea80abd0d87b80b78c248643b49aa6d94673b413609b"
             ],
-            "version": "==0.6.0"
+            "version": "==0.6.0.post1"
         },
         "dj-database-url": {
             "hashes": [
@@ -370,6 +370,13 @@
             ],
             "index": "pypi",
             "version": "==1.0.4"
+        },
+        "stopforumspam-api": {
+            "hashes": [
+                "sha256:9de7b9d0eb823f99e5ec16a12082bc5027e895ba445d55c8b0d4e678fd65aa91"
+            ],
+            "index": "pypi",
+            "version": "==0.0.3"
         },
         "stripe": {
             "hashes": [

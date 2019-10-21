@@ -51,6 +51,7 @@ Werkzeug = "==0.11.2"
 whitenoise = "==1.0.6"
 WTForms = "==2.1"
 flask-limiter = "*"
+stopforumspam-api = "*"
 
 [dev-packages]
 

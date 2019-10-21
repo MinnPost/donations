@@ -21,7 +21,7 @@ from forms import MinnPostForm, ConfirmForm
 #from sassutils.wsgi import SassMiddleware # mp put this into grunt instead
 import stripe
 from validate_email import validate_email
-from helpers import checkLevel, amount_to_charge, calculate_amount_fees, dir_last_updated, honeypot_checker
+from helpers import checkLevel, amount_to_charge, calculate_amount_fees, dir_last_updated, is_known_spam_email, is_known_spam_ip
 
 from flask_sslify import SSLify
 
@@ -1380,6 +1380,7 @@ def charge_ajax():
     first_name = request.form['first_name']
     last_name = request.form['last_name']
     email_is_valid = validate_email(email)
+    email_is_spam = is_known_spam_email(email)
 
     stripe_card = ''
     stripe_bank_account = ''
