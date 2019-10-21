@@ -15,7 +15,7 @@ from flask_limiter.util import get_remote_address
 from core import db
 from models import Transaction
 
-from forms import MinnPostForm, ConfirmForm, MinnPostFormRecaptcha, ConfirmFormRecaptcha
+from forms import MinnPostForm, ConfirmForm, MinnPostFormRecaptcha
 #from raven.contrib.flask import Sentry
 #from sassutils.wsgi import SassMiddleware # mp put this into grunt instead
 import stripe
@@ -1794,10 +1794,7 @@ def thanks():
 @app.route('/confirm/', methods=['POST'])
 def confirm():
 
-    if app.use_recaptcha is True:
-        form = ConfirmFormRecaptcha(request.form)
-    else:
-        form = ConfirmForm(request.form)
+    form = ConfirmForm(request.form)
 
     #pprint('Request: {}'.format(request))
 
@@ -1830,10 +1827,7 @@ def confirm():
 @app.route('/minnpost-advertising-confirm/', methods=['POST'])
 def minnpost_advertising_confirm():
 
-    if app.use_recaptcha is True:
-        form = ConfirmFormRecaptcha(request.form)
-    else:
-        form = ConfirmForm(request.form)
+    form = ConfirmForm(request.form)
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
@@ -1867,10 +1861,7 @@ def minnpost_advertising_confirm():
 @app.route('/minnroast-patron-confirm/', methods=['POST'])
 def minnroast_patron_confirm():
 
-    if app.use_recaptcha is True:
-        form = ConfirmFormRecaptcha(request.form)
-    else:
-        form = ConfirmForm(request.form)
+    form = ConfirmForm(request.form)
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
     amount_formatted = format(amount, ',.2f')
@@ -1903,10 +1894,7 @@ def minnroast_patron_confirm():
 @app.route('/pledge-confirm/', methods=['POST'])
 def minnpost_pledge_confirm():
 
-    if app.use_recaptcha is True:
-        form = ConfirmFormRecaptcha(request.form)
-    else:
-        form = ConfirmForm(request.form)
+    form = ConfirmForm(request.form)
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
@@ -1943,10 +1931,7 @@ def minnpost_pledge_confirm():
 @app.route('/donation-update-confirm/', methods=['POST'])
 def minnpost_donation_update_confirm():
 
-    if app.use_recaptcha is True:
-        form = ConfirmFormRecaptcha(request.form)
-    else:
-        form = ConfirmForm(request.form)
+    form = ConfirmForm(request.form)
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
@@ -1998,10 +1983,7 @@ def minnpost_donation_cancel_confirm():
 @app.route('/minnroast-pledge-confirm/', methods=['POST'])
 def minnroast_pledge_confirm():
 
-    if app.use_recaptcha is True:
-        form = ConfirmFormRecaptcha(request.form)
-    else:
-        form = ConfirmForm(request.form)
+    form = ConfirmForm(request.form)
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
@@ -2037,10 +2019,7 @@ def minnroast_pledge_confirm():
 @app.route('/anniversary-patron-confirm/', methods=['POST'])
 def anniversary_patron_confirm():
 
-    if app.use_recaptcha is True:
-        form = ConfirmFormRecaptcha(request.form)
-    else:
-        form = ConfirmForm(request.form)
+    form = ConfirmForm(request.form)
 
     amount = float(request.form['amount'])
     amount_formatted = format(amount, ',.2f')
@@ -2072,10 +2051,7 @@ def anniversary_patron_confirm():
 @app.route('/minnpost-event-confirm/', methods=['POST'])
 def minnroast_event_confirm():
 
-    if app.use_recaptcha is True:
-        form = ConfirmFormRecaptcha(request.form)
-    else:
-        form = ConfirmForm(request.form)
+    form = ConfirmForm(request.form)
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])

@@ -82,10 +82,6 @@ class ConfirmForm(FlaskForm):
     other_messages = SelectMultipleField(u'Periodic MinnPost Messages')
 
 
-class ConfirmFormRecaptcha(FlaskForm):
-    recaptcha = RecaptchaField()
-    
-
 class MemberForm(BaseForm):
     openended_status = RadioField(u'Membership Duration',
         choices=[('Open', 'Sustaining'), ('None', 'One Year')],
