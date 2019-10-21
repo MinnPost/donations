@@ -2059,48 +2059,7 @@ global.Payment = Payment;
           // 1. process donation to stripe
           that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), true);
 
-          var tokenData = {};
-
-          var full_name = '';
-          if ($('#full_name').length > 0) {
-            full_name = $('#full_name').val();
-          } else {
-            full_name = $('#first_name').val() + ' ' + $('#last_name').val();
-          }
-          tokenData.name = full_name;
-
-          var street = 'None';
-          if ($('input[name="full_address"]').val() != '') {
-            street = $('#full_address').val();
-            if ($('input[name="billing_street"]').val() != '') {
-              street = $('input[name="billing_street"]').val();
-            }
-            tokenData.address_line1 = street;
-          }
-
-          var city = 'None';
-          if ($('input[name="billing_city"]').val() != '') {
-            city = $('input[name="billing_city"]').val();
-            tokenData.address_city = city;
-          }
-
-          var state = 'None';
-          if ($('input[name="billing_state"]').val() != '') {
-            state = $('input[name="billing_state"]').val();
-            tokenData.address_state = state;
-          }
-
-          var zip = 'None';
-          if ($('input[name="billing_zip"]').val() != '') {
-            zip = $('input[name="billing_zip"]').val();
-            tokenData.address_zip = zip;
-          }
-
-          var country = 'US';
-          if ($('input[name="billing_country"]').val() != '') {
-            country = $('input[name="billing_country"]').val();
-          }
-          tokenData.address_country = country;
+          var tokenData = that.generateTokenData();
 
           // 2. create minnpost account if specified
           if (options.create_account === true) {
@@ -2163,6 +2122,53 @@ global.Payment = Payment;
         $(options.cc_cvv_selector, element).parent().removeClass('error');
       }
     }, // stripeErrorDisplay
+
+    generateTokenData: function() {
+      var tokenData = {};
+
+      var full_name = '';
+      if ($('#full_name').length > 0) {
+        full_name = $('#full_name').val();
+      } else {
+        full_name = $('#first_name').val() + ' ' + $('#last_name').val();
+      }
+      tokenData.name = full_name;
+
+      var street = 'None';
+      if ($('input[name="full_address"]').val() != '') {
+        street = $('#full_address').val();
+        if ($('input[name="billing_street"]').val() != '') {
+          street = $('input[name="billing_street"]').val();
+        }
+        tokenData.address_line1 = street;
+      }
+
+      var city = 'None';
+      if ($('input[name="billing_city"]').val() != '') {
+        city = $('input[name="billing_city"]').val();
+        tokenData.address_city = city;
+      }
+
+      var state = 'None';
+      if ($('input[name="billing_state"]').val() != '') {
+        state = $('input[name="billing_state"]').val();
+        tokenData.address_state = state;
+      }
+
+      var zip = 'None';
+      if ($('input[name="billing_zip"]').val() != '') {
+        zip = $('input[name="billing_zip"]').val();
+        tokenData.address_zip = zip;
+      }
+
+      var country = 'US';
+      if ($('input[name="billing_country"]').val() != '') {
+        country = $('input[name="billing_country"]').val();
+      }
+      tokenData.address_country = country;
+
+      return tokenData;
+    }, // generateTokenData
 
     createToken: function(card, tokenData) {
       var that = this;
@@ -2227,6 +2233,7 @@ global.Payment = Payment;
           // regenerate the token from stripe
           if ($('input[name="bankToken"]').length == 0) {
             // finally, get a token from stripe, and try to charge it if it is not ach
+            var tokenData = that.generateTokenData();
             that.createToken(that.cardNumberElement, tokenData);
           }
           // add some error messages and styles
