@@ -222,6 +222,7 @@ def minnpost_support():
         first_name = first_name,last_name = last_name, email=email,
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # used at support.minnpost.com/give
@@ -369,6 +370,7 @@ def minnpost_form():
         minnpost_root = app.minnpost_root, step_one_url = step_one_url,
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 
@@ -476,6 +478,7 @@ def minnpost_event_form():
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # used to validate event promo codes to assign users discount
@@ -658,6 +661,7 @@ def minnpost_advertising_form():
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # used at support.minnpost.com/minnroast-sponsorship
@@ -728,6 +732,7 @@ def minnroast_patron_form():
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # used at support.minnpost.com/minnroast-pledge
@@ -906,6 +911,7 @@ def minnpost_pledge_payment():
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 
@@ -1145,6 +1151,7 @@ def minnpost_donation_update_form():
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 
@@ -1260,6 +1267,7 @@ def minnpost_donation_cancel_form():
         minnpost_root = app.minnpost_root,
         key = app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # used at support.minnpost.com/anniversary-sponsorship
@@ -1330,6 +1338,7 @@ def anniversary_patron_form():
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # generalized error with a specific template
@@ -1341,6 +1350,7 @@ def error():
         message=message,
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 # generalized error with a specific template
@@ -1352,6 +1362,7 @@ def page_not_found(error):
         message=message,
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 ## this is a minnpost url. use this when sending a request to plaid
@@ -1691,6 +1702,7 @@ def charge_ajax():
             session=session, minnpost_root = app.minnpost_root,
             key = app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
         #body = transaction.id
@@ -1774,6 +1786,7 @@ def thanks():
             message=message,
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 
@@ -1810,6 +1823,7 @@ def confirm():
             message=message,
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -1846,6 +1860,7 @@ def minnpost_advertising_confirm():
             message=message,
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -1880,6 +1895,7 @@ def minnroast_patron_confirm():
             message=message,
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 
@@ -1920,6 +1936,7 @@ def minnpost_pledge_confirm():
             message=message,
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -1959,6 +1976,7 @@ def minnpost_donation_update_confirm():
             message=message,
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -1972,6 +1990,7 @@ def minnpost_donation_cancel_confirm():
         'minnpost-cancel/finish.html',
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
     )
 
 
@@ -2011,6 +2030,7 @@ def minnroast_pledge_confirm():
             message=message,
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -2045,6 +2065,7 @@ def anniversary_patron_confirm():
             message=message,
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 # this is a minnpost url
@@ -2088,6 +2109,7 @@ def minnroast_event_confirm():
             message=message,
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
         )
 
 
