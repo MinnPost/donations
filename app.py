@@ -149,7 +149,6 @@ ip_ban_list = IP_BAN_LIST
 
 @app.before_request
 def block_method():
-    app.use_recaptcha = True
     ip = request.environ.get('REMOTE_ADDR')
     if ip in ip_ban_list:
         print('error: block from ban list. IP is {}'.format(ip))
@@ -1454,13 +1453,10 @@ def charge_ajax():
     email_is_valid = validate_email(email)
     email_is_spam = is_known_spam_email(email)
 
-    if email_is_spam is True:
-        app.use_recaptcha = True
-
     stripe_card = ''
     stripe_bank_account = ''
 
-    if email_is_valid and customer_id is '': # this is a new customer
+    if email_is_valid and email_is_spam is False and customer_id is '': # this is a new customer
     # if it is a new customer, assume they only have one payment method and it should be the default
         try:
             if 'stripeToken' in request.form:
@@ -1510,7 +1506,7 @@ def charge_ajax():
             body = e.json_body
             print('Stripe returned an unknown error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
             return jsonify(errors=body)
-    elif customer_id is not None and customer_id != '': # this is an existing customer
+    elif email_is_valid and email_is_spam is False and customer_id is not None and customer_id != '': # this is an existing customer
         customer = stripe.Customer.retrieve(customer_id)
         customer.email = email
         customer.save()
@@ -1566,6 +1562,12 @@ def charge_ajax():
             print('Stripe returned an unknown error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
             return jsonify(errors=body)
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
+    elif email_is_spam is True: # email was a spammer
+        print('Error: email found in spam database. {} {} {}; showed error'.format(email, first_name, last_name))        
+        body = []
+        message = 'Please ensure you have a valid email address. {} has been flagged as a possible spam email address.'.format(email)
+        body.append({'field': 'email', 'message': message})
+        return jsonify(errors=body)
     else: # the email was invalid
         print('Error saving update for customer {} {} {}; showed error'.format(email, first_name, last_name))        
         body = []
