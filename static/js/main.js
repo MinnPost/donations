@@ -2007,6 +2007,10 @@ global.Payment = Payment;
     },
 
     buttonStatus: function(options, button, disabled) {
+      // remove the old token so we can generate a new one
+      var supportform = $(options.donate_form_selector);
+      $('input[name="stripeToken"]', supportform).remove();
+      $('input[name="payment_type"]', supportform).remove();
       button.prop('disabled', disabled);
       if (disabled === false) {
         button.text(options.button_text);
@@ -2230,9 +2234,6 @@ global.Payment = Payment;
         if (typeof response.errors !== 'undefined') {
           // do not submit. there is an error.
           that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
-          // regenerate the token from stripe
-          // remove the old token so we can generate a new one
-          supportform.remove($('input[name="stripeToken"]'));
           // add some error messages and styles
           $.each(response.errors, function( index, error ) {
             var field = error.field + '_field_selector';
