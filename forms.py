@@ -60,10 +60,32 @@ class DonateForm(BaseForm):
     #billing_zip = StringField(u"ZIP Code", [validators.Length(max=5)])
 
 class FinishForm(FlaskForm):
+    class Meta:
+        def bind_field(self, form, unbound_field, options):
+            filters = unbound_field.kwargs.get("filters", [])
+            filters.append(strip_filter)
+            return unbound_field.bind(form=form, filters=filters, **options)
     lock_key = HiddenField(u"Lock Key", [validators.InputRequired()])
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(
         u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
     )
-    #newsletters = SelectMultipleField(u'Newsletters')
-    #other_messages = SelectMultipleField(u'Periodic MinnPost Messages')
+    daily_newsletter = BooleanField(
+        u"Daily Newsletter?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    sunday_review_newsletter = BooleanField(
+        u"Sunday Review?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    greater_mn_newsletter = BooleanField(
+        u"Greater MN Newsletter?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    dc_memo = BooleanField(
+        u"DC Memo?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    event_messages = BooleanField(
+        u"Events & Membership Messages?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    feedback_messages = BooleanField(
+        u"Feedback opportunities?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+

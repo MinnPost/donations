@@ -106,8 +106,8 @@
     'confirm_button_selector' : '#finish',
     'opp_id_selector' : '#flask_id',
     'recurring_selector' : '#recurring',
-    'newsletter_group_selector' : '[name="newsletters"]',
-    'message_group_selector' : '[name="messages"]',
+    'newsletter_group_selector' : '.form-item--newsletter input[type="checkbox"]',
+    'message_group_selector' : '.form-item--optional input[type="checkbox"]',
     'reason_field_selector' : '#reason_for_supporting',
     'share_reason_selector' : '#reason_shareable',
     'confirm_top_selector' : '.support--post-confirm',
@@ -1406,21 +1406,21 @@
           url: options.minnpost_root + '/wp-json/minnpost-api/v2/mailchimp/user',
           data: get_data
         }).done(function( result ) {
-          if ( typeof result.status !== 'undefined' ) {
-            $(options.email_field_selector, element).after('<input name="mailchimp_status" type="hidden" value="' + result.status + '">');
+          if ( typeof result.mailchimp_status !== 'undefined' ) {
+            $(options.email_field_selector, element).after('<input name="mailchimp_status" type="hidden" value="' + result.mailchimp_status + '">');
           }
-          if ( typeof result.mailchimp_id !== 'undefined' ) {
-            $(options.email_field_selector, element).after('<input name="mailchimp_user_id" type="hidden" value="' + result.mailchimp_id + '">');
+          if ( typeof result.mailchimp_user_id !== 'undefined' ) {
+            $(options.email_field_selector, element).after('<input name="mailchimp_user_id" type="hidden" value="' + result.mailchimp_user_id + '">');
           }
-          if (result.status === 'subscribed') {
+          if (result.mailchimp_status === 'subscribed') {
             // user created - show a success message
             $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
-            var interests = result.interests;
-            $.each(interests, function( index, value ) {
+            var groups = result.groups;
+            $.each(groups, function( index, value ) {
               if ( value === true ) {
-                $(':checkbox[value="' + index + '"]').prop('checked',true);
+                $(':checkbox[name="' + index + '"]').prop('checked',true);
               } else {
-                $(':checkbox[value="' + index + '"]').prop('checked',false);
+                $(':checkbox[name="' + index + '"]').prop('checked',false);
               }
             });
           }
@@ -1454,7 +1454,7 @@
             email: $(options.email_field_selector, element).val(),
             first_name: $(options.first_name_field_selector, element).val(),
             last_name: $(options.last_name_field_selector, element).val(),
-            groups_submitted: {}
+            groups_submitted: []
           };
 
           post_data.groups_available = 'all';
@@ -1469,15 +1469,15 @@
 
           if (typeof newsletter_groups !== 'undefined') {
             $.each(newsletter_groups, function(index, value) {
-              var group = $(this).val();
-              post_data.groups_submitted[index] = group;
+              var group = $(this).attr('name');
+              post_data.groups_submitted.push(group);
             });
           }
 
           if (typeof message_groups !== 'undefined') {
             $.each(message_groups, function(index, value) {
-              var group = $(this).val();
-              post_data.groups_submitted[index] = group;
+              var group = $(this).attr('name');
+              post_data.groups_submitted.push(group);
             });
           }
 
