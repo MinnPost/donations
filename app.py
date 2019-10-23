@@ -1406,6 +1406,156 @@ def calculate_fees():
     return jsonify(ret_data)
 
 
+# force recaptcha
+# called by ajax
+@app.route('/give-recaptcha/')
+def recaptcha():
+
+    #if app.use_recaptcha is True:
+    form = MinnPostFormRecaptcha()
+    #else:
+    #    form = MinnPostForm()
+
+    if request.args.get('amount'):
+        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
+        if (amount).is_integer():
+            amount_formatted = int(amount)
+        else:
+            amount_formatted = format(amount, ',.2f')
+    else:
+        message = "The page you requested can't be found."
+        return render_template('error.html', message=message)
+    if request.args.get('campaign'):
+        campaign = request.args.get('campaign')
+    else:
+        campaign = ''
+    if request.args.get('show_ach'):
+        show_ach = request.args.get('show_ach')
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = SHOW_ACH
+    frequency = request.args.get('frequency')
+    if frequency is None:
+        frequency = 'one-time'
+    if frequency == 'monthly':
+        yearly = 12
+    else:
+        yearly = 1
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    else:
+        customer_id = ''
+    installments = 'None'
+    openended_status = 'Open'
+    level = checkLevel(amount, frequency, yearly)
+    maximum_choose_multiple_int = int(app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))])
+    maximum_choose_multiple_level_text = num2words(int(app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))]))
+
+    if request.args.get('swag'):
+        swag = request.args.get('swag')
+    else:
+        swag = ''
+
+    if request.args.get('atlantic_subscription'):
+        atlantic_subscription = request.args.get('atlantic_subscription')
+        if atlantic_subscription != 'true':
+            atlantic_subscription = ''
+    else:
+        atlantic_subscription = ''
+
+    if request.args.get('atlantic_id'):
+        atlantic_id = request.args.get('atlantic_id')
+    else:
+        atlantic_id = ''
+
+    if request.args.get('nyt_subscription'):
+        nyt_subscription = request.args.get('nyt_subscription')
+    else:
+        nyt_subscription = ''
+
+    if request.args.get('decline_benefits'):
+        decline_benefits = request.args.get('decline_benefits')
+        if decline_benefits == 'true':
+            swag = ''
+            atlantic_subscription = ''
+            atlantic_id = ''
+            nyt_subscription = ''
+    else:
+        decline_benefits = ''
+
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    else:
+        first_name = ''
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    else:
+        last_name = ''
+    if request.args.get('email'):
+        email = request.args.get('email')
+    else:
+        email = ''
+
+    if request.args.get('billing_street'):
+        billing_street = request.args.get('billing_street')
+    else:
+        billing_street = ''
+
+    if request.args.get('billing_city'):
+        billing_city = request.args.get('billing_city')
+    else:
+        billing_city = ''
+
+    if request.args.get('billing_state'):
+        billing_state = request.args.get('billing_state')
+    else:
+        billing_state = ''
+
+    if request.args.get('billing_zip'):
+        billing_zip = request.args.get('billing_zip')
+    else:
+        billing_zip = ''
+
+    if request.args.get('billing_country'):
+        billing_country = request.args.get('billing_country')
+    else:
+        billing_country = ''
+
+    fees = calculate_amount_fees(amount, 'visa')
+
+    atlantic_id_url = ''
+    if atlantic_id != '':
+        atlantic_id_url = '&amp;' + atlantic_id
+    
+    step_one_url = f'{app.minnpost_root}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
+
+    return render_template(
+        'minnpost-form.html',
+        form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
+        frequency=frequency, installments=installments,
+        openended_status=openended_status,
+        yearly=yearly,
+        level=level,
+        swag=swag, atlantic_subscription=atlantic_subscription, atlantic_id=atlantic_id, nyt_subscription=nyt_subscription, decline_benefits=decline_benefits,
+        first_name = first_name,last_name = last_name, email=email,
+        billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
+        fees = fees,
+        show_upsell = app.show_upsell, allow_donation_notification = app.allow_donation_notification,
+        top_swag_minimum_level = app.top_swag_minimum_level,
+        separate_swag_minimum_level = app.separate_swag_minimum_level,
+        main_swag_minimum_level = app.main_swag_minimum_level,
+        show_thankyou_lists = app.show_thankyou_lists, maximum_choose_multiple_int = maximum_choose_multiple_int, maximum_choose_multiple_level_text = maximum_choose_multiple_level_text,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        minnpost_root = app.minnpost_root, step_one_url = step_one_url,
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=True,
+    )
+
+
 
 ## this is a minnpost url. when submitting a charge, start with ajax, then submit to the /thanks or whatever other url
 @app.route('/charge_ajax/', methods=['POST'])
@@ -1459,10 +1609,12 @@ def charge_ajax():
 
     if is_known_spam_ip is True: # ip is a spammer or blocked
         print('Error: IP address found in spam database. {} {} {}; showed error'.format(email, first_name, last_name))        
-        body = []
-        message = 'Please ensure you have a valid IP address.'.format(email)
+        #body = []
+        #message = 'Please ensure you have a valid IP address.'.format(email)
         #body.append({'field': 'email', 'message': message})
-        return jsonify(errors=body)
+        #return jsonify(errors=body)
+        full_url = url_for('recaptcha', **request.args)
+        return redirect(full_url)
 
     if email_is_valid and email_is_spam is False and customer_id is '': # this is a new customer
     # if it is a new customer, assume they only have one payment method and it should be the default
