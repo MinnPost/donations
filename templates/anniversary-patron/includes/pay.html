@@ -42,6 +42,11 @@
       <label class="additional-option" id="reason_shareable" for="reason_shareable"><input type="checkbox" checked="checked" name="reason_shareable" id="reason_shareable" value="1"> MinnPost has permission to post this comment on the website. </label>
     </div>
     
+    {% if use_recaptcha == True %}
+    <div class="form-item form-item-recaptcha">
+      {{ form.recaptcha }}
+    </div>
+    {% endif %}
 
     <button type="submit" class="btn btn--submit give" autocomplete="off">Purchase your Patron package</button>
 

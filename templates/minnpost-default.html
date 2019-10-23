@@ -38,6 +38,12 @@
 		    </div>
 		</fieldset>
 
+		{% if use_recaptcha == True %}
+	    <div class="form-item form-item-recaptcha">
+	      {{ form.recaptcha }}
+	    </div>
+	    {% endif %}
+
 		<button type="submit" class="btn btn--submit give" autocomplete="off">Review member benefits and pay</button>
 
 	  </form>
