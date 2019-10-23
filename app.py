@@ -93,7 +93,10 @@ if 'DYNO' in os.environ:
 
 app.minnpost_root = MINNPOST_ROOT
 app.secret_key = FLASK_SECRET_KEY
-app.use_recaptcha = USE_RECAPTCHA
+if USE_RECAPTCHA == "True":
+    app.use_recaptcha = True
+else:
+    app.use_recaptcha = False
 app.default_campaign_onetime = DEFAULT_CAMPAIGN_ONETIME
 app.default_campaign_recurring = DEFAULT_CAMPAIGN_RECURRING
 app.minnroast_campaign_id = MINNROAST_CAMPAIGN_ID
