@@ -65,6 +65,7 @@ from config import PLAID_PUBLIC_KEY
 from config import PLAID_ENVIRONMENT
 from config import SHOW_ACH
 from config import SHOW_THANKYOU_LISTS
+from config import USE_RECAPTCHA
 from config import DEFAULT_FREQUENCY
 from salesforce import add_customer_and_charge
 from salesforce import update_account
@@ -92,7 +93,7 @@ if 'DYNO' in os.environ:
 
 app.minnpost_root = MINNPOST_ROOT
 app.secret_key = FLASK_SECRET_KEY
-app.use_recaptcha = False
+app.use_recaptcha = USE_RECAPTCHA
 app.default_campaign_onetime = DEFAULT_CAMPAIGN_ONETIME
 app.default_campaign_recurring = DEFAULT_CAMPAIGN_RECURRING
 app.minnroast_campaign_id = MINNROAST_CAMPAIGN_ID
