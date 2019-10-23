@@ -1607,17 +1607,6 @@ def charge_ajax():
     stripe_card = ''
     stripe_bank_account = ''
 
-    ip = request.environ.get('REMOTE_ADDR')
-
-    if is_known_spam_ip(ip) is True: # ip is a spammer or blocked
-        print('Error: IP address found in spam database. {} {} {}; showed error'.format(email, first_name, last_name))        
-        #body = []
-        #message = 'Please ensure you have a valid IP address.'.format(email)
-        #body.append({'field': 'email', 'message': message})
-        #return jsonify(errors=body)
-        full_url = url_for('recaptcha', **request.args)
-        return redirect(full_url)
-
     if email_is_valid and email_is_spam is False and customer_id is '': # this is a new customer
     # if it is a new customer, assume they only have one payment method and it should be the default
         try:
