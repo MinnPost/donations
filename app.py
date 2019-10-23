@@ -39,7 +39,6 @@ from config import (
     STRIPE_WEBHOOK_SECRET,
 )
 from datetime import datetime
-from decimal import Decimal, ROUND_HALF_UP
 from pprint import pformat
 
 from pytz import timezone
@@ -308,7 +307,12 @@ def add_donation(form=None, customer=None, donation_type=None):
 def do_charge_or_show_errors(template, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")
 
-    amount = Decimal(request.form["amount"])
+    amount = float(re.sub("[^\d\.]", "", request.form["amount"]))
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
+
     email = request.form["email"]
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
@@ -365,7 +369,7 @@ def do_charge_or_show_errors(template, function, donation_type):
     function(customer=customer, form=clean(request.form), donation_type=donation_type)
     return render_template(
         "thanks.html",
-        amount=amount, frequency=frequency, yearly=yearly, level=level,
+        amount=amount_formatted, frequency=frequency, yearly=yearly, level=level,
         email=email, first_name=first_name, last_name=last_name,
         #session=session,
         minnpost_root=app.config["MINNPOST_ROOT"],
@@ -374,6 +378,7 @@ def do_charge_or_show_errors(template, function, donation_type):
 
 
 def validate_form(FormType, template, function=add_donation.delay):
+    # this doesn't work well with ajax
     app.logger.info(pformat(request.form))
 
     form = FormType(request.form)
@@ -422,8 +427,11 @@ def give_form():
 
     # amount is the bare minimum to work
     if request.args.get("amount"):
-        amount = Decimal(re.sub('[^\d\.]','',request.args.get("amount")))
-        amount_formatted = format(amount, ",.2f")
+        amount = float(re.sub("[^\d\.]", "", request.args.get("amount")))
+        if (amount).is_integer():
+            amount_formatted = int(amount)
+        else:
+            amount_formatted = format(amount, ',.2f')
     else:
         message = "The page you requested can't be found."
         return render_template("error.html", message=message)
@@ -559,7 +567,12 @@ def plaid_token():
 @app.route("/calculate-fees/", methods=["POST"])
 def calculate_fees():
 
-    amount = Decimal(request.form["amount"])
+    amount = float(re.sub("[^\d\.]", "", request.form["amount"]))
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
+
     fees = ''
     
     # get fee amount to send to stripe
@@ -577,9 +590,13 @@ def thanks():
     form        = DonateForm()
     form_action = "/thanks/"
 
-    amount = Decimal(request.form["amount"])
+    amount = float(re.sub("[^\d\.]", "", request.form["amount"]))
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
+
     customer_id = request.form["customer_id"]
-    amount_formatted = format(amount, ",.2f")
 
     email = request.form["email"]
     first_name = request.form["first_name"]
@@ -597,7 +614,8 @@ def thanks():
     #    print('try to update account now')
     #    update_account.delay(form=request.form, account = {'levelint' : level.get('levelint', 0), 'level' : 'MinnPost {}'.format(level.get('level', '--None--').title())})
     return render_template(
-        "thanks.html",
+        template,
+        form_action=form_action,
         amount=amount_formatted,
         frequency=frequency,
         yearly=yearly,
@@ -948,7 +966,6 @@ def add_recurring_donation(contact=None, form=None, customer=None):
     rdo.shipping_zip = form.get("shipping_zip", "")
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
-
 
     apply_card_details(rdo=rdo, customer=customer)
     rdo.save()
