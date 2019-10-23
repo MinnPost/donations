@@ -52,6 +52,7 @@ whitenoise = "==1.0.6"
 WTForms = "==2.1"
 flask-limiter = "*"
 stopforumspam-api = "*"
+httpbl = "*"
 
 [dev-packages]
 
