@@ -159,7 +159,7 @@ def block_method():
 
 @app.route('/')
 def minnpost_support():
-    app.use_recaptcha = True
+    #app.use_recaptcha = True
     if app.use_recaptcha is True:
         form = MinnPostFormRecaptcha()
     else:
