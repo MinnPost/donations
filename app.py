@@ -695,6 +695,10 @@ def finish():
     form = FinishForm()
 
     update_donation.delay(request.form)
+    app.logger.info("clearing lock")
+    lock_key = request.form["lock_key"]
+    lock = Lock(key=lock_key)
+    lock.release()
     return render_template(
         template,
         minnpost_root=app.config["MINNPOST_ROOT"],
