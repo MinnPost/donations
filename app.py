@@ -1607,7 +1607,9 @@ def charge_ajax():
     stripe_card = ''
     stripe_bank_account = ''
 
-    if is_known_spam_ip is True: # ip is a spammer or blocked
+    ip = request.environ.get('REMOTE_ADDR')
+
+    if is_known_spam_ip(ip) is True: # ip is a spammer or blocked
         print('Error: IP address found in spam database. {} {} {}; showed error'.format(email, first_name, last_name))        
         #body = []
         #message = 'Please ensure you have a valid IP address.'.format(email)
