@@ -160,10 +160,7 @@ def block_method():
 @app.route('/')
 def minnpost_support():
     
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
+    form = MinnPostFormRecaptcha()
 
     if request.args.get('amount'):
         amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
