@@ -129,6 +129,8 @@ PLAID_SECRET = os.getenv('PLAID_SECRET')
 PLAID_PUBLIC_KEY = os.getenv('PLAID_PUBLIC_KEY')
 PLAID_ENVIRONMENT = os.getenv('PLAID_ENVIRONMENT')
 
+PROJECT_HONEYPOT_KEY = os.getenv('PROJECT_HONEYPOT_KEY')
+
 ############
 # Postgres
 #

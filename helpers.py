@@ -1,6 +1,9 @@
 import os
 from datetime import datetime, timedelta
 from stopforumspam_api import query
+import httpbl
+from config import PROJECT_HONEYPOT_KEY
+bl = httpbl.HttpBL(PROJECT_HONEYPOT_KEY)
 def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
     thisyear = amount * yearly
     level = ''
@@ -110,9 +113,12 @@ def is_known_spam_email(email):
     return False
 
 def is_known_spam_ip(ip):
-    response = query(ip=ip)
-    if response.ip.appears:
-        difference = datetime.utcnow() - response.ip.lastseen
-        if response.ip.frequency > 8 and difference.days < 60:
+    stop_response = query(ip=ip)
+    if stop_response.ip.appears:
+        difference = datetime.utcnow() - stop_response.ip.lastseen
+        if stop_response.ip.frequency > 8 and difference.days < 60:
             return True
+    ph_response = bl.query(ip)
+    if ph_response['threat_score'] > 25 and response['days_since_last_activity'] < 60:
+        return True
     return False
