@@ -80,6 +80,11 @@
       //'level_amount_selector' : $( '#amount_for_js .level-amount' )
     });
   });
+  {% if use_recaptcha == True %}
+  function onSubmit(token) {
+    document.getElementById('recaptcha-submit').submit();
+  }
+  {% endif %}
   </script>
 
 </body>

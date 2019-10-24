@@ -124,9 +124,13 @@ app.config.update(
 app.config['RECAPTCHA_USE_SSL'] = False
 if 'DYNO' in os.environ:
     app.config['RECAPTCHA_USE_SSL'] = True
-app.config['RECAPTCHA_PUBLIC_KEY'] = app.config["RECAPTCHA_KEYS"]["site_key"]
-app.config['RECAPTCHA_PRIVATE_KEY'] = app.config["RECAPTCHA_KEYS"]["secret_key"]
-app.config['RECAPTCHA_DATA_ATTRS'] = {'size': 'invisible'}
+#app.config['RECAPTCHA_PUBLIC_KEY'] = app.config["RECAPTCHA_KEYS"]["site_key"]
+#app.config['RECAPTCHA_PRIVATE_KEY'] = app.config["RECAPTCHA_KEYS"]["secret_key"]
+#app.config['RECAPTCHA_DATA_ATTRS'] = {'size': 'invisible'}
+
+app.config["RECAPTCHA3_PUBLIC_KEY"] = app.config["RECAPTCHA_KEYS"]["site_key"]
+app.config["RECAPTCHA3_PRIVATE_KEY"] = app.config["RECAPTCHA_KEYS"]["secret_key"]
+
 stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 
 celery = make_celery(app)

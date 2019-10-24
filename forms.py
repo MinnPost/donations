@@ -2,9 +2,10 @@ from flask_wtf import FlaskForm, RecaptchaField
 
 from wtforms.fields import StringField, HiddenField, BooleanField, DecimalField, TextAreaField, SelectMultipleField
 from wtforms.fields import RadioField, SelectField
-from wtforms import validators
+from wtforms import validators, TextField
 from wtforms.fields.html5 import EmailField
 
+from recaptcha3 import Recaptcha3Field
 
 class BaseForm(FlaskForm):
     first_name = StringField(u'First name',
@@ -72,7 +73,9 @@ class MinnPostForm(FlaskForm):
 
 
 class MinnPostFormRecaptcha(MinnPostForm):
-    recaptcha = RecaptchaField()
+    #recaptcha = RecaptchaField()
+    message = TextField(label="Message")
+    recaptcha = Recaptcha3Field(action="TestAction", execute_on_load=True)
 
 
 class ConfirmForm(FlaskForm):

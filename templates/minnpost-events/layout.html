@@ -77,6 +77,11 @@
       'plaid_public_key' : '{{plaid_public_key}}',{% endif %}
     });
   });
+  {% if use_recaptcha == True %}
+  function onSubmit(token) {
+    document.getElementById('recaptcha-submit').submit();
+  }
+  {% endif %}
   </script>
 
 </body>
