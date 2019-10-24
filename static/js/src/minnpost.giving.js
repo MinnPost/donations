@@ -1441,6 +1441,10 @@
                 that.stripeErrorDisplay(response.errors, $(that.options.cc_cvv_selector), that.element, that.options );
               }
 
+              if (error.field == 'recaptcha') {
+                $('button.give').before('<p class="recaptcha-error">' + message + '</p>')
+              }
+
               if (error.type == 'invalid_request_error') {
                 $('button.give').before('<p class="error">' + error.message + '</p>')
               }
