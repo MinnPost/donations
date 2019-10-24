@@ -87,6 +87,11 @@
       'minnpost_root' : '{{minnpost_root}}',
     });
   });
+  {% if use_recaptcha == True %}
+  function onSubmit(token) {
+    document.getElementById('recaptcha-submit').submit();
+  }
+  {% endif %}
   </script>
 
 </body>

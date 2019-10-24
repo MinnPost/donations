@@ -42,6 +42,10 @@
 				margin-bottom: $h5-space;
 			}
 		}
+		p.recaptcha-terms {
+			font-size: 75%;
+			margin-top: $h4-space;
+		}
 	}
 	.honor, .actions--edit-amount, .actions--pay-fees {
 		font-family: $helvetica;

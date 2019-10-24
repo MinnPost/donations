@@ -126,7 +126,7 @@ if 'DYNO' in os.environ:
     app.config['RECAPTCHA_USE_SSL'] = True
 app.config['RECAPTCHA_PUBLIC_KEY'] = app.config["RECAPTCHA_KEYS"]["site_key"]
 app.config['RECAPTCHA_PRIVATE_KEY'] = app.config["RECAPTCHA_KEYS"]["secret_key"]
-app.config['RECAPTCHA_OPTIONS'] = {'theme':'white'}
+app.config['RECAPTCHA_DATA_ATTRS'] = {'size': 'invisible'}
 stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 
 celery = make_celery(app)

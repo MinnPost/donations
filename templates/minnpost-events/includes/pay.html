@@ -48,12 +48,11 @@
     {% endif %}
 
     {% if use_recaptcha == True %}
-    <div class="form-item form-item-recaptcha">
-      {{ form.recaptcha }}
-    </div>
+      <button class="btn btn--submit give g-recaptcha" data-sitekey="{{ recaptcha }}" data-callback="onSubmit" id="recaptcha-submit" autocomplete="off">Complete Purchase</button>
+      <p class="recaptcha-terms">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy">Privacy Policy</a> and <a href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
+    {% else %}
+      <button type="submit" class="btn btn--submit give" autocomplete="off">Complete Purchase</button>
     {% endif %}
-
-    <button type="submit" class="btn btn--submit give" autocomplete="off">Complete Purchase</button>
 
   </fieldset>
 

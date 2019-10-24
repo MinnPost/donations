@@ -41,14 +41,13 @@
       <textarea id="reason_for_supporting" cols="20" rows="4" name="reason_for_supporting"></textarea></label> <!-- could send to Givalike and/or ajax -->
       <label class="additional-option" id="reason_shareable" for="reason_shareable"><input type="checkbox" checked="checked" name="reason_shareable" id="reason_shareable" value="1"> MinnPost has permission to post this comment on the website. </label>
     </div>
-    
-    {% if use_recaptcha == True %}
-    <div class="form-item form-item-recaptcha">
-      {{ form.recaptcha }}
-    </div>
-    {% endif %}
 
-    <button type="submit" class="btn btn--submit give" autocomplete="off">Purchase your Patron package</button>
+    {% if use_recaptcha == True %}
+      <button class="btn btn--submit give g-recaptcha" data-sitekey="{{ recaptcha }}" data-callback="onSubmit" id="recaptcha-submit" autocomplete="off">Purchase your Patron package</button>
+      <p class="recaptcha-terms">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy">Privacy Policy</a> and <a href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
+    {% else %}
+      <button type="submit" class="btn btn--submit give" autocomplete="off">Purchase your Patron package</button>
+    {% endif %}
 
   </fieldset>
 

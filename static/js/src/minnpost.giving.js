@@ -1255,6 +1255,7 @@
               url: options.minnpost_root + '/wp-json/user-account-management/v1/create-user',
               data: user
             }).done(function( data ) {
+              grecaptcha.reset();
               if (data.status === 'success' && data.reason === 'new user') {
                 // user created - they should receive email
                 // submit the form
