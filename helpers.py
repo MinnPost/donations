@@ -105,20 +105,24 @@ def dir_last_updated(folder):
         for f in files))
 
 def is_known_spam_email(email):
-    response = query(email=email)
-    if response.email.appears:
-        difference = datetime.utcnow() - response.email.lastseen
-        if response.email.frequency > 8 and difference.days < 60:
-            return True
+    if query != None:
+        response = query(email=email)
+        if response != None:
+            if response.email.appears:
+                difference = datetime.utcnow() - response.email.lastseen
+                if response.email.frequency > 8 and difference.days < 60:
+                    return True
     return False
 
 def is_known_spam_ip(ip):
-    stop_response = query(ip=ip)
-    if stop_response.ip.appears:
-        difference = datetime.utcnow() - stop_response.ip.lastseen
-        if stop_response.ip.frequency > 8 and difference.days < 60:
-            return True
-    ph_response = bl.query(ip)
-    if ph_response['threat_score'] > 25 and response['days_since_last_activity'] < 60:
-        return True
+    if query != None:
+        stop_response = query(ip=ip)
+        if stop_response != None:
+            if stop_response.ip.appears:
+                difference = datetime.utcnow() - stop_response.ip.lastseen
+                if stop_response.ip.frequency > 8 and difference.days < 60:
+                    return True
+            ph_response = bl.query(ip)
+            if ph_response['threat_score'] > 25 and response['days_since_last_activity'] < 60:
+                return True
     return False
