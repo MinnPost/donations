@@ -161,9 +161,9 @@ def block_method():
     if ip in ip_ban_list:
         print('error: block from ban list. IP is {}'.format(ip))
         abort(403)
-    #if is_known_spam_ip(ip):
-    #    print('error: IP {} found in stopforumspam database. Recaptcha was shown.'.format(ip))
-    #    app.use_recaptcha = True
+    if is_known_spam_ip(ip):
+        print('error: IP {} found in stopforumspam database. Recaptcha was shown.'.format(ip))
+        app.use_recaptcha = True
 
 @app.route('/')
 def minnpost_support():
