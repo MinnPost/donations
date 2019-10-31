@@ -102,10 +102,9 @@ def calculate_amount_fees(amount, payment_type):
 
 def get_frequency_label(frequency):
     frequency_label = ''
-    if frequency is None:
-        frequency = 'one-time'
+    if frequency == 'one-time':
         frequency_label = ''
-    if frequency == 'monthly':
+    elif frequency == 'monthly':
         yearly = 12
         frequency_label = '/month'
     else:
