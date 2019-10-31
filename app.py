@@ -1586,14 +1586,13 @@ def charge_ajax():
     #next_page_template = 'thanks.html'
 
     amount = float(request.form['amount'])
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
     customer_id = request.form['customer_id']
     if 'opp_id' in form:
         opp_id = request.form['opp_id']
-
-    #if (amount).is_integer():
-    #    amount_formatted = float(request.form['amount'])
-    #else:
-    amount_formatted = format(amount, ',.2f')
 
     frequency = request.form['recurring']
     if frequency is None:
@@ -1899,13 +1898,11 @@ def thanks():
     #pprint('Request: {}'.format(request))
 
     amount = float(request.form['amount'])
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
     customer_id = request.form['customer_id']
-
-    #if (amount).is_integer():
-    #    amount_formatted = float(request.form['amount'])
-    #else:
-    #    amount_formatted = format(amount, ',.2f')
-    amount_formatted = format(amount, ',.2f')
 
     frequency = request.form['recurring']
     if frequency is None:
@@ -1997,7 +1994,10 @@ def minnpost_advertising_confirm():
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2030,7 +2030,10 @@ def minnroast_patron_confirm():
     form = ConfirmForm(request.form)
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2064,7 +2067,10 @@ def minnpost_pledge_confirm():
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2101,7 +2107,10 @@ def minnpost_donation_update_confirm():
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2153,7 +2162,10 @@ def minnroast_pledge_confirm():
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2188,7 +2200,10 @@ def anniversary_patron_confirm():
     form = ConfirmForm(request.form)
 
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2221,7 +2236,10 @@ def minnroast_event_confirm():
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     quantity = float(request.form['quantity'])
 
