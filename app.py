@@ -20,7 +20,7 @@ from forms import MinnPostForm, ConfirmForm, MinnPostFormRecaptcha
 #from sassutils.wsgi import SassMiddleware # mp put this into grunt instead
 import stripe
 from validate_email import validate_email
-from helpers import checkLevel, amount_to_charge, calculate_amount_fees, dir_last_updated, is_known_spam_email, is_known_spam_ip
+from helpers import checkLevel, amount_to_charge, calculate_amount_fees, get_frequency_label, dir_last_updated, is_known_spam_email, is_known_spam_ip
 
 from flask_sslify import SSLify
 
@@ -195,6 +195,7 @@ def minnpost_support():
         yearly = 12
     else:
         yearly = 1
+    frequency_label = get_frequency_label(frequency)
 
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
@@ -224,7 +225,7 @@ def minnpost_support():
     return render_template(
         'minnpost-default.html',
         form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
-        frequency=frequency,
+        frequency=frequency, frequency_label=frequency_label,
         yearly=yearly,
         level=level,
         first_name = first_name,last_name = last_name, email=email,
@@ -263,13 +264,14 @@ def minnpost_form():
             show_ach = False
     else:
         show_ach = SHOW_ACH
-    frequency = request.args.get('frequency')
+    frequency = request.args.get('frequency')    
     if frequency is None:
         frequency = 'one-time'
     if frequency == 'monthly':
         yearly = 12
     else:
         yearly = 1
+    frequency_label = get_frequency_label(frequency)
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
     else:
@@ -361,7 +363,7 @@ def minnpost_form():
     return render_template(
         'minnpost-form.html',
         form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
-        frequency=frequency, installments=installments,
+        frequency=frequency, installments=installments, frequency_label=frequency_label,
         openended_status=openended_status,
         yearly=yearly,
         level=level,
@@ -950,6 +952,7 @@ def minnpost_donation_update_form():
         opp_id = request.args.get('opportunity')
         recurring_id = ''
         frequency = ''
+        frequency_label = ''
         recurring = []
         show_frequency_field = False
         try:
@@ -986,7 +989,7 @@ def minnpost_donation_update_form():
                 frequency = request.args.get('frequency')
             else:
                 frequency = recurring['npe03__Installment_Period__c'].lower()
-
+            frequency_label = get_frequency_label(frequency)
             campaign = recurring['npe03__Recurring_Donation_Campaign__c']
 
         except:
@@ -1149,7 +1152,7 @@ def minnpost_donation_update_form():
         'minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
         description=description, summary=summary, allow_additional=allow_additional, button=button,
-        form=form, amount=amount_formatted, show_amount_field=show_amount_field, frequency=frequency, show_frequency_field=show_frequency_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
+        form=form, amount=amount_formatted, show_amount_field=show_amount_field, frequency=frequency, frequency_label=frequency_label, show_frequency_field=show_frequency_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
         #opp_type = opp_type, opp_subtype = opp_subtype,
         first_name = first_name,last_name = last_name, email=email,
         billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
@@ -1183,6 +1186,8 @@ def minnpost_donation_cancel_form():
         opp_id = request.args.get('opportunity')
         sf_id = opp_id
         recurring_id = ''
+        frequency = ''
+        frequency_label = ''
         recurring = []
         try:
             result = get_opportunity(opp_id)
@@ -1225,6 +1230,7 @@ def minnpost_donation_cancel_form():
                 frequency = request.args.get('frequency')
             else:
                 frequency = recurring['npe03__Installment_Period__c'].lower()
+            frequency_label = get_frequency_label(frequency)
             title = 'MinnPost | Cancel Recurring Donation'
             heading = 'Cancel Recurring Donation'
             description = 'Recurring Donation Cancellation'
@@ -1452,6 +1458,7 @@ def recaptcha():
         yearly = 12
     else:
         yearly = 1
+    frequency_label = get_frequency_label(frequency)
     if request.args.get('customer_id'):
         customer_id = request.args.get('customer_id')
     else:
@@ -1543,7 +1550,7 @@ def recaptcha():
     return render_template(
         'minnpost-form.html',
         form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
-        frequency=frequency, installments=installments,
+        frequency=frequency, installments=installments, frequency_label=frequency_label,
         openended_status=openended_status,
         yearly=yearly,
         level=level,
@@ -1579,14 +1586,13 @@ def charge_ajax():
     #next_page_template = 'thanks.html'
 
     amount = float(request.form['amount'])
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
     customer_id = request.form['customer_id']
     if 'opp_id' in form:
         opp_id = request.form['opp_id']
-
-    #if (amount).is_integer():
-    #    amount_formatted = float(request.form['amount'])
-    #else:
-    amount_formatted = format(amount, ',.2f')
 
     frequency = request.form['recurring']
     if frequency is None:
@@ -1596,6 +1602,7 @@ def charge_ajax():
     else:
         yearly = 1
     level = checkLevel(amount, frequency, yearly)
+    frequency_label = get_frequency_label(frequency)
 
     payment_type = ''
     if 'pay_fees' in request.form:
@@ -1857,7 +1864,7 @@ def charge_ajax():
         # the payment type here won't work because it doesn't get sent to the method, but to the template       
         return render_template(
             'thanks.html',
-            amount=amount_formatted, frequency=frequency, yearly=yearly, level=level,
+            amount=amount_formatted, frequency=frequency, frequency_label=frequency_label, yearly=yearly, level=level,
             email=email, first_name=first_name, last_name=last_name,
             session=session, minnpost_root = app.minnpost_root,
             key = app.config['STRIPE_KEYS']['publishable_key'],
@@ -1891,13 +1898,11 @@ def thanks():
     #pprint('Request: {}'.format(request))
 
     amount = float(request.form['amount'])
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
     customer_id = request.form['customer_id']
-
-    #if (amount).is_integer():
-    #    amount_formatted = float(request.form['amount'])
-    #else:
-    #    amount_formatted = format(amount, ',.2f')
-    amount_formatted = format(amount, ',.2f')
 
     frequency = request.form['recurring']
     if frequency is None:
@@ -1907,6 +1912,7 @@ def thanks():
     else:
         yearly = 1
     level = checkLevel(amount, frequency, yearly)
+    frequency_label = get_frequency_label(frequency)
 
     if 'pay_fees' in request.form:
         pay_fees = request.form['pay_fees']
@@ -1931,7 +1937,7 @@ def thanks():
         update_account.delay(form=request.form, account = {'levelint' : level.get('levelint', 0), 'level' : 'MinnPost {}'.format(level.get('level', '--None--').title())})
         return render_template(
             'thanks.html',
-            amount=amount_formatted, frequency=frequency, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, minnpost_root = app.minnpost_root, key = app.config['STRIPE_KEYS']['publishable_key']
+            amount=amount_formatted, frequency=frequency, frequency_label=frequency_label, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, minnpost_root = app.minnpost_root, key = app.config['STRIPE_KEYS']['publishable_key']
         )
     else:
         print('ajax result donate form did not validate: error below')
@@ -1988,7 +1994,10 @@ def minnpost_advertising_confirm():
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2021,7 +2030,10 @@ def minnroast_patron_confirm():
     form = ConfirmForm(request.form)
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2055,7 +2067,10 @@ def minnpost_pledge_confirm():
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2092,7 +2107,10 @@ def minnpost_donation_update_confirm():
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2144,7 +2162,10 @@ def minnroast_pledge_confirm():
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2179,7 +2200,10 @@ def anniversary_patron_confirm():
     form = ConfirmForm(request.form)
 
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     flask_id = session['flask_id']
     sf_type = session['sf_type']
@@ -2212,7 +2236,10 @@ def minnroast_event_confirm():
 
     #pprint('Request: {}'.format(request))
     amount = float(request.form['amount'])
-    amount_formatted = format(amount, ',.2f')
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
 
     quantity = float(request.form['quantity'])
 
