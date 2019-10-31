@@ -99,10 +99,27 @@ def calculate_amount_fees(amount, payment_type):
 
     return fees
 
+
+def get_frequency_label(frequency):
+    frequency_label = ''
+    if frequency is None:
+        frequency = 'one-time'
+        frequency_label = ''
+    if frequency == 'monthly':
+        yearly = 12
+        frequency_label = '/month'
+    else:
+        yearly = 1
+        frequency_label = '/year'
+
+    return frequency_label
+
+
 def dir_last_updated(folder):
     return str(max(os.path.getmtime(os.path.join(root_path, f))
         for root_path, dirs, files in os.walk(folder)
         for f in files))
+
 
 def is_known_spam_email(email):
     response = query(email=email)
@@ -112,6 +129,7 @@ def is_known_spam_email(email):
             if response.email.frequency > 8 and difference.days < 60:
                 return True
     return False
+
 
 def is_known_spam_ip(ip):
     stop_response = query(ip=ip)
