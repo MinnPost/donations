@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b25623c5c3d780abc65e1b3057e314c045d16f214e86c63275daa48b96f47653"
+            "sha256": "d02f4e93b8545f8bb607c34d11f0741a187c55242188908cdfc8ded1f0e20e1e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -108,11 +108,11 @@
         },
         "django": {
             "hashes": [
-                "sha256:c6c7e7a961e2847d050d214ca96dc3167bb5f2b25cd5c6cb2eea96e1717f4ade",
-                "sha256:d92ad85a8684d86d078312acb0860824861a3cfcb482428f40878421f2253398"
+                "sha256:52a66d7f8b036d02da0a4472359e8be1727424fc1e4b4f5c684ef97de7b569e1",
+                "sha256:c85b8c95366e187ca0581d45a6e508107ca4bd38cb45c24aa09d3572074c523d"
             ],
             "index": "pypi",
-            "version": "==1.8.1"
+            "version": "==1.11.23"
         },
         "django-postgrespool": {
             "hashes": [
@@ -333,6 +333,9 @@
             "version": "==2016.7"
         },
         "raven": {
+            "extras": [
+                "flask"
+            ],
             "hashes": [
                 "sha256:9f06a22083b3ff25a8203b1bf5907df4eb8f74ad8575d61a4a023bde456c5cff",
                 "sha256:d5fb3f54af217209110f1d931798f46627a5d9e84768bddaa224f27b82ab3d7d"
