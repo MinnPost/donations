@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b25623c5c3d780abc65e1b3057e314c045d16f214e86c63275daa48b96f47653"
+            "sha256": "aea0cb74a8ddfa81d1183e9d5e8980448331576e3894d08c1bd69f62b176b73c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -333,6 +333,9 @@
             "version": "==2016.7"
         },
         "raven": {
+            "extras": [
+                "flask"
+            ],
             "hashes": [
                 "sha256:9f06a22083b3ff25a8203b1bf5907df4eb8f74ad8575d61a4a023bde456c5cff",
                 "sha256:d5fb3f54af217209110f1d931798f46627a5d9e84768bddaa224f27b82ab3d7d"
@@ -419,11 +422,11 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:b6a93e909b31e3e14659584ff7329864275905ddc1b8653861bdfe1e597250f4",
-                "sha256:eb4f98994b40a8e2edce289e811c9a38880ae53eb9ff6f031d0e243a69b0fcbf"
+                "sha256:97660b282aa7e29f94f3fe378e5c7162d7ab9d601a8dbb1cbb2ffc8f0e54607d",
+                "sha256:cfd1281b1748288e59762c0e174d64d8bcb2b70e7c57bc4a1203c8825af24ac3"
             ],
             "index": "pypi",
-            "version": "==0.11.2"
+            "version": "==0.15.3"
         },
         "whitenoise": {
             "hashes": [
