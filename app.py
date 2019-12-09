@@ -1596,7 +1596,7 @@ def charge_ajax():
     if 'opp_id' in form:
         opp_id = request.form['opp_id']
 
-    if 'update_default_source' in form:
+    if 'update_default_source' in request.form:
         update_default_source = True
     else:
         update_default_source = False
