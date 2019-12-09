@@ -1148,6 +1148,8 @@ def minnpost_donation_update_form():
     description = 'Donation Update'
     allow_additional = False
 
+    update_default_source = True
+
     return render_template(
         'minnpost-minimal-form.html',
         title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, recurring_id=recurring_id, heading=heading,
@@ -1157,7 +1159,7 @@ def minnpost_donation_update_form():
         first_name = first_name,last_name = last_name, email=email,
         billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
         additional_donation = additional_donation,
-        pay_fees = pay_fees,
+        pay_fees = pay_fees, update_default_source = update_default_source,
         stage=stage, close_date=close_date,
         show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
         key=app.config['STRIPE_KEYS']['publishable_key'],
@@ -1594,6 +1596,11 @@ def charge_ajax():
     if 'opp_id' in form:
         opp_id = request.form['opp_id']
 
+    if 'update_default_source' in form:
+        update_default_source = True
+    else:
+        update_default_source = False
+
     frequency = request.form['recurring']
     if frequency is None:
         frequency = 'one-time'
@@ -1627,8 +1634,8 @@ def charge_ajax():
         try:
             if 'stripeToken' in request.form:
                 customer = stripe.Customer.create(
-                        email=email,
-                        card=request.form['stripeToken'] 
+                    email=email,
+                    card=request.form['stripeToken'] 
                 )
                 stripe_card = customer.default_source
             elif 'bankToken' in request.form:
@@ -1681,12 +1688,26 @@ def charge_ajax():
         # todo: build a checkbox or something that lets users indicate that we should update their default method
         # maybe anytime someone changes a customer, it should change the default method.
         try:
-            if 'stripeToken' in request.form:
-                card = customer.sources.create(source=request.form['stripeToken'])
-                stripe_card = card.id
-            elif 'bankToken' in request.form:
-                bank_account = customer.sources.create(source=request.form['bankToken'])
-                stripe_bank_account = bank_account.id
+            if update_default_source is True:
+                if 'stripeToken' in request.form:
+                    customer = stripe.Customer.modify(
+                        customer_id,
+                        card=request.form['stripeToken'] 
+                    )
+                    stripe_card = customer.default_source
+                elif 'bankToken' in request.form:
+                    customer = stripe.Customer.modify(
+                        customer_id,
+                        source=request.form['bankToken']
+                    )
+                    stripe_bank_account = customer.default_source
+            else:
+                if 'stripeToken' in request.form:
+                    card = customer.sources.create(source=request.form['stripeToken'])
+                    stripe_card = card.id
+                elif 'bankToken' in request.form:
+                    bank_account = customer.sources.create(source=request.form['bankToken'])
+                    stripe_bank_account = bank_account.id
         except stripe.error.InvalidRequestError as e: # stripe returned a bank account error
             body = e.json_body
             error = body['error']

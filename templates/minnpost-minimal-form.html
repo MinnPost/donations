@@ -10,6 +10,10 @@
 
       <div id="amount_for_js" class="amount"><span class="level-amount">{{ amount }}</span></div>
 
+      {% if update_default_source == True %}
+        <input type="hidden" name="update_default_source" id="update_default_source" value="true">
+      {% endif %}
+
       {% if stage != '' %}
         <input type="hidden" name="stage" id="stage" value="{{ stage }}">
       {% endif %}
