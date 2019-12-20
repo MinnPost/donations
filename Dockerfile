@@ -3,7 +3,7 @@ FROM python:3.6
 # This Dockerfile is intended for development. See Dockerfile.sample for something more
 # suitable for production.
 
-ENV NODE_VERSION=node_8.x
+ENV NODE_VERSION=node_12.x
 ENV FLASK_DEBUG 1
 ENV NPM_CONFIG_LOGLEVEL warn
 
@@ -20,11 +20,14 @@ RUN apt-get -yq update && \
 
 WORKDIR /app
 
+ARG ENABLE_SENTRY_RELEASE=False
+
 COPY static /app/static
 COPY webpack /app/webpack
+COPY config /app/config
 COPY package.json /app/
 COPY yarn.lock /app/
-COPY .babelrc /app/
+COPY babel.config.js /app/
 RUN yarn
 
 RUN pip install --upgrade pip

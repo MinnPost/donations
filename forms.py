@@ -10,7 +10,27 @@ from wtforms.fields import (
 from wtforms.fields.html5 import EmailField
 
 
-def strip_filter(value):
+# amount must be $1 or higher
+def validate_amount(form, field):
+    value = field.data
+    if value is None:
+        raise validators.ValidationError("Non-numeric amount provided")
+    if value < 1:
+        raise validators.ValidationError("Amount is less than 1")
+
+
+# if value starts with a dollar sign, remove it
+# then convert to a float
+def format_amount(value):
+    if value.startswith("$"):
+        value = value[1:]
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
+
+def strip_whitespace(value):
     if value is not None and hasattr(value, "strip"):
         return value.strip()
     return value
@@ -20,7 +40,7 @@ class BaseForm(FlaskForm):
     class Meta:
         def bind_field(self, form, unbound_field, options):
             filters = unbound_field.kwargs.get("filters", [])
-            filters.append(strip_filter)
+            filters.append(strip_whitespace)
             return unbound_field.bind(form=form, filters=filters, **options)
 
     first_name = StringField(
@@ -29,17 +49,19 @@ class BaseForm(FlaskForm):
     last_name = StringField(
         u"Last name", [validators.required(message="Your last name is required.")]
     )
-    amount = DecimalField(
+    amount = StringField(
         u"Amount",
-        [
+        validators=[
             validators.required(message="Please choose a donation amount."),
-            validators.NumberRange(min=1),
+            validate_amount,
         ],
+        filters=[format_amount],
     )
     stripeEmail = EmailField(
         "Email address", [validators.DataRequired(), validators.Email()]
     )
     stripeToken = HiddenField(u"Stripe token", [validators.InputRequired()])
+    recaptchaToken = HiddenField(u"Recaptcha token", [validators.InputRequired()])
     description = HiddenField(u"Description", [validators.InputRequired()])
     pay_fees_value = HiddenField(
         u"Pay Fees Value", [validators.AnyOf(["True", "False"])]
@@ -50,10 +72,6 @@ class BaseForm(FlaskForm):
 
 
 class DonateForm(BaseForm):
-    installments = HiddenField(u"Installments", [validators.AnyOf(["None"])])
-    openended_status = HiddenField(
-        u"Openended Status", [validators.AnyOf(["None", "Open"])]
-    )
     installment_period = StringField(
         u"Installment Period", [validators.AnyOf(["yearly", "monthly", "None"])]
     )
@@ -61,8 +79,6 @@ class DonateForm(BaseForm):
 
 
 class CircleForm(BaseForm):
-    installments = HiddenField(u"Installments", [validators.AnyOf(["3", "36"])])
-    openended_status = HiddenField(u"Openended Status", [validators.AnyOf(["None"])])
     installment_period = StringField(
         u"Installment Period", [validators.AnyOf(["yearly", "monthly"])]
     )
@@ -78,11 +94,7 @@ class BusinessMembershipForm(BaseForm):
     shipping_state = StringField("Shipping State", [validators.Length(max=2)])
     shipping_street = StringField("Shipping Street", [validators.Length(max=255)])
     shipping_postalcode = StringField(u"ZIP Code", [validators.Length(max=20)])
-    installments = HiddenField(u"Installments", [validators.AnyOf(["1", "None"])])
-    openended_status = HiddenField(
-        u"Openended Status", [validators.AnyOf(["None", "Open"])]
-    )
-    installment_period = StringField([validators.AnyOf(["yearly", "monthly", "None"])])
+    installment_period = StringField([validators.AnyOf(["yearly", "monthly"])])
 
 
 class BlastForm(FlaskForm):
@@ -102,8 +114,6 @@ class BlastForm(FlaskForm):
         "Subscriber Email address", [validators.DataRequired(), validators.Email()]
     )
     installment_period = HiddenField(u"Installment Period")
-    installments = HiddenField(u"Installments")
-    openended_status = HiddenField(u"Openended Status")
     campaign_id = HiddenField("Campaign ID")
     referral_id = HiddenField("Referral ID")
     description = HiddenField(u"Description")

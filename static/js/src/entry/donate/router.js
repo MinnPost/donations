@@ -4,8 +4,11 @@ import VueRouter from 'vue-router';
 
 import RouteHandler from '../../RouteHandler.vue';
 import TopForm from './TopForm.vue';
-import mergeValuesIntoStartState from '../../utils/mergeValuesIntoStartState';
-import { BASE_FORM_STATE } from './constants';
+import mergeValuesIntoStartState from '../../utils/merge-values-into-start-state';
+import sanitizeParams from '../../utils/sanitize-params';
+import { BASE_FORM_STATE, AMBASSADOR_CODES } from './constants';
+
+// import Thermometer from './Thermometer.vue';
 
 Vue.use(VueRouter);
 
@@ -19,38 +22,52 @@ function createInitialFormState(queryParams) {
     );
   }
 
-  let openEndedStatus;
-  let { amount, installmentPeriod = 'monthly' } = queryParams;
-  const { campaignId = '', referralId = '' } = queryParams;
+  const cleanParams = sanitizeParams(queryParams);
+  const {
+    campaignId = '',
+    referralId = '',
+    firstName = '',
+    lastName = '',
+    email = '',
+    zipcode = '',
+    code = '',
+  } = cleanParams;
+  let amount;
+  let installmentPeriod;
 
-  switch (installmentPeriod.toLowerCase()) {
-    case 'once':
-      openEndedStatus = 'None';
-      installmentPeriod = 'None';
-      amount = amount || '60';
-      break;
-    case 'monthly':
-      openEndedStatus = 'Open';
-      amount = amount || '35';
-      break;
-    case 'yearly':
-      openEndedStatus = 'Open';
-      amount = amount || '75';
-      break;
-    default:
-      installmentPeriod = 'monthly';
-      openEndedStatus = 'Open';
-      amount = amount || '35';
+  if (code && AMBASSADOR_CODES[code]) {
+    ({ amount, installmentPeriod } = AMBASSADOR_CODES[code]);
+  } else {
+    ({ amount, installmentPeriod = 'monthly' } = cleanParams);
+
+    switch (installmentPeriod.toLowerCase()) {
+      case 'once':
+        installmentPeriod = 'None';
+        amount = amount || '60';
+        break;
+      case 'monthly':
+        amount = amount || '35';
+        break;
+      case 'yearly':
+        amount = amount || '75';
+        break;
+      default:
+        installmentPeriod = 'monthly';
+        amount = amount || '35';
+    }
   }
 
   // merge query-parameter values into full state object,
   // which contains validation information
   return mergeValuesIntoStartState(BASE_FORM_STATE, {
     amount,
+    zipcode,
+    first_name: firstName,
+    last_name: lastName,
+    stripeEmail: email,
     campaign_id: campaignId,
     referral_id: referralId,
     installment_period: installmentPeriod,
-    openended_status: openEndedStatus,
   });
 }
 
@@ -65,6 +82,7 @@ function createRouter() {
 function bindRouterEvents(router, routeHandler, store) {
   router.onReady(() => {
     const topForm = new Vue({ ...TopForm, store });
+    // const thermometer = new Vue({ ...Thermometer });
     const {
       currentRoute: { query },
     } = router;
@@ -76,6 +94,7 @@ function bindRouterEvents(router, routeHandler, store) {
 
     routeHandler.$mount('#app');
     topForm.$mount('#top-form');
+    // thermometer.$mount('#thermometer');
   });
 }
 
