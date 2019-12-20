@@ -41,7 +41,6 @@ from config import (
     STRIPE_WEBHOOK_SECRET,
 )
 from datetime import datetime
-from decimal import Decimal, ROUND_HALF_UP
 from pprint import pformat
 
 from pytz import timezone
@@ -56,6 +55,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask import Flask, redirect, render_template, request, send_from_directory, jsonify, session
 from forms import (
+    format_amount,
     DonateForm,
     FinishForm,
 )
@@ -362,13 +362,14 @@ def update_donation(self, form=None):
     logging.info("post submit updated")
 
 
-def do_charge_or_show_errors(template, function, donation_type):
+def do_charge_or_show_errors(form_data, template, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")
 
-    amount = Decimal(request.form["amount"])
-    email = request.form["email"]
-    first_name = request.form["first_name"]
-    last_name = request.form["last_name"]
+    amount = form_data["amount"]
+
+    email = form_data["email"]
+    first_name = form_data["first_name"]
+    last_name = form_data["last_name"]
 
     frequency = request.form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     if frequency == "monthly":
@@ -391,17 +392,19 @@ def do_charge_or_show_errors(template, function, donation_type):
             )
             stripe_bank_account = customer.default_source
         amount_formatted = format(amount, ",.2f")
-        app.logger.info(f"Create Stripe Customer: {customer.id} {email} {first_name} {last_name} and charge amount {amount_formatted} with frequency {frequency}")
     except stripe.error.CardError as e:
         body = e.json_body
         err = body.get("error", {})
         message = err.get("message", "")
-        form_data = request.form.to_dict()
+        # at this point, amount has been converted to a float
+        # bring it back to a string for the rehydration of the form
+        form_data["amount"] = str(form_data["amount"])
         del form_data["stripeToken"]
 
         return render_template(
             template,
             stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             message=message,
             form_data=form_data,
         )
@@ -409,24 +412,28 @@ def do_charge_or_show_errors(template, function, donation_type):
         body = e.json_body
         err = body.get("error", {})
         message = err.get("message", "")
-        form_data = request.form.to_dict()
+        # at this point, amount has been converted to a float
+        # bring it back to a string for the rehydration of the form
+        form_data["amount"] = str(form_data["amount"])
         del form_data["stripeToken"]
+        del form_data["bankToken"]
 
         return render_template(
             template,
             stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             message=message,
-            form=form_data,
+            form_data=form_data,
         )
-    app.logger.info(f"Customer id: {customer.id}")
-    function(customer=customer, form=clean(request.form), donation_type=donation_type)
+    app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
+    function(customer=customer, form=clean(form_data), donation_type=donation_type)
     return render_template(
         "thanks.html",
-        amount=amount, frequency=frequency, yearly=yearly, level=level,
+        amount=amount_formatted, frequency=frequency, yearly=yearly, level=level,
         email=email, first_name=first_name, last_name=last_name,
-        #session=session,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
 
 
@@ -434,12 +441,16 @@ def validate_form(FormType, template, function=add_donation.delay):
     app.logger.info(pformat(request.form))
 
     form = FormType(request.form)
+    # use form.data instead of request.form from here on out
+    # because it includes all filters applied by WTF Forms
+    form_data = form.data
+    form_errors = form.errors
+    email = form_data["email"]
+
     if FormType is DonateForm:
         donation_type = "membership"
     else:
         raise Exception("Unrecognized form type")
-
-    email = request.form["email"]
 
     if not validate_email(email):
         message = "There was an issue saving your email address."
@@ -447,13 +458,14 @@ def validate_form(FormType, template, function=add_donation.delay):
             "error.html", message=message
         )
     if not form.validate():
-        app.logger.error(f"Form validation errors: {form.errors}")
+        app.logger.error(f"Form validation errors: {form_errors}")
         message = "There was an issue saving your donation information."
         return render_template(
             "error.html", message=message
         )
 
     return do_charge_or_show_errors(
+        form_data=form_data,
         template=template,
         function=function,
         donation_type=donation_type,
@@ -479,7 +491,7 @@ def give_form():
 
     # amount is the bare minimum to work
     if request.args.get("amount"):
-        amount = Decimal(re.sub('[^\d\.]','',request.args.get("amount")))
+        amount = format_amount(request.args.get("amount"))
         amount_formatted = format(amount, ",.2f")
     else:
         message = "The page you requested can't be found."
@@ -590,7 +602,8 @@ def give_form():
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
 
 
@@ -622,7 +635,7 @@ def plaid_token():
 @app.route("/calculate-fees/", methods=["POST"])
 def calculate_fees():
 
-    amount = Decimal(request.form["amount"])
+    amount = format_amount(request.form["amount"])
     fees = ''
     
     # get fee amount to send to stripe
@@ -640,9 +653,14 @@ def thanks():
     form        = DonateForm()
     form_action = "/finish/"
 
-    amount = Decimal(request.form["amount"])
-    customer_id = request.form["customer_id"]
+    # use form.data instead of request.form from here on out
+    # because it includes all filters applied by WTF Forms
+    form_data = form.data
+
+    amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
+
+    customer_id = request.form["customer_id"]
 
     email = request.form["email"]
     first_name = request.form["first_name"]
@@ -674,7 +692,8 @@ def thanks():
         lock_key=lock_key,
         #session=session,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
     #else:
     #    print('ajax result donate form did not validate: error below')
