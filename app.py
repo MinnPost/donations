@@ -838,8 +838,7 @@ def minnpost_pledge_payment():
 
     stage = ''
     if 'StageName' in opportunity and opportunity['StageName'] is not None:
-        if 'Failed' == opportunity['StageName']:
-            stage = 'Pledged'
+        stage = 'Pledged'
 
     close_date = ''
     if 'CloseDate' in opportunity and opportunity['CloseDate'] is not None:
@@ -1011,8 +1010,7 @@ def minnpost_prefill_donate():
 
     stage = ''
     if 'StageName' in opportunity and opportunity['StageName'] is not None:
-        if 'Failed' == opportunity['StageName']:
-            stage = 'Pledged'
+        stage = 'Pledged'
 
     close_date = ''
     if 'CloseDate' in opportunity and opportunity['CloseDate'] is not None:
