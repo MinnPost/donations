@@ -379,7 +379,8 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         amount=amount_formatted, frequency=frequency, yearly=yearly, level=level,
         email=email, first_name=first_name, last_name=last_name,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
 
 
@@ -545,7 +546,8 @@ def give_form():
         campaign=campaign, customer_id=customer_id,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
 
 
@@ -639,7 +641,8 @@ def thanks():
         last_name=last_name,
         #session=session,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
     #else:
     #    print('ajax result donate form did not validate: error below')
