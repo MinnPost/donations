@@ -1,0 +1,12 @@
+// To be removed after this repo is set up to take the base ds-toolbox elements file
+.c-site-footer {
+  &__links {
+    list-style: none;
+  }
+
+  // remove after 10yr treatment
+  &__logo {
+    // hack: nudge 10yr bug left for alignment of square
+    margin-left: -$size-xxs;
+  }
+}
