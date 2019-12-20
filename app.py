@@ -925,6 +925,221 @@ def minnpost_pledge_payment():
     )
 
 
+# used at support.minnpost.com/pledge-payment
+@app.route('/donate/')
+def minnpost_prefill_donate():
+    
+    if app.use_recaptcha is True:
+        form = MinnPostFormRecaptcha()
+    else:
+        form = MinnPostForm()
+
+    confirm_url = '/donate-confirm/'
+    redirect_url = 'donate-thanks'
+
+    now = datetime.now()
+    today = datetime.now(tz=zone).strftime('%Y-%m-%d')
+    year = now.year
+
+    if request.args.get('opportunity'):
+        opp_id = request.args.get('opportunity')
+        recurring_id = ''
+        recurring = []
+        try:
+            result = get_opportunity(opp_id)
+            opportunity = result['opportunity']
+
+            amount = float(opportunity['Amount'])
+            if (amount).is_integer():
+                amount_formatted = int(amount)
+            else:
+                amount_formatted = format(amount, ',.2f')
+            campaign = opportunity['CampaignId']
+
+        except:
+            opp_id = ''
+            recurring_id = ''
+            opportunity = []
+            recurring = []
+    elif request.args.get('recurring'):
+        recurring_id = request.args.get('recurring')
+        opp_id = ''
+        opportunity = []
+        try:
+            result = get_recurring(recurring_id)
+            recurring = result['recurring']
+            amount = float(recurring['npe03__Amount__c'])
+            if (amount).is_integer():
+                amount_formatted = int(amount)
+            else:
+                amount_formatted = format(amount, ',.2f')
+            campaign = recurring['npe03__Recurring_Donation_Campaign__c']
+
+        except:
+            opp_id = ''
+            recurring_id = ''
+            opportunity = []
+            recurring = []
+    else:
+        opp_id = ''
+        recurring_id = ''
+        opportunity = []
+        recurring = []
+
+        if request.args.get('amount'):
+            amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
+            if (amount).is_integer():
+                amount_formatted = int(amount)
+            else:
+                amount_formatted = format(amount, ',.2f')
+        else:
+            amount_formatted = ''
+
+        if request.args.get('campaign'):
+            campaign = request.args.get('campaign')
+        else:
+            campaign = ''
+
+    if request.args.get('show_ach'):
+        show_ach = request.args.get('show_ach')
+        if show_ach == 'false':
+            show_ach = False
+        else:
+            show_ach = True
+    else:
+        show_ach = True
+
+    stage = ''
+    if 'StageName' in opportunity and opportunity['StageName'] is not None:
+        if 'Failed' == opportunity['StageName']:
+            stage = 'Pledged'
+
+    close_date = ''
+    if 'CloseDate' in opportunity and opportunity['CloseDate'] is not None:
+        three_days_ago = (datetime.now(tz=zone) - timedelta(days=3)).strftime('%Y-%m-%d')
+        if opportunity['CloseDate'] <= three_days_ago:
+            close_date = today
+        else:
+            close_date = opportunity['CloseDate']
+
+    if request.args.get('customer_id'):
+        customer_id = request.args.get('customer_id')
+    elif 'Stripe_Customer_ID__c' in opportunity and opportunity['Stripe_Customer_ID__c'] is not None:
+        customer_id = opportunity['Stripe_Customer_ID__c']
+    elif 'Stripe_Customer_Id__c' in recurring and recurring['Stripe_Customer_Id__c'] is not None:
+        customer_id = recurring['Stripe_Customer_Id__c']
+    else:
+        customer_id = ''
+
+    if request.args.get('pledge'):
+        pledge = request.args.get('pledge')
+    elif 'MRpledge_com_ID__c' in opportunity and opportunity['MRpledge_com_ID__c'] is not None:
+        pledge = opportunity['MRpledge_com_ID__c']
+    else:
+        pledge = ''
+
+    if request.args.get('firstname'):
+        first_name = request.args.get('firstname')
+    elif 'Donor_first_name__c' in opportunity and opportunity['Donor_first_name__c'] is not None:
+        first_name = opportunity['Donor_first_name__c']
+    elif 'Donor_first_name__c' in recurring and recurring['Donor_first_name__c'] is not None:
+        first_name = recurring['Donor_first_name__c']
+    else:
+        first_name = ''
+    if request.args.get('lastname'):
+        last_name = request.args.get('lastname')
+    elif 'Donor_last_name__c' in opportunity and opportunity['Donor_last_name__c'] is not None:
+        last_name = opportunity['Donor_last_name__c']
+    elif 'Donor_last_name__c' in recurring and recurring['Donor_last_name__c'] is not None:
+        last_name = recurring['Donor_last_name__c']
+    else:
+        last_name = ''
+    if request.args.get('email'):
+        email = request.args.get('email')
+    elif 'Donor_e_mail__c' in opportunity and opportunity['Donor_e_mail__c'] is not None:
+        email = opportunity['Donor_e_mail__c']
+    elif 'Donor_e_mail__c' in recurring and recurring['Donor_e_mail__c'] is not None:
+        email = recurring['Donor_e_mail__c']
+    else:
+        email = ''
+    if request.args.get('additional_donation'):
+        additional_donation = float(request.args.get('additional_donation'))
+    else:
+        additional_donation = ''
+
+    if request.args.get('billing_street'):
+        billing_street = request.args.get('billing_street')
+    elif 'Donor_address_line_1__c' in opportunity and opportunity['Donor_address_line_1__c'] is not None:
+        billing_street = opportunity['Donor_address_line_1__c']
+    elif 'Donor_address_line_1__c' in recurring and recurring['Donor_address_line_1__c'] is not None:
+        billing_street = recurring['Donor_address_line_1__c']
+    else:
+        billing_street = ''
+    if request.args.get('billing_city'):
+        billing_city = request.args.get('billing_city')
+    elif 'Donor_city__c' in opportunity and opportunity['Donor_city__c'] is not None:
+        billing_city = opportunity['Donor_city__c']
+    elif 'Donor_city__c' in recurring and recurring['Donor_city__c'] is not None:
+        billing_city = recurring['Donor_city__c']
+    else:
+        billing_city = ''
+    if request.args.get('billing_state'):
+        billing_state = request.args.get('billing_state')
+    elif 'Donor_state__c' in opportunity and opportunity['Donor_state__c'] is not None:
+        billing_state = opportunity['Donor_state__c']
+    elif 'Donor_state__c' in recurring and recurring['Donor_state__c'] is not None:
+        billing_state = recurring['Donor_state__c']
+    else:
+        billing_state = ''
+    if request.args.get('billing_zip'):
+        billing_zip = request.args.get('billing_zip')
+    elif 'Donor_ZIP__c' in opportunity and opportunity['Donor_ZIP__c'] is not None:
+        billing_zip = opportunity['Donor_ZIP__c']
+    elif 'Donor_ZIP__c' in recurring and recurring['Donor_ZIP__c'] is not None:
+        billing_zip = recurring['Donor_ZIP__c']
+    else:
+        billing_zip = ''
+    if request.args.get('billing_country'):
+        billing_country = request.args.get('billing_country')
+    elif 'Donor_country__c' in opportunity and opportunity['Donor_country__c'] is not None:
+        billing_country = opportunity['Donor_country__c']
+    elif 'Donor_country__c' in recurring and recurring['Donor_country__c'] is not None:
+        billing_country = recurring['Donor_country__c']
+    else:
+        billing_country = ''
+
+    show_amount_field = True
+    title = 'MinnPost | Donation'
+    #if amount_formatted != '':
+    #    heading = '${} Donation for Election Coverage'.format(amount_formatted)
+    #else:
+        #heading = 'Recurring Donation Update'
+    heading = 'MinnPost Donation'
+    summary = 'Thank you for supporting MinnPost’s nonprofit newsroom. If you have any questions, please email Tanner Curl at <a href="mailto:tcurl@minnpost.com">tcurl@minnpost.com</a>.'
+    hide_comments = True
+    hide_display = True
+    button = 'Make Your Donation'
+
+    description = 'MinnPost Pledge Payment'
+    allow_additional = False
+
+    return render_template(
+        'minnpost-minimal-form.html',
+        title=title, confirm_url=confirm_url, redirect_url=redirect_url, opp_id=opp_id, pledge=pledge, recurring_id=recurring_id, heading=heading,
+        description=description, summary=summary, allow_additional=allow_additional, button=button,
+        form=form, amount=amount_formatted, show_amount_field=show_amount_field, campaign=campaign, customer_id=customer_id, hide_comments=hide_comments, hide_display=hide_display,
+        #opp_type = opp_type, opp_subtype = opp_subtype,
+        first_name = first_name,last_name = last_name, email=email,
+        billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
+        additional_donation = additional_donation,
+        stage=stage, close_date=close_date,
+        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
+        key=app.config['STRIPE_KEYS']['publishable_key'],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        use_recaptcha=app.use_recaptcha,
+    )
+
+
 # used at support.minnpost.com/recurring-donation-update
 @app.route('/recurring-donation-update/')
 def minnpost_recurring_donation_update_form():
@@ -2119,6 +2334,48 @@ def minnpost_pledge_confirm():
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
         )
+
+
+# this is a minnpost url
+@app.route('/donate-confirm/', methods=['POST'])
+def minnpost_donate_confirm():
+
+    form = ConfirmForm(request.form)
+
+    #pprint('Request: {}'.format(request))
+    amount = float(request.form['amount'])
+    if (amount).is_integer():
+        amount_formatted = int(amount)
+    else:
+        amount_formatted = format(amount, ',.2f')
+
+    flask_id = session['flask_id']
+    sf_type = session['sf_type']
+
+    #print('flask id is {} and now update'.format(flask_id))
+    #print(request.form)
+
+    if flask_id:
+        # we shouldn't need to run the update donation object here bc no newsletters or whatever
+        #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
+        return render_template(
+            'minnpost-minimal-form/finish.html',
+            amount=amount_formatted, session=session,
+            key = app.config['STRIPE_KEYS']['publishable_key']
+        )
+    else:
+        print('post-donate form did not validate: error below')
+        print(form.errors)
+        message = "there was an issue with this form"
+        print('Error with post-update form {} {}'.format(sf_type, flask_id))
+        return render_template(
+            'error.html',
+            message=message,
+            key=app.config['STRIPE_KEYS']['publishable_key'],
+            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+            use_recaptcha=app.use_recaptcha,
+        )
+
 
 # this is a minnpost url
 @app.route('/donation-update-confirm/', methods=['POST'])
