@@ -1120,7 +1120,7 @@ def minnpost_prefill_donate():
     hide_display = True
     button = 'Make Your Donation'
 
-    description = 'MinnPost Pledge Payment'
+    description = 'MinnPost Donation'
     allow_additional = False
 
     return render_template(
