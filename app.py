@@ -383,7 +383,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     )
 
 
-def validate_form(FormType, bundles, template, function=add_donation.delay):
+def validate_form(FormType, template, function=add_donation.delay):
     app.logger.info(pformat(request.form))
 
     form = FormType(request.form)
