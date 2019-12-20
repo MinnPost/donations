@@ -53,6 +53,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask import Flask, redirect, render_template, request, send_from_directory, jsonify, session
 from forms import (
+    format_amount,
     DonateForm,
 )
 from npsp import RDO, Contact, Opportunity, Affiliation, Account
@@ -304,10 +305,10 @@ def add_donation(form=None, customer=None, donation_type=None):
     return True
 
 
-def do_charge_or_show_errors(template, function, donation_type):
+def do_charge_or_show_errors(form_data, template, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")
 
-    amount = float(re.sub("[^\d\.]", "", form_data["amount"]))
+    amount = form_data["amount"]
     if (amount).is_integer():
         amount_formatted = int(amount)
     else:
@@ -410,6 +411,7 @@ def validate_form(FormType, bundles, template, function=add_donation.delay):
         )
 
     return do_charge_or_show_errors(
+        form_data=form_data,
         template=template,
         function=function,
         donation_type=donation_type,
@@ -435,7 +437,7 @@ def give_form():
 
     # amount is the bare minimum to work
     if request.args.get("amount"):
-        amount = float(re.sub("[^\d\.]", "", request.args.get("amount")))
+        amount = format_amount(request.args.get("amount"))
         if (amount).is_integer():
             amount_formatted = int(amount)
         else:
@@ -575,7 +577,7 @@ def plaid_token():
 @app.route("/calculate-fees/", methods=["POST"])
 def calculate_fees():
 
-    amount = float(re.sub("[^\d\.]", "", request.form["amount"]))
+    amount = format_amount(request.form["amount"])
     if (amount).is_integer():
         amount_formatted = int(amount)
     else:
@@ -598,7 +600,11 @@ def thanks():
     form        = DonateForm()
     form_action = "/thanks/"
 
-    amount = float(re.sub("[^\d\.]", "", request.form["amount"]))
+    # use form.data instead of request.form from here on out
+    # because it includes all filters applied by WTF Forms
+    form_data = form.data
+
+    amount = form_data["amount"]
     if (amount).is_integer():
         amount_formatted = int(amount)
     else:

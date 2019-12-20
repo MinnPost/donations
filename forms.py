@@ -1,3 +1,4 @@
+import re
 from flask_wtf import FlaskForm
 from wtforms import validators
 from wtforms.fields import (
@@ -22,12 +23,13 @@ def validate_amount(form, field):
 # if value starts with a dollar sign, remove it
 # then convert to a float
 def format_amount(value):
-    if value.startswith("$"):
-        value = value[1:]
-    try:
-        return float(value)
-    except ValueError:
-        return None
+    if value is not None:
+        if value.startswith("$"):
+            value = value[1:]
+        try:
+            return float(re.sub("[^\d\.]", "", value))
+        except ValueError:
+            return None
 
 
 def strip_whitespace(value):
