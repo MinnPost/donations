@@ -381,12 +381,14 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
                     card=request.form["stripeToken"] 
             )
             stripe_card = customer.default_source
+            form_data["stripe_type"] = "card"
         elif "bankToken" in request.form:
             customer = stripe.Customer.create(
                 email=email,
                 source=request.form["bankToken"]
             )
             stripe_bank_account = customer.default_source
+            form_data["stripe_type"] = "bank_account"
         amount_formatted = format(amount, ",.2f")
     except stripe.error.CardError as e:
         body = e.json_body
@@ -1050,7 +1052,9 @@ def add_recurring_donation(contact=None, form=None, customer=None):
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
 
-    apply_card_details(rdo=rdo, customer=customer)
+    if form["stripe_type"] == "card":
+        apply_card_details(rdo=rdo, customer=customer)
+
     rdo.save()
 
     return rdo
