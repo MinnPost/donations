@@ -66,7 +66,7 @@ class BaseForm(FlaskForm):
         "Email address", [validators.DataRequired(), validators.Email()]
     )
     billing_zip = StringField(u"ZIP Code", [validators.Length(max=5)])
-    stripeToken = HiddenField(u"Stripe token", [validators.InputRequired()])
+    #stripeToken = HiddenField(u"Stripe token", [validators.InputRequired()])
     #recaptchaToken = HiddenField(u"Recaptcha token", [validators.InputRequired()])
     description = HiddenField(u"Description", [validators.InputRequired()])
     #reason = StringField(u"Encouraged to give by", [validators.Length(max=255)])
