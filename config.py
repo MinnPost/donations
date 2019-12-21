@@ -34,10 +34,10 @@ CELERYBEAT_SCHEDULE = {
         "schedule": timedelta(minutes=CHARGE_MINUTES_FREQUENCY)
         # texas 'schedule': crontab(minute='0', hour=BATCH_HOURS)
     },
-    #"charge-ach": {
-    #    "task": "batch.update_ach_charges",
-    #    "schedule": timedelta(minutes=ACH_MINUTES_FREQUENCY)
-    #},
+    "charge-ach": {
+        "task": "batch.update_ach_charges",
+        "schedule": timedelta(minutes=ACH_MINUTES_FREQUENCY)
+    },
 }
 CELERYD_LOG_FORMAT = "%(levelname)s %(name)s/%(module)s:%(lineno)d - %(message)s"
 CELERYD_TASK_LOG_FORMAT = "%(levelname)s %(name)s/%(module)s:%(lineno)d - %(message)s"

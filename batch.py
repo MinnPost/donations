@@ -86,7 +86,7 @@ def charge_cards():
 
     log = Log()
 
-    log.it("---Starting batch job...")
+    log.it("---Starting batch card job...")
 
     three_days_ago = (datetime.now(tz=zone) - timedelta(days=3)).strftime("%Y-%m-%d")
     today = datetime.now(tz=zone).strftime("%Y-%m-%d")
@@ -103,6 +103,33 @@ def charge_cards():
         amount = amount_to_charge(opportunity)
         log.it(
             f"---- Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
+        )
+        charge(opportunity)
+
+    log.send()
+
+    lock.release()
+
+
+@celery.task()
+def update_ach_charges():
+
+    lock = Lock(key='update-ach-charges-lock')
+    lock.acquire()
+
+    log = Log()
+
+    log.it('---Starting batch ach job...')
+    log.it('---Checking for status changes on ACH charges...')
+
+    opportunities = Opportunity.list(begin=three_days_ago, end=today, stage_name="ACH Pending")
+
+    for opportunity in opportunities:
+        if not opportunity.stripe_customer_id:
+            continue
+        amount = amount_to_charge(opportunity)
+        log.it(
+            f"---- ACH Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
         )
         charge(opportunity)
 
