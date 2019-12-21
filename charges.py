@@ -122,19 +122,35 @@ def charge(opportunity):
     opportunity.stage_name = "In Process"
     opportunity.save()
 
+    if opportunity.stripe_card is not None:
+        charge_source = opportunity.stripe_card
+    elif opportunity.stripe_bank_account is not None:
+        charge_source = opportunity.stripe_bank_account
+    else:
+        charge_source = None
+
+     if opportunity.shipping_name != '':
+        shipping_address = {'line1' : opportunity.shipping_street, 'city' : opportunity.shipping_city, 'state' : opportunity.shipping_state, 'postal_code' : opportunity.shipping_zip, 'country' : opportunity.shipping_country}
+        if shipping_address.get('line1'):
+            shipping_details = {'name' : opportunity.shipping_name, 'address' : shipping_address}
+        else:
+            shipping_details = None
+    else:
+        shipping_details = None
+
     try:
         card_charge = stripe.Charge.create(
             customer=opportunity.stripe_customer_id,
             amount=int(amount * 100),
             currency="usd",
-            description=opportunity.description,
+            description=opportunity.stripe_description,
             metadata={
                 "opportunity_id": opportunity.id,
                 "account_id": opportunity.account_id,
                 "source": opportunity.referring_page,
             },
-            #shipping=shipping_details,
-            #source=charge_source,
+            shipping=shipping_details,
+            source=charge_source,
         )
     except stripe.error.CardError as e:
         # look for decline code:

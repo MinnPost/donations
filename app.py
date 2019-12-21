@@ -821,7 +821,7 @@ def authorization_notification(payload):
     last_name = name.last
     email = details["Buyer"]["Email"]
     zipcode = get_zip(details=details)
-    description = details["SellerOrderAttributes"]["StoreName"]
+    stripe_description = details["SellerOrderAttributes"]["StoreName"]
 
     logging.info("----Getting contact....")
     contact = Contact.get_or_create(
@@ -848,7 +848,7 @@ def authorization_notification(payload):
 
     opportunity = Opportunity(contact=contact, stage_name="Closed Won")
     opportunity.amount = amount
-    opportunity.description = description
+    opportunity.stripe_description = stripe_description
     opportunity.lead_source = "Amazon Alexa"
     opportunity.amazon_order_id = amzn_id
     opportunity.campaign_id = AMAZON_CAMPAIGN_ID
@@ -939,7 +939,7 @@ def add_opportunity(contact=None, form=None, customer=None):
     # default
     opportunity.amount = form.get("amount", 0)
     opportunity.campaign_id = form.get("campaign_id", DEFAULT_CAMPAIGN_ONETIME)
-    opportunity.description = "MinnPost Membership"
+    opportunity.stripe_description = "MinnPost Membership"
     opportunity.lead_source = "Stripe"
     opportunity.type = form.get("opp_type", "Donation")
     
@@ -1011,7 +1011,7 @@ def add_recurring_donation(contact=None, form=None, customer=None):
     # default
     rdo.amount = form.get("amount", 0)
     rdo.campaign_id = form.get("campaign_id", DEFAULT_CAMPAIGN_ONETIME)
-    rdo.description = "MinnPost Sustaining Membership"
+    rdo.stripe_description = "MinnPost Sustaining Membership"
     rdo.lead_source = "Stripe"
     
     # minnpost custom fields

@@ -335,6 +335,7 @@ class Opportunity(SalesforceObject):
         self.shipping_state = None
         self.shipping_zip = None
         self.shipping_country = None
+        self.stripe_description = None
         self.stripe_error_message = None
         self.stripe_bank_account = None
         self.stripe_card = None
@@ -404,6 +405,7 @@ class Opportunity(SalesforceObject):
                 Stripe_Bank_Account__c,
                 Stripe_Card__c,
                 Stripe_Customer_Id__c,
+                Stripe_Description__c,
                 Stripe_Error_Message__c,
                 Stripe_Transaction_ID__c
             FROM Opportunity
@@ -441,6 +443,7 @@ class Opportunity(SalesforceObject):
             y.stripe_bank_account = item["Stripe_Bank_Account__c"]
             y.stripe_card = item["Stripe_Card__c"]
             y.stripe_customer_id = item["Stripe_Customer_ID__c"]
+            y.stripe_description = ["Stripe_Description__c"]
             y.stripe_error_message = item["Stripe_Error_Message__c"]
             y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
             y.lock_key = item["Flask_Transaction_ID__c"]
@@ -563,6 +566,7 @@ class Opportunity(SalesforceObject):
             "Stripe_Agreed_to_pay_fees__c": self.agreed_to_pay_fees,
             "Stripe_Bank_Account__c": self.stripe_bank_account,
             "Stripe_Card__c": self.stripe_card,
+            "Stripe_Description__c": self.stripe_description,
             "Card_expiration_date__c": self.stripe_card_expiration,
             "Card_acct_last_4__c": self.stripe_card_last_4,
             "Stripe_Customer_ID__c": self.stripe_customer_id,
@@ -586,7 +590,7 @@ class Opportunity(SalesforceObject):
         return sf.updates(opportunities, post_submit_details)
 
     def __str__(self):
-        return f"{self.id}: {self.name} for {self.amount} ({self.description})"
+        return f"{self.id}: {self.name} for {self.amount} ({self.stripe_description})"
 
     def save(self):
 
@@ -656,7 +660,6 @@ class RDO(SalesforceObject):
         self.type = "Recurring Donation"
         self.date_established = today
         self.lead_source = None
-        self.description = None
 
         # set defaults for custom rdo fields
         self.agreed_to_pay_fees = False
@@ -696,6 +699,7 @@ class RDO(SalesforceObject):
         self.stripe_card_expiration = None
         self.stripe_card_last_4 = None
         self.stripe_customer_id = None
+        self.stripe_description = None
         self.stripe_transaction_id = None
         self.ticket_count = 0
 
@@ -753,7 +757,7 @@ class RDO(SalesforceObject):
             "Stripe_Agreed_to_pay_fees__c": self.agreed_to_pay_fees,
             "Stripe_Bank_Account__c": self.stripe_bank_account,
             "Stripe_Card__c": self.stripe_card,
-            "Stripe_Description__c": self.description,
+            "Stripe_Description__c": self.stripe_description,
             "Card_expiration_date__c": self.stripe_card_expiration,
             "Card_acct_last_4__c": self.stripe_card_last_4,
             "Stripe_Customer_ID__c": self.stripe_customer_id,
@@ -763,7 +767,7 @@ class RDO(SalesforceObject):
         return recurring_donation
 
     def __str__(self):
-        return f"{self.id}: {self.name} for {self.amount} ({self.description})"
+        return f"{self.id}: {self.name} for {self.amount} ({self.stripe_description})"
 
     # TODO sensible way to cache this to prevent it from being run multiple times when nothing
     # has changed? The opportunities themselves may've changed even when the RDO hasn't so
@@ -800,6 +804,7 @@ class RDO(SalesforceObject):
                 Stripe_Bank_Account__c,
                 Stripe_Card__c,
                 Stripe_Customer_Id__c,
+                Stripe_Description__c,
                 Stripe_Error_Message__c,
                 Stripe_Transaction_ID__c
             FROM Opportunity
@@ -817,6 +822,7 @@ class RDO(SalesforceObject):
             y.campaign_id = item["CampaignId"]
             y.close_date = item["CloseDate"]
             y.description = item["Description"]
+            y.stripe_description = ["Stripe_Description__c"]
             y.stage_name = "Pledged"
             y.type = item["Type"]
             y.payment_type = item["Payment_Type__c"]
