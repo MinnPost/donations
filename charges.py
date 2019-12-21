@@ -201,7 +201,6 @@ def charge(opportunity):
         opportunity.stage_name = "Closed Won"
         opportunity.save()
     else:
-        opportunity.stripe_card = charge.source.id
         opportunity.stripe_bank_account = charge.source.id
         opportunity.stage_name = "Closed Won"
         opportunity.save()
