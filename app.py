@@ -86,7 +86,7 @@ if ENABLE_SENTRY:
 
 locale.setlocale(locale.LC_ALL, "C")
 csp = {
-    "default-src": ["'self'", "*.texastribune.org"],
+    "default-src": ["'self'", "*.minnpost.com"],
     "font-src": [
         "'self'",
         "data:",
@@ -103,7 +103,7 @@ csp = {
     "img-src": [
         "'self'",
         "data:",
-        "*.texastribune.org",
+        "*.minnpost.com",
         "q.stripe.com",
         "www.facebook.com",
         "stats.g.doubleclick.net",
@@ -136,7 +136,7 @@ csp = {
     ],
     "connect-src": [
         "*.stripe.com",
-        "*.texastribune.org",
+        "*.minnpost.com",
         "www.google-analytics.com",
         "www.facebook.com",
         "stats.g.doubleclick.net",
@@ -160,7 +160,7 @@ csp = {
         "data:",
         "'unsafe-inline'",
         "'unsafe-eval'",
-        "*.texastribune.org",
+        "*.minnpost.com",
         "www.googleadservices.com",
         "js.stripe.com",
         "*.googleapis.com",
