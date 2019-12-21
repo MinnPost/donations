@@ -67,6 +67,10 @@ class Lock(object):
             raise AlreadyExecuting
         self.connection.setex(name=self.key, value="bar", time=1200)
 
+    def append(self, key, value):
+        if self.connection.get(key):
+            self.connection.setex(name=key, value=value, time=1200)
+
     def release(self):
         self.connection.delete(self.key)
 

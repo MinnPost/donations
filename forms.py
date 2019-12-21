@@ -1,4 +1,5 @@
 import re
+from decimal import Decimal, ROUND_HALF_UP
 from flask_wtf import FlaskForm
 from wtforms import validators
 from wtforms.fields import (
@@ -7,6 +8,8 @@ from wtforms.fields import (
     HiddenField,
     RadioField,
     StringField,
+    TextAreaField,
+    SelectMultipleField,
 )
 from wtforms.fields.html5 import EmailField
 
@@ -27,7 +30,7 @@ def format_amount(value):
         if value.startswith("$"):
             value = value[1:]
         try:
-            return float(re.sub("[^\d\.]", "", value))
+            return Decimal(re.sub("[^\d\.]", "", value))
         except ValueError:
             return None
 
@@ -79,3 +82,34 @@ class DonateForm(BaseForm):
         u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
     )
     #billing_zip = StringField(u"ZIP Code", [validators.Length(max=5)])
+
+class FinishForm(FlaskForm):
+    class Meta:
+        def bind_field(self, form, unbound_field, options):
+            filters = unbound_field.kwargs.get("filters", [])
+            filters.append(strip_whitespace)
+            return unbound_field.bind(form=form, filters=filters, **options)
+    lock_key = HiddenField(u"Lock Key", [validators.InputRequired()])
+    reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
+    reason_shareable = BooleanField(
+        u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    daily_newsletter = BooleanField(
+        u"Daily Newsletter?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    sunday_review_newsletter = BooleanField(
+        u"Sunday Review?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    greater_mn_newsletter = BooleanField(
+        u"Greater MN Newsletter?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    dc_memo = BooleanField(
+        u"DC Memo?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    event_messages = BooleanField(
+        u"Events & Membership Messages?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    feedback_messages = BooleanField(
+        u"Feedback opportunities?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+

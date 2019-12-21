@@ -9,6 +9,8 @@ import locale
 import logging
 import os
 import re
+import uuid
+from batch import Lock
 from config import (
     TIMEZONE,
     AMAZON_MERCHANT_ID,
@@ -55,6 +57,7 @@ from flask import Flask, redirect, render_template, request, send_from_directory
 from forms import (
     format_amount,
     DonateForm,
+    FinishForm,
 )
 from npsp import RDO, Contact, Opportunity, Affiliation, Account
 from amazon_pay.ipn_handler import IpnHandler
@@ -284,12 +287,16 @@ def add_donation(form=None, customer=None, donation_type=None):
         logging.info("----Creating one time payment...")
         opportunity = add_opportunity(contact=contact, form=form, customer=customer)
         charge(opportunity)
+        lock = Lock(key=opportunity.lock_key)
+        lock.append(key=opportunity.lock_key, value=opportunity.id)
         logging.info(opportunity)
         notify_slack(contact=contact, opportunity=opportunity)
         return True
     else:
         logging.info("----Creating recurring payment...")
         rdo = add_recurring_donation(contact=contact, form=form, customer=customer)
+        lock = Lock(key=rdo.lock_key)
+        lock.append(key=rdo.lock_key, value=rdo.id)
 
     # get opportunities
     opportunities = rdo.opportunities()
@@ -305,14 +312,60 @@ def add_donation(form=None, customer=None, donation_type=None):
     return True
 
 
+@celery.task(name="app.update_donation", bind=True, max_retries=None)
+def update_donation(self, form=None):
+    """
+    Update the post-submit donation info in SF if supplied
+    """
+
+    form = clean(form)
+
+    lock_key = form.get("lock_key", "")
+    post_submit_details = dict()
+
+    # update the post submit fields
+
+    # testimonial
+    reason_for_supporting = form.get("reason_for_supporting", "")
+    reason_for_supporting_shareable = form.get("reason_shareable", False)
+
+    # newsletters
+    daily_newsletter = form.get("04471b1571", False)
+    sunday_review_newsletter = form.get("94fc1bd7c9", False)
+    greater_mn_newsletter = form.get("ce6fd734b6", False)
+    dc_memo = form.get("d89249e207", False)
+    event_messages = form.get("68449d845c", False)
+    feedback_messages = form.get("958bdb5d3c", False)
+
+    # testimonial in salesforce
+    post_submit_details["Reason_for_Gift__c"] = reason_for_supporting
+    post_submit_details["Reason_for_gift_shareable__c"] = reason_for_supporting_shareable
+
+    # newsletters in salesforce
+    post_submit_details["Daily_newsletter_sign_up__c"] = daily_newsletter
+    post_submit_details["Greater_MN_newsletter__c"] = greater_mn_newsletter
+    post_submit_details["Sunday_Review_newsletter__c"] = sunday_review_newsletter
+    post_submit_details["DC_Memo_sign_up__c"] = dc_memo
+    post_submit_details["Event_member_benefit_messages__c"] = event_messages
+    post_submit_details["Input_feedback_messages__c"] = feedback_messages
+
+    opps = Opportunity.load_after_submit(
+        lock_key=lock_key
+    )
+
+    if not opps:
+        print('no sf id here yet. delay and try again.')
+        raise self.retry(countdown=200)
+
+    response = Opportunity.update_post_submit(opps, post_submit_details)
+    logging.info(response)
+    logging.info("post submit updated")
+
+
 def do_charge_or_show_errors(form_data, template, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")
 
     amount = form_data["amount"]
-    if (amount).is_integer():
-        amount_formatted = int(amount)
-    else:
-        amount_formatted = format(amount, ',.2f')
 
     email = form_data["email"]
     first_name = form_data["first_name"]
@@ -439,10 +492,7 @@ def give_form():
     # amount is the bare minimum to work
     if request.args.get("amount"):
         amount = format_amount(request.args.get("amount"))
-        if (amount).is_integer():
-            amount_formatted = int(amount)
-        else:
-            amount_formatted = format(amount, ',.2f')
+        amount_formatted = format(amount, ",.2f")
     else:
         message = "The page you requested can't be found."
         return render_template("error.html", message=message)
@@ -536,6 +586,11 @@ def give_form():
 
     step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
 
+    # make a uuid for redis and lock it
+    lock_key = str(uuid.uuid4())
+    lock = Lock(key=lock_key)
+    lock.acquire()
+
     return render_template(
         template,
         form=form,
@@ -546,6 +601,7 @@ def give_form():
         campaign=campaign, customer_id=customer_id,
         show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
+        lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
@@ -580,11 +636,6 @@ def plaid_token():
 def calculate_fees():
 
     amount = format_amount(request.form["amount"])
-    if (amount).is_integer():
-        amount_formatted = int(amount)
-    else:
-        amount_formatted = format(amount, ',.2f')
-
     fees = ''
     
     # get fee amount to send to stripe
@@ -600,17 +651,14 @@ def calculate_fees():
 def thanks():
     template    = "thanks.html"
     form        = DonateForm()
-    form_action = "/thanks/"
+    form_action = "/finish/"
 
     # use form.data instead of request.form from here on out
     # because it includes all filters applied by WTF Forms
     form_data = form.data
 
     amount = form_data["amount"]
-    if (amount).is_integer():
-        amount_formatted = int(amount)
-    else:
-        amount_formatted = format(amount, ',.2f')
+    amount_formatted = format(amount, ",.2f")
 
     customer_id = request.form["customer_id"]
 
@@ -624,6 +672,8 @@ def thanks():
     else:
         yearly = 1
     level = check_level(amount, frequency, yearly)
+
+    lock_key = request.form["lock_key"]
 
     #if form.validate():
     #    print('Done with stripe processing {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
@@ -639,6 +689,7 @@ def thanks():
         email=email,
         first_name=first_name,
         last_name=last_name,
+        lock_key=lock_key,
         #session=session,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
@@ -655,6 +706,23 @@ def thanks():
     #        key=app.config['STRIPE_KEYS']['publishable_key']
     #    )
 
+
+@app.route('/finish/', methods=["GET", "POST"])
+def finish():
+
+    template    = "finish.html"
+    form = FinishForm()
+
+    update_donation.delay(request.form)
+    app.logger.info("clearing lock")
+    lock_key = request.form["lock_key"]
+    lock = Lock(key=lock_key)
+    lock.release()
+    return render_template(
+        template,
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
+    )
 
 @app.route("/error")
 def error():
@@ -916,6 +984,8 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.shipping_country = form.get("shipping_country", "")
     opportunity.stripe_customer_id = customer["id"]
     opportunity.subtype = form.get("opp_subtype", "Donation: Individual")
+
+    opportunity.lock_key = form.get("lock_key", "")
 
     # stripe customer handling
     customer = stripe.Customer.retrieve(customer["id"])

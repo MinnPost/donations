@@ -343,6 +343,7 @@ class Opportunity(SalesforceObject):
         self.stripe_customer_id = None
         self.stripe_transaction_id = None
         self.ticket_count = 0
+        self.lock_key = None
 
     @classmethod
     def list(
@@ -386,6 +387,7 @@ class Opportunity(SalesforceObject):
                 RecordType.Name,
                 StageName,
                 Type,
+                Flask_Transaction_ID__c,
                 Payment_Type__c,
                 Card_acct_last_4__c,
                 Card_expiration_date__c,
@@ -441,7 +443,63 @@ class Opportunity(SalesforceObject):
             y.stripe_customer_id = item["Stripe_Customer_ID__c"]
             y.stripe_error_message = item["Stripe_Error_Message__c"]
             y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
+            y.lock_key = item["Flask_Transaction_ID__c"]
             y.created = False
+            results.append(y)
+
+        return results
+
+
+    @classmethod
+    def load_after_submit(
+        cls,
+        begin=None,
+        end=None,
+        lock_key=None,
+        sf_connection=None,
+    ):
+
+        sf = SalesforceConnection() if sf_connection is None else sf_connection
+
+        if lock_key is None:
+            return False
+
+        where = f"""
+            WHERE Flask_Transaction_ID__c = '{lock_key}'
+        """
+
+        query = f"""
+            SELECT
+                Id,
+                Flask_Transaction_ID__c,
+                Reason_for_Gift__c,
+                Reason_for_gift_shareable__c,
+                Daily_newsletter_sign_up__c,
+                Greater_MN_newsletter__c,
+                Sunday_Review_newsletter__c,
+                DC_Memo_sign_up__c,
+                Event_member_benefit_messages__c,
+                Input_feedback_messages__c
+            FROM Opportunity
+            {where}
+        """
+
+        response = sf.query(query)
+        logging.debug(response)
+
+        results = list()
+        for item in response:
+            y = cls()
+            y.id = item["Id"]
+            y.lock_key = item["Flask_Transaction_ID__c"]
+            y.reason_for_supporting = "Reason_for_Gift__c"
+            y.reason_for_supporting_shareable = "Reason_for_gift_shareable__c"
+            y.daily_newsletter = "Daily_newsletter_sign_up__c"
+            y.greater_mn_newsletter = "Greater_MN_newsletter__c"
+            y.sunday_review_newsletter = "Sunday_Review_newsletter__c"
+            y.dc_memo = "DC_Memo_sign_up__c"
+            y.event_messages = "Event_member_benefit_messages__c"
+            y.feedback_messages = "Input_feedback_messages__c"
             results.append(y)
 
         return results
@@ -510,6 +568,7 @@ class Opportunity(SalesforceObject):
             "Stripe_Customer_ID__c": self.stripe_customer_id,
             "Stripe_Error_Message__c": self.stripe_error_message,
             "Stripe_Transaction_ID__c": self.stripe_transaction_id,
+            "Flask_Transaction_ID__c": self.lock_key,
         }
 
     @classmethod
@@ -518,6 +577,13 @@ class Opportunity(SalesforceObject):
             raise SalesforceException("at least one Opportunity must be specified")
         sf = SalesforceConnection() if sf_connection is None else sf_connection
         return sf.updates(opportunities, card_details)
+
+    @classmethod
+    def update_post_submit(cls, opportunities, post_submit_details, sf_connection=None):
+        if not opportunities:
+            raise SalesforceException("at least one Opportunity must be specified")
+        sf = SalesforceConnection() if sf_connection is None else sf_connection
+        return sf.updates(opportunities, post_submit_details)
 
     def __str__(self):
         return f"{self.id}: {self.name} for {self.amount} ({self.description})"
@@ -633,6 +699,8 @@ class RDO(SalesforceObject):
         self.stripe_transaction_id = None
         self.ticket_count = 0
 
+        self.lock_key = None
+
     def _format(self):
 
         # TODO be sure to reverse this on deserialization
@@ -690,6 +758,7 @@ class RDO(SalesforceObject):
             "Card_acct_last_4__c": self.stripe_card_last_4,
             "Stripe_Customer_ID__c": self.stripe_customer_id,
             "Stripe_Transaction_ID__c": self.stripe_transaction_id,
+            "Flask_Transaction_ID__c": self.lock_key,
         }
         return recurring_donation
 
@@ -718,6 +787,7 @@ class RDO(SalesforceObject):
                 Card_acct_last_4__c,
                 Card_expiration_date__c,
                 Card_type__c,
+                Flask_Transaction_ID__c,
                 npsp__Closed_Lost_Reason__c,
                 Referring_page__c,
                 Shipping_address_name__c,
@@ -769,6 +839,7 @@ class RDO(SalesforceObject):
             y.shipping_zip = item["Shipping_address_ZIP__c"]
             y.shipping_country = item["Shipping_address_country__c"]
             y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
+            y.lock_key = item["Flask_Transaction_ID__c"]
             y.created = False
             results.append(y)
         return results
