@@ -443,7 +443,7 @@ class Opportunity(SalesforceObject):
             y.stripe_bank_account = item["Stripe_Bank_Account__c"]
             y.stripe_card = item["Stripe_Card__c"]
             y.stripe_customer_id = item["Stripe_Customer_ID__c"]
-            y.stripe_description = ["Stripe_Description__c"]
+            y.stripe_description = item["Stripe_Description__c"]
             y.stripe_error_message = item["Stripe_Error_Message__c"]
             y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
             y.lock_key = item["Flask_Transaction_ID__c"]
@@ -822,7 +822,7 @@ class RDO(SalesforceObject):
             y.campaign_id = item["CampaignId"]
             y.close_date = item["CloseDate"]
             y.description = item["Description"]
-            y.stripe_description = ["Stripe_Description__c"]
+            y.stripe_description = item["Stripe_Description__c"]
             y.stage_name = "Pledged"
             y.type = item["Type"]
             y.payment_type = item["Payment_Type__c"]
