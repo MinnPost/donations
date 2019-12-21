@@ -178,10 +178,6 @@ csp = {
 
 
 app = Flask(__name__)
-
-if 'DYNO' in os.environ:
-    sslify = SSLify(app) # only trigger SSLify if the app is running on Heroku
-
 Talisman(
     app,
     content_security_policy={},
