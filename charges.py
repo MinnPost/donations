@@ -138,7 +138,7 @@ def charge(opportunity):
             shipping_details = None
 
         try:
-            card_charge = stripe.Charge.create(
+            charge = stripe.Charge.create(
                 customer=opportunity.stripe_customer_id,
                 amount=int(amount * 100),
                 currency="usd",
@@ -174,7 +174,7 @@ def charge(opportunity):
             # TODO should we raise this?
             return
 
-        if card_charge.status != "succeeded":
+        if charge.status != 'succeeded' and charge.status != 'pending':
             logging.error("Charge failed. Check Stripe logs.")
             opportunity.stage_name = "Failed"
             opportunity.stripe_error_message = "Error: Unknown. Check logs"
@@ -189,19 +189,19 @@ def charge(opportunity):
 
     # this is either pending or finished
     if charge.status == 'pending':
-            logging.info(f"ACH charge pending. Check at intervals to see if it processes.")
-            opportunity.stage_name = "ACH Pending"
-            opportunity.stripe_transaction_id = charge.id
-            opportunity.save()
+        logging.info(f"ACH charge pending. Check at intervals to see if it processes.")
+        opportunity.stage_name = "ACH Pending"
+        opportunity.stripe_transaction_id = charge.id
+        opportunity.save()
 
     # charge was successful
     if charge.source.object != 'bank_account':
-        opportunity.stripe_card = card_charge.source.id
-        opportunity.stripe_transaction_id = card_charge.id
+        opportunity.stripe_card = charge.source.id
+        opportunity.stripe_transaction_id = charge.id
         opportunity.stage_name = "Closed Won"
         opportunity.save()
     else:
-        opportunity.stripe_card = card_charge.source.id
+        opportunity.stripe_card = charge.source.id
         opportunity.stripe_bank_account = charge.source.id
         opportunity.stage_name = "Closed Won"
         opportunity.save()
