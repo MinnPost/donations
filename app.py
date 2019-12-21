@@ -987,17 +987,18 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.subtype = form.get("opp_subtype", "Donation: Individual")
 
     opportunity.lock_key = form.get("lock_key", "")
+    
+    if form["stripe_type"] == "card":
+        customer = stripe.Customer.retrieve(customer["id"])
+        # stripe customer handling
+        card = customer.sources.retrieve(customer.sources.data[0].id)
+        year = card.exp_year
+        month = card.exp_month
+        day = calendar.monthrange(year, month)[1]
 
-    # stripe customer handling
-    customer = stripe.Customer.retrieve(customer["id"])
-    card = customer.sources.retrieve(customer.sources.data[0].id)
-    year = card.exp_year
-    month = card.exp_month
-    day = calendar.monthrange(year, month)[1]
-
-    opportunity.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
-    opportunity.card_type = card.brand
-    opportunity.stripe_card_last_4 = card.last4
+        opportunity.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
+        opportunity.card_type = card.brand
+        opportunity.stripe_card_last_4 = card.last4
 
     opportunity.save()
     return opportunity
