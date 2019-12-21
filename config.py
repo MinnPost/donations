@@ -1,9 +1,6 @@
 import os
 
-from celery.schedules import crontab
-
-# from datetime import timedelta
-
+from datetime import timedelta
 
 def bool_env(val):
     """Replaces string based environment values with Python booleans"""
@@ -25,19 +22,22 @@ AMAZON_CAMPAIGN_ID = os.getenv("AMAZON_CAMPAIGN_ID", "")
 ########
 # Celery
 #
-
-# default is 4am and 4pm:
-BATCH_HOURS = os.getenv("BATCH_HOURS", "4, 16")
 CELERY_TIMEZONE = TIMEZONE
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 CELERY_ALWAYS_EAGER = bool_env("CELERY_ALWAYS_EAGER")
-# deprecated:
+CHARGE_MINUTES_FREQUENCY = os.getenv("CHARGE_MINUTES_FREQUENCY", 5)
+ACH_MINUTES_FREQUENCY = os.getenv("ACH_MINUTES_FREQUENCY", 10)
 CELERYBEAT_SCHEDULE = {
-    "every-day": {
+    "charge-cards": {
         "task": "batch.charge_cards",
-        "schedule": crontab(minute="0", hour=BATCH_HOURS),
-    }
+        "schedule": timedelta(minutes=CHARGE_MINUTES_FREQUENCY)
+        # texas 'schedule': crontab(minute='0', hour=BATCH_HOURS)
+    },
+    #"charge-ach": {
+    #    "task": "batch.update_ach_charges",
+    #    "schedule": timedelta(minutes=ACH_MINUTES_FREQUENCY)
+    #},
 }
 CELERYD_LOG_FORMAT = "%(levelname)s %(name)s/%(module)s:%(lineno)d - %(message)s"
 CELERYD_TASK_LOG_FORMAT = "%(levelname)s %(name)s/%(module)s:%(lineno)d - %(message)s"
