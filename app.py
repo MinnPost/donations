@@ -292,6 +292,9 @@ def add_donation(form=None, customer=None, donation_type=None):
         logging.info("----Creating recurring payment...")
         rdo = add_recurring_donation(contact=contact, form=form, customer=customer)
         lock = Lock(key=rdo.lock_key)
+        if not rdo.id:
+            logging.info("----No recurring payment ID yet; retry...")
+            raise self.retry(countdown=200)
         lock.append(key=rdo.lock_key, value=rdo.id)
 
     # get opportunities
