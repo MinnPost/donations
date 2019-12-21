@@ -129,7 +129,7 @@ def charge(opportunity):
     else:
         charge_source = None
 
-     if opportunity.shipping_name != '':
+    if opportunity.shipping_name != '':
         shipping_address = {'line1' : opportunity.shipping_street, 'city' : opportunity.shipping_city, 'state' : opportunity.shipping_state, 'postal_code' : opportunity.shipping_zip, 'country' : opportunity.shipping_country}
         if shipping_address.get('line1'):
             shipping_details = {'name' : opportunity.shipping_name, 'address' : shipping_address}
