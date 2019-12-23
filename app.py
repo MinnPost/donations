@@ -308,15 +308,9 @@ def add_donation(form=None, customer=None, donation_type=None):
         charge(opp)
 
         # do more rdo stuff
-        logging.info(rdo)
-
         lock = Lock(key=rdo.lock_key)
-        if rdo.id is None:
-            logging.info("----No recurring payment ID yet; retry...")
-            raise self.retry(countdown=200)
-        else:
-            lock.append(key=rdo.lock_key, value=rdo.id)
-
+        lock.append(key=rdo.lock_key, value=rdo.id)
+        logging.info(rdo)
         notify_slack(contact=contact, rdo=rdo)
         return True
 
@@ -1078,6 +1072,8 @@ def add_recurring_donation(contact=None, form=None, customer=None):
     rdo.shipping_zip = form.get("shipping_zip", "")
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
+
+    rdo.lock_key = form.get("lock_key", "")
 
     if form["stripe_type"] == "card":
         apply_card_details(rdo=rdo, customer=customer)
