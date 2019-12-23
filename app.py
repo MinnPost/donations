@@ -314,7 +314,8 @@ def add_donation(form=None, customer=None, donation_type=None):
         if rdo.id is None:
             logging.info("----No recurring payment ID yet; retry...")
             raise self.retry(countdown=200)
-        lock.append(key=rdo.lock_key, value=rdo.id)
+        else:
+            lock.append(key=rdo.lock_key, value=rdo.id)
 
         notify_slack(contact=contact, rdo=rdo)
         return True
