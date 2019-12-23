@@ -11,7 +11,6 @@
 @import 'tools/mixins';
 @import 'tools/functions';
 @import 'tools/helpers';
-@import 'tools/sass-burger/burger';
 
 
 //--------------------------------------*/
@@ -37,10 +36,7 @@
 //--------------------------------------*/
 // Modules
 //--------------------------------------*/
-//@import 'module/ads';
 @import 'module/logo';
-@import 'module/utilities';
-
 @import 'module/well';
 @import 'module/progress';
 @import 'module/panels';

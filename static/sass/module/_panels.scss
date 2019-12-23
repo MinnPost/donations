@@ -1,7 +1,7 @@
-.js .panel, .js .panel .form-item--honor-memory .honor-or-memory, .js .swag.swag--separate, .js .swag .form-item--atlantic_id {
+.js .panel, .js .panel .form-item--honor-memory .honor-or-memory {
 	display: none;
 }
-.no-js .panel, .js .panel .form-item--honor-memory .honor-or-memory, .no-js .swag .form-item--atlantic_id {
+.no-js .panel, .js .panel .form-item--honor-memory .honor-or-memory {
 	display: block;
 }
 
@@ -21,11 +21,6 @@
 		padding-left: 0;
 		margin-left: 0;
 	}
-	&#panel--review {
-		.actions {
-			font-size: $micro-size;
-		}
-	}
 	&#panel--pay {
 		.actions {
 			margin: $half-space 0 0 0;
@@ -43,21 +38,11 @@
 			}
 		}
 	}
-	.honor, .actions--edit-amount, .actions--pay-fees {
+	.actions--edit-amount, .actions--pay-fees {
 		font-family: $helvetica;
 	}
 	.actions--edit-amount {
 		width: auto;
-	}
-	&#panel--review {
-		.honor, .actions--edit-amount, .actions--pay-fees {
-			font-size: $small-size;
-		}
-	}
-	&#panel--review {
-		.actions--edit-amount {
-			float: right;
-		}
 	}
 	.form-item--honor-memory {
 		.honor-or-memory {
@@ -89,57 +74,6 @@
 	.actions--edit-amount, .actions--pay-fees {
 		font-size: 55%;
 		margin-bottom: $half-space;
-	}
-	.benefits {
-		margin-bottom: 0;
-		> label {
-			float: left;
-			max-width: 150px;
-			width: 32%;
-			height: 98px;
-			cursor: pointer;
-			margin-right: $quarter-space;
-			input {
-				display: none;
-			}
-			div {
-				padding: $half-space;
-				width: 100%;
-				height: 100%;
-			}
-			&:hover {
-				background: $gray-dark;
-				color: $white;
-			}
-		}
-		label.swag:last-of-type {
-			box-shadow: 0 0 3px 0 rgba(122,122,122, 1);
-		    display: block;
-		    float: left;
-		    max-width: 150px;
-		    text-align: center;
-		    font-family: $helvetica;
-		    height: 99px;
-		    margin-right: 0;
-		    div {
-		    	padding: $milli-space;
-		    }
-		}
-		label.swag.total--4:last-of-type {
-			max-width: 100%;
-			width: 100%;
-			height: 36px;
-			div {
-				padding: $quarter-space;
-			}
-		}
-		input:checked ~ div {
-		  background: $minnpost-blue;
-		  color: $white;
-		}
-		h3.swag, p.swag {
-			clear: both;
-		}
 	}
 }
 
