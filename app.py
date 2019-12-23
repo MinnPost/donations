@@ -359,7 +359,7 @@ def update_donation(self, form=None):
         )
 
         if not opps:
-            print('no opportunity id here yet. delay and try again.')
+            logging.info("No opportunity id here yet. Delay and try again.")
             raise self.retry(countdown=200)
 
         response = Opportunity.update_post_submit(opps, post_submit_details)
@@ -369,7 +369,7 @@ def update_donation(self, form=None):
         )
 
         if not rdo:
-            print('no recurring donation id here yet. delay and try again.')
+            logging.info("No recurring donation id here yet. Delay and try again.")
             raise self.retry(countdown=200)
 
         response = RDO.update_post_submit(rdo, post_submit_details)
@@ -693,10 +693,6 @@ def thanks():
 
     lock_key = request.form["lock_key"]
 
-    #if form.validate():
-    #    print('Done with stripe processing {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
-    #    print('try to update account now')
-    #    update_account.delay(form=request.form, account = {'levelint' : level.get('levelint', 0), 'level' : 'MinnPost {}'.format(level.get('level', '--None--').title())})
     return render_template(
         template,
         form_action=form_action,
@@ -713,19 +709,9 @@ def thanks():
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
-    #else:
-    #    print('ajax result donate form did not validate: error below')
-    #    print(form.errors)
-    #    message = "There was an issue saving your donation information."
-    #    print('Error with stripe processing {} {} {}'.format(email, first_name, last_name))
-    #    return render_template(
-    #        'error.html',
-    #        message=message,
-    #        key=app.config['STRIPE_KEYS']['publishable_key']
-    #    )
 
 
-@app.route('/finish/', methods=["GET", "POST"])
+@app.route("/finish/", methods=["GET", "POST"])
 def finish():
 
     template    = "finish.html"
