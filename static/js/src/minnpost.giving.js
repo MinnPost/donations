@@ -23,9 +23,6 @@
     'plaid_link' : '#authorize-ach',
     'minnpost_root' : 'https://www.minnpost.com',
     'donate_form_selector': '#donate',
-    'review_step_selector' : '#panel--review',
-    'details_step_selector' : '#panel--details',
-    'attendees_step_selector' : '#panel--attendees',
     'donate_step_selector' : '#panel--pay',
     'confirm_form_selector' : '#confirm',
     'confirm_step_selector' : '#panel--confirmation',
@@ -34,7 +31,7 @@
     'query' : 'step',
     'pay_cc_processing_selector' : 'input[id="edit-pay-fees"]',
     'fee_amount' : '.processing-amount',
-    'level_amount_selector' : '#panel--review .amount .level-amount',
+    'level_amount_selector' : '#panel--pay .amount .level-amount',
     'original_amount_selector' : '#amount',
     'frequency_selector' : '.frequency',
     'full_amount_selector' : '.full-amount',
@@ -196,15 +193,12 @@
       if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options, reset); // processing fees
       }
-
-      if ($(this.options.details_step_selector).length > 0 || $(this.options.review_step_selector).length > 0) {
-        this.options.level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
-        this.options.levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
-        this.honorOrMemory(this.element, this.options); // in honor or in memory of someone
-      }
       
       if ($(this.options.donate_step_selector).length > 0) {
+        this.options.level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
+        this.options.levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
         this.donateAnonymously(this.element, this.options); // anonymous
+        this.honorOrMemory(this.element, this.options); // in honor or in memory of someone
         this.outsideUnitedStates(this.element, this.options); // outside US
         this.shippingAddress(this.element, this.options); // shipping address
         this.allowMinnpostAccount(this.element, this.options, false); // option for creating minnpost account
@@ -486,17 +480,6 @@
           }
         }
       });
-      if ($(options.level_indicator_selector).length > 0 && $(options.review_benefits_selector).length > 0) {
-        $(options.level_indicator_selector, element).prop('class', levelclass);
-        $(options.level_name_selector).text(level.charAt(0).toUpperCase() + level.slice(1));
-
-        var review_level_benefits = this.getQueryStrings($(options.review_benefits_selector, element).prop('href'));
-        review_level_benefits = review_level_benefits['level'];
-        
-        var link = $(options.review_benefits_selector, element).prop('href');
-        link = link.replace(review_level_benefits, level);
-        $(options.review_benefits_selector).prop('href', link);
-      }
       if (returnvalue === 'name') {
         return level;
       } else if (returnvalue === 'num') {
@@ -632,15 +615,6 @@
       });
     }, // allowMinnpostAccount
 
-    populateAttendees: function(quantity) {
-      var attendees = '';
-      var attendee = $('.attendees > fieldset:first').html();
-      for (i = 1; i <= quantity; i++) {
-        attendees += '<fieldset class="attendee">' + attendee.replace(/_1/g, '_' + i) + '</fieldset>';
-      }
-      $('.attendees').html(attendees);
-    },
-
     displayAmount: function(element, options, single_unit_price, quantity, additional_amount, valid_code) {
       var amount = single_unit_price * parseInt(quantity, 10);
       if (additional_amount === '') {
@@ -660,21 +634,6 @@
       $(options.calculated_amount_selector).text(amount); // this is the preview text
       $(options.original_amount_selector).val(quantity * single_unit_price); // this is the amount field
       $(options.quantity_selector).text(quantity); // everywhere there's a quantity
-
-      if (quantity == 1) {
-        $('.attendee-title').text($('.attendee-title').data('single'));
-      } else {
-        $('.attendee-title').text($('.attendee-title').data('plural'));
-      }
-
-      $('.code-result').remove();
-      if (valid_code === true) {
-        $('.apply-promo-code').after('<p class="code-result success">Your member discount code was successfully added.</p>');
-        $('.show-' + options.single_unit_price_attribute).text(single_unit_price);
-        $('.apply-promo-code').text('Applied').addClass('btn--disabled');
-      } else if (valid_code === false) {
-        $('.apply-promo-code').after('<p class="code-result error">This code is incorrect. Try again.</p>');
-      }
 
     },
 
@@ -703,77 +662,7 @@
         
       });
 
-      var attendees = '';
-      $(options.review_step_selector).find('.btn').click(function() {
-        attendees = that.populateAttendees(quantity);
-      });
-
-      $('.progress--donation .panel--attendees').find('a').click(function() {
-        attendees = that.populateAttendees(quantity);
-      });
-
-      if ($(this.options.promocode_selector).length > 0) {
-        //$(this.options.promocode_selector).after('');
-        $('.apply-promo-code').click(function(event) {
-          var code = $(options.promocode_selector, element).val();
-          if ($(options.event_id_selector).length > 0) {
-            var event_id = $(options.event_id_selector, element).val();
-          } else {
-            var event_id = 1;
-          }
-          //use_promo = that.checkPromoCode(code);
-          event.preventDefault();
-            var data = {
-              promo_code: code,
-              event: event_id
-            };
-            $.ajax({
-              method: 'POST',
-              url: '/event-check-promo/',
-              data: data
-            }).done(function( data ) {
-              that.calculateAmount(element, options, data);
-              //that.displayAmount(element, options, data.single_unit_price, quantity, additional_amount, data.success);
-            });
-        });
-      }
-
     }, // calculateAmount
-
-    checkPromoCode: function(code) {
-      var data = {
-        promo_code: code
-      };
-      $.ajax({
-        method: 'POST',
-        url: '/event-check-promo/',
-        data: data
-      }).done(function( data ) {
-        if (data.success === true) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-    }, // checkPromoCode
-
-    usePromoCode: function(element, options) {
-      $(this.options.use_promocode_selector).parent().html('<a href="#" class="use-promo-code">Use promo code</a>');
-      if ($(this.options.promocode_selector).val() === '') {
-        $(options.promo_selector + ' div:first', element).hide();
-      } else {
-         $(options.promo_selector + ' div:last', element).hide();
-      }
-      $('.use-promo-code').click(function(event) {
-        $(options.promo_selector + ' div:first', element).show();
-        $(options.promo_selector + ' div:last', element).hide();
-        event.preventDefault();
-      });
-    }, //usePromoCode
-
-    addToCalendar: function(element, options) {
-      $(options.calendar_button_selector).css('display', 'inline-block');
-    }, // addToCalendar
 
     checkMinnpostAccountExists: function(element, options, email) {     
       var user = {
