@@ -82,23 +82,57 @@ def charge_cards():
 
     log = Log()
 
-    log.it("---Starting batch job...")
+    log.it("---Starting batch card job...")
 
-    three_days_ago = (datetime.now(tz=zone) - timedelta(days=10)).strftime("%Y-%m-%d")
+    ten_days_ago = (datetime.now(tz=zone) - timedelta(days=10)).strftime("%Y-%m-%d")
     today = datetime.now(tz=zone).strftime("%Y-%m-%d")
 
-    opportunities = Opportunity.list(begin=three_days_ago, end=today)
+    opportunities = Opportunity.list(begin=ten_days_ago, end=today)
 
     log.it("---Processing charges...")
 
     log.it(f"Found {len(opportunities)} opportunities available to process.")
 
     for opportunity in opportunities:
-        if not opportunity.stripe_customer:
+        if not opportunity.stripe_customer_id:
             continue
         amount = amount_to_charge(opportunity)
         log.it(
-            f"---- Charging ${amount} to {opportunity.stripe_customer} ({opportunity.name})"
+            f"---- Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
+        )
+        charge(opportunity)
+
+    log.send()
+
+    lock.release()
+
+
+@celery.task()
+def update_ach_charges():
+
+    lock = Lock(key="update-ach-charges-lock")
+    lock.acquire()
+
+    log = Log()
+
+    log.it('---Starting batch ach job...')
+    log.it('---Checking for status changes on ACH charges...')
+
+    ten_days_ago = (datetime.now(tz=zone) - timedelta(days=10)).strftime("%Y-%m-%d")
+    today = datetime.now(tz=zone).strftime("%Y-%m-%d")
+
+    opportunities = Opportunity.list(begin=ten_days_ago, end=today)
+
+    log.it("---Processing charges...")
+
+    log.it(f"Found {len(opportunities)} opportunities available to process.")
+
+    for opportunity in opportunities:
+        if not opportunity.stripe_customer_id:
+            continue
+        amount = amount_to_charge(opportunity)
+        log.it(
+            f"---- ACH Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
         )
         charge(opportunity)
 
