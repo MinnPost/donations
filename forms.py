@@ -41,6 +41,7 @@ def strip_whitespace(value):
     return value
 
 
+# all forms can inherit these options
 class BaseForm(FlaskForm):
     class Meta:
         def bind_field(self, form, unbound_field, options):
@@ -89,8 +90,10 @@ class BaseForm(FlaskForm):
     stripeToken = HiddenField(u"Stripe token", [validators.Optional()])
     bankToken = HiddenField(u"Bank token", [validators.Optional()])
     recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
+    update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
 
 
+# used for the main donate flow from the website
 class DonateForm(BaseForm):
     lock_key = HiddenField("Lock Key", [validators.Optional()])
     installment_period = StringField(
@@ -102,7 +105,7 @@ class DonateForm(BaseForm):
     anonymous = BooleanField(
         u"Anonymous?", false_values=(False, 'false', 0, '0', None, "None")
     )
-    in_honor_or_memory = RadioField(
+    in_honor_memory = RadioField(
         u"Honor or memory?", choices=[('1', 'True'), ('0', 'False')])
     in_honor_memory_of = StringField(
         u"Honor or memory of", [validators.Optional()]
@@ -132,6 +135,42 @@ class DonateForm(BaseForm):
     )
 
 
+# used for anniversary-patron, minnpost-default, minnroast-patron, other minimal donate forms
+class MinimalForm(BaseForm):
+    pledge = HiddenField("Pledge", [validators.Optional()])
+    stage = HiddenField("Stage Name", [validators.Optional()])
+    close_date = HiddenField("Close Date", [validators.Optional()])
+    opp_id = HiddenField("Opportunity ID", [validators.Optional()])
+    recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()])
+    opp_type = HiddenField("Opportunity Type", [validators.Optional()])
+    opp_subtype = HiddenField("Opportunity Sub-Type", [validators.Optional()])
+    redirect_url = HiddenField("Opportunity Type", [validators.Optional()])
+    display_as = StringField(
+        u"Preferred name", [validators.Optional()]
+    )
+    anonymous = BooleanField(
+        u"Anonymous?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+
+
+# used for minnpost-advertising
+class AdvertisingForm(MinimalForm):
+    minnpost_invoice = StringField(
+        u"Invoice #", [validators.required(message="Your invoice number is required.")]
+    )
+    client_organization = StringField(
+        u"Organization", [validators.required(message="Your organization name is required.")]
+    )
+
+
+# used for minnpost-cancel
+class CancelForm(MinimalForm):
+    email_user_when_canceled = HiddenField("Email user when canceled?", [validators.Optional()])
+    sf_id = HiddenField(u"Salesforce ID", [validators.InputRequired()])
+    sf_type = HiddenField(u"Salesforce Object Type", [validators.InputRequired()])
+
+
+# used for post-donate form with newsletter/testimonial options
 class FinishForm(FlaskForm):
     class Meta:
         def bind_field(self, form, unbound_field, options):
