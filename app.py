@@ -323,6 +323,7 @@ def update_donation(self, form=None):
 
     form = clean(form)
 
+    frequency = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     lock_key = form.get("lock_key", "")
     post_submit_details = dict()
 
@@ -352,15 +353,27 @@ def update_donation(self, form=None):
     post_submit_details["Event_member_benefit_messages__c"] = event_messages
     post_submit_details["Input_feedback_messages__c"] = feedback_messages
 
-    opps = Opportunity.load_after_submit(
-        lock_key=lock_key
-    )
+    if frequency == "one-time":
+        opps = Opportunity.load_after_submit(
+            lock_key=lock_key
+        )
 
-    if not opps:
-        print('no sf id here yet. delay and try again.')
-        raise self.retry(countdown=200)
+        if not opps:
+            print('no opportunity id here yet. delay and try again.')
+            raise self.retry(countdown=200)
 
-    response = Opportunity.update_post_submit(opps, post_submit_details)
+        response = Opportunity.update_post_submit(opps, post_submit_details)
+    else:
+        rdo = RDO.load_after_submit(
+            lock_key=lock_key
+        )
+
+        if not rdo:
+            print('no recurring donation id here yet. delay and try again.')
+            raise self.retry(countdown=200)
+
+        response = RDO.update_post_submit(rdo, post_submit_details)
+
     logging.info(response)
     logging.info("post submit updated")
 
