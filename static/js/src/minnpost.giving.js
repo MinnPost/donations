@@ -39,11 +39,12 @@
     'level_name_selector' : '.level-name',
     'name_selector' : '.form-item--display-name',
     'in_honor_or_memory_field_selector' : '.form-item--honor-memory',
-    'honor_or_memory_chooser' : 'input[name="in_honor_or_memory"]', // radio field
-    'honor_name_selector' : '.honor',
-    'memory_name_selector' : '.memory',
-    'honor_selector' : '#in-honor',
-    'memory_selector' : '#in-memory',
+    'honor_or_memory_chooser' : 'input[name="in_honor_or_memory"]', // radio fields
+    'honor_name_selector' : '.honor', // label
+    'memory_name_selector' : '.memory', // label
+    'honor_selector' : '#in-honor', // single radio field
+    'memory_selector' : '#in-memory', // single radio field
+    'honor_memory_input_group' : '.honor-or-memory', // holds the form field
     'notify_selector' : '.notify_someone',
     'notify_field_selector' : '.form-item--notify',
     'anonymous_selector' : '#anonymous',
@@ -193,7 +194,7 @@
         this.options.level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
         this.options.levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
         this.donateAnonymously(this.element, this.options); // anonymous
-        this.honorOrMemory(this.element, this.options); // in honor or in memory of someone
+        this.honorOrMemoryToggle(this.element, this.options); // in honor or in memory of someone
         this.outsideUnitedStates(this.element, this.options); // outside US
         this.shippingAddress(this.element, this.options); // shipping address
         this.allowMinnpostAccount(this.element, this.options, false); // option for creating minnpost account
@@ -475,36 +476,32 @@
     }, // checkLevel
 
     honorOrMemory: function(element, options) {
-      if ($(options.honor_selector, element).is(':checked')) {
-        $(options.in_honor_or_memory_field_selector + ' div' + options.honor_name_selector, element).show();
-      } else {
-        $(options.in_honor_or_memory_field_selector + ' div' + options.honor_name_selector, element).hide();
-        $(options.honor_name_selector + ' input', element).val('');
-      }
-
-      if ($(options.memory_selector, element).is(':checked')) {
-        $(options.in_honor_or_memory_field_selector + ' div' + options.memory_name_selector, element).show();
-      } else {
-        $(options.in_honor_or_memory_field_selector + ' div' + options.memory_name_selector, element).hide();
-        $(options.memory_name_selector + ' input', element).val('');
-      }
-
-      $(options.honor_or_memory_chooser, element).change(function() {
-        if ($(options.honor_selector).is(':checked')) {
-          $(options.in_honor_or_memory_field_selector + ' div' + options.honor_name_selector, element).show();
+      if ($(options.honor_or_memory_chooser + ':checked').val()) {
+        $(options.honor_memory_input_group, element).show();
+        if ($(options.honor_selector, element).is(':checked')) {
+          $(options.in_honor_or_memory_field_selector + ' span' + options.honor_name_selector, element).show();
         } else {
-          $(options.in_honor_or_memory_field_selector + ' div' + options.honor_name_selector, element).hide();
+          $(options.in_honor_or_memory_field_selector + ' span' + options.honor_name_selector, element).hide();
           $(options.honor_name_selector + ' input', element).val('');
         }
-        if ($(options.memory_selector).is(':checked')) {
-          $(options.in_honor_or_memory_field_selector + ' div' + options.memory_name_selector, element).show();
+        if ($(options.memory_selector, element).is(':checked')) {
+          $(options.in_honor_or_memory_field_selector + ' span' + options.memory_name_selector, element).show();
         } else {
-          $(options.in_honor_or_memory_field_selector + ' div' + options.memory_name_selector, element).hide();
+          $(options.in_honor_or_memory_field_selector + ' span' + options.memory_name_selector, element).hide();
           $(options.memory_name_selector + ' input', element).val('');
         }
-      });
-
+      } else {
+        $(options.honor_memory_input_group, element).hide();
+      }
     }, // honorOrMemory
+
+    honorOrMemoryToggle: function(element, options) {
+      var that = this;
+      that.honorOrMemory(that.element, that.options);
+      $(options.honor_or_memory_chooser, element).change(function() {
+        that.honorOrMemory(that.element, that.options);
+      });
+    }, // honorOrMemoryToggle
 
     outsideUnitedStates: function(element, options) {
       $(options.show_billing_country_selector).click(function() {
