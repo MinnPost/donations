@@ -315,7 +315,7 @@ class Opportunity(SalesforceObject):
         self.event_ticket_quantity = None
         self.fair_market_value = None
         self.include_amount_in_notification = False
-        self.in_honor_memory = None
+        self.in_honor_or_memory = None
         self.in_honor_memory_of = None
         self.notify_someone = False
         self.member_benefit_request_swag = None
@@ -544,7 +544,7 @@ class Opportunity(SalesforceObject):
             "Email_User_When_Canceled__c": self.email_cancel,
             "Fair_market_value__c": self.fair_market_value,
             "Include_amount_in_notification__c": self.include_amount_in_notification,
-            "In_Honor_Memory__c": self.in_honor_memory,
+            "In_Honor_Memory__c": self.in_honor_or_memory,
             "In_Honor_of_In_Memory__c": self.in_honor_memory_of,
             "Notify_someone__c": self.notify_someone,
             "Member_benefit_request_Swag__c": self.member_benefit_request_swag,
@@ -678,7 +678,7 @@ class RDO(SalesforceObject):
         self.email_notify = False
         self.email_cancel = False
         self.include_amount_in_notification = False
-        self.in_honor_memory = None
+        self.in_honor_or_memory = None
         self.in_honor_memory_of = None
         self.notify_someone = False
         self.member_benefit_request_swag = None
@@ -734,7 +734,7 @@ class RDO(SalesforceObject):
             "Email_to_notify__c": self.email_notify,
             "Email_User_When_Canceled__c": self.email_cancel,
             "Include_amount_in_notification__c": self.include_amount_in_notification,
-            "In_Honor_Memory__c": self.in_honor_memory,
+            "In_Honor_Memory__c": self.in_honor_or_memory,
             "In_honor_memory_of__c": self.in_honor_memory_of,
             "Notify_someone__c": self.notify_someone,
             #'npe03__Installments__c': self.installments, # only add this if we need to close it

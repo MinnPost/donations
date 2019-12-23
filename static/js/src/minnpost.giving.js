@@ -38,22 +38,22 @@
     'level_indicator_selector' : 'h2.level',
     'level_name_selector' : '.level-name',
     'name_selector' : '.form-item--display-name',
-    'honor_memory_name_selector' : '.form-item--honor-memory',
-    'honor_or_memory_chooser' : 'input[name="in-honor-or-memory"]',
+    'in_honor_or_memory_field_selector' : '.form-item--honor-memory',
+    'honor_or_memory_chooser' : 'input[name="in_honor_or_memory"]', // radio field
     'honor_name_selector' : '.honor',
     'memory_name_selector' : '.memory',
-    'honor_selector' : '#edit-in-honor',
-    'memory_selector' : '#edit-in-memory',
+    'honor_selector' : '#in-honor',
+    'memory_selector' : '#in-memory',
     'notify_selector' : '.notify_someone',
     'notify_field_selector' : '.form-item--notify',
-    'anonymous_selector' : '#edit-anonymous',
+    'anonymous_selector' : '#anonymous',
     'show_billing_country_selector' : '#billing_show_country',
     'billing_country_selector' : '.form-item--country',
     'show_shipping_country_selector' : '#shipping_show_country',
     'shipping_country_selector' : '.form-item--shipping-country',
     'shipping_address_selector' : '.form-item--shipping-address',
     'use_for_shipping_selector' : '#useforshipping',
-    'email_field_selector' : '#edit-email',
+    'email_field_selector' : '#email',
     'password_field_selector' : '#password',
     'first_name_field_selector' : '#first_name',
     'last_name_field_selector' : '#last_name',
@@ -476,30 +476,30 @@
 
     honorOrMemory: function(element, options) {
       if ($(options.honor_selector, element).is(':checked')) {
-        $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).show();
+        $(options.in_honor_or_memory_field_selector + ' div' + options.honor_name_selector, element).show();
       } else {
-        $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).hide();
+        $(options.in_honor_or_memory_field_selector + ' div' + options.honor_name_selector, element).hide();
         $(options.honor_name_selector + ' input', element).val('');
       }
 
       if ($(options.memory_selector, element).is(':checked')) {
-        $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).show();
+        $(options.in_honor_or_memory_field_selector + ' div' + options.memory_name_selector, element).show();
       } else {
-        $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).hide();
+        $(options.in_honor_or_memory_field_selector + ' div' + options.memory_name_selector, element).hide();
         $(options.memory_name_selector + ' input', element).val('');
       }
 
       $(options.honor_or_memory_chooser, element).change(function() {
         if ($(options.honor_selector).is(':checked')) {
-          $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).show();
+          $(options.in_honor_or_memory_field_selector + ' div' + options.honor_name_selector, element).show();
         } else {
-          $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).hide();
+          $(options.in_honor_or_memory_field_selector + ' div' + options.honor_name_selector, element).hide();
           $(options.honor_name_selector + ' input', element).val('');
         }
         if ($(options.memory_selector).is(':checked')) {
-          $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).show();
+          $(options.in_honor_or_memory_field_selector + ' div' + options.memory_name_selector, element).show();
         } else {
-          $(options.honor_memory_name_selector + ' div' + options.memory_name_selector, element).hide();
+          $(options.in_honor_or_memory_field_selector + ' div' + options.memory_name_selector, element).hide();
           $(options.memory_name_selector + ' input', element).val('');
         }
       });

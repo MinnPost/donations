@@ -965,7 +965,7 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.email_cancel = form.get("email_cancel", False)
     opportunity.fair_market_value = form.get("fair_market_value", "")
     opportunity.include_amount_in_notification = form.get("include_amount_in_notification", False)
-    opportunity.in_honor_memory = form.get("in_honor_memory", False)
+    opportunity.in_honor_or_memory = form.get("in_honor_or_memory", False)
     opportunity.in_honor_memory_of = form.get("in_honor_memory_of", "")
     opportunity.notify_someone = form.get("notify_someone", False)
     opportunity.member_benefit_request_swag = form.get("member_benefit_request_swag", "")
