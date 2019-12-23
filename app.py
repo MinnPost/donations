@@ -460,10 +460,10 @@ def validate_form(FormType, template, function=add_donation.delay):
         )
     if not form.validate():
         app.logger.error(f"Form validation errors: {form_errors}")
-        message = "There was an issue saving your donation information."
-        return render_template(
-            "error.html", message=message
-        )
+        body = []
+        for field in form.errors:
+            body.append({'field': field, 'message': form.errors[field]})
+        return jsonify(errors=body)
 
     return do_charge_or_show_errors(
         form_data=form_data,
@@ -955,7 +955,7 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.credited_as = form.get("display_as", None)
     opportunity.donor_first_name = form.get("first_name", "")
     opportunity.donor_last_name = form.get("last_name", "")
-    opportunity.donor_email = form['email']
+    opportunity.donor_email = form.get("email", "")
     opportunity.donor_address_one = form.get("billing_street", "")
     opportunity.donor_city = form.get("billing_city", "")
     opportunity.donor_state = form.get("billing_state", "")
@@ -985,6 +985,8 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.shipping_country = form.get("shipping_country", "")
     opportunity.stripe_customer_id = customer["id"]
     opportunity.subtype = form.get("opp_subtype", "Donation: Individual")
+
+    app.logger.info(f"credited as: {opportunity.credited_as} address one: {opportunity.donor_address_one} city: {opportunity.donor_city} state: {opportunity.donor_state} zip: {opportunity.donor_zip} country: {opportunity.donor_country}")
 
     opportunity.lock_key = form.get("lock_key", "")
     
@@ -1026,7 +1028,7 @@ def add_recurring_donation(contact=None, form=None, customer=None):
     rdo.credited_as = form.get("display_as", None)
     rdo.donor_first_name = form.get("first_name", "")
     rdo.donor_last_name = form.get("last_name", "")
-    rdo.donor_email = form['email']
+    rdo.donor_email = form.get("email", "")
     rdo.donor_address_one = form.get("billing_street", "")
     rdo.donor_city = form.get("billing_city", "")
     rdo.donor_state = form.get("billing_state", "")
@@ -1035,7 +1037,7 @@ def add_recurring_donation(contact=None, form=None, customer=None):
     rdo.email_notify = form.get("email_notify", "")
     rdo.email_cancel = form.get("email_cancel", False)
     rdo.include_amount_in_notification = form.get("include_amount_in_notification", False)
-    rdo.in_honor_memory = form.get("in_honor_memory", False)
+    rdo.in_honor_or_memory = form.get("in_honor_or_memory", False)
     rdo.in_honor_memory_of = form.get("in_honor_memory_of", "")
     rdo.notify_someone = form.get("notify_someone", False)
     #rdo.installments = None

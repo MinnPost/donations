@@ -48,12 +48,11 @@ class BaseForm(FlaskForm):
             filters.append(strip_whitespace)
             return unbound_field.bind(form=form, filters=filters, **options)
 
-    first_name = StringField(
-        u"First name", [validators.required(message="Your first name is required.")]
-    )
-    last_name = StringField(
-        u"Last name", [validators.required(message="Your last name is required.")]
-    )
+    source = HiddenField("Source", [validators.Optional()])
+    customer_id = HiddenField("Customer ID", [validators.Optional()])
+    campaign = HiddenField("Campaign ID", [validators.Length(max=18)])
+    description = HiddenField(u"Description", [validators.InputRequired()])
+
     amount = StringField(
         u"Amount",
         validators=[
@@ -62,26 +61,76 @@ class BaseForm(FlaskForm):
         ],
         filters=[format_amount],
     )
+    first_name = StringField(
+        u"First name", [validators.required(message="Your first name is required.")]
+    )
+    last_name = StringField(
+        u"Last name", [validators.required(message="Your last name is required.")]
+    )
+    
+    billing_street = StringField(
+        u"Street Address", [validators.Optional()]
+    )
+    billing_city = StringField(
+        u"City", [validators.Optional()]
+    )
+    billing_state = StringField(
+        u"State", [validators.Optional()]
+    )
+    billing_zip = StringField(
+        u"ZIP Code", [validators.Length(max=5)]
+    )
+    billing_country = StringField(
+        u"Country", [validators.Optional()]
+    )
     email = EmailField(
         "Email address", [validators.DataRequired(), validators.Email()]
     )
-    billing_zip = StringField(u"ZIP Code", [validators.Length(max=5)])
-    #stripeToken = HiddenField(u"Stripe token", [validators.InputRequired()])
-    #recaptchaToken = HiddenField(u"Recaptcha token", [validators.InputRequired()])
-    description = HiddenField(u"Description", [validators.InputRequired()])
-    #reason = StringField(u"Encouraged to give by", [validators.Length(max=255)])
-    campaign_id = HiddenField("Campaign ID", [validators.Length(max=18)])
-    #referral_id = HiddenField("Referral ID", [validators.Length(max=18)])
+    stripeToken = HiddenField(u"Stripe token", [validators.Optional()])
+    bankToken = HiddenField(u"Bank token", [validators.Optional()])
+    recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
 
 
 class DonateForm(BaseForm):
+    lock_key = HiddenField("Lock Key", [validators.Optional()])
     installment_period = StringField(
         u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
     )
+    display_as = StringField(
+        u"Preferred name", [validators.Optional()]
+    )
+    anonymous = BooleanField(
+        u"Anonymous?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+    in_honor_or_memory = RadioField(
+        u"Honor or memory?", choices=[('1', 'True'), ('0', 'False')])
+    in_honor_memory_of = StringField(
+        u"Honor or memory of", [validators.Optional()]
+    )
+
+    shipping_name = StringField(
+        u"Ship to", [validators.Optional()]
+    )
+    shipping_street = StringField(
+        u"Street Address", [validators.Optional()]
+    )
+    shipping_city = StringField(
+        u"City", [validators.Optional()]
+    )
+    shipping_state = StringField(
+        u"State", [validators.Optional()]
+    )
+    shipping_zip = StringField(
+        u"ZIP Code", [validators.Length(max=5)]
+    )
+    shipping_country = StringField(
+        u"Country", [validators.Optional()]
+    )
+
     pay_fees = BooleanField(
         u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
     )
-    #billing_zip = StringField(u"ZIP Code", [validators.Length(max=5)])
+
 
 class FinishForm(FlaskForm):
     class Meta:
