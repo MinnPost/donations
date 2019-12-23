@@ -171,7 +171,6 @@ class SalesforceConnection(object):
         """
 
         url = f"{self.instance_url}{path}"
-        logging.info(f"url is {url} and data is {repr(data)}")
         logging.debug(data)
         resp = requests.patch(url, headers=self.headers, data=json.dumps(data))
         self.check_response(response=resp, expected_status=expected_response)
