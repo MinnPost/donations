@@ -70,11 +70,6 @@
     'additional_amount_field' : '#additional_donation',
     'additional_amount_selector' : '.additional_donation',
     'has_additional_text_selector' : '.has_additional',
-    'promo_selector' : '.form-item--promo-code',
-    'use_promocode_selector' : '#use-promo-code',
-    'promocode_selector' : '#promo_code',
-    'event_id_selector' : '#event',
-    'calendar_button_selector' : '.addeventatc',
     'billing_selector' : 'fieldset.billing',
     'shipping_selector' : 'fieldset.shipping',
     'credit_card_fieldset' : '.payment-method-group',
@@ -211,14 +206,6 @@
       if ($(this.options.calculated_amount_selector).length > 0) {
         this.calculateAmount(this.element, this.options, ''); //
       } // calculate amount based on quantity
-
-      if ($(this.options.use_promocode_selector).length > 0) {
-        this.usePromoCode(this.element, this.options); // handle promo code field
-      } // allow users to enter a promo code on a page
-
-      if ($(this.options.calendar_button_selector).length > 0) {
-        this.addToCalendar(this.element, this.options);
-      } // there is an event details item; allow for an add to calendar button
 
       if ($(this.options.confirm_step_selector).length > 0) {
         this.showNewsletterSettings(this.element, this.options);
