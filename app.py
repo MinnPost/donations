@@ -52,7 +52,7 @@ from plaid.errors import APIError, ItemError
 from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
 from flask import Flask, redirect, render_template, request, send_from_directory, jsonify, session
 from forms import (
     format_amount,
@@ -186,7 +186,7 @@ Talisman(
 )
 
 limiter = Limiter(
-    app, key_func=get_remote_address, default_limits=["200 per day", "50 per hour"]
+    app, key_func=get_ipaddr, default_limits=["200 per day", "25 per hour"]
 )
 
 log_level = logging.getLevelName(LOG_LEVEL)
