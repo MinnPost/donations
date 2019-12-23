@@ -40,10 +40,7 @@
     'name_selector' : '.form-item--display-name',
     'in_honor_or_memory_field_selector' : '.form-item--honor-memory',
     'honor_or_memory_chooser' : 'input[name="in_honor_or_memory"]', // radio fields
-    'honor_name_selector' : '.honor', // label
-    'memory_name_selector' : '.memory', // label
-    'honor_selector' : '#in-honor', // single radio field
-    'memory_selector' : '#in-memory', // single radio field
+    'honor_type_selector' : '.honor_type', // span inside label
     'honor_memory_input_group' : '.honor-or-memory', // holds the form field
     'notify_selector' : '.notify_someone',
     'notify_field_selector' : '.form-item--notify',
@@ -478,20 +475,10 @@
     honorOrMemory: function(element, options) {
       if ($(options.honor_or_memory_chooser + ':checked').val()) {
         $(options.honor_memory_input_group, element).show();
-        if ($(options.honor_selector, element).is(':checked')) {
-          $(options.in_honor_or_memory_field_selector + ' span' + options.honor_name_selector, element).show();
-        } else {
-          $(options.in_honor_or_memory_field_selector + ' span' + options.honor_name_selector, element).hide();
-          $(options.honor_name_selector + ' input', element).val('');
-        }
-        if ($(options.memory_selector, element).is(':checked')) {
-          $(options.in_honor_or_memory_field_selector + ' span' + options.memory_name_selector, element).show();
-        } else {
-          $(options.in_honor_or_memory_field_selector + ' span' + options.memory_name_selector, element).hide();
-          $(options.memory_name_selector + ' input', element).val('');
-        }
+        $(options.honor_type_selector).text($(options.honor_or_memory_chooser + ':checked').val());
       } else {
         $(options.honor_memory_input_group, element).hide();
+        $(options.honor_name_selector + ' input', element).val('');
       }
     }, // honorOrMemory
 
