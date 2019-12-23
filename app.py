@@ -279,6 +279,10 @@ def add_donation(form=None, customer=None, donation_type=None):
     if contact.duplicate_found:
         send_multiple_account_warning(contact)
 
+    if form["in_honor_or_memory"] != None:
+        honor_or_memory = form["in_honor_or_memory"]
+        form["in_honor_or_memory"] = 'In ' + honor_or_memory + 'of ...'
+
     if frequency == "one-time":
         logging.info("----Creating one time payment...")
         opportunity = add_opportunity(contact=contact, form=form, customer=customer)
@@ -965,7 +969,7 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.email_cancel = form.get("email_cancel", False)
     opportunity.fair_market_value = form.get("fair_market_value", "")
     opportunity.include_amount_in_notification = form.get("include_amount_in_notification", False)
-    opportunity.in_honor_or_memory = form.get("in_honor_or_memory", False)
+    opportunity.in_honor_or_memory = form.get("in_honor_or_memory", "")
     opportunity.in_honor_memory_of = form.get("in_honor_memory_of", "")
     opportunity.notify_someone = form.get("notify_someone", False)
     opportunity.member_benefit_request_swag = form.get("member_benefit_request_swag", "")
@@ -985,8 +989,6 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.shipping_country = form.get("shipping_country", "")
     opportunity.stripe_customer_id = customer["id"]
     opportunity.subtype = form.get("opp_subtype", "Donation: Individual")
-
-    app.logger.info(f"credited as: {opportunity.credited_as} address one: {opportunity.donor_address_one} city: {opportunity.donor_city} state: {opportunity.donor_state} zip: {opportunity.donor_zip} country: {opportunity.donor_country}")
 
     opportunity.lock_key = form.get("lock_key", "")
     
@@ -1037,7 +1039,7 @@ def add_recurring_donation(contact=None, form=None, customer=None):
     rdo.email_notify = form.get("email_notify", "")
     rdo.email_cancel = form.get("email_cancel", False)
     rdo.include_amount_in_notification = form.get("include_amount_in_notification", False)
-    rdo.in_honor_or_memory = form.get("in_honor_or_memory", False)
+    rdo.in_honor_or_memory = form.get("in_honor_or_memory", "")
     rdo.in_honor_memory_of = form.get("in_honor_memory_of", "")
     rdo.notify_someone = form.get("notify_someone", False)
     #rdo.installments = None
