@@ -40,21 +40,6 @@
     'full_amount_selector' : '.full-amount',
     'level_indicator_selector' : 'h2.level',
     'level_name_selector' : '.level-name',
-    'review_benefits_selector' : '.review-benefits',
-    'allow_upsell' : true,
-    'upsell_btn_selector' : '.btn--upsell',
-    'upsell_selector' : '.well--upsell',
-    'upsell_amount_selector' : '.upsell-amount',
-    'swag_selector' : '.swag',
-    'swag_decline_selector' : '#swag-no',
-    'swag_nyt_selector' : 'input[name="nyt"]',
-    'separate_swag_selector' : 'fieldset.swag--separate',
-    'separate_swag_redeem' : '.swag-redeem--separate',
-    'swag_selector_choose_multiple' : '.swag--choose-multiple',
-    'swag_choose_multiple_name' : 'swag_thankyou',
-    'atlantic_status' : 'input[name="swag_atlanticsubscription"]',
-    'atlantic_existing' : '#atlantic_existing',
-    'atlantic_selector' : '.form-item--atlantic_id',
     'name_selector' : '.form-item--display-name',
     'honor_memory_name_selector' : '.form-item--honor-memory',
     'honor_or_memory_chooser' : 'input[name="in-honor-or-memory"]',
@@ -69,7 +54,6 @@
     'billing_country_selector' : '.form-item--country',
     'show_shipping_country_selector' : '#shipping_show_country',
     'shipping_country_selector' : '.form-item--shipping-country',
-    //'needs_shipping_selector' : '.swag--shipping',
     'shipping_address_selector' : '.form-item--shipping-address',
     'use_for_shipping_selector' : '#useforshipping',
     'email_field_selector' : '#edit-email',
@@ -131,13 +115,7 @@
         'name' : 'platinum',
         'min' : 240
       }
-    },
-    'upsell' : {
-      'bronze' : true,
-      'silver' : 9,
-      'gold' : 19,
-      'platinum' : false
-    },
+    }
 
   }; // end defaults
 
@@ -186,8 +164,6 @@
       this.options.processing_fee = (Math.round(parseFloat(this.options.fee_amount)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
       this.options.processing_fee_text = this.options.processing_fee;
       
-      this.options.upsell_amount = parseFloat($(this.options.upsell_amount_selector, this.element).text());
-      this.options.upsold = this.options.amount + this.options.upsell_amount;
       this.options.cardType = null;
       this.options.create_account = false;
 
@@ -225,8 +201,6 @@
         this.options.level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
         this.options.levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
         this.honorOrMemory(this.element, this.options); // in honor or in memory of someone
-        this.swag(this.element, this.options, false); // manage swag display
-        this.upsell(this.element, this.options, this.options.amount, this.options.frequency); // upsell to next level
       }
       
       if ($(this.options.donate_step_selector).length > 0) {
@@ -530,41 +504,6 @@
       }
     }, // checkLevel
 
-    upsell: function(element, options, amount, frequency) {
-      if (options.allow_upsell === true) {
-        var that = this;
-        var amount_monthly;
-
-        if (frequency === 12) {
-          amount_monthly = amount;
-        } else if (frequency === 1) {
-          amount_monthly = amount / frequency;
-        }
-
-        $.each(options.upsell, function(index, value) {
-          if (index === options.level) { // current level upsell
-            if ((value !== true && amount_monthly < value) || value === false) {
-              $(options.upsell_selector, element).hide();
-            }
-          }
-        });
-
-        $(options.upsell_btn_selector, element).click(function(event) {
-          var upsold = options.upsold;
-          that.options.amount = upsold;
-          $(options.level_amount_selector, element).text(upsold);
-          $(options.full_amount_selector, element).text(upsold);
-          $(options.original_amount_selector, element).val(upsold);
-          $(this).remove();
-          event.stopPropagation();
-          event.preventDefault();
-          that.init(true, upsold);
-        });
-      } else {
-        $(options.upsell_selector, element).hide();
-      }
-    }, // upsell
-
     honorOrMemory: function(element, options) {
       if ($(options.honor_selector, element).is(':checked')) {
         $(options.honor_memory_name_selector + ' div' + options.honor_name_selector, element).show();
@@ -596,55 +535,6 @@
       });
 
     }, // honorOrMemory
-
-    swag: function(element, options, change) {
-      
-      var that = this;
-      var currentlevel = that.options.levelnum;
-
-      if (change === false) { // keep this from repeating
-        $(options.swag_selector, element).hide(); // hide all the swag items first
-        $(options.swag_selector, element).filter(function(index) { // only show items that are less than or equal to donation level
-          return $(this).prop('class').slice(-1) <= currentlevel;
-        }).show();
-
-        $(options.separate_swag_redeem, element).click(function(event) { // if user clicks to redeem a separate item (ie atlantic)
-          event.stopImmediatePropagation();
-          $(options.separate_swag_selector, element).toggle(); // show the options there
-          return false;
-        });
-      }
-
-      if ($(options.atlantic_existing, element).is(':checked')) { // if user has existing atlantic subscription
-        $(options.atlantic_selector, element).show();
-      } else {
-        $(options.atlantic_selector, element).hide();
-      }
-
-      $(options.atlantic_status, element).change(function() { // if user clicks one of the atlantic radio buttons
-        that.swag(element, options, true);
-      });
-
-      $(options.swag_decline_selector, element).click(function(event) {
-        $(options.swag_nyt_selector, element).prop('checked', false);
-      });
-
-      var maximum_choose = $(options.swag_selector_choose_multiple, element).data('maximum-choose');
-      $(options.swag_selector_choose_multiple, element).show();
-      $(options.swag_selector_choose_multiple, element).find('label, .swag').show();
-      var count_checked = $(options.swag_selector_choose_multiple + ' input[name="' + options.swag_choose_multiple_name + '"]:checked').length;
-      $('input', options.swag_selector_choose_multiple).change(function() { // if user clicks one of the atlantic radio buttons
-        if ( $(this).prop('type') == 'checkbox') {
-          count_checked = $(options.swag_selector_choose_multiple + ' input[name="' + options.swag_choose_multiple_name + '"]:checked').length;
-          if (maximum_choose === count_checked) {
-            $('input:not(:checked)', options.swag_selector_choose_multiple).attr('disabled',true);
-          } else {
-            $('input:not(:checked)', options.swag_selector_choose_multiple).attr('disabled',false);
-          }
-        }
-      });
-
-    }, // swag
 
     outsideUnitedStates: function(element, options) {
       $(options.show_billing_country_selector).click(function() {
