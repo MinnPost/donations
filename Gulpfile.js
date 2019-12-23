@@ -50,6 +50,7 @@ function styles() {
       mqpacker( {
         'sort': true
       } ),
+      autoprefixer(),
       cssnano( {
         'safe': true // Use safe optimizations.
       } ) // Minify
