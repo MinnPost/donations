@@ -295,24 +295,29 @@ def add_donation(form=None, customer=None, donation_type=None):
     else:
         logging.info("----Creating recurring payment...")
         rdo = add_recurring_donation(contact=contact, form=form, customer=customer)
+
+        # get opportunities
+        opportunities = rdo.opportunities()
+        today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
+        opp = [
+            opportunity
+            for opportunity in opportunities
+            if opportunity.close_date == today
+        ][0]
+        # charge the first one
+        charge(opp)
+
+        # do more rdo stuff
+        logging.info(rdo)
+
         lock = Lock(key=rdo.lock_key)
-        if not rdo.id:
+        if rdo.id is None:
             logging.info("----No recurring payment ID yet; retry...")
             raise self.retry(countdown=200)
         lock.append(key=rdo.lock_key, value=rdo.id)
 
-    # get opportunities
-    opportunities = rdo.opportunities()
-    today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
-    opp = [
-        opportunity
-        for opportunity in opportunities
-        if opportunity.close_date == today
-    ][0]
-    charge(opp)
-    logging.info(rdo)
-    notify_slack(contact=contact, rdo=rdo)
-    return True
+        notify_slack(contact=contact, rdo=rdo)
+        return True
 
 
 @celery.task(name="app.update_donation", bind=True, max_retries=None)
