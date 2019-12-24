@@ -337,8 +337,8 @@ def add_donation(form=None, customer=None, donation_type=None):
         notify_slack(contact=contact, rdo=rdo)
         return True
 
-
-@celery.task(name="app.update_donation", bind=True, max_retries=None)
+# retry it for up to one hour, then stop
+@celery.task(name="app.update_donation", bind=True, max_retries=18)
 def update_donation(self, form=None):
     """
     Update the post-submit donation info in SF if supplied
