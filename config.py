@@ -23,6 +23,8 @@ AMAZON_CAMPAIGN_ID = os.getenv("AMAZON_CAMPAIGN_ID", "")
 ########
 # Celery
 #
+
+# these lines pending deletion
 #CELERY_TIMEZONE = TIMEZONE
 #CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 #ELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")

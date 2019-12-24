@@ -779,10 +779,10 @@ def thanks():
         first_name=first_name,
         last_name=last_name,
         lock_key=lock_key,
-        #session=session,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        last_updated=dir_last_updated('static'),
     )
 
 
