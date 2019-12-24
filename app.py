@@ -53,7 +53,7 @@ from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
-from flask import Flask, redirect, render_template, request, send_from_directory, jsonify, session
+from flask import Flask, redirect, render_template, request, send_from_directory, jsonify
 from forms import (
     format_amount,
     DonateForm,
@@ -70,6 +70,7 @@ from util import (
     clean,
     notify_slack,
     send_multiple_account_warning,
+    dir_last_updated,
 )
 from validate_email import validate_email
 from charges import charge, calculate_amount_fees, check_level
@@ -562,7 +563,7 @@ def root_form():
         amount=amount_formatted, frequency=frequency, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email,
         campaign=campaign, customer_id=customer_id,
-        plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         #lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
@@ -691,7 +692,7 @@ def give_form():
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id,
-        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
@@ -799,7 +800,7 @@ def finish():
     return render_template(
         template,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"]
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
 
 @app.route("/error")

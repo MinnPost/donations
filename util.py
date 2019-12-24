@@ -1,3 +1,4 @@
+import os
 import json
 import hashlib
 import logging
@@ -228,3 +229,8 @@ def send_email_new_business_membership(account, contact):
         subject="New business membership",
         body=body,
     )
+
+def dir_last_updated(folder):
+    return str(max(os.path.getmtime(os.path.join(root_path, f))
+        for root_path, dirs, files in os.walk(folder)
+        for f in files))
