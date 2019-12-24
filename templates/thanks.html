@@ -19,8 +19,6 @@
       <input type="hidden" name="email" id="email" value="{{ email }}">
       <input type="hidden" name="first_name" id="first_name" value="{{ first_name }}">
       <input type="hidden" name="last_name" id="last_name" value="{{ last_name }}">
-      <!--<input type="hidden" name="flask_id" id="flask_id" value="{{ session['flask_id'] }}">
-      <input type="hidden" name="sf_type" id="sf_type" value="{{ session['sf_type'] }}">-->
       <input type="hidden" name="lock_key" id="lock_key" value="{{ lock_key }}">
       <section class="panel panel--form" id="panel--confirmation">
         <h1>Thank you for supporting MinnPost</h1>
@@ -30,10 +28,10 @@
         <fieldset class="support-reasons">
           <div class="form-item form-item--comments">
             <label>Your reason for supporting MinnPost:
-            <textarea id="reason_for_supporting" cols="20" rows="8" name="reason_for_supporting"></textarea></label> <!-- could send to Givalike and/or ajax -->
+            <textarea id="reason_for_supporting" cols="20" rows="8" name="reason_for_supporting"></textarea></label>
             <label class="additional-option" id="reason_shareable" for="reason_shareable"><input type="checkbox" checked="checked" name="reason_shareable" id="reason_shareable" value="1"> MinnPost has permission to post this comment on the website.</label>
           </div>
-        </fieldset> <!-- we are open to how this gets transferred. if we need to, we can make a minnpost ajax endpoint, but it does have to get stored somewhere -->
+        </fieldset>
         <fieldset class="support-newsletter">
           <div class="form-item form-item--newsletter">
             <label>Choose any of these newsletters:</label>
@@ -47,8 +45,8 @@
             <label><input type="checkbox" name="68449d845c" id="events" value="1"> Events &amp; member benefits</label>
             <label><input type="checkbox" name="958bdb5d3c" id="feedback" value="1"> Opportunities to give MinnPost input/feedback</label>
           </div>
-        </fieldset> <!-- we have a working api endpoint for this already, and it is operating -->
-        <button type="submit" name="finish" id="finish" class="clear-block btn btn--submit">Send and Finish</button> <!-- ideally this would call both ajax endpoints, but the mailchimp one is the only one currently in use -->
+        </fieldset>
+        <button type="submit" name="finish" id="finish" class="clear-block btn btn--submit">Send and Finish</button>
       </section>
     </form>
   </div>
