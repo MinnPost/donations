@@ -57,6 +57,9 @@ from flask import Flask, redirect, render_template, request, send_from_directory
 from forms import (
     format_amount,
     DonateForm,
+    MinimalForm,
+    AdvertisingForm,
+    CancelForm,
     FinishForm,
 )
 from npsp import RDO, Contact, Opportunity, Affiliation, Account
@@ -519,7 +522,7 @@ def robots_txt():
 @app.route("/")
 def root_form():
     template    = "root.html"
-    form        = DonateForm()
+    form        = MinimalForm()
     form_action = "/give/"
 
     # amount is the bare minimum to work
