@@ -211,9 +211,29 @@ make_celery(app)
 Redirects.
 """
 
-@app.route("/index.html")
-def index_html_route():
-    return redirect("/give/", code=302)
+# support.minnpost.com/minnroast-sponsorship
+@app.route("/minnroast-sponsorship/")
+def minnroast_sponsorship_form():
+    redirect_to = url_for("minnroast_patron_form", **request.args)
+    return redirect(redirect_to)
+
+# support.minnpost.com/minnroast-pledge
+@app.route("/minnroast-pledge/")
+def minnroast_pledge_form():
+    redirect_to = url_for("minnpost_pledge_form", **request.args)
+    return redirect(redirect_to)
+
+# support.minnpost.com/recurring-donation-update
+@app.route("/recurring-donation-update/")
+def minnpost_recurring_donation_update_form():
+    redirect_to = url_for("minnpost_donation_update_form", **request.args)
+    return redirect(redirect_to)
+
+# support.minnpost.com/anniversary-sponsorship
+@app.route("/anniversary-sponsorship/")
+def anniversary_sponsorship_form():
+    redirect_to = url_for("anniversary_patron_form", **request.args)
+    return redirect(redirect_to)
 
 
 
@@ -494,6 +514,57 @@ def validate_form(FormType, template, function=add_donation.delay):
 def robots_txt():
     root_dir = os.path.dirname(os.getcwd())
     return send_from_directory(os.path.join(root_dir, "app"), "robots.txt")
+
+
+@app.route("/")
+def root_form():
+    template    = "root.html"
+    form        = DonateForm()
+    form_action = "/give/"
+
+    # amount is the bare minimum to work
+    if request.args.get("amount"):
+        amount = format_amount(request.args.get("amount"))
+        amount_formatted = format(amount, ",.2f")
+    else:
+        amount = ""
+        amount_formatted = ""
+
+    # frequency
+    frequency = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
+    if frequency == "monthly":
+        yearly = 12
+    else:
+        yearly = 1
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", '')
+
+    # stripe customer id
+    customer_id = request.args.get("customer_id", "")
+
+    # user first name
+    first_name = request.args.get("firstname", '')
+
+    # user last name
+    last_name = request.args.get("lastname", '')
+
+    # user email
+    email = request.args.get("email", '')
+
+    return render_template(
+        template,
+        form=form,
+        form_action=form_action,
+        amount=amount_formatted, frequency=frequency, yearly=yearly,
+        first_name=first_name, last_name=last_name, email=email,
+        campaign=campaign, customer_id=customer_id,
+        plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY,
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        #lock_key=lock_key,
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+    )
 
 
 @app.route("/give/", methods=["GET", "POST"])
