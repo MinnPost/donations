@@ -16,7 +16,6 @@
   var pluginName = 'minnpost_giving',
   defaults = {
     'debug' : false, // this can be set to true on page level options
-    'tabs' : true, // are we doing the tab thing
     'stripe_publishable_key' : '',
     'plaid_env' : '',
     'plaid_public_key' : '',
@@ -181,7 +180,7 @@
 
       // call functions
 
-      this.paymentPanels(query_panel); // tabs
+      this.tabNavigation(query_panel); // navigating
 
       if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options, reset); // processing fees
@@ -258,9 +257,8 @@
       return b;
     }, // getQueryStrings
 
-    paymentPanels: function(active) {
+    tabNavigation: function(active) {
       var that = this;
-      var usetabs = this.options.tabs;
       var title = 'MinnPost | Support Us | ';
       var page = $('.progress--donation li.' + active).text();
       var next = $('.progress--donation li.' + active).next().text();
@@ -299,13 +297,7 @@
       document.title = title + page;
       this.analyticsTrackingStep(step, title, post_purchase);
 
-      // make some tabs for form
-      if (usetabs === true) {
-        $('.panel').hide();
-      } else {
-        $('.panel').show();
-      }
-      // activate the tabs
+      // activate the nav tabs
       if ($('.progress--donation li .active').length === 0) {
         $('#' + active).show();
         $('.progress--donation li.' + active + ' a').addClass('active');
@@ -313,17 +305,8 @@
         active = $('.progress--donation li .active').parent().prop('class');
         $('#' + active).show();
       }
-      
-      /*$('.progress--donation li a, a.btn.btn--next').click(function(event) {
-        event.preventDefault();
-        $('.progress--donation li a').removeClass('active');
-        var link = $(this).prop('href');
-        var query = that.getQueryStrings(link);
-        query = query['step'];
-        $('.progress--donation li.' + query + ' a').addClass('active');
-        that.paymentPanels(query);    
-      });*/
-    }, // paymentPanels
+
+    }, // tabNavigation
 
     analyticsTrackingStep: function(step, title, post_purchase) {
       var level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
