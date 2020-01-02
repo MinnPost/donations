@@ -106,7 +106,7 @@ class DonateForm(BaseForm):
         u"Anonymous?", false_values=(False, 'false', 0, '0', None, "None")
     )
     in_honor_or_memory = RadioField(
-        u"Honor or memory?", choices=[('honor', 'In honor of'), ('memory', 'In memory of'), ('0', 'False')])
+        u"Honor or memory?", [validators.Optional()], choices=[('honor', 'In honor of'), ('memory', 'In memory of'), ('0', 'False')])
     in_honor_memory_of = StringField(
         u"Honor or memory of", [validators.Optional()]
     )
