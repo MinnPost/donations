@@ -305,7 +305,7 @@ def add_donation(form=None, customer=None, donation_type=None):
 
     if form["in_honor_or_memory"] != None:
         honor_or_memory = form["in_honor_or_memory"]
-        form["in_honor_or_memory"] = 'In ' + honor_or_memory + ' of...'
+        form["in_honor_or_memory"] = 'In ' + str(honor_or_memory) + ' of...'
 
     if frequency == "one-time":
         logging.info("----Creating one time payment...")
