@@ -1080,10 +1080,10 @@
             } else {
               message = error.message[0];
             }
-            if ($(field).length > 0) {
-              $(options[field]).addClass('error');
-              $(options[field]).prev().addClass('error');
-              $(options[field]).after('<span class="check-field invalid">' + message + '</span>');
+            if ($(that.options[field]).length > 0) {
+              $(that.options[field]).addClass('error');
+              $(that.options[field]).prev().addClass('error');
+              $(that.options[field]).after('<span class="check-field invalid">' + message + '</span>');
             }
 
             if (typeof error !== 'undefined') {
