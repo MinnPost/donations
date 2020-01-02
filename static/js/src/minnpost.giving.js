@@ -730,7 +730,7 @@
       // validate/error handle the card fields
       that.cardNumberElement.on('change', function(event) {
         // error handling
-        that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
+        that.stripeErrorDisplay(event, $(that.options.cc_num_selector, element), element, that.options );
         // Switch brand logo
         if (event.brand) {
           that.calculateFees(that.options.original_amount, event.brand);
@@ -741,12 +741,12 @@
 
       that.cardExpiryElement.on('change', function(event) {
         // error handling
-        that.stripeErrorDisplay(event, $(options.cc_exp_selector, element), element, options );
+        that.stripeErrorDisplay(event, $(that.options.cc_exp_selector, element), element, that.options );
       });
 
       that.cardCvcElement.on('change', function(event) {
         // error handling
-        that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
+        that.stripeErrorDisplay(event, $(that.options.cc_cvv_selector, element), element, that.options );
       });
 
       // this is the method to create a single card field and mount it
@@ -896,23 +896,23 @@
         $('input, label', element).removeClass('error');
         var valid = true;
         var payment_method = 'card';
-        if ($(options.choose_payment).length > 0) {
-          payment_method = $(options.choose_payment + ' input:checked').val();
+        if ($(that.options.choose_payment).length > 0) {
+          payment_method = $(that.options.choose_payment + ' input:checked').val();
         }
-        $(options.choose_payment + ' input').change(function() {
-          $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
+        $(that.options.choose_payment + ' input').change(function() {
+          $(that.options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
         });
 
         if (payment_method === 'ach') {
           if ($('input[name="bankToken"]').length === 0) {
             valid = false;
-            $(options.payment_method_selector).prepend('<p class="error">You are required to enter credit card information, or to authorize MinnPost to charge your bank account, to make a payment.</p>');
+            $(that.options.payment_method_selector).prepend('<p class="error">You are required to enter credit card information, or to authorize MinnPost to charge your bank account, to make a payment.</p>');
           }
         }
 
         if (valid === true) {
           // 1. process donation to stripe
-          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), true);
+          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), true);
 
           var full_name = '';
           if ($('#full_name').length > 0) {
@@ -950,19 +950,19 @@
           }
 
           // 2. create minnpost account if specified
-          if (options.create_account === true) {
+          if (that.options.create_account === true) {
             var user = {
-              email: $(options.email_field_selector, element).val(),
-              first_name: $(options.first_name_field_selector, element).val(),
-              last_name: $(options.last_name_field_selector, element).val(),
-              password: $(options.password_field_selector, element).val(),
-              city: $(options.account_city_selector, element).val(),
-              state: $(options.account_state_selector, element).val(),
-              zip: $(options.account_zip_selector, element).val(),
+              email: $(that.options.email_field_selector, element).val(),
+              first_name: $(that.options.first_name_field_selector, element).val(),
+              last_name: $(that.options.last_name_field_selector, element).val(),
+              password: $(that.options.password_field_selector, element).val(),
+              city: $(that.options.account_city_selector, element).val(),
+              state: $(that.options.account_state_selector, element).val(),
+              zip: $(that.options.account_zip_selector, element).val(),
             };
             $.ajax({
               method: 'POST',
-              url: options.minnpost_root + '/wp-json/user-account-management/v1/create-user',
+              url: that.options.minnpost_root + '/wp-json/user-account-management/v1/create-user',
               data: user
             }).done(function( data ) {
               if (data.status === 'success' && data.reason === 'new user') {
@@ -986,7 +986,7 @@
           }
         } else {
           // this means valid is false
-          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
+          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
         }
 
       });
@@ -1016,7 +1016,7 @@
       that.stripe.createToken(card).then(function(result) {
         if (result.error) {
           // Show the errors on the form
-          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
+          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
           var field = result.error.field + '_field_selector';
           var message = '';
           if (typeof result.error.message === 'string') {
@@ -1110,9 +1110,9 @@
 
             if (typeof response.errors[0] !== 'undefined') {
               var field = response.errors[0].field + '_field_selector';
-              if ($(field).length > 0) {
+              if ($(that.options[field]).length > 0) {
                 $('html, body').animate({
-                  scrollTop: $(options[field]).parent().offset().top
+                  scrollTop: $(that.options[field]).parent().offset().top
                 }, 2000);
               }
             }
