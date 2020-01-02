@@ -1044,6 +1044,7 @@
       var that = this;
       // Insert the token ID into the form so it gets submitted to the server
       var supportform = $(this.options.donate_form_selector);
+      var form_data_action = $(supportform).data('action');
       if ( type === 'card' ) {
         supportform.append($('<input type=\"hidden\" name=\"stripeToken\">').val(token.id));
         if ($('input[name="payment_type"]').length > 0) {
@@ -1062,7 +1063,7 @@
       // Submit the form
       //supportform.submit();
       $.ajax({
-        url:'/give/',
+        url: form_data_action,
         cache: false,
         data: $(supportform).serialize(),
         type: 'POST'
@@ -1119,8 +1120,9 @@
 
           });
         } else {
-          supportform.get(0).submit(); // continue submitting the form
+          supportform.get(0).submit();
         }
+        // todo: one thing that might be nice here is to load the templates from the server instead of parsing the errors from the json
       })
       .error(function(response) {
         that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);

@@ -438,45 +438,19 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         body = e.json_body
         err = body.get("error", {})
         message = err.get("message", "")
-        # at this point, amount has been converted to a float
-        # bring it back to a string for the rehydration of the form
-        form_data["amount"] = str(form_data["amount"])
-        del form_data["stripeToken"]
-
-        return render_template(
-            template,
-            stripe=app.config["STRIPE_KEYS"]["publishable_key"],
-            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
-            message=message,
-            form_data=form_data,
-        )
+        app.logger.error(f"Stripe CardError: {message}")
+        return jsonify(errors=body)
     except stripe.error.InvalidRequestError as e:
         body = e.json_body
         err = body.get("error", {})
         message = err.get("message", "")
-        # at this point, amount has been converted to a float
-        # bring it back to a string for the rehydration of the form
-        form_data["amount"] = str(form_data["amount"])
-        del form_data["stripeToken"]
-        del form_data["bankToken"]
+        app.logger.error(f"Stripe InvalidRequestError: {message}")
+        return jsonify(errors=body)
 
-        return render_template(
-            template,
-            stripe=app.config["STRIPE_KEYS"]["publishable_key"],
-            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
-            message=message,
-            form_data=form_data,
-        )
     app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
     function(customer=customer, form=clean(form_data), donation_type=donation_type)
-    return render_template(
-        "thanks.html",
-        amount=amount_formatted, frequency=frequency, yearly=yearly, level=level,
-        email=email, first_name=first_name, last_name=last_name,
-        minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
-        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
-    )
+
+    return True
 
 
 def validate_form(FormType, template, function=add_donation.delay):
@@ -581,10 +555,11 @@ def root_form():
 def give_form():
     template    = "give.html"
     form        = DonateForm()
+    form_data_action = "/give/"
     form_action = "/thanks/"
 
     if request.method == "POST":
-        return validate_form(DonateForm, template=template)
+        validate_form(DonateForm, template=template)
 
     # fields from URL
 
@@ -693,7 +668,7 @@ def give_form():
     return render_template(
         template,
         form=form,
-        form_action=form_action,
+        form_action=form_action, form_data_action=form_data_action,
         amount=amount_formatted, frequency=frequency, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
