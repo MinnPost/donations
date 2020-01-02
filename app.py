@@ -72,7 +72,7 @@ from util import (
     send_multiple_account_warning,
     dir_last_updated,
 )
-from validate_email import validate_email
+from email_validator import validate_email, EmailNotValidError
 from charges import charge, calculate_amount_fees, check_level
 
 ZONE = timezone(TIMEZONE)
@@ -494,16 +494,22 @@ def validate_form(FormType, template, function=add_donation.delay):
     else:
         raise Exception("Unrecognized form type")
 
-    if not validate_email(email):
-        message = "There was an issue saving your email address."
-        return render_template(
-            "error.html", message=message
-        )
+    body = []
+
+    try:
+        v = validate_email(email, allow_smtputf8=False) # validate and get info
+        email = v["email"] # replace with normalized form
+    except EmailNotValidError as e:
+        # email is not valid, exception message is human-readable
+        app.logger.error(f"Email validation failed on address: {email}")
+        message = str(e)
+        body.append({"field": "email", "message": message})
+        return jsonify(errors=body)
+        
     if not form.validate():
         app.logger.error(f"Form validation errors: {form_errors}")
-        body = []
         for field in form.errors:
-            body.append({'field': field, 'message': form.errors[field]})
+            body.append({"field": field, "message": form.errors[field]})
         return jsonify(errors=body)
 
     return do_charge_or_show_errors(

@@ -152,6 +152,5 @@ RECAPTCHA_KEYS = {
 # User Interface options
 #
 DEFAULT_FREQUENCY = os.getenv('DEFAULT_FREQUENCY', 'one-time')
-FORM_EMAIL_FIELD = os.getenv('FORM_EMAIL_FIELD', 'email')
 MINNPOST_ROOT = os.getenv('MINNPOST_ROOT')
 SHOW_ACH = os.getenv('SHOW_ACH', False)
