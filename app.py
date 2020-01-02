@@ -339,7 +339,7 @@ def add_donation(form=None, customer=None, donation_type=None):
         return True
 
 # retry it for up to one hour, then stop
-@celery.task(name="app.update_donation", bind=True, max_retries=18)
+@celery.task(name="app.update_donation", bind=True, max_retries=30)
 def update_donation(self, form=None):
     """
     Update the post-submit donation info in SF if supplied
@@ -384,7 +384,7 @@ def update_donation(self, form=None):
 
         if not opps:
             logging.info("No opportunity id here yet. Delay and try again.")
-            raise self.retry(countdown=200)
+            raise self.retry(countdown=120)
 
         response = Opportunity.update_post_submit(opps, post_submit_details)
     else:
@@ -394,7 +394,7 @@ def update_donation(self, form=None):
 
         if not rdo:
             logging.info("No recurring donation id here yet. Delay and try again.")
-            raise self.retry(countdown=200)
+            raise self.retry(countdown=120)
 
         response = RDO.update_post_submit(rdo, post_submit_details)
 
