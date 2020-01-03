@@ -559,7 +559,7 @@ def give_form():
     form_action = "/thanks/"
 
     if request.method == "POST":
-        validate_form(DonateForm, template=template)
+        return validate_form(DonateForm, template=template)
 
     # fields from URL
 

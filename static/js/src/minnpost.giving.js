@@ -268,6 +268,8 @@
       var next_step = step + 1;
       var post_purchase = false;
 
+      // we will have to update this because no more flask id
+
       this.debug( 'step is ' + step + ' and nav item count is ' + nav_item_count + ' and opp id is ' + opp_id + ' and next step is ' + next_step );
 
       // this is the last visible step
@@ -1061,7 +1063,6 @@
       }
 
       // Submit the form
-      //supportform.submit();
       $.ajax({
         url: form_data_action,
         cache: false,
