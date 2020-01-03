@@ -940,11 +940,11 @@ class RDO(SalesforceObject):
         return results
 
     @classmethod
-    def update_post_submit(cls, rdo, post_submit_details, sf_connection=None):
+    def update(cls, rdo, details, sf_connection=None):
         if not rdo:
             raise SalesforceException("at least one recurring donation must be specified")
         sf = SalesforceConnection() if sf_connection is None else sf_connection
-        return sf.updates(rdo, post_submit_details)
+        return sf.updates(rdo, details)
 
     @property
     def amount(self):
