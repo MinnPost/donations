@@ -1099,9 +1099,14 @@
 
     stripeTokenHandler: function(token, type) {
       var that = this;
-      // Insert the token ID into the form so it gets submitted to the server
       var supportform = $(this.options.donate_form_selector);
-      var form_data_action = $(supportform).data('action');
+      var form_data_action = '';
+      if (typeof $(supportform).data('action') !== 'undefined') {
+        form_data_action = $(supportform).data('action');
+      } else {
+        form_data_action = window.location.pathname;
+      }
+      // Insert the token ID into the form so it gets submitted to the server
       if ( type === 'card' ) {
         supportform.append($('<input type=\"hidden\" name=\"stripeToken\">').val(token.id));
         if ($('input[name="payment_type"]').length > 0) {
