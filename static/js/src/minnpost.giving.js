@@ -933,6 +933,8 @@
         $(that.options.choose_payment + ' input').change(function() {
           $(that.options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
         });
+        // if it changed, reset the button
+        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
 
         if (payment_method === 'ach') {
           if ($('input[name="bankToken"]').length === 0) {
@@ -1110,6 +1112,11 @@
         if (typeof response.errors !== 'undefined') {
           // do not submit. there is an error.
           that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
+          // regenerate the token from stripe
+          if ($('input[name="bankToken"]').length == 0) {
+            // finally, get a token from stripe, and try to charge it if it is not ach
+            that.createToken(that.cardNumberElement, tokenData);
+          }
           // add some error messages and styles
           $.each(response.errors, function( index, error ) {
             var field = error.field + '_field_selector';
