@@ -450,7 +450,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
     function(customer=customer, form=clean(form_data), donation_type=donation_type)
 
-    return True
+    return jsonify(success=True)
 
 
 def validate_form(FormType, template, function=add_donation.delay):
