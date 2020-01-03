@@ -184,6 +184,7 @@
       this.tabNavigation(query_panel); // navigating
 
       this.amountAsRadio(this.element, this.options); // if the amount field is a radio button
+      this.amountUpdated(this.element, this.options); // if the amount text field can change
 
       if ($(this.options.pay_cc_processing_selector).length > 0) {
         this.creditCardProcessingFees(this.options, reset); // processing fees
@@ -355,6 +356,16 @@
 
     }, // analyticsTrackingStep
 
+    amountAsRadio: function(element, options) {
+      // when amount field is a radio button, we need to check it whenever it changes
+      var that = this;
+      $(options.original_amount_selector, element).change(function() {
+        if ($(this).is(':radio')) {
+            options.original_amount = parseInt($(options.original_amount_selector + ':checked', element).val(), 10);
+          }
+      });
+    }, // amountAsRadio
+
     amountUpdated: function(element, options) {
       // when amount text field can change, we need to check it whenever it changes
       var that = this;
@@ -371,16 +382,6 @@
       });
 
     }, // amountUpdated
-
-    amountAsRadio: function(element, options) {
-      // when amount field is a radio button, we need to check it whenever it changes
-      var that = this;
-      $(options.original_amount_selector, element).change(function() {
-        if ($(this).is(':radio')) {
-            options.original_amount = parseInt($(options.original_amount_selector + ':checked', element).val(), 10);
-          }
-      });
-    }, // amountAsRadio
 
     calculateFees: function(amount, payment_type) {
       // this sends the amount and payment type to python; get the fee and display it to the user on the checkbox label
