@@ -371,16 +371,13 @@
       var that = this;
       var payment_type = $(options.choose_payment + ' input').val();
       $(options.update_amount_selector, element).change(function() {
-        if ($(this).is(':radio')) {
-            options.original_amount = parseInt($(options.update_amount_selector, element).val(), 10);
-            if ( payment_type === 'ach' ) {
-              that.calculateFees(that.options.original_amount, 'ach');
-            } else {
-              that.calculateFees(that.options.original_amount, 'visa');
-            }
+          options.original_amount = parseInt($(options.update_amount_selector, element).val(), 10);
+          if ( payment_type === 'ach' ) {
+            that.calculateFees(that.options.original_amount, 'ach');
+          } else {
+            that.calculateFees(that.options.original_amount, 'visa');
           }
       });
-
     }, // amountUpdated
 
     calculateFees: function(amount, payment_type) {
