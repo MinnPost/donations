@@ -464,8 +464,13 @@ def validate_form(FormType, template, function=add_donation.delay):
     form_errors = form.errors
     email = form_data["email"]
 
-    if FormType is DonateForm:
-        donation_type = "membership"
+    # currently donation_type is not used for anything. maybe it should be used for the opportunity type
+    if FormType is DonateForm or FormType is MinimalForm or FormType is CancelForm or FormType is FinishForm:
+        donation_type = "Donation"
+    elif FormType is AdvertisingForm:
+        donation_type = "Sales"
+    elif FormType is SponsorshipForm:
+        donation_type = "Sponsorship"
     else:
         raise Exception("Unrecognized form type")
 
