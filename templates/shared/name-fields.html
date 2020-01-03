@@ -1,0 +1,35 @@
+<div class="form-item form-item--first-name">
+  <label for="first_name" class="required">First Name: </label>
+  <input type="text" id="first_name" name="first_name" maxlength="40" required value="{{ first_name }}">
+</div>
+<div class="form-item form-item--last-name">
+  <label for="last_name" class="required">Last Name: </label>
+  <input type="text" id="last_name" name="last_name" maxlength="80" required value="{{ last_name }}">
+</div>
+<div class="form-group form-group--recognition">
+  {% if hide_display != True %}
+  <div class="form-item form-item--display-name">
+    <div>
+      <label for="display_as">Preferred name(s) for donor recognition: </label>
+      <input type="text" id="display_as" name="display_as" value="{{ credited_as }}">
+    </div>
+    <div>
+      <label class="additional-option"><input type="checkbox" name="anonymous" id="anonymous" value="1"{% if anonymous == True %} checked{%endif %}> Make this donation anonymously</label>
+    </div>
+  </div>
+  {%endif %}
+  {% if hide_honor_or_memory != True %}
+    <div class="form-item form-item--honor-memory">
+      <div>
+        <label class="additional-option"><input type="radio" name="in_honor_or_memory" id="in-honor" value="honor"> Make this donation in honor of someone</label>
+      </div>
+      <div>
+        <label class="additional-option"><input type="radio" name="in_honor_or_memory" id="in-memory" value="memory"> Make this donation in memory of someone</label>
+      </div>
+      <div class="honor-or-memory">
+        <label for="in_honor_memory_of">In <span class="honor_type">honor</span> of</span>: </label>
+        <input type="text" id="in-honor-name" name="in_honor_memory_of">
+      </div>
+    </div>
+  {% endif %}
+</div>

@@ -129,7 +129,8 @@
 		display: block;
 		&#panel--details {
 			width: auto;
-			margin-right: 10%;
+			padding-right: 5%;
+			max-width: 50%;
 			> fieldset {
 				max-width: none;
 				width: 82%;

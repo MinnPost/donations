@@ -390,10 +390,13 @@ class Opportunity(SalesforceObject):
                 Id,
                 LeadSource,
                 Name,
-                RecordType.Name,
                 StageName,
                 Type,
+                Anonymous__c,
+                Card_type__c,
+                npsp__Closed_Lost_Reason__c,
                 Credited_as__c,
+                Client_Organization__c,
                 Donor_first_name__c,
                 Donor_last_name__c,
                 Donor_e_mail__c,
@@ -402,12 +405,22 @@ class Opportunity(SalesforceObject):
                 Donor_state__c,
                 Donor_ZIP__c,
                 Donor_country__c,
-                Flask_Transaction_ID__c,
+                Email_to_notify__c,
+                Email_User_When_Canceled__c,
+                Fair_market_value__c,
+                Include_amount_in_notification__c,
+                In_Honor_Memory__c,
+                In_Honor_of_In_Memory__c,
+                Notify_someone__c,
+                Member_benefit_request_Swag__c,
+                Member_benefit_request_New_York_Times__c,
+                Member_benefit_request_Other_benefits__c,
+                Member_benefit_request_Atlantic_sub_ID__c,
+                Member_benefit_special_thank_you_list__c,
+                MinnPost_Invoice__c,
+                MRpledge_com_ID__c,
+                Opportunity_Subtype__c,
                 Payment_Type__c,
-                Card_acct_last_4__c,
-                Card_expiration_date__c,
-                Card_type__c,
-                npsp__Closed_Lost_Reason__c,
                 Referring_page__c,
                 Shipping_address_name__c,
                 Shipping_address_street__c,
@@ -418,10 +431,13 @@ class Opportunity(SalesforceObject):
                 Stripe_Agreed_to_pay_fees__c,
                 Stripe_Bank_Account__c,
                 Stripe_Card__c,
-                Stripe_Customer_Id__c,
                 Stripe_Description__c,
+                Card_expiration_date__c,
+                Card_acct_last_4__c,
+                Stripe_Customer_ID__c,
                 Stripe_Error_Message__c,
-                Stripe_Transaction_ID__c
+                Stripe_Transaction_ID__c,
+                Flask_Transaction_ID__c
             FROM Opportunity
             {where}
         """
@@ -444,6 +460,9 @@ class Opportunity(SalesforceObject):
             y.stage_name = "Pledged"
             y.type = item["Type"]
             y.credited_as = item["Credited_as__c"]
+            y.anonymous = item["Anonymous__c"]
+            y.in_honor_or_memory = item["In_Honor_Memory__c"]
+            y.in_honor_or_memory_of = item["In_Honor_of_In_Memory__c"]
             y.donor_address_one = item["Donor_address_line_1__c"]
             y.donor_city = item["Donor_city__c"]
             y.donor_state = item["Donor_state__c"]
@@ -599,18 +618,11 @@ class Opportunity(SalesforceObject):
         }
 
     @classmethod
-    def update_card(cls, opportunities, card_details, sf_connection=None):
+    def update(cls, opportunities, details, sf_connection=None):
         if not opportunities:
             raise SalesforceException("at least one Opportunity must be specified")
         sf = SalesforceConnection() if sf_connection is None else sf_connection
-        return sf.updates(opportunities, card_details)
-
-    @classmethod
-    def update_post_submit(cls, opportunities, post_submit_details, sf_connection=None):
-        if not opportunities:
-            raise SalesforceException("at least one Opportunity must be specified")
-        sf = SalesforceConnection() if sf_connection is None else sf_connection
-        return sf.updates(opportunities, post_submit_details)
+        return sf.updates(opportunities, details)
 
     def __str__(self):
         return f"{self.id}: {self.name} for {self.amount} ({self.stripe_description})"

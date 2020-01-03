@@ -40,7 +40,7 @@ from config import (
     REPORT_URI,
     STRIPE_WEBHOOK_SECRET,
 )
-from datetime import datetime
+from datetime import datetime, timedelta
 from pprint import pformat
 
 from pytz import timezone
@@ -272,10 +272,12 @@ def add_donation(form=None, customer=None, donation_type=None):
     payer wait for them. It sends a notification about the donation to Slack (if configured).
     """
 
+    today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
+
     form = clean(form)
     first_name = form["first_name"]
     last_name = form["last_name"]
-    frequency = form["installment_period"]
+    frequency = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     email = form["email"]
     zipcode = form["billing_zip"]
 
@@ -310,7 +312,7 @@ def add_donation(form=None, customer=None, donation_type=None):
 
     if frequency == "one-time":
         logging.info("----Creating one time payment...")
-        opportunity = add_opportunity(contact=contact, form=form, customer=customer)
+        opportunity = add_or_update_opportunity(contact=contact, form=form, customer=customer)
         charge(opportunity)
         lock = Lock(key=opportunity.lock_key)
         lock.append(key=opportunity.lock_key, value=opportunity.id)
@@ -319,7 +321,7 @@ def add_donation(form=None, customer=None, donation_type=None):
         return True
     else:
         logging.info("----Creating recurring payment...")
-        rdo = add_recurring_donation(contact=contact, form=form, customer=customer)
+        rdo = add_or_update_recurring_donation(contact=contact, form=form, customer=customer)
 
         # get opportunities
         opportunities = rdo.opportunities()
@@ -339,9 +341,74 @@ def add_donation(form=None, customer=None, donation_type=None):
         notify_slack(contact=contact, rdo=rdo)
         return True
 
+
+@celery.task(name="app.update_donation")
+def update_donation(form=None, customer=None, donation_type=None):
+    """
+    Update an existing donation in SF. This is done in the background
+    because there are a lot of API calls and there's no point in making the
+    payer wait for them. It sends a notification about the donation to Slack (if configured).
+    """
+
+    form = clean(form)
+    first_name = form["first_name"]
+    last_name = form["last_name"]
+    frequency = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    email = form["email"]
+    zipcode = form["billing_zip"]
+
+    opportunity_id = form.get("opportunity_id", None)
+    recurring_id = form.get("recurring_id", None)
+
+    # if we don't have either, get out
+
+    logging.info("----Getting contact....")
+    contact = Contact.get_or_create(
+        email=email, first_name=first_name, last_name=last_name, zipcode=zipcode
+    )
+    logging.info(contact)
+
+    if contact.first_name == "Subscriber" and contact.last_name == "Subscriber":
+        logging.info(f"Changing name of contact to {first_name} {last_name}")
+        contact.first_name = first_name
+        contact.last_name = last_name
+        contact.mailing_postal_code = zipcode
+        contact.save()
+
+    if contact.first_name != first_name or contact.last_name != last_name:
+        logging.info(
+            f"Contact name doesn't match: {contact.first_name} {contact.last_name}"
+        )
+
+    if zipcode and not contact.created and contact.mailing_postal_code != zipcode:
+        contact.mailing_postal_code = zipcode
+        contact.save()
+
+    if contact.duplicate_found:
+        send_multiple_account_warning(contact)
+
+    if form["in_honor_or_memory"] != None:
+        honor_or_memory = form["in_honor_or_memory"]
+        form["in_honor_or_memory"] = 'In ' + str(honor_or_memory) + ' of...'
+
+    if frequency == "one-time":
+        logging.info("----Updating one time payment...")
+        opportunity = add_or_update_opportunity(contact=contact, form=form, customer=customer)
+        charge(opportunity)
+        logging.info(opportunity)
+        notify_slack(contact=contact, opportunity=opportunity)
+        return True
+    else:
+        logging.info("----Updating recurring payment...")
+        rdo = add_or_update_recurring_donation(contact=contact, form=form, customer=customer)
+        logging.info(rdo)
+        notify_slack(contact=contact, rdo=rdo)
+        return True
+
+
 # retry it for up to one hour, then stop
-@celery.task(name="app.update_donation", bind=True, max_retries=30)
-def update_donation(self, form=None):
+@celery.task(name="app.finish_donation", bind=True, max_retries=30)
+def finish_donation(self, form=None):
     """
     Update the post-submit donation info in SF if supplied
     """
@@ -387,7 +454,7 @@ def update_donation(self, form=None):
             logging.info("No opportunity id here yet. Delay and try again.")
             raise self.retry(countdown=120)
 
-        response = Opportunity.update_post_submit(opps, post_submit_details)
+        response = Opportunity.update(opps, post_submit_details)
     else:
         rdo = RDO.load_after_submit(
             lock_key=lock_key
@@ -397,7 +464,7 @@ def update_donation(self, form=None):
             logging.info("No recurring donation id here yet. Delay and try again.")
             raise self.retry(countdown=120)
 
-        response = RDO.update_post_submit(rdo, post_submit_details)
+        response = RDO.update(rdo, post_submit_details)
 
     logging.info(response)
     logging.info("post submit updated")
@@ -589,16 +656,6 @@ def give_form():
     # stripe customer id
     customer_id = request.args.get("customer_id", "")
 
-    # show ach fields
-    if request.args.get("show_ach"):
-        show_ach = request.args.get("show_ach")
-        if show_ach == 'true':
-            show_ach = True
-        else:
-            show_ach = False
-    else:
-        show_ach = app.config["SHOW_ACH"]
-
     # user first name
     first_name = request.args.get("firstname", '')
 
@@ -665,6 +722,22 @@ def give_form():
 
     step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
 
+    # interface settings
+    with_shipping = True
+    hide_pay_comments = True
+
+    # show ach fields
+    if request.args.get("show_ach"):
+        show_ach = request.args.get("show_ach")
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = app.config["SHOW_ACH"]
+
+    button = "Place this Donation"
+
     # make a uuid for redis and lock it
     lock_key = str(uuid.uuid4())
     lock = Lock(key=lock_key)
@@ -678,7 +751,7 @@ def give_form():
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id,
-        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
@@ -772,13 +845,228 @@ def thanks():
     )
 
 
+@app.route("/donate/", methods=["GET", "POST"])
+def donate_form():
+
+    template    = "minimal.html"
+    form        = MinimalForm()
+    form_action = "/finish/"
+
+    if request.method == "POST":
+        return validate_form(MinimalForm, template, update_donation.delay)
+
+    # default fields that can be overridden by url
+    opportunity_id = None
+    recurring_id = None
+    opportunity = None
+    recurring = None
+
+    amount = 0
+    amount_formatted = 0
+    campaign = None
+    customer_id = None
+    first_name = None
+    last_name = None
+    email = None
+    billing_street = None
+    billing_city = None
+    billing_state = None
+    billing_zip = None
+    billing_country = None
+
+    # fields from URL
+    if request.args.get("opportunity"):
+        opportunity_id = request.args.get("opportunity")
+        try:
+            opportunity = Opportunity.list(
+                opportunity_id=opportunity_id
+            )
+            donation = opportunity[0]
+        except:
+            donation = None
+    elif request.args.get("recurring"):
+        recurring_id = request.args.get("recurring")
+        try:
+            rdo = RDO.list(
+                recurring_id=recurring_id
+            )
+            donation = rdo[0]
+        except:
+            donation = None
+
+    logging.info(donation)
+
+    if donation is not None:
+        # set defaults that urls can override
+        amount = format_amount(donation.amount)
+        amount_formatted = format(amount, ",.2f")
+        campaign = donation.campaign_id
+        customer_id = donation.stripe_customer_id
+        first_name = donation.donor_first_name
+        last_name = donation.donor_last_name
+        anonymous = donation.anonymous
+        credited_as = donation.credited_as
+        email = donation.donor_email
+        billing_street = donation.donor_address_one
+        billing_city = donation.donor_city
+        billing_state = donation.donor_state
+        billing_zip = donation.donor_zip
+        billing_country = donation.donor_country
+
+    # allow some fields to be overridden on the url
+    if request.args.get("amount"):
+        amount = format_amount(request.args.get("amount"))
+        amount_formatted = format(amount, ",.2f")
+
+    # salesforce campaign
+    if campaign is not None:
+        if request.args.get("campaign"):
+            campaign = request.args.get("campaign")
+    else:
+        campaign = request.args.get("campaign", "")
+
+    # stripe customer id
+    if customer_id is not None:
+        if request.args.get("customer_id"):
+            customer_id = request.args.get("customer_id")
+    else:
+        customer_id = request.args.get("customer_id", "")
+
+    # donor first name
+    if first_name is not None:
+        if request.args.get("first_name"):
+            first_name = request.args.get("first_name")
+    else:
+        first_name = request.args.get("first_name", "")
+
+    # donor last name
+    if last_name is not None:
+        if request.args.get("last_name"):
+            last_name = request.args.get("last_name")
+    else:
+        last_name = request.args.get("last_name", "")
+
+    # donor email
+    if email is not None:
+        if request.args.get("email"):
+            email = request.args.get("email")
+    else:
+        email = request.args.get("email", "")
+
+    # user address
+
+    # street
+    if billing_street is not None:
+        if request.args.get("billing_street"):
+            billing_street = request.args.get("billing_street")
+    else:
+        billing_street = request.args.get("billing_street", "")
+
+    # city
+    if billing_city is not None:
+        if request.args.get("billing_city"):
+            billing_city = request.args.get("billing_city")
+    else:
+        billing_city = request.args.get("billing_city", "")
+
+    # state
+    if billing_state is not None:
+        if request.args.get("billing_city"):
+            billing_state = request.args.get("billing_state")
+    else:
+        billing_state = request.args.get("billing_state", "")
+
+    # zip
+    if billing_zip is not None:
+        if request.args.get("billing_zip"):
+            billing_zip = request.args.get("billing_zip")
+    else:
+        billing_zip = request.args.get("billing_zip", "")
+
+    # country
+    if billing_country is not None:
+        if request.args.get("billing_country"):
+            billing_country = request.args.get("billing_country")
+    else:
+        billing_country = request.args.get("billing_country", "")
+
+    # show ach fields
+    if request.args.get("show_ach"):
+        show_ach = request.args.get("show_ach")
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = app.config["SHOW_ACH"]
+
+    # fees
+    fees = calculate_amount_fees(amount, "visa")
+    today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
+
+    # fields for minimal form
+
+    stage = ""
+    if donation.stage_name is not None:
+        stage = "Pledged" # because it could be failed or closed lost or whatever
+
+    close_date = ""
+    if donation.close_date is not None:
+        three_days_ago = (datetime.now(tz=ZONE) - timedelta(days=3)).strftime('%Y-%m-%d')
+        if donation.close_date <= three_days_ago:
+            close_date = today
+        else: 
+            close_date = donation.close_date
+
+    show_amount_field = True
+    hide_amount_heading = True
+    title = "MinnPost | Donation"
+    heading = "MinnPost Donation"
+    summary = "Thank you for supporting MinnPost’s nonprofit newsroom. If you have any questions, please email Tanner Curl at <a href=\"mailto:tcurl@minnpost.com\">tcurl@minnpost.com</a>."
+    with_shipping = False
+    hide_minnpost_account = True
+    hide_pay_comments = True
+    hide_display = False
+    hide_honor_or_memory = False
+    button = "Make Your Donation"
+    description = "MinnPost Donation"
+    allow_additional = False
+    additional_donation = 0
+    if allow_additional is True:
+        if request.args.get("additional_donation"):
+            additional_donation = format_amount(request.args.get("additional_donation"))
+
+    # make a uuid for redis and lock it
+    lock_key = str(uuid.uuid4())
+    lock = Lock(key=lock_key)
+    lock.acquire()
+
+    return render_template(
+        template,
+        form=form,
+        form_action=form_action,
+        amount=amount, amount_formatted=amount_formatted,
+        first_name=first_name, last_name=last_name, email=email, anonymous=anonymous, credited_as=credited_as,
+        billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
+        campaign=campaign, customer_id=customer_id,
+        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        lock_key=lock_key,
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        hide_amount_heading=hide_amount_heading, title=title, heading=heading, summary=summary, allow_additional=allow_additional, button=button, show_amount_field=show_amount_field, with_shipping=with_shipping, hide_minnpost_account=hide_minnpost_account, hide_pay_comments=hide_pay_comments, hide_display=hide_display, hide_honor_or_memory=hide_honor_or_memory,
+        opportunity_id=opportunity_id, recurring_id=recurring_id, description=description,
+        stage=stage, close_date=close_date,
+    )
+
+
 @app.route("/finish/", methods=["GET", "POST"])
 def finish():
 
     template    = "finish.html"
     form = FinishForm()
 
-    update_donation.delay(request.form)
+    finish_donation.delay(request.form)
     app.logger.info("clearing lock")
     lock_key = request.form["lock_key"]
     lock = Lock(key=lock_key)
@@ -848,7 +1136,7 @@ def customer_source_updated(event):
     if not opps:
         return
 
-    response = Opportunity.update_card(opps, card_details)
+    response = Opportunity.update(opps, card_details)
     logging.info(response)
     logging.info("card details updated")
 
@@ -994,14 +1282,26 @@ def stripehook():
     return "", 200
 
 
-def add_opportunity(contact=None, form=None, customer=None):
+def add_or_update_opportunity(contact=None, form=None, customer=None):
     """
-    This will add a single donation to Salesforce.
+    This will add or update a single donation in Salesforce.
     """
 
-    logging.info("----Adding opportunity...")
-
+    today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
     opportunity = Opportunity(contact=contact)
+
+    opportunity_id = form.get("opportunity_id", None)
+    if opportunity_id is not None:
+        try:
+            opportunity_list = Opportunity.list(
+                opportunity_id=opportunity_id
+            )
+            opportunity = opportunity_list[0]
+            logging.info("----Updating opportunity...")
+        except:
+            opportunity = None
+    else:
+        logging.info("----Adding opportunity...")
 
     # posted form fields
 
@@ -1011,6 +1311,8 @@ def add_opportunity(contact=None, form=None, customer=None):
     opportunity.stripe_description = "MinnPost Membership"
     opportunity.lead_source = "Stripe"
     opportunity.type = form.get("opp_type", "Donation")
+    opportunity.close_date = form.get("close_date", today)
+    opportunity.stage = form.get("stage", "Pledged")
     
     # minnpost custom fields
     opportunity.agreed_to_pay_fees = form.get("pay_fees", False)
@@ -1068,15 +1370,28 @@ def add_opportunity(contact=None, form=None, customer=None):
     return opportunity
 
 
-def add_recurring_donation(contact=None, form=None, customer=None):
+def add_or_update_recurring_donation(contact=None, form=None, customer=None):
     """
-    This will add a recurring donation to Salesforce.
+    This will add or update a recurring donation in Salesforce.
     """
 
     if form["installment_period"] is None:
         raise Exception("installment_period must have a value")
 
     rdo = RDO(contact=contact)
+
+    recurring_id = form.get("recurring_id", None)
+    if recurring_id is not None:
+        try:
+            rdo_list = RDO.list(
+                recurring_id=recurring_id
+            )
+            rdo = rdo_list[0]
+            logging.info("----Updating recurring donation...")
+        except:
+            opportunity = None
+    else:
+        logging.info("----Adding recurring donation...")
 
     # default
     rdo.amount = form.get("amount", 0)

@@ -1,0 +1,42 @@
+<section class="panel panel--form" id="panel--details">
+  <div class="support support--summary">
+    
+      <h1>{{ heading }}</h1>
+    
+      {% if summary != '' %}
+      <p>{{ summary|safe }}</p>
+      {% endif %}
+
+  </div>
+
+  {% if amount == '' or show_amount_field == True %}
+  <fieldset class="clear-block">
+    <div class="form-item form-item--amount">
+      <label for="amount" class="required">Amount: </label>
+      <div class="input-prepend">
+        <span class="prefix">$</span>
+        <input type="number" id="new-amount" name="new-amount" value="{{ amount }}" min="1" step="any" required>
+      </div>
+    </div>
+  </fieldset>
+  {% endif %}
+
+  {% if show_frequency_field == True %}
+  <fieldset class="clear-block">
+    <div class="form-item form-item--recurring">
+      <input type="radio" id="recurring-monthly" name="installment_period" value="monthly"{% if frequency == 'monthly' %} checked {% endif %}> <label for="recurring-monthly">monthly</label>
+      <input type="radio" id="recurring-yearly" name="installment_period" value="yearly"{% if frequency == 'yearly' %} checked {% endif %}> <label for="recurring-yearly">yearly</label>
+    </div>
+  </fieldset>
+  {% endif %}
+
+  {% if allow_additional == True %}
+  <fieldset class="clear-block">
+    <div class="form-item form-item--additional-donation">
+      <label for="additional_donation">Additional Donation (optional): </label>
+      <input type="number" id="additional_donation" name="additional_donation" value="{{ additional_donation }}" step="any">
+    </div>
+  </fieldset>
+  {% endif %}
+  
+</section>
