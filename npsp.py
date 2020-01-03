@@ -393,6 +393,15 @@ class Opportunity(SalesforceObject):
                 RecordType.Name,
                 StageName,
                 Type,
+                Credited_as__c,
+                Donor_first_name__c,
+                Donor_last_name__c,
+                Donor_e_mail__c,
+                Donor_address_line_1__c,
+                Donor_city__c,
+                Donor_state__c,
+                Donor_ZIP__c,
+                Donor_country__c,
                 Flask_Transaction_ID__c,
                 Payment_Type__c,
                 Card_acct_last_4__c,
@@ -434,6 +443,15 @@ class Opportunity(SalesforceObject):
             #y.record_type_name = item["RecordType"]["Name"]
             y.stage_name = "Pledged"
             y.type = item["Type"]
+            y.credited_as = item["Credited_as__c"]
+            y.donor_address_one = item["Donor_address_line_1__c"]
+            y.donor_city = item["Donor_city__c"]
+            y.donor_state = item["Donor_state__c"]
+            y.donor_zip = item["Donor_ZIP__c"]
+            y.donor_country = item["Donor_country__c"]
+            y.donor_first_name = item["Donor_first_name__c"]
+            y.donor_last_name = item["Donor_last_name__c"]
+            y.donor_email = item["Donor_e_mail__c"]
             y.card_type = item["Card_type__c"]
             y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
             y.payment_type = item["Payment_Type__c"]
