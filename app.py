@@ -912,6 +912,8 @@ def donate_form():
         billing_state = donation.donor_state
         billing_zip = donation.donor_zip
         billing_country = donation.donor_country
+        opportunity_type = donation.type
+        opportunity_subtype = donation.subtype
 
     # allow some fields to be overridden on the url
     if request.args.get("amount"):
@@ -1055,7 +1057,7 @@ def donate_form():
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
         hide_amount_heading=hide_amount_heading, title=title, heading=heading, summary=summary, allow_additional=allow_additional, button=button, show_amount_field=show_amount_field, with_shipping=with_shipping, hide_minnpost_account=hide_minnpost_account, hide_pay_comments=hide_pay_comments, hide_display=hide_display, hide_honor_or_memory=hide_honor_or_memory,
-        opportunity_id=opportunity_id, recurring_id=recurring_id, description=description,
+        opportunity_id=opportunity_id, opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype, recurring_id=recurring_id, description=description,
         stage=stage, close_date=close_date,
     )
 
@@ -1310,7 +1312,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None):
     opportunity.campaign_id = form.get("campaign_id", DEFAULT_CAMPAIGN_ONETIME)
     opportunity.stripe_description = "MinnPost Membership"
     opportunity.lead_source = "Stripe"
-    opportunity.type = form.get("opp_type", "Donation")
+    opportunity.type = form.get("opportunity_type", "Donation")
     opportunity.close_date = form.get("close_date", today)
     opportunity.stage = form.get("stage", "Pledged")
     
@@ -1350,7 +1352,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None):
     opportunity.shipping_zip = form.get("shipping_zip", "")
     opportunity.shipping_country = form.get("shipping_country", "")
     opportunity.stripe_customer_id = customer["id"]
-    opportunity.subtype = form.get("opp_subtype", "Donation: Individual")
+    opportunity.subtype = form.get("opportunity_subtype", "Donation: Individual")
 
     opportunity.lock_key = form.get("lock_key", "")
     
