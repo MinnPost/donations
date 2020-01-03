@@ -367,16 +367,17 @@
     }, // amountAsRadio
 
     amountUpdated: function(element, options) {
-      // when amount text field can change, we need to check it whenever it changes
+      // when new amount text field can change, we need to change the hidden field
       var that = this;
       var payment_type = $(options.choose_payment + ' input').val();
       $(options.update_amount_selector, element).change(function() {
-          options.original_amount = parseInt($(options.update_amount_selector, element).val(), 10);
-          if ( payment_type === 'ach' ) {
-            that.calculateFees(that.options.original_amount, 'ach');
-          } else {
-            that.calculateFees(that.options.original_amount, 'visa');
-          }
+        $(options.original_amount_selector, element).val($(this).val());
+        options.original_amount = parseInt($(options.original_amount_selector, element).val(), 10);
+        if ( payment_type === 'ach' ) {
+          that.calculateFees(that.options.original_amount, 'ach');
+        } else {
+          that.calculateFees(that.options.original_amount, 'visa');
+        }
       });
     }, // amountUpdated
 
