@@ -1068,7 +1068,7 @@
       return tokenData;
     }, // generateTokenData
 
-    createToken: function(card tokenData) {
+    createToken: function(card, tokenData) {
       var that = this;
       that.stripe.createToken(card, tokenData).then(function(result) {
         if (result.error) {
