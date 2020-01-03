@@ -13,7 +13,7 @@
 
 <main>
 	<div class="wrapper support--forms">
-	  <form data-action="{{ form_data_action }}" action="{{ form_action }}" method="post" class="support support--donate" id="donate">
+	  <form action="{{ form_action }}" method="post" class="support support--donate" id="donate">
 	    {{ form.csrf_token }}
 
 	    <input type="hidden" name="amount" id="amount" value="{{ amount }}">
