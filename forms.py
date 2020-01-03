@@ -140,7 +140,7 @@ class MinimalForm(BaseForm):
     pledge = HiddenField("Pledge", [validators.Optional()])
     stage = HiddenField("Stage Name", [validators.Optional()])
     close_date = HiddenField("Close Date", [validators.Optional()])
-    opp_id = HiddenField("Opportunity ID", [validators.Optional()])
+    opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])
     recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()])
     opp_type = HiddenField("Opportunity Type", [validators.Optional()])
     opp_subtype = HiddenField("Opportunity Sub-Type", [validators.Optional()])

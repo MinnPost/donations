@@ -352,6 +352,7 @@ class Opportunity(SalesforceObject):
         end=None,
         stage_name="Pledged",
         stripe_customer_id=None,
+        opportunity_id=None,
         sf_connection=None,
     ):
 
@@ -372,6 +373,11 @@ class Opportunity(SalesforceObject):
                 AND CloseDate <= {end}
                 AND CloseDate >= {begin}
                 AND StageName = '{stage_name}'
+            """
+
+        if opportunity_id is not None:
+            where = f"""
+                WHERE Id = '{opportunity_id}'
             """
 
         query = f"""
@@ -700,7 +706,6 @@ class RDO(SalesforceObject):
         self.stripe_customer_id = None
         self.stripe_description = None
         self.stripe_transaction_id = None
-        self.ticket_count = 0
 
         self.lock_key = None
 
@@ -736,7 +741,7 @@ class RDO(SalesforceObject):
             "In_Honor_Memory__c": self.in_honor_or_memory,
             "In_honor_memory_of__c": self.in_honor_memory_of,
             "Notify_someone__c": self.notify_someone,
-            #'npe03__Installments__c': self.installments, # only add this if we need to close it
+            #'npe03__Installments__c': self.installments,
             "npe03__Installment_Period__c": self.installment_period, # this has to be there even if it is open ended
             "Lead_Source__c": self.lead_source,
             "Member_benefit_request_Swag__c": self.member_benefit_request_swag,

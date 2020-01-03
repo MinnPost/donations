@@ -551,7 +551,6 @@ def root_form():
         campaign=campaign, customer_id=customer_id,
         plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
-        #lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
     )
