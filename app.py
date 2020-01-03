@@ -58,6 +58,7 @@ from forms import (
     format_amount,
     DonateForm,
     MinimalForm,
+    SponsorshipForm,
     AdvertisingForm,
     CancelForm,
     FinishForm,
