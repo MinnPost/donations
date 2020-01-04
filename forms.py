@@ -52,7 +52,7 @@ class BaseForm(FlaskForm):
     source = HiddenField("Source", [validators.Optional()])
     customer_id = HiddenField("Customer ID", [validators.Optional()])
     campaign = HiddenField("Campaign ID", [validators.Length(max=18)])
-    description = HiddenField(u"Description", [validators.InputRequired()])
+    description = HiddenField(u"Description", [validators.Optional()])
 
     amount = StringField(
         u"Amount",
@@ -87,6 +87,7 @@ class BaseForm(FlaskForm):
     email = EmailField(
         "Email address", [validators.DataRequired(), validators.Email()]
     )
+    payment_type = StringField(u"Payment Type", [validators.Optional()])
     stripeToken = HiddenField(u"Stripe token", [validators.Optional()])
     bankToken = HiddenField(u"Bank token", [validators.Optional()])
     recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])

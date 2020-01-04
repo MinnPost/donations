@@ -477,7 +477,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
 
-    frequency = request.form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     if frequency == "monthly":
         yearly = 12
     else:
@@ -485,17 +485,17 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     level = check_level(amount, frequency, yearly)
 
     try:
-        if "stripeToken" in request.form:
+        if "stripeToken" in form_data:
             customer = stripe.Customer.create(
                     email=email,
-                    card=request.form["stripeToken"] 
+                    card=form_data["stripeToken"] 
             )
             stripe_card = customer.default_source
             form_data["stripe_type"] = "card"
-        elif "bankToken" in request.form:
+        elif "bankToken" in form_data:
             customer = stripe.Customer.create(
                 email=email,
-                source=request.form["bankToken"]
+                source=form_data["bankToken"]
             )
             stripe_bank_account = customer.default_source
             form_data["stripe_type"] = "bank_account"
@@ -789,12 +789,17 @@ def plaid_token():
 @app.route("/calculate-fees/", methods=["POST"])
 def calculate_fees():
 
-    amount = format_amount(request.form["amount"])
+    form = DonateForm(request.form)
+    # use form.data instead of request.form from here on out
+    # because it includes all filters applied by WTF Forms
+    form_data = form.data
+
+    amount = form_data["amount"]
     fees = ''
     
     # get fee amount to send to stripe
-    if "payment_type" in request.form:
-        payment_type = request.form["payment_type"]
+    if "payment_type" in form_data:
+        payment_type = form_data["payment_type"]
         fees = calculate_amount_fees(amount, payment_type)
 
     ret_data = {"fees": fees}
@@ -804,7 +809,7 @@ def calculate_fees():
 @app.route("/thanks/", methods=["POST"])
 def thanks():
     template    = "thanks.html"
-    form        = DonateForm()
+    form        = DonateForm(request.form)
     form_action = "/finish/"
 
     # use form.data instead of request.form from here on out
@@ -814,20 +819,20 @@ def thanks():
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
 
-    customer_id = request.form["customer_id"]
+    customer_id = form_data["customer_id"]
 
-    email = request.form["email"]
-    first_name = request.form["first_name"]
-    last_name = request.form["last_name"]
+    email = form_data["email"]
+    first_name = form_data["first_name"]
+    last_name = form_data["last_name"]
 
-    frequency = request.form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     if frequency == "monthly":
         yearly = 12
     else:
         yearly = 1
     level = check_level(amount, frequency, yearly)
 
-    lock_key = request.form["lock_key"]
+    lock_key = form_data["lock_key"]
 
     return render_template(
         template,
@@ -1083,6 +1088,7 @@ def finish():
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
+
 
 @app.route("/error")
 def error():
