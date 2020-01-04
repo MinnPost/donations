@@ -93,6 +93,16 @@ class BaseForm(FlaskForm):
     update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
 
 
+# used for getting a plaid token
+class PlaidForm(BaseForm):
+    public_token = StringField(
+        u"Public token", [validators.required(message="Plaid requires a public token.")]
+    )
+    account_id = StringField(
+        u"Account ID", [validators.required(message="Plaid requires an account ID.")]
+    )
+
+
 # used for the main donate flow from the website
 class DonateForm(BaseForm):
     lock_key = HiddenField("Lock Key", [validators.Optional()])

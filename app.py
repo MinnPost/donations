@@ -56,6 +56,7 @@ from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
 from flask import Flask, redirect, render_template, request, send_from_directory, jsonify
 from forms import (
     format_amount,
+    PlaidForm,
     DonateForm,
     MinimalForm,
     SponsorshipForm,
@@ -764,9 +765,13 @@ def give_form():
 @app.route("/plaid_token/", methods=["POST"])
 def plaid_token():
 
-    form = DonateForm(request.form)
-    public_token = request.form["public_token"]
-    account_id = request.form["account_id"]
+    form = PlaidForm(request.form)
+    # use form.data instead of request.form from here on out
+    # because it includes all filters applied by WTF Forms
+    form_data = form.data
+
+    public_token = form_data["public_token"]
+    account_id = form_data["account_id"]
 
     client = Client(client_id=app.config["PLAID_CLIENT_ID"], secret=app.config["PLAID_SECRET"], public_key=app.config["PLAID_PUBLIC_KEY"], environment=app.config["PLAID_ENVIRONMENT"])
     exchange_token_response = client.Item.public_token.exchange(public_token)
