@@ -467,9 +467,6 @@ def finish_donation(self, form=None):
 
         response = RDO.update(rdo, post_submit_details)
 
-    logging.info(response)
-    logging.info("post submit updated")
-
 
 def do_charge_or_show_errors(form_data, template, function, donation_type):
     app.logger.debug("----Creating Stripe customer...")

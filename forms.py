@@ -193,12 +193,16 @@ class CancelForm(MinimalForm):
 
 
 # used for post-donate form with newsletter/testimonial options
-class FinishForm(FlaskForm):
+class FinishForm(BaseForm):
     class Meta:
         def bind_field(self, form, unbound_field, options):
             filters = unbound_field.kwargs.get("filters", [])
             filters.append(strip_whitespace)
             return unbound_field.bind(form=form, filters=filters, **options)
+
+    installment_period = StringField(
+        u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
+    )
     lock_key = HiddenField(u"Lock Key", [validators.InputRequired()])
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(
