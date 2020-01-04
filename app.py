@@ -1068,11 +1068,14 @@ def donate_form():
 def finish():
 
     template    = "finish.html"
-    form = FinishForm()
+    form = FinishForm(request.form)
+    # use form.data instead of request.form from here on out
+    # because it includes all filters applied by WTF Forms
+    form_data = form.data
 
-    finish_donation.delay(request.form)
+    finish_donation.delay(form_data)
     app.logger.info("clearing lock")
-    lock_key = request.form["lock_key"]
+    lock_key = form_data["lock_key"]
     lock = Lock(key=lock_key)
     lock.release()
     return render_template(
