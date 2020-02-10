@@ -2314,11 +2314,11 @@ global.Payment = Payment;
           if ( typeof result.mailchimp_id !== 'undefined' ) {
             $(options.email_field_selector, element).after('<input name="mailchimp_user_id" type="hidden" value="' + result.mailchimp_id + '">');
           }
-          if (result.status === 'subscribed') {
+          if (result.mailchimp_status === 'subscribed') {
             // user created - show a success message
             $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
-            var interests = result.interests;
-            $.each(interests, function( index, value ) {
+            var groups = result.groups;
+            $.each(groups, function( index, value ) {
               if ( value === true ) {
                 $(':checkbox[value="' + index + '"]').prop('checked',true);
               } else {
