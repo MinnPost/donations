@@ -232,6 +232,7 @@ def minnpost_support():
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
         use_recaptcha=app.use_recaptcha,
+        last_updated=dir_last_updated('static')
     )
 
 # used at support.minnpost.com/give
@@ -2171,7 +2172,7 @@ def thanks():
         update_account.delay(form=request.form, account = {'levelint' : level.get('levelint', 0), 'level' : 'MinnPost {}'.format(level.get('level', '--None--').title())})
         return render_template(
             'thanks.html',
-            amount=amount_formatted, frequency=frequency, frequency_label=frequency_label, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, minnpost_root = app.minnpost_root, key = app.config['STRIPE_KEYS']['publishable_key']
+            amount=amount_formatted, frequency=frequency, frequency_label=frequency_label, yearly=yearly, level=level, email=email, first_name=first_name, last_name=last_name, session=session, minnpost_root = app.minnpost_root, key = app.config['STRIPE_KEYS']['publishable_key'], last_updated=dir_last_updated('static')
         )
     else:
         print('ajax result donate form did not validate: error below')
@@ -2218,6 +2219,7 @@ def confirm():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
+            last_updated=dir_last_updated('static')
         )
 
 # this is a minnpost url
@@ -2242,7 +2244,8 @@ def minnpost_advertising_confirm():
         return render_template(
             'minnpost-advertising/finish.html',
             amount=amount_formatted, session=session,
-            key = app.config['STRIPE_KEYS']['publishable_key']
+            key = app.config['STRIPE_KEYS']['publishable_key'],
+            last_updated=dir_last_updated('static')
         )
     else:
         print('post-advertising form did not validate: error below')
@@ -2255,6 +2258,7 @@ def minnpost_advertising_confirm():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
+            last_updated=dir_last_updated('static')
         )
 
 # this is a minnpost url
@@ -2277,7 +2281,8 @@ def minnroast_patron_confirm():
         return render_template(
             'minnroast-patron/finish.html',
             amount=amount_formatted, session=session,
-            key = app.config['STRIPE_KEYS']['publishable_key']
+            key = app.config['STRIPE_KEYS']['publishable_key'],
+            last_updated=dir_last_updated('static')
         )
     else:
         print('post-sponsorship form did not validate: error below')
@@ -2290,6 +2295,7 @@ def minnroast_patron_confirm():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
+            last_updated=dir_last_updated('static')
         )
 
 
@@ -2318,7 +2324,8 @@ def minnpost_pledge_confirm():
         return render_template(
             'minnpost-minimal-form/finish.html',
             amount=amount_formatted, session=session,
-            key = app.config['STRIPE_KEYS']['publishable_key']
+            key = app.config['STRIPE_KEYS']['publishable_key'],
+            last_updated=dir_last_updated('static')
         )
     else:
         print('post-pledge form did not validate: error below')
@@ -2331,6 +2338,7 @@ def minnpost_pledge_confirm():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
+            last_updated=dir_last_updated('static')
         )
 
 
@@ -2359,7 +2367,8 @@ def minnpost_donate_confirm():
         return render_template(
             'minnpost-minimal-form/finish.html',
             amount=amount_formatted, session=session,
-            key = app.config['STRIPE_KEYS']['publishable_key']
+            key = app.config['STRIPE_KEYS']['publishable_key'],
+            last_updated=dir_last_updated('static')
         )
     else:
         print('post-donate form did not validate: error below')
@@ -2372,6 +2381,7 @@ def minnpost_donate_confirm():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
+            last_updated=dir_last_updated('static')
         )
 
 
@@ -2400,7 +2410,8 @@ def minnpost_donation_update_confirm():
         return render_template(
             'minnpost-minimal-form/finish.html',
             amount=amount_formatted, session=session,
-            key = app.config['STRIPE_KEYS']['publishable_key']
+            key = app.config['STRIPE_KEYS']['publishable_key'],
+            last_updated=dir_last_updated('static')
         )
     else:
         print('post-pledge form did not validate: error below')
@@ -2413,6 +2424,7 @@ def minnpost_donation_update_confirm():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
+            last_updated=dir_last_updated('static')
         )
 
 # this is a minnpost url
@@ -2427,6 +2439,7 @@ def minnpost_donation_cancel_confirm():
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
         use_recaptcha=app.use_recaptcha,
+        last_updated=dir_last_updated('static')
     )
 
 
@@ -2454,7 +2467,8 @@ def minnroast_pledge_confirm():
         return render_template(
             'minnpost-minimal-form/finish.html',
             amount=amount_formatted, session=session,
-            key = app.config['STRIPE_KEYS']['publishable_key']
+            key = app.config['STRIPE_KEYS']['publishable_key'],
+            last_updated=dir_last_updated('static')
         )
     else:
         print('post-pledge form did not validate: error below')
@@ -2467,6 +2481,7 @@ def minnroast_pledge_confirm():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
+            last_updated=dir_last_updated('static')
         )
 
 # this is a minnpost url
@@ -2489,7 +2504,8 @@ def anniversary_patron_confirm():
         return render_template(
             'anniversary-patron/finish.html',
             amount=amount_formatted, session=session,
-            key = app.config['STRIPE_KEYS']['publishable_key']
+            key = app.config['STRIPE_KEYS']['publishable_key'],
+            last_updated=dir_last_updated('static')
         )
     else:
         print('post-sponsorship form did not validate: error below')
@@ -2502,6 +2518,7 @@ def anniversary_patron_confirm():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
+            last_updated=dir_last_updated('static')
         )
 
 # this is a minnpost url
@@ -2533,7 +2550,8 @@ def minnroast_event_confirm():
         return render_template(
             'minnpost-events/finish.html',
             amount=amount_formatted, session=session, event=event,
-            key = app.config['STRIPE_KEYS']['publishable_key']
+            key = app.config['STRIPE_KEYS']['publishable_key'],
+            last_updated=dir_last_updated('static')
         )
     else:
         print('post-event form did not validate: error below')
@@ -2546,6 +2564,7 @@ def minnroast_event_confirm():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
+            last_updated=dir_last_updated('static')
         )
 
 
