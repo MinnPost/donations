@@ -1482,11 +1482,11 @@
           url: options.minnpost_root + '/wp-json/minnpost-api/v2/mailchimp/user',
           data: get_data
         }).done(function( result ) {
-          if ( typeof result.status !== 'undefined' ) {
-            $(options.email_field_selector, element).after('<input name="mailchimp_status" type="hidden" value="' + result.status + '">');
+          if ( typeof result.mailchimp_status !== 'undefined' ) {
+            $(options.email_field_selector, element).after('<input name="mailchimp_status" type="hidden" value="' + result.mailchimp_status + '">');
           }
-          if ( typeof result.mailchimp_id !== 'undefined' ) {
-            $(options.email_field_selector, element).after('<input name="mailchimp_user_id" type="hidden" value="' + result.mailchimp_id + '">');
+          if ( typeof result.mailchimp_user_id !== 'undefined' ) {
+            $(options.email_field_selector, element).after('<input name="mailchimp_user_id" type="hidden" value="' + result.mailchimp_user_id + '">');
           }
           if (result.mailchimp_status === 'subscribed') {
             // user created - show a success message
