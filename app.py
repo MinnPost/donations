@@ -2011,7 +2011,11 @@ def charge_ajax():
             session['opp_type'] = request.form['opp_type']
 
             if request.form['opp_type'] == 'Sponsorship':
-                if amount == 300:
+                if amount == 175:
+                    fair_market_value = 50
+                elif amount == 300:
+                    fair_market_value = 100
+                elif amount == 350:
                     fair_market_value = 100
                 elif amount == 500:
                     fair_market_value = 100
