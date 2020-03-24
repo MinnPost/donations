@@ -83,6 +83,7 @@ import batch
 from pprint import pprint
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
 limiter = Limiter(
     app,
     key_func=get_remote_address,
