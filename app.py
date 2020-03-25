@@ -10,7 +10,7 @@ from flask import Flask, redirect, render_template, request, session, url_for, j
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
 from werkzeug.contrib.fixers import ProxyFix
 
 from core import db
@@ -86,7 +86,7 @@ app = Flask(__name__)
 #app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
 limiter = Limiter(
     app,
-    key_func=get_remote_address,
+    key_func=get_ipaddr,
     default_limits=["200 per day", "25 per hour"]
 )
 
