@@ -3,7 +3,9 @@ from datetime import datetime, timedelta
 from stopforumspam_api import query
 import httpbl
 from config import PROJECT_HONEYPOT_KEY
+from config import EMAIL_BAN_LIST
 bl = httpbl.HttpBL(PROJECT_HONEYPOT_KEY)
+email_ban_list = EMAIL_BAN_LIST
 def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
     thisyear = amount * yearly
     level = ''
@@ -121,6 +123,11 @@ def dir_last_updated(folder):
 
 
 def is_known_spam_email(email):
+
+    if email in email_ban_list:
+        print('error: block from ban list. email is {}'.format(email))
+        return True
+
     response = query(email=email)
     if response != None:
         if response.email.appears:
