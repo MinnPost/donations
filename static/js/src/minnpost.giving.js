@@ -107,8 +107,7 @@
     'confirm_button_selector' : '#finish',
     'opp_id_selector' : '#flask_id',
     'recurring_selector' : '#recurring',
-    'newsletter_group_selector' : '[name="newsletters"]',
-    'message_group_selector' : '[name="messages"]',
+    'newsletter_group_selector' : '.support-newsletters',
     'reason_field_selector' : '#reason_for_supporting',
     'share_reason_selector' : '#reason_shareable',
     'confirm_top_selector' : '.support--post-confirm',
@@ -1473,6 +1472,36 @@
 
     showNewsletterSettings: function(element, options) {
       var that = this;
+
+      var newsletter_group_html = '';
+      if ($(options.newsletter_group_selector).length > 0 ) {
+        var get_data = {
+          shortcode: 'newsletter_form',
+          placement: 'useraccount'
+        };
+        $.ajax({
+          method: 'GET',
+          url: options.minnpost_root + '/wp-json/minnpost-api/v2/mailchimp/form',
+          data: get_data
+        }).done(function( result ) {
+          if ( typeof result.group_fields !== 'undefined' ) {
+            $.each(result.group_fields, function( index, category ) {
+              newsletter_group_html += '<fieldset class="m-form-item support-newsletter m-form-item-' + category.type + '">';
+              newsletter_group_html += '<label>' + category.name + ':</label>';
+              if ( category.contains.length > 0 ) {
+                newsletter_group_html += '<div class="form-item form-item--newsletter">';
+                $.each(category[category.contains], function( index, item ) {
+                  newsletter_group_html += '<label><input name="groups_submitted[]" type="checkbox" value="' + item.id + '">' + item.name + '</label>';
+                });
+                newsletter_group_html += '</div>';
+              }
+              newsletter_group_html += '</fieldset>';
+            });
+            $(options.newsletter_group_selector).html(newsletter_group_html);
+          }
+        });
+      }
+
       if ($(options.newsletter_group_selector).length > 0 && typeof $(options.email_field_selector, element).val() !== 'undefined') {
         var get_data = {
           email: $(options.email_field_selector, element).val()
@@ -1507,8 +1536,7 @@
 
     confirmMessageSubmit: function(element, options) {
 
-      //var existing_newsletter_settings = this.options.existing_newsletter_settings;
-      var existing_newsletter_settings = $('.support-newsletter :input').serialize();
+      var existing_newsletter_settings = $(options.newsletter_group_selector + ' input').serialize();
       //this.debug(existing_newsletter_settings);
 
       $(options.confirm_form_selector).submit(function(event) {
@@ -1518,11 +1546,10 @@
         // submit settings to mailchimp
         // need to get user info on a hidden field here
 
-        var newsletter_groups = $(options.newsletter_group_selector + ':checked');
-        var message_groups = $(options.message_group_selector + ':checked');
-        var new_newsletter_settings = $('.support-newsletter :input:checked').serialize();
+        var newsletter_groups = $(options.newsletter_group_selector + ' input:checked');
+        var new_newsletter_settings = newsletter_groups.serialize();
 
-        if ((existing_newsletter_settings !== new_newsletter_settings) && (typeof newsletter_groups !== 'undefined' || typeof message_groups !== 'undefined')) {
+        if ((existing_newsletter_settings !== new_newsletter_settings) && (typeof newsletter_groups !== 'undefined')) {
           //add our own ajax check as X-Requested-With is not always reliable
           //ajax_form_data = new_newsletter_settings + '&ajaxrequest=true&subscribe';
 
@@ -1545,13 +1572,6 @@
 
           if (typeof newsletter_groups !== 'undefined') {
             $.each(newsletter_groups, function(index, value) {
-              var group = $(this).val();
-              post_data.groups_submitted[index] = group;
-            });
-          }
-
-          if (typeof message_groups !== 'undefined') {
-            $.each(message_groups, function(index, value) {
               var group = $(this).val();
               post_data.groups_submitted[index] = group;
             });

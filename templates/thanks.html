@@ -33,20 +33,7 @@
             <label class="additional-option" id="reason_shareable" for="reason_shareable"><input type="checkbox" checked="checked" name="reason_shareable" id="reason_shareable" value="1"> MinnPost has permission to post this comment on the website.</label>
           </div>
         </fieldset> <!-- we are open to how this gets transferred. if we need to, we can make a minnpost ajax endpoint, but it does have to get stored somewhere -->
-        <fieldset class="support-newsletter">
-          <div class="form-item form-item--newsletter">
-            <label>Choose any of these newsletters:</label>
-            <label><input type="checkbox" name="newsletters" id="daily" value="04471b1571"> Daily newsletter</label>
-            <label><input type="checkbox" name="newsletters" id="sunday" value="94fc1bd7c9"> Sunday review</label>
-            <label><input type="checkbox" name="newsletters" id="greatermn" value="ce6fd734b6"> Greater Minnesota newsletter</label>
-            <label><input type="checkbox" name="newsletters" id="dcmemo" value="d89249e207"> D. C. Memo</label>
-          </div>
-          <div class="form-item form-item--optional">
-            <label>Periodic MinnPost messages:</label>
-            <label><input type="checkbox" name="messages" id="events" value="68449d845c"> Events &amp; member benefits</label>
-            <label><input type="checkbox" name="messages" id="feedback" value="958bdb5d3c"> Opportunities to give MinnPost input/feedback</label>
-          </div>
-        </fieldset> <!-- we have a working api endpoint for this already, and it is operating -->
+        <div class="support-newsletters"><img src="/static/img/spinner.gif" alt="Loading"></div>
         <button type="submit" name="finish" id="finish" class="clear-block btn btn--submit">Send and Finish</button> <!-- ideally this would call both ajax endpoints, but the mailchimp one is the only one currently in use -->
       </section>
     </form>
