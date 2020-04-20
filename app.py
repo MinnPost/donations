@@ -2170,7 +2170,8 @@ def thanks():
     email_is_spam = is_known_spam_email(email)
 
     if email_is_spam is True:
-        app.use_recaptcha = True
+        print('error: block from ban list. email is {}'.format(email))
+        #app.use_recaptcha = True
 
     if form.validate():
         print('Done with stripe processing {} {} {} for amount {} and frequency {}'.format(email, first_name, last_name, amount_formatted, frequency))
