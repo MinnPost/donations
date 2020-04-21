@@ -17,6 +17,7 @@ EMAIL_BAN_LIST = os.getenv('EMAIL_BAN_LIST', '')
 #
 FLASK_SECRET_KEY = os.getenv('FLASK_SECRET_KEY', '\xa5\xcc\xff\x8dT\xea%W\xdb\xdd\x85>\xdae\xd85D\xb7\xd2\x11(U\xac\x08')
 ROOT_URL = os.getenv('ROOT_URL')
+WTF_CSRF_ENABLED = False
 
 ########
 # Celery
