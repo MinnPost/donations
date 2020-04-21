@@ -8,7 +8,6 @@
     <img src="https://www.minnpost.com/wp-content/uploads/2020/01/2020MRLogo600-1.png" alt="MinnPost presents MinnRoast 2020" />
 
     <form action="/minnroast-patron-confirm/" method="post" class="support support--donate" id="donate">
-      {{ form.csrf_token }}
 
       <input type="hidden" name="recurring" id="recurring" value="one-time">
       <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">

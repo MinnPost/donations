@@ -17,7 +17,6 @@
   <div class="wrapper support--forms">
 
     <form action="/minnpost-event-confirm/" method="post" class="support support--donate" id="donate">
-      {{ form.csrf_token }}
 
       <input type="hidden" name="event" id="event" value="{{ event }}">
       <input type="hidden" name="amount" id="amount" value="{{ starting_amount }}">

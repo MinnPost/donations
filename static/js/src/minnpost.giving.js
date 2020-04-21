@@ -1366,10 +1366,6 @@
             $(that.options[field], element).prev().addClass('error');
             $(that.options[field], element).after('<span class="check-field invalid">' + message + '</span>');
           }
-
-          if (result.error.field == 'csrf_token') {
-            $('button.give').before('<p class="error">Sorry, this form had a back-end error and was unable to complete your donation. Please <a href="#" onclick="location.reload(); return false;">reload the page</a> and try again (we will preserve as much of your information as possible).</p>')
-          }
         } else {
           // Send the token to your server
           that.stripeTokenHandler(result.token, 'card');

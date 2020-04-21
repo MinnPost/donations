@@ -6,7 +6,6 @@
   <div class="wrapper support--forms">
 
     <form action="{{ confirm_url }}" method="post" class="support support--cancel" id="cancel">
-      {{ form.csrf_token }}
 
       {% if amount != '' and show_amount_field != True %}
       <input type="hidden" name="amount" id="amount" value="{{ amount }}">
