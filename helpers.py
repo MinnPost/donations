@@ -144,7 +144,7 @@ def is_known_spam_email(email):
     wordpress_response = requests.get(api_url)
     if wordpress_response != None:
         result = json.loads(wordpress_response.text)
-        if result.status == 'spam':
+        if result['status'] == 'spam':
             print('error: block from wordpress response. email is {}'.format(email))
             return True
 
