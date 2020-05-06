@@ -908,19 +908,9 @@ global.Payment = Payment;
     'account_zip_selector' : '#billing_zip',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.form-item--password',
-    'calculated_amount_selector' : '.calculated-amount',
-    'quantity_field' : '#quantity',
-    'quantity_selector' : '.quantity',
-    'item_selector': '.purchase-item',
-    'single_unit_price_attribute' : 'unit-price',
     'additional_amount_field' : '#additional_donation',
     'additional_amount_selector' : '.additional_donation',
     'has_additional_text_selector' : '.has_additional',
-    'promo_selector' : '.form-item--promo-code',
-    'use_promocode_selector' : '#use-promo-code',
-    'promocode_selector' : '#promo_code',
-    'event_id_selector' : '#event',
-    'calendar_button_selector' : '.addeventatc',
     'billing_selector' : 'fieldset.billing',
     'shipping_selector' : 'fieldset.shipping',
     'credit_card_fieldset' : '.payment-method-group',
@@ -1561,6 +1551,14 @@ global.Payment = Payment;
       var that = this;
       var account_exists = false;
 
+      $(options.email_field_selector, element).parent().append('<p class="error spam-email">This email address has been detected as a spammer.</p>');
+      $('.spam-email').hide();
+
+      $(options.email_field_selector, element).change(function() {
+        $('.spam-email').hide();
+        $(this).removeClass('invalid error');
+      });
+
       function doneTyping () {
         var email = $(options.email_field_selector, element).val();
         account_exists = that.checkMinnpostAccountExists(element, options, email);
@@ -1606,159 +1604,17 @@ global.Payment = Payment;
 
         $('.form-item .form-help').hide();
       }
-      $('.form-item--with-help label, .form-item--with-help input').next('.help-link').click(function() {
+      $('.help-link').click(function() {
         $(this).next('.form-help').toggle();
         return false;
       });
     }, // allowMinnpostAccount
 
-    populateAttendees: function(quantity) {
-      var attendees = '';
-      var attendee = $('.attendees > fieldset:first').html();
-      for (i = 1; i <= quantity; i++) {
-        attendees += '<fieldset class="attendee">' + attendee.replace(/_1/g, '_' + i) + '</fieldset>';
-      }
-      $('.attendees').html(attendees);
-    },
-
-    displayAmount: function(element, options, single_unit_price, quantity, additional_amount, valid_code) {
-      var amount = single_unit_price * parseInt(quantity, 10);
-      if (additional_amount === '') {
-        additional_amount = 0;
-        $(options.create_mp_selector).parent().hide();
-      } else {
-        amount += parseInt(additional_amount, 10);
-        levelcheck = {original_amount: additional_amount, frequency: 1, levels: options.levels};
-        level = this.checkLevel(element, levelcheck, 'num');
-        if (level >= 2) {
-          $(options.create_mp_selector).parent().show();
-        }
-        $(options.has_additional_text_selector).html($(options.has_additional_text_selector).data('text'));
-        $(options.additional_amount_selector).text(parseFloat($(options.additional_amount_field).val()));
-      }
-
-      $(options.calculated_amount_selector).text(amount); // this is the preview text
-      $(options.original_amount_selector).val(quantity * single_unit_price); // this is the amount field
-      $(options.quantity_selector).text(quantity); // everywhere there's a quantity
-
-      if (quantity == 1) {
-        $('.attendee-title').text($('.attendee-title').data('single'));
-      } else {
-        $('.attendee-title').text($('.attendee-title').data('plural'));
-      }
-
-      $('.code-result').remove();
-      if (valid_code === true) {
-        $('.apply-promo-code').after('<p class="code-result success">Your member discount code was successfully added.</p>');
-        $('.show-' + options.single_unit_price_attribute).text(single_unit_price);
-        $('.apply-promo-code').text('Applied').addClass('btn--disabled');
-      } else if (valid_code === false) {
-        $('.apply-promo-code').after('<p class="code-result error">This code is incorrect. Try again.</p>');
-      }
-
-    },
-
-    calculateAmount: function(element, options, data) {
-      //this.debug('start. set variables and plain text, and remove code result.');
-      var that = this;
-      var quantity = $(options.quantity_field).val();
-
-      var single_unit_price = $(options.quantity_field).data(options.single_unit_price_attribute);
-      var additional_amount = $(options.additional_amount_field).val();
-      if (data.success === true) {
-        single_unit_price = data.single_unit_price;
-      }
-      that.displayAmount(element, options, single_unit_price, quantity, additional_amount, data.success);
-
-      $(options.quantity_field + ', ' + options.additional_amount_field).change(function() { // the quantity or additional amount changed
-        quantity = $(options.quantity_field).val();
-        additional_amount = $(options.additional_amount_field).val();
-        if (quantity != 1) {
-          $(options.item_selector).text($(options.item_selector).data('plural'));
-        } else {
-          $(options.item_selector).text($(options.item_selector).data('single'));
-        }
-
-        that.displayAmount(element, options, single_unit_price, quantity, additional_amount);
-        
-      });
-
-      var attendees = '';
-      $(options.review_step_selector).find('.btn').click(function() {
-        attendees = that.populateAttendees(quantity);
-      });
-
-      $('.progress--donation .panel--attendees').find('a').click(function() {
-        attendees = that.populateAttendees(quantity);
-      });
-
-      if ($(this.options.promocode_selector).length > 0) {
-        //$(this.options.promocode_selector).after('');
-        $('.apply-promo-code').click(function(event) {
-          var code = $(options.promocode_selector, element).val();
-          if ($(options.event_id_selector).length > 0) {
-            var event_id = $(options.event_id_selector, element).val();
-          } else {
-            var event_id = 1;
-          }
-          //use_promo = that.checkPromoCode(code);
-          event.preventDefault();
-            var data = {
-              promo_code: code,
-              event: event_id
-            };
-            $.ajax({
-              method: 'POST',
-              url: '/event-check-promo/',
-              data: data
-            }).done(function( data ) {
-              that.calculateAmount(element, options, data);
-              //that.displayAmount(element, options, data.single_unit_price, quantity, additional_amount, data.success);
-            });
-        });
-      }
-
-    }, // calculateAmount
-
-    checkPromoCode: function(code) {
-      var data = {
-        promo_code: code
-      };
-      $.ajax({
-        method: 'POST',
-        url: '/event-check-promo/',
-        data: data
-      }).done(function( data ) {
-        if (data.success === true) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-    }, // checkPromoCode
-
-    usePromoCode: function(element, options) {
-      $(this.options.use_promocode_selector).parent().html('<a href="#" class="use-promo-code">Use promo code</a>');
-      if ($(this.options.promocode_selector).val() === '') {
-        $(options.promo_selector + ' div:first', element).hide();
-      } else {
-         $(options.promo_selector + ' div:last', element).hide();
-      }
-      $('.use-promo-code').click(function(event) {
-        $(options.promo_selector + ' div:first', element).show();
-        $(options.promo_selector + ' div:last', element).hide();
-        event.preventDefault();
-      });
-    }, //usePromoCode
-
-    addToCalendar: function(element, options) {
-      $(options.calendar_button_selector).css('display', 'inline-block');
-    }, // addToCalendar
-
-    checkMinnpostAccountExists: function(element, options, email) {     
+    checkMinnpostAccount: function(element, options, email) {
       var user = {
         email: email
       };
+      var that = this;
       $.ajax({
         method: 'GET',
         url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account-exists',
@@ -1777,6 +1633,9 @@ global.Payment = Payment;
               $('.account-exists', element).show();
             }
           });
+        } else if ( result.status === 'spam' ) {
+          $(that.options.email_field_selector).addClass('invalid error');
+          $( '.spam-email').show();
         } else { // user does not exist or ajax call failed
           if ($(options.create_mp_selector, element).is(':checked')) {
             $(options.password_selector, element).show();
@@ -2058,6 +1917,30 @@ global.Payment = Payment;
             $(options.payment_method_selector).prepend('<p class="error">You are required to enter credit card information, or to authorize MinnPost to charge your bank account, to make a payment.</p>');
           }
         }
+
+        var user = {
+          email: $(options.email_field_selector, element).val(),
+          first_name: $(options.first_name_field_selector, element).val(),
+          last_name: $(options.last_name_field_selector, element).val(),
+          password: $(options.password_field_selector, element).val(),
+          city: $(options.account_city_selector, element).val(),
+          state: $(options.account_state_selector, element).val(),
+          zip: $(options.account_zip_selector, element).val(),
+        };
+
+        // check the user info for spam
+        $.ajax({
+          method: 'GET',
+          url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account',
+          data: user
+        }).done(function( result ) {
+          if ( result.status === 'spam' ) {
+            valid = false;
+            $(options.email_field_selector).addClass('invalid error');
+            $( '.spam-email').show();
+          }
+        });
+
         if (valid === true) {
           // 1. process donation to stripe
           that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), true);
@@ -2066,15 +1949,6 @@ global.Payment = Payment;
 
           // 2. create minnpost account if specified
           if (options.create_account === true) {
-            var user = {
-              email: $(options.email_field_selector, element).val(),
-              first_name: $(options.first_name_field_selector, element).val(),
-              last_name: $(options.last_name_field_selector, element).val(),
-              password: $(options.password_field_selector, element).val(),
-              city: $(options.account_city_selector, element).val(),
-              state: $(options.account_state_selector, element).val(),
-              zip: $(options.account_zip_selector, element).val(),
-            };
             $.ajax({
               method: 'POST',
               url: options.minnpost_root + '/wp-json/user-account-management/v1/create-user',
