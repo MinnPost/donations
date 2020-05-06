@@ -82,9 +82,6 @@
     'account_zip_selector' : '#billing_zip',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.form-item--password',
-    'calculated_amount_selector' : '.calculated-amount',
-    'quantity_field' : '#quantity',
-    'quantity_selector' : '.quantity',
     'item_selector': '.purchase-item',
     'single_unit_price_attribute' : 'unit-price',
     'additional_amount_field' : '#additional_donation',
@@ -242,18 +239,6 @@
         this.achFields(this.element, this.options); // do stuff for ach payments, if applicable to the form
         this.validateAndSubmit(this.element, this.options); // validate and submit the form
       }
-
-      if ($(this.options.calculated_amount_selector).length > 0) {
-        this.calculateAmount(this.element, this.options, ''); //
-      } // calculate amount based on quantity
-
-      if ($(this.options.use_promocode_selector).length > 0) {
-        this.usePromoCode(this.element, this.options); // handle promo code field
-      } // allow users to enter a promo code on a page
-
-      if ($(this.options.calendar_button_selector).length > 0) {
-        this.addToCalendar(this.element, this.options);
-      } // there is an event details item; allow for an add to calendar button
 
       if ($(this.options.confirm_step_selector).length > 0) {
         this.showNewsletterSettings(this.element, this.options);
@@ -737,7 +722,7 @@
 
       function doneTyping () {
         var email = $(options.email_field_selector, element).val();
-        account_exists = that.checkMinnpostAccountExists(element, options, email);
+        account_exists = that.checkMinnpostAccount(element, options, email);
       }
 
       //setup before functions
@@ -786,156 +771,13 @@
       });
     }, // allowMinnpostAccount
 
-    populateAttendees: function(quantity) {
-      var attendees = '';
-      var attendee = $('.attendees > fieldset:first').html();
-      for (i = 1; i <= quantity; i++) {
-        attendees += '<fieldset class="attendee">' + attendee.replace(/_1/g, '_' + i) + '</fieldset>';
-      }
-      $('.attendees').html(attendees);
-    },
-
-    displayAmount: function(element, options, single_unit_price, quantity, additional_amount, valid_code) {
-      var amount = single_unit_price * parseInt(quantity, 10);
-      if (additional_amount === '') {
-        additional_amount = 0;
-        $(options.create_mp_selector).parent().hide();
-      } else {
-        amount += parseInt(additional_amount, 10);
-        levelcheck = {original_amount: additional_amount, frequency: 1, levels: options.levels};
-        level = this.checkLevel(element, levelcheck, 'num');
-        if (level >= 2) {
-          $(options.create_mp_selector).parent().show();
-        }
-        $(options.has_additional_text_selector).html($(options.has_additional_text_selector).data('text'));
-        $(options.additional_amount_selector).text(parseFloat($(options.additional_amount_field).val()));
-      }
-
-      $(options.calculated_amount_selector).text(amount); // this is the preview text
-      $(options.original_amount_selector).val(quantity * single_unit_price); // this is the amount field
-      $(options.quantity_selector).text(quantity); // everywhere there's a quantity
-
-      if (quantity == 1) {
-        $('.attendee-title').text($('.attendee-title').data('single'));
-      } else {
-        $('.attendee-title').text($('.attendee-title').data('plural'));
-      }
-
-      $('.code-result').remove();
-      if (valid_code === true) {
-        $('.apply-promo-code').after('<p class="code-result success">Your member discount code was successfully added.</p>');
-        $('.show-' + options.single_unit_price_attribute).text(single_unit_price);
-        $('.apply-promo-code').text('Applied').addClass('btn--disabled');
-      } else if (valid_code === false) {
-        $('.apply-promo-code').after('<p class="code-result error">This code is incorrect. Try again.</p>');
-      }
-
-    },
-
-    calculateAmount: function(element, options, data) {
-      //this.debug('start. set variables and plain text, and remove code result.');
-      var that = this;
-      var quantity = $(options.quantity_field).val();
-
-      var single_unit_price = $(options.quantity_field).data(options.single_unit_price_attribute);
-      var additional_amount = $(options.additional_amount_field).val();
-      if (data.success === true) {
-        single_unit_price = data.single_unit_price;
-      }
-      that.displayAmount(element, options, single_unit_price, quantity, additional_amount, data.success);
-
-      $(options.quantity_field + ', ' + options.additional_amount_field).change(function() { // the quantity or additional amount changed
-        quantity = $(options.quantity_field).val();
-        additional_amount = $(options.additional_amount_field).val();
-        if (quantity != 1) {
-          $(options.item_selector).text($(options.item_selector).data('plural'));
-        } else {
-          $(options.item_selector).text($(options.item_selector).data('single'));
-        }
-
-        that.displayAmount(element, options, single_unit_price, quantity, additional_amount);
-        
-      });
-
-      var attendees = '';
-      $(options.review_step_selector).find('.btn').click(function() {
-        attendees = that.populateAttendees(quantity);
-      });
-
-      $('.progress--donation .panel--attendees').find('a').click(function() {
-        attendees = that.populateAttendees(quantity);
-      });
-
-      if ($(this.options.promocode_selector).length > 0) {
-        //$(this.options.promocode_selector).after('');
-        $('.apply-promo-code').click(function(event) {
-          var code = $(options.promocode_selector, element).val();
-          if ($(options.event_id_selector).length > 0) {
-            var event_id = $(options.event_id_selector, element).val();
-          } else {
-            var event_id = 1;
-          }
-          //use_promo = that.checkPromoCode(code);
-          event.preventDefault();
-            var data = {
-              promo_code: code,
-              event: event_id
-            };
-            $.ajax({
-              method: 'POST',
-              url: '/event-check-promo/',
-              data: data
-            }).done(function( data ) {
-              that.calculateAmount(element, options, data);
-              //that.displayAmount(element, options, data.single_unit_price, quantity, additional_amount, data.success);
-            });
-        });
-      }
-
-    }, // calculateAmount
-
-    checkPromoCode: function(code) {
-      var data = {
-        promo_code: code
-      };
-      $.ajax({
-        method: 'POST',
-        url: '/event-check-promo/',
-        data: data
-      }).done(function( data ) {
-        if (data.success === true) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-    }, // checkPromoCode
-
-    usePromoCode: function(element, options) {
-      $(this.options.use_promocode_selector).parent().html('<a href="#" class="use-promo-code">Use promo code</a>');
-      if ($(this.options.promocode_selector).val() === '') {
-        $(options.promo_selector + ' div:first', element).hide();
-      } else {
-         $(options.promo_selector + ' div:last', element).hide();
-      }
-      $('.use-promo-code').click(function(event) {
-        $(options.promo_selector + ' div:first', element).show();
-        $(options.promo_selector + ' div:last', element).hide();
-        event.preventDefault();
-      });
-    }, //usePromoCode
-
-    addToCalendar: function(element, options) {
-      $(options.calendar_button_selector).css('display', 'inline-block');
-    }, // addToCalendar
-
-    checkMinnpostAccountExists: function(element, options, email) {     
+    checkMinnpostAccount: function(element, options, email) {     
       var user = {
         email: email
       };
       $.ajax({
         method: 'GET',
-        url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account-exists',
+        url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account',
         data: user
       }).done(function( result ) {
         if (result.status === 'success' && result.reason === 'user exists') { // user exists
@@ -962,7 +804,7 @@
           return false;
         }
       });
-    }, // checkMinnpostAccountExists
+    }, // checkMinnpostAccount
 
     choosePaymentMethod: function(element, options) {
 
