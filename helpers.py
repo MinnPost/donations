@@ -1,11 +1,14 @@
 import os
+import requests
 from datetime import datetime, timedelta
 from stopforumspam_api import query
 import httpbl
+from config import MINNPOST_ROOT
 from config import PROJECT_HONEYPOT_KEY
 from config import EMAIL_BAN_LIST
 bl = httpbl.HttpBL(PROJECT_HONEYPOT_KEY)
 email_ban_list = EMAIL_BAN_LIST
+minnpost_root = MINNPOST_ROOT
 def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
     thisyear = amount * yearly
     level = ''
@@ -132,8 +135,17 @@ def is_known_spam_email(email):
     if response != None:
         if response.email.appears:
             difference = datetime.utcnow() - response.email.lastseen
-            if response.email.frequency > 8 and difference.days < 60:
+            if response.email.frequency > 2 and difference.days < 365:
+                print('error: block from stopforumspam response. email is {}'.format(email))
                 return True
+
+    api_url = step_one_url = f'{minnpost_root}/wp-json/user-account-management/v1/check-account/?email={email}'
+    wordpress_response = requests.get(api_url)
+    if wordpress_response != None:
+        if wordpress_response.text.status == 'spam':
+            print('error: block from wordpress response. email is {}'.format(email))
+            return True
+
     return False
 
 
