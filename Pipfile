@@ -57,4 +57,4 @@ httpbl = "*"
 [dev-packages]
 
 [requires]
-python_version = "3.6.6"
+python_version = "3.6.10"
