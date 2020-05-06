@@ -233,18 +233,6 @@
         this.validateAndSubmit(this.element, this.options); // validate and submit the form
       }
 
-      if ($(this.options.calculated_amount_selector).length > 0) {
-        this.calculateAmount(this.element, this.options, ''); //
-      } // calculate amount based on quantity
-
-      if ($(this.options.use_promocode_selector).length > 0) {
-        this.usePromoCode(this.element, this.options); // handle promo code field
-      } // allow users to enter a promo code on a page
-
-      if ($(this.options.calendar_button_selector).length > 0) {
-        this.addToCalendar(this.element, this.options);
-      } // there is an event details item; allow for an add to calendar button
-
       if ($(this.options.confirm_step_selector).length > 0) {
         this.showNewsletterSettings(this.element, this.options);
         this.confirmMessageSubmit(this.element, this.options); // submit the stuff on the confirmation page
@@ -735,7 +723,7 @@
 
       function doneTyping () {
         var email = $(options.email_field_selector, element).val();
-        account_exists = that.checkMinnpostAccountExists(element, options, email);
+        account_exists = that.checkMinnpostAccount(element, options, email);
       }
 
       //setup before functions
@@ -791,7 +779,7 @@
       var that = this;
       $.ajax({
         method: 'GET',
-        url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account-exists',
+        url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account',
         data: user
       }).done(function( result ) {
         if (result.status === 'success' && result.reason === 'user exists') { // user exists
@@ -821,7 +809,7 @@
           return false;
         }
       });
-    }, // checkMinnpostAccountExists
+    }, // checkMinnpostAccount
 
     choosePaymentMethod: function(element, options) {
 
