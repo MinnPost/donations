@@ -1906,29 +1906,6 @@ global.Payment = Payment;
           }
         }
 
-        var user = {
-          email: $(options.email_field_selector, element).val(),
-          first_name: $(options.first_name_field_selector, element).val(),
-          last_name: $(options.last_name_field_selector, element).val(),
-          password: $(options.password_field_selector, element).val(),
-          city: $(options.account_city_selector, element).val(),
-          state: $(options.account_state_selector, element).val(),
-          zip: $(options.account_zip_selector, element).val(),
-        };
-
-        // check the user info for spam
-        $.ajax({
-          method: 'GET',
-          url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account',
-          data: user
-        }).done(function( result ) {
-          if ( result.status === 'spam' ) {
-            valid = false;
-            $(options.email_field_selector).addClass('invalid error');
-            $( '.spam-email').show();
-          }
-        });
-
         if (valid === true) {
           // 1. process donation to stripe
           that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), true);
@@ -1937,6 +1914,15 @@ global.Payment = Payment;
 
           // 2. create minnpost account if specified
           if (options.create_account === true) {
+            var user = {
+              email: $(options.email_field_selector, element).val(),
+              first_name: $(options.first_name_field_selector, element).val(),
+              last_name: $(options.last_name_field_selector, element).val(),
+              password: $(options.password_field_selector, element).val(),
+              city: $(options.account_city_selector, element).val(),
+              state: $(options.account_state_selector, element).val(),
+              zip: $(options.account_zip_selector, element).val(),
+            };
             $.ajax({
               method: 'POST',
               url: options.minnpost_root + '/wp-json/user-account-management/v1/create-user',
