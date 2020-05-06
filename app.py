@@ -41,20 +41,6 @@ from config import ANNIVERSARY_PARTY_OPPORTUNITY_SUBTYPE
 from config import SHOW_UPSELL
 from config import ALLOW_DONATION_NOTIFICATION
 
-from config import EVENT_1_USE_PROMO_CODE
-from config import EVENT_1_SINGLE_UNIT_PRICE
-from config import EVENT_1_DISCOUNT_SINGLE_UNIT_PRICE
-from config import EVENT_1_SINGLE_UNIT_FAIR_MARKET_VALUE
-from config import EVENT_1_PROMO_CODE
-from config import EVENT_1_CAMPAIGN_ID
-
-from config import EVENT_2_USE_PROMO_CODE
-from config import EVENT_2_SINGLE_UNIT_PRICE
-from config import EVENT_2_DISCOUNT_SINGLE_UNIT_PRICE
-from config import EVENT_2_SINGLE_UNIT_FAIR_MARKET_VALUE
-from config import EVENT_2_PROMO_CODE
-from config import EVENT_2_CAMPAIGN_ID
-
 from config import ADVERTISING_CAMPAIGN_ID
 from config import TOP_SWAG_MINIMUM_LEVEL
 from config import SEPARATE_SWAG_MINIMUM_LEVEL
@@ -385,143 +371,6 @@ def minnpost_form():
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
         use_recaptcha=app.use_recaptcha,
     )
-
-
-# used at support.minnpost.com/event-register
-@app.route('/event-register/')
-def minnpost_event_form():
-
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
-
-    if request.args.get('event'):
-        event = request.args.get('event')
-    else:
-        event = '1'
-
-    if event == '1':
-        event_promo_code = EVENT_1_PROMO_CODE
-        campaign_id = EVENT_1_CAMPAIGN_ID
-        use_promo_code = EVENT_1_USE_PROMO_CODE
-    elif event == '2':
-        event_promo_code = EVENT_2_PROMO_CODE
-        campaign_id = EVENT_2_CAMPAIGN_ID
-        use_promo_code = EVENT_2_USE_PROMO_CODE    
-
-    if request.args.get('campaign'):
-        campaign_id = request.args.get('campaign')
-
-    result = get_campaign(campaign_id)
-    campaign = result['campaign']
-
-    if request.args.get('show_ach'):
-        show_ach = request.args.get('show_ach')
-        if show_ach == 'true':
-            show_ach = True
-        else:
-            show_ach = False
-    else:
-        show_ach = SHOW_ACH
-
-    if request.args.get('customer_id'):
-        customer_id = request.args.get('customer_id')
-    else:
-        customer_id = ''
-
-    if request.args.get('promo_code'):
-        promo_code = request.args.get('promo_code')
-    else:
-        promo_code = ''
-
-    if request.args.get('opp_type'):
-        opp_type = request.args.get('opp_type')
-    else:
-        opp_type = 'Sales'
-
-    if request.args.get('opp_subtype'):
-        opp_subtype = request.args.get('opp_subtype')
-    else:
-        opp_subtype = 'Sales: Tickets'
-
-    if request.args.get('firstname'):
-        first_name = request.args.get('firstname')
-    else:
-        first_name = ''
-    if request.args.get('lastname'):
-        last_name = request.args.get('lastname')
-    else:
-        last_name = ''
-    if request.args.get('email'):
-        email = request.args.get('email')
-    else:
-        email = ''
-    if request.args.get('additional_donation'):
-        additional_donation = float(request.args.get('additional_donation'))
-    else:
-        additional_donation = ''
-    if request.args.get('quantity'):
-        quantity = int(request.args.get('quantity'))
-    else:
-        quantity = 1
-    # possible we should create sf contacts for each attendee who is submitted
-
-    if event == '1':
-        single_unit_price = EVENT_1_SINGLE_UNIT_PRICE
-        single_unit_fair_market_value = EVENT_1_SINGLE_UNIT_FAIR_MARKET_VALUE
-        discount_single_unit_price = EVENT_1_DISCOUNT_SINGLE_UNIT_PRICE
-    elif event == '2':
-        single_unit_price = EVENT_2_SINGLE_UNIT_PRICE
-        single_unit_fair_market_value = EVENT_2_SINGLE_UNIT_FAIR_MARKET_VALUE
-        discount_single_unit_price = EVENT_2_DISCOUNT_SINGLE_UNIT_PRICE
-    
-    #print('total fair market value is {}'.format(quantity * single_unit_fair_market_value))
-    if promo_code == event_promo_code:
-        single_unit_price = discount_single_unit_price
-    starting_amount = format(quantity * single_unit_price)
-
-    return render_template(
-        'minnpost-events/form.html',
-        form=form, event=event, use_promo_code=use_promo_code, campaign_id=campaign_id, campaign=campaign, customer_id=customer_id,
-        opp_type = opp_type, opp_subtype = opp_subtype,
-        first_name = first_name,last_name = last_name, email=email,
-        promo_code=promo_code, event_promo_code=event_promo_code, additional_donation = additional_donation,
-        quantity=quantity, single_unit_price = single_unit_price, starting_amount = starting_amount,
-        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, minnpost_root = app.minnpost_root, last_updated=dir_last_updated('static'),
-        key=app.config['STRIPE_KEYS']['publishable_key'],
-        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
-        use_recaptcha=app.use_recaptcha,
-    )
-
-# used to validate event promo codes to assign users discount
-# called by ajax
-@app.route('/event-check-promo/', methods=['POST'])
-def event_check_promo():
-
-    if request.form['event']:
-        event = request.form['event']
-    else:
-        event = '1'
-
-    if event == '1':
-        promo_code = EVENT_1_PROMO_CODE
-        discount_single_unit_price = EVENT_1_DISCOUNT_SINGLE_UNIT_PRICE
-        nodiscount_single_unit_price = EVENT_1_SINGLE_UNIT_PRICE
-    elif event == '2':
-        promo_code = EVENT_2_PROMO_CODE
-        discount_single_unit_price = EVENT_2_DISCOUNT_SINGLE_UNIT_PRICE
-        nodiscount_single_unit_price = EVENT_2_SINGLE_UNIT_PRICE
-    
-    sent_promo_code = request.form['promo_code']
-    if sent_promo_code == promo_code:
-        success = True
-        single_unit_price = discount_single_unit_price
-    else:
-        success = False
-        single_unit_price = nodiscount_single_unit_price
-    ret_data = {"success": success, "single_unit_price": single_unit_price}
-    return jsonify(ret_data)
 
 
 # get the current state of a campaign by loading the report
@@ -1621,7 +1470,7 @@ def plaid_token():
     return jsonify(response)
 
 
-# used to validate event promo codes to assign users discount
+# used to calculate transaction fees
 # called by ajax
 @app.route('/calculate-fees/', methods=['POST'])
 def calculate_fees():
@@ -2062,21 +1911,7 @@ def charge_ajax():
         if 'opp_subtype' in request.form:
             opp_subtype = request.form['opp_subtype']
             session['opp_subtype'] = opp_subtype
-            if opp_subtype == 'Sales: Tickets':
-
-                if request.form['event']:
-                    event = request.form['event']
-                    if event == '1':
-                        single_unit_fair_market_value = float(EVENT_1_SINGLE_UNIT_FAIR_MARKET_VALUE)
-                    elif event == '2':
-                        single_unit_fair_market_value = float(EVENT_2_SINGLE_UNIT_FAIR_MARKET_VALUE)
-                    else:
-                        single_unit_fair_market_value = float(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
-                else:
-                    event = '1'
-                    single_unit_fair_market_value = float(EVENT_SINGLE_UNIT_FAIR_MARKET_VALUE)
-                fair_market_value = quantity * single_unit_fair_market_value
-            elif opp_subtype == 'Sales: Advertising':
+            if opp_subtype == 'Sales: Advertising':
                 fair_market_value = amount
                 extra_values['invoice'] = request.form['invoice']
                 extra_values['organization'] = request.form['organization']
@@ -2519,52 +2354,6 @@ def anniversary_patron_confirm():
         print(form.errors)
         message = "there was an issue with this form"
         print('Error with post-sponsorship form {} {}'.format(sf_type, flask_id))
-        return render_template(
-            'error.html',
-            message=message,
-            key=app.config['STRIPE_KEYS']['publishable_key'],
-            recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
-            use_recaptcha=app.use_recaptcha,
-            last_updated=dir_last_updated('static')
-        )
-
-# this is a minnpost url
-@app.route('/minnpost-event-confirm/', methods=['POST'])
-def minnroast_event_confirm():
-
-    form = ConfirmForm(request.form)
-
-    #pprint('Request: {}'.format(request))
-    amount = float(request.form['amount'])
-    if (amount).is_integer():
-        amount_formatted = int(amount)
-    else:
-        amount_formatted = format(amount, ',.2f')
-
-    quantity = float(request.form['quantity'])
-
-    if request.form['event']:
-        event = request.form['event']
-    else:
-        event = '1'
-
-    flask_id = session['flask_id']
-    sf_type = session['sf_type']
-
-    if flask_id:
-        # we shouldn't need to run the update donation object here bc no newsletters or whatever
-        #result = update_donation_object.delay(object_name=sf_type, flask_id=flask_id, form=request.form)
-        return render_template(
-            'minnpost-events/finish.html',
-            amount=amount_formatted, session=session, event=event,
-            key = app.config['STRIPE_KEYS']['publishable_key'],
-            last_updated=dir_last_updated('static')
-        )
-    else:
-        print('post-event form did not validate: error below')
-        print(form.errors)
-        message = "there was an issue with this form"
-        print('Error with post-event form {} {}'.format(sf_type, flask_id))
         return render_template(
             'error.html',
             message=message,
