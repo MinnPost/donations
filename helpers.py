@@ -1,5 +1,6 @@
 import os
 import requests
+import json
 from datetime import datetime, timedelta
 from stopforumspam_api import query
 import httpbl
@@ -142,7 +143,8 @@ def is_known_spam_email(email):
     api_url = step_one_url = f'{minnpost_root}/wp-json/user-account-management/v1/check-account/?email={email}'
     wordpress_response = requests.get(api_url)
     if wordpress_response != None:
-        if wordpress_response.text.status == 'spam':
+        result = json.loads(wordpress_response.text)
+        if result.status == 'spam':
             print('error: block from wordpress response. email is {}'.format(email))
             return True
 
