@@ -1243,9 +1243,15 @@ class Contact(SalesforceObject):
         self.created = False
         self.email = None
         self.lead_source = "Stripe"
+        self.description = None
+        self.mailing_street = None
+        self.mailing_city = None
+        self.mailing_state = None
         self.mailing_postal_code = None
+        self.mailing_country = None
         self.duplicate_found = False
-        self.work_email = None
+        self.stripe_customer_id = None
+
 
     @property
     def name(self):
@@ -1270,25 +1276,15 @@ class Contact(SalesforceObject):
             "Email": self.email,
             "FirstName": self.first_name,
             "LastName": self.last_name,
+            "Description": self.description,
             "LeadSource": self.lead_source,
+            "Stripe_Customer_Id__c": self.stripe_customer_id,
+            "MailingStreet": self.mailing_street,
+            "MailingCity": self.mailing_city,
+            "MailingState": self.mailing_state,
             "MailingPostalCode": self.mailing_postal_code,
-            "npe01__WorkEmail__c": self.work_email,
+            "MailingCountry": self.mailing_country,
         }
-
-    @classmethod
-    def get_or_create(cls, email, first_name=None, last_name=None, zipcode=None):
-        contact = cls.get(email=email)
-        if contact:
-            logging.debug(f"Contact found: {contact}")
-            return contact
-        logging.debug("Creating contact...")
-        contact = Contact()
-        contact.email = email
-        contact.first_name = first_name
-        contact.last_name = last_name
-        contact.mailing_postal_code = zipcode
-        contact.save()
-        return contact
 
     @classmethod
     def get(cls, id=None, email=None, sf_connection=None):
@@ -1301,7 +1297,20 @@ class Contact(SalesforceObject):
             raise SalesforceException("id and email can't both be specified")
         if id:
             query = f"""
-                    SELECT Id, AccountId, FirstName, LastName, LeadSource, Stripe_Customer_ID__c, MailingPostalCode, Email, npe01__WorkEmail__c
+                    SELECT
+                        Id,
+                        AccountId,
+                        Email,
+                        FirstName,
+                        LastName,
+                        Description,
+                        LeadSource,
+                        MailingStreet,
+                        MailingCity,
+                        MailingState,
+                        MailingPostalCode,
+                        MailingCountry,
+                        Stripe_Customer_Id__c
                     FROM Contact
                     WHERE id = '{id}'
                     """
@@ -1315,14 +1324,33 @@ class Contact(SalesforceObject):
             contact.first_name = response["FirstName"]
             contact.last_name = response["LastName"]
             contact.email = response["Email"]
+            contact.description = response["Description"]
             contact.lead_source = response["LeadSource"]
+            contact.mailing_street = response["MailingStreet"]
+            contact.mailing_city = response["MailingCity"]
+            contact.mailing_state = response["MailingState"]
             contact.mailing_postal_code = response["MailingPostalCode"]
-            contact.work_email = response["npe01__WorkEmail__c"]
+            contact.mailing_country = response["MailingCountry"]
+            contact.stripe_customer_id = response["Stripe_Customer_Id__c"]
             contact.created = False
             return contact
 
         query = f"""
-                SELECT Id, AccountId, FirstName, LastName, LeadSource, MailingPostalCode, {COMBINED_EMAIL_FIELD}, Email, npe01__WorkEmail__c
+                SELECT 
+                    Id,
+                    AccountId,
+                    {COMBINED_EMAIL_FIELD},
+                    Email,
+                    FirstName,
+                    LastName,
+                    Description,
+                    LeadSource,
+                    MailingStreet,
+                    MailingCity,
+                    MailingState,
+                    MailingPostalCode,
+                    MailingCountry,
+                    Stripe_Customer_Id__c
                 FROM Contact
                 WHERE {COMBINED_EMAIL_FIELD}
                 LIKE '%{email}%'
@@ -1343,12 +1371,17 @@ class Contact(SalesforceObject):
         contact.first_name = response["FirstName"]
         contact.last_name = response["LastName"]
         contact.email = response["Email"]
+        contact.description = response["Description"]
         contact.lead_source = response["LeadSource"]
-        contact.work_email = response["npe01__WorkEmail__c"]
+        contact.mailing_street = response["MailingStreet"]
+        contact.mailing_city = response["MailingCity"]
+        contact.mailing_state = response["MailingState"]
         contact.mailing_postal_code = response["MailingPostalCode"]
+        contact.mailing_country = response["MailingCountry"]
+        contact.stripe_customer_id = response["Stripe_Customer_Id__c"]
         contact.created = False
-
         return contact
+
 
     def __str__(self):
         return f"{self.id} ({self.account_id}): {self.first_name} {self.last_name}"

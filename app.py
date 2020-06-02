@@ -276,33 +276,15 @@ def add_donation(form=None, customer=None, donation_type=None):
     today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
 
     form = clean(form)
-    first_name = form["first_name"]
-    last_name = form["last_name"]
     frequency = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
-    email = form["email"]
-    zipcode = form["billing_zip"]
 
     logging.info("----Getting contact....")
-    contact = Contact.get_or_create(
-        email=email, first_name=first_name, last_name=last_name, zipcode=zipcode
-    )
+    contact = get_or_add_contact(form=form)
     logging.info(contact)
 
-    if contact.first_name == "Subscriber" and contact.last_name == "Subscriber":
-        logging.info(f"Changing name of contact to {first_name} {last_name}")
-        contact.first_name = first_name
-        contact.last_name = last_name
-        contact.mailing_postal_code = zipcode
-        contact.save()
-
-    if contact.first_name != first_name or contact.last_name != last_name:
-        logging.info(
-            f"Contact name doesn't match: {contact.first_name} {contact.last_name}"
-        )
-
-    if zipcode and not contact.created and contact.mailing_postal_code != zipcode:
-        contact.mailing_postal_code = zipcode
-        contact.save()
+    if contact.created is False:
+        logging.info("Updating contact")
+        contact = update_contact(form=form)
 
     if contact.duplicate_found:
         send_multiple_account_warning(contact)
@@ -357,6 +339,8 @@ def update_donation(form=None, customer=None, donation_type=None):
     frequency = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     email = form["email"]
     zipcode = form["billing_zip"]
+
+
 
     opportunity_id = form.get("opportunity_id", None)
     recurring_id = form.get("recurring_id", None)
@@ -1293,6 +1277,60 @@ def stripehook():
     app.logger.info(event)
 
     return "", 200
+
+
+def get_or_add_contact(form=None):
+    """
+    This will get or add a contact in Salesforce.
+    """
+
+    email = form.get("email", "")
+    contact = Contact.get(email=email)
+    if contact:
+        logging.debug(f"Contact found: {contact}")
+        return contact
+
+    contact = Contact()
+    contact.email = email
+    contact.first_name = form.get("first_name", "")
+    contact.last_name = form.get("last_name", "")
+    contact.description = form.get("description", None)
+    contact.stripe_customer_id = form.get("stripe_customer_id", "")
+    contact.mailing_street = form.get("billing_street", "")
+    contact.mailing_city = form.get("billing_city", "")
+    contact.mailing_state = form.get("billing_state", "")
+    contact.mailing_postal_code = form.get("billing_zip", "")
+    contact.mailing_country = form.get("billing_country", "")
+
+    contact.save()
+    return contact
+
+
+def update_contact(form=None):
+    """
+    This will update a contact in Salesforce.
+    """
+
+    email = form.get("email", "")
+    contact = Contact.get(email=email)
+    if not contact:
+        logging.debug(f"Contact not found: {email}")
+        return contact
+
+    contact = Contact()
+    contact.email = email
+    contact.first_name = form.get("first_name", "")
+    contact.last_name = form.get("last_name", "")
+    contact.description = form.get("description", None)
+    contact.stripe_customer_id = form.get("stripe_customer_id", "")
+    contact.mailing_street = form.get("billing_street", "")
+    contact.mailing_city = form.get("billing_city", "")
+    contact.mailing_state = form.get("billing_state", "")
+    contact.mailing_postal_code = form.get("billing_zip", "")
+    contact.mailing_country = form.get("billing_country", "")
+
+    contact.save()
+    return contact
 
 
 def add_or_update_opportunity(contact=None, form=None, customer=None):
