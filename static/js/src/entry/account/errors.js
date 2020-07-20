@@ -1,47 +1,34 @@
-export class Auth0Error extends Error {
-  constructor(message) {
-    super(`Auth0 error: ${message}`);
+// think of as an abstract class
+export class AppError extends Error {
+  constructor({ name, message, extra }) {
+    super(message);
+    this.name = name;
+    this.extra = extra;
   }
 }
 
-export class UnverifiedError extends Error {
-  constructor() {
-    super('Unverified email address');
+// can also be used in SSR
+export class AxiosError extends AppError {
+  constructor({ message, extra, status = 500 }) {
+    super({ name: 'AxiosError', message, extra });
+    this.status = status;
   }
 }
 
-export class InvalidRouteError extends Error {
-  constructor() {
-    super('Invalid route');
+// client only
+export class UnverifiedError extends AppError {
+  constructor({ extra } = {}) {
+    super({
+      name: 'UnverifiedError',
+      message: 'Unverified email address accessing protected route',
+      extra,
+    });
   }
 }
 
-export class AxiosNetworkError extends Error {
-  constructor(xhr) {
-    super('Axios network error');
-
-    const {
-      status,
-      statusText,
-      timeout,
-      readyState,
-      response,
-      responseText,
-      responseType,
-      responseURL,
-    } = xhr;
-
-    const metadata = {
-      status,
-      statusText,
-      timeout,
-      readyState,
-      response,
-      responseText,
-      responseType,
-      responseURL,
-    };
-
-    this.metadata = JSON.stringify(metadata);
+// client only
+export class Auth0Error extends AppError {
+  constructor({ message, extra }) {
+    super({ name: 'Auth0Error', message, extra });
   }
 }
