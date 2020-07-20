@@ -60,9 +60,6 @@
     'account_zip_selector' : '#billing_zip',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.form-item--password',
-    'calculated_amount_selector' : '.calculated-amount',
-    'quantity_field' : '#quantity',
-    'quantity_selector' : '.quantity',
     'item_selector': '.purchase-item',
     'single_unit_price_attribute' : 'unit-price',
     'additional_amount_field' : '#additional_donation',
@@ -203,10 +200,6 @@
         this.achFields(this.element, this.options); // do stuff for ach payments, if applicable to the form
         this.validateAndSubmit(this.element, this.options); // validate and submit the form
       }
-
-      if ($(this.options.calculated_amount_selector).length > 0) {
-        this.calculateAmount(this.element, this.options, ''); //
-      } // calculate amount based on quantity
 
       if ($(this.options.confirm_step_selector).length > 0) {
         this.showNewsletterSettings(this.element, this.options);
@@ -551,7 +544,7 @@
 
       function doneTyping () {
         var email = $(options.email_field_selector, element).val();
-        account_exists = that.checkMinnpostAccountExists(element, options, email);
+        account_exists = that.checkMinnpostAccount(element, options, email);
       }
 
       //setup before functions
@@ -600,62 +593,13 @@
       });
     }, // allowMinnpostAccount
 
-    displayAmount: function(element, options, single_unit_price, quantity, additional_amount, valid_code) {
-      var amount = single_unit_price * parseInt(quantity, 10);
-      if (additional_amount === '') {
-        additional_amount = 0;
-        $(options.create_mp_selector).parent().hide();
-      } else {
-        amount += parseInt(additional_amount, 10);
-        levelcheck = {original_amount: additional_amount, frequency: 1, levels: options.levels};
-        level = this.checkLevel(element, levelcheck, 'num');
-        if (level >= 2) {
-          $(options.create_mp_selector).parent().show();
-        }
-        $(options.has_additional_text_selector).html($(options.has_additional_text_selector).data('text'));
-        $(options.additional_amount_selector).text(parseFloat($(options.additional_amount_field).val()));
-      }
-
-      $(options.calculated_amount_selector).text(amount); // this is the preview text
-      $(options.original_amount_selector).val(quantity * single_unit_price); // this is the amount field
-      $(options.quantity_selector).text(quantity); // everywhere there's a quantity
-
-    },
-
-    calculateAmount: function(element, options, data) {
-      //this.debug('start. set variables and plain text, and remove code result.');
-      var that = this;
-      var quantity = $(options.quantity_field).val();
-
-      var single_unit_price = $(options.quantity_field).data(options.single_unit_price_attribute);
-      var additional_amount = $(options.additional_amount_field).val();
-      if (data.success === true) {
-        single_unit_price = data.single_unit_price;
-      }
-      that.displayAmount(element, options, single_unit_price, quantity, additional_amount, data.success);
-
-      $(options.quantity_field + ', ' + options.additional_amount_field).change(function() { // the quantity or additional amount changed
-        quantity = $(options.quantity_field).val();
-        additional_amount = $(options.additional_amount_field).val();
-        if (quantity != 1) {
-          $(options.item_selector).text($(options.item_selector).data('plural'));
-        } else {
-          $(options.item_selector).text($(options.item_selector).data('single'));
-        }
-
-        that.displayAmount(element, options, single_unit_price, quantity, additional_amount);
-        
-      });
-
-    }, // calculateAmount
-
-    checkMinnpostAccountExists: function(element, options, email) {     
+    checkMinnpostAccount: function(element, options, email) {     
       var user = {
         email: email
       };
       $.ajax({
         method: 'GET',
-        url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account-exists',
+        url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account',
         data: user
       }).done(function( result ) {
         if (result.status === 'success' && result.reason === 'user exists') { // user exists
@@ -682,7 +626,7 @@
           return false;
         }
       });
-    }, // checkMinnpostAccountExists
+    }, // checkMinnpostAccount
 
     choosePaymentMethod: function(element, options) {
 
