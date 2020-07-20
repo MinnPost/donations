@@ -87,24 +87,24 @@ function uglifyscripts() {
 
 // Optimize Images
 function images() {
-  return gulp
-    .src(config.images.main)
-    .pipe(
-      imagemin([
-        imagemin.gifsicle({ interlaced: true }),
-        imagemin.jpegtran({ progressive: true }),
-        imagemin.optipng({ optimizationLevel: 5 }),
-        imagemin.svgo({
-          plugins: [
-            {
-              removeViewBox: false,
-              collapseGroups: true
-            }
-          ]
-        })
-      ])
-    )
-    .pipe(gulp.dest(config.images.dest));
+	return gulp
+		.src(config.images.main)
+		.pipe(
+			imagemin([
+				imagemin.gifsicle({ interlaced: true }),
+				imagemin.mozjpeg({ quality: 90, progressive: true }),
+				imagemin.optipng({ optimizationLevel: 5 }),
+				imagemin.svgo({
+					plugins: [
+						{
+							removeViewBox: false,
+							collapseGroups: true
+						}
+					]
+				})
+			])
+		)
+		.pipe(gulp.dest(config.images.dest));
 }
 
 function svgminify() {
