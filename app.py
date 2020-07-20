@@ -75,7 +75,7 @@ from util import (
     dir_last_updated,
 )
 from email_validator import validate_email, EmailNotValidError
-from charges import charge, calculate_amount_fees, check_level
+from charges import charge, calculate_amount_fees, check_level, ChargeException
 
 ZONE = timezone(TIMEZONE)
 

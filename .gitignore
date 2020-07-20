@@ -10,6 +10,7 @@ node_modules/
 htmlcov
 celerybeat-schedule*
 celerybeat.pid
+npm-debug.log
 .pytest_cache
 **/__pycache__
 .mypy_cache/

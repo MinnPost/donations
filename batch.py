@@ -6,7 +6,7 @@ from pytz import timezone
 
 import celery
 import redis
-from charges import amount_to_charge, charge
+from charges import amount_to_charge, charge, ChargeException
 from npsp import Opportunity
 from util import send_email
 
@@ -88,7 +88,7 @@ def charge_cards():
 
     log.it("---Starting batch card job...")
 
-    three_days_ago = (datetime.now(tz=zone) - timedelta(days=3)).strftime("%Y-%m-%d")
+    three_days_ago = (datetime.now(tz=zone) - timedelta(days=14)).strftime("%Y-%m-%d")
     today = datetime.now(tz=zone).strftime("%Y-%m-%d")
 
     opportunities = Opportunity.list(begin=three_days_ago, end=today)
@@ -134,7 +134,11 @@ def update_ach_charges():
         log.it(
             f"---- ACH Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
         )
-        charge(opportunity)
+        try:
+            charge(opportunity)
+        except ChargeException:
+            # TODO should we alert slack? Did not because we had no notifications here before
+            pass
 
     log.send()
 

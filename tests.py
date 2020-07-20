@@ -19,6 +19,12 @@ class SalesforceConnectionSubClass(SalesforceConnection):
 sf = SalesforceConnectionSubClass()
 
 
+def test_net_amount_none():
+    opp = Opportunity(sf_connection=sf)
+    opp.net_amount = None
+    assert opp.net_amount == "0.00"
+
+
 def test__clean():
     form = {
         "a": "None",
@@ -181,6 +187,7 @@ def test__format_opportunity():
     opportunity = Opportunity(sf_connection=sf)
     opportunity.account_id = "0011700000BpR8PAAV"
     opportunity.amount = 9
+    opportunity.net_amount = 8
     opportunity.encouraged_by = "Because I love the Trib!"
     opportunity.name = "D C (dcraigmile+test6@texastribune.org)"
     opportunity.stripe_id = "cus_78MqJSBejMN9gn"
@@ -213,6 +220,8 @@ def test__format_opportunity():
         "Stripe_Card_Expiration__c": None,
         "Stripe_Card_Last_4__c": None,
         "Amazon_Order_Id__c": None,
+        "Net_Amount__c": "8.00",
+        "Donor_Selected_Amount__c": 0,
     }
     assert response == expected
 

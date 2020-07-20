@@ -12,6 +12,22 @@ stripe.api_key = STRIPE_KEYS["secret_key"]
 TWOPLACES = Decimal(10) ** -2  # same as Decimal('0.01')
 
 
+class ChargeException(Exception):
+    def __init__(self, opportunity, message):
+        super().__init__(message)
+        self.opportunity = opportunity
+        self.message = message
+
+    def send_slack_notification(self):
+        send_slack_message(
+            {
+                "channel": "#stripe",
+                "text": f"Charge failed for {self.opportunity.name} [{self.message}]",
+                "icon_emoji": ":x:",
+            }
+        )
+
+
 def amount_to_charge(opportunity):
     """
     Determine the amount to charge. This depends on whether the payer agreed
@@ -163,22 +179,21 @@ def charge(opportunity):
             logging.debug(
                 f"Opportunity set to '{opportunity.stage_name}' with reason: {opportunity.stripe_error_message}"
             )
-            return
+            raise ChargeException(opportunity, "card error")
 
         except stripe.error.InvalidRequestError as e:
             logging.error(f"Problem: {e}")
-            # TODO should we raise this?
-            return
+            raise ChargeException(opportunity, "invalid request")
         except Exception as e:
             logging.error(f"Problem: {e}")
-            # TODO should we raise this?
-            return
+            raise ChargeException(opportunity, "unknown error")
 
         if charge.status != 'succeeded' and charge.status != 'pending':
-            logging.error("Charge failed. Check Stripe logs.")
             opportunity.stage_name = "Failed"
             opportunity.stripe_error_message = "Error: Unknown. Check logs"
             opportunity.save()
+            logging.error("Charge failed. Check Stripe logs.")
+            raise ChargeException(opportunity, "charge failed")
             return
 
     else:
