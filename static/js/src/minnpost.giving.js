@@ -1120,7 +1120,7 @@
               }
 
               if (error.type == 'invalid_request_error') {
-                $('button.give').before('<p class="error">' + error.message + '</p>')
+                $('button.give').before('<p class="error error-invalid-request">' + error.message + '</p>')
               }
 
             }
