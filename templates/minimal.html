@@ -22,7 +22,6 @@
       {% if amount != '' %}
         <input type="hidden" name="amount" id="amount" value="{{ amount }}">
       {% endif %}
-      <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
       {% if opportunity_id %}
         <input type="hidden" name="opportunity_id" id="opportunity_id" value="{{ opportunity_id }}">
         <input type="hidden" name="installment_period" id="installment_period" value="one-time">
@@ -30,7 +29,6 @@
       {% if recurring_id %}
         <input type="hidden" name="recurring_id" id="recurring_id" value="{{ recurring_id }}">
       {% endif %}
-      <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
       {% if pledge %}
         <input type="hidden" name="pledge" id="pledge" value="{{ pledge }}">
       {% endif %}
@@ -43,8 +41,7 @@
       {% if opportunity_subtype %}
         <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
       {% endif %}
-      
-      <input type="hidden" name="lock_key" id="lock_key" value="{{ lock_key }}">
+      {% include 'shared/hidden-fields.html' %}
 
       {% include 'minimal/details.html' %}
       {% include 'shared/pay.html' %}
