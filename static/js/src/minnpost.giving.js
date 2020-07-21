@@ -60,8 +60,6 @@
     'account_zip_selector' : '#billing_zip',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.form-item--password',
-    'item_selector': '.purchase-item',
-    'single_unit_price_attribute' : 'unit-price',
     'additional_amount_field' : '#additional_donation',
     'additional_amount_selector' : '.additional_donation',
     'has_additional_text_selector' : '.has_additional',
@@ -77,8 +75,7 @@
     'confirm_button_selector' : '#finish',
     'opp_id_selector' : '#flask_id',
     'recurring_selector' : '#recurring',
-    'newsletter_group_selector' : '.form-item--newsletter input[type="checkbox"]',
-    'message_group_selector' : '.form-item--optional input[type="checkbox"]',
+    'newsletter_group_selector' : '.support-newsletters',
     'reason_field_selector' : '#reason_for_supporting',
     'share_reason_selector' : '#reason_shareable',
     'confirm_top_selector' : '.support--post-confirm',
@@ -542,6 +539,14 @@
       var that = this;
       var account_exists = false;
 
+      $(options.email_field_selector, element).parent().append('<p class="error spam-email">This email address has been detected as a spammer.</p>');
+      $('.spam-email').hide();
+
+      $(options.email_field_selector, element).change(function() {
+        $('.spam-email').hide();
+        $(this).removeClass('invalid error');
+      });
+
       function doneTyping () {
         var email = $(options.email_field_selector, element).val();
         account_exists = that.checkMinnpostAccount(element, options, email);
@@ -587,16 +592,17 @@
 
         $('.form-item .form-help').hide();
       }
-      $('.form-item--with-help label, .form-item--with-help input').next('.help-link').click(function() {
+      $('.help-link').click(function() {
         $(this).next('.form-help').toggle();
         return false;
       });
     }, // allowMinnpostAccount
 
-    checkMinnpostAccount: function(element, options, email) {     
+    checkMinnpostAccount: function(element, options, email) {
       var user = {
         email: email
       };
+      var that = this;
       $.ajax({
         method: 'GET',
         url: options.minnpost_root + '/wp-json/user-account-management/v1/check-account',
@@ -615,6 +621,9 @@
               $('.account-exists', element).show();
             }
           });
+        } else if ( result.status === 'spam' ) {
+          $(that.options.email_field_selector).addClass('invalid error');
+          $( '.spam-email').show();
         } else { // user does not exist or ajax call failed
           if ($(options.create_mp_selector, element).is(':checked')) {
             $(options.password_selector, element).show();
@@ -919,6 +928,7 @@
               url: that.options.minnpost_root + '/wp-json/user-account-management/v1/create-user',
               data: user
             }).done(function( data ) {
+              grecaptcha.reset();
               if (data.status === 'success' && data.reason === 'new user') {
                 // user created - they should receive email
                 // submit the form
@@ -1105,6 +1115,10 @@
                 that.stripeErrorDisplay(response.errors, $(that.options.cc_cvv_selector), that.element, that.options );
               }
 
+              if (error.field == 'recaptcha') {
+                $('button.give').before('<p class="recaptcha-error">' + message + '</p>')
+              }
+
               if (error.type == 'invalid_request_error') {
                 $('button.give').before('<p class="error">' + error.message + '</p>')
               }
@@ -1113,18 +1127,17 @@
 
             if (typeof response.errors[0] !== 'undefined') {
               var field = response.errors[0].field + '_field_selector';
-              if ($(that.options[field]).length > 0) {
+              if ($(field).length > 0) {
                 $('html, body').animate({
-                  scrollTop: $(that.options[field]).parent().offset().top
+                  scrollTop: $(options[field]).parent().offset().top
                 }, 2000);
               }
             }
 
           });
         } else {
-          supportform.get(0).submit();
+          supportform.get(0).submit(); // continue submitting the form
         }
-        // todo: one thing that might be nice here is to load the templates from the server instead of parsing the errors from the json
       })
       .error(function(response) {
         that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
@@ -1134,6 +1147,36 @@
 
     showNewsletterSettings: function(element, options) {
       var that = this;
+
+      var newsletter_group_html = '';
+      if ($(options.newsletter_group_selector).length > 0 ) {
+        var get_data = {
+          shortcode: 'newsletter_form',
+          placement: 'useraccount'
+        };
+        $.ajax({
+          method: 'GET',
+          url: options.minnpost_root + '/wp-json/minnpost-api/v2/mailchimp/form',
+          data: get_data
+        }).done(function( result ) {
+          if ( typeof result.group_fields !== 'undefined' ) {
+            $.each(result.group_fields, function( index, category ) {
+              newsletter_group_html += '<fieldset class="m-form-item support-newsletter m-form-item-' + category.type + '">';
+              newsletter_group_html += '<label>' + category.name + ':</label>';
+              if ( category.contains.length > 0 ) {
+                newsletter_group_html += '<div class="form-item form-item--newsletter">';
+                $.each(category[category.contains], function( index, item ) {
+                  newsletter_group_html += '<label><input name="groups_submitted[]" type="checkbox" value="' + item.id + '">' + item.name + '</label>';
+                });
+                newsletter_group_html += '</div>';
+              }
+              newsletter_group_html += '</fieldset>';
+            });
+            $(options.newsletter_group_selector).html(newsletter_group_html);
+          }
+        });
+      }
+
       if ($(options.newsletter_group_selector).length > 0 && typeof $(options.email_field_selector, element).val() !== 'undefined') {
         var get_data = {
           email: $(options.email_field_selector, element).val()
@@ -1155,9 +1198,9 @@
             var groups = result.groups;
             $.each(groups, function( index, value ) {
               if ( value === true ) {
-                $(':checkbox[name="' + index + '"]').prop('checked',true);
+                $(':checkbox[value="' + index + '"]').prop('checked',true);
               } else {
-                $(':checkbox[name="' + index + '"]').prop('checked',false);
+                $(':checkbox[value="' + index + '"]').prop('checked',false);
               }
             });
           }
@@ -1168,8 +1211,7 @@
 
     confirmMessageSubmit: function(element, options) {
 
-      //var existing_newsletter_settings = this.options.existing_newsletter_settings;
-      var existing_newsletter_settings = $('.support-newsletter :input').serialize();
+      var existing_newsletter_settings = $(options.newsletter_group_selector + ' input').serialize();
       //this.debug(existing_newsletter_settings);
 
       $(options.confirm_form_selector).submit(function(event) {
@@ -1179,11 +1221,10 @@
         // submit settings to mailchimp
         // need to get user info on a hidden field here
 
-        var newsletter_groups = $(options.newsletter_group_selector + ':checked');
-        var message_groups = $(options.message_group_selector + ':checked');
-        var new_newsletter_settings = $('.support-newsletter :input:checked').serialize();
+        var newsletter_groups = $(options.newsletter_group_selector + ' input:checked');
+        var new_newsletter_settings = newsletter_groups.serialize();
 
-        if ((existing_newsletter_settings !== new_newsletter_settings) && (typeof newsletter_groups !== 'undefined' || typeof message_groups !== 'undefined')) {
+        if ((existing_newsletter_settings !== new_newsletter_settings) && (typeof newsletter_groups !== 'undefined')) {
           //add our own ajax check as X-Requested-With is not always reliable
           //ajax_form_data = new_newsletter_settings + '&ajaxrequest=true&subscribe';
 
@@ -1191,7 +1232,7 @@
             email: $(options.email_field_selector, element).val(),
             first_name: $(options.first_name_field_selector, element).val(),
             last_name: $(options.last_name_field_selector, element).val(),
-            groups_submitted: []
+            groups_submitted: {}
           };
 
           post_data.groups_available = 'all';
@@ -1206,15 +1247,8 @@
 
           if (typeof newsletter_groups !== 'undefined') {
             $.each(newsletter_groups, function(index, value) {
-              var group = $(this).attr('name');
-              post_data.groups_submitted.push(group);
-            });
-          }
-
-          if (typeof message_groups !== 'undefined') {
-            $.each(message_groups, function(index, value) {
-              var group = $(this).attr('name');
-              post_data.groups_submitted.push(group);
+              var group = $(this).val();
+              post_data.groups_submitted[index] = group;
             });
           }
 
