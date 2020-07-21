@@ -24,6 +24,10 @@ fieldset.payment {
   p.error {
     margin-top: -$base-spacing;
     font-size: $small-size;
+
+    &.error-invalid-request {
+      margin-top: -$base-spacing / 2;
+    }
   }
 }
 

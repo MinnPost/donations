@@ -469,14 +469,14 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     level = check_level(amount, frequency, yearly)
 
     try:
-        if "stripeToken" in form_data:
+        if form_data.get("stripeToken",""):
             customer = stripe.Customer.create(
                     email=email,
                     card=form_data["stripeToken"] 
             )
             stripe_card = customer.default_source
             form_data["stripe_type"] = "card"
-        elif "bankToken" in form_data:
+        if form_data.get("bankToken",""):
             customer = stripe.Customer.create(
                 email=email,
                 source=form_data["bankToken"]
