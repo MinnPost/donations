@@ -288,7 +288,7 @@ class Opportunity(SalesforceObject):
         self.description = None
         self.lead_source = None
         #self.record_type_name = record_type_name
-        self.campaign_id = None
+        self.campaign = None
         self.stage_name = stage_name
         self.type = None
 
@@ -451,7 +451,7 @@ class Opportunity(SalesforceObject):
             y.account_id = item["AccountId"]
             y.amount = item["Amount"]
             y.close_date = item["CloseDate"]
-            y.campaign_id = item["CampaignId"]
+            y.campaign = item["CampaignId"]
             y.description = item["Description"]
             y.id = item["Id"]
             y.lead_source = item["LeadSource"]
@@ -563,7 +563,7 @@ class Opportunity(SalesforceObject):
             "AccountId": self.account_id,
             "Amount": self.amount,
             "CloseDate": self.close_date,
-            "CampaignId": self.campaign_id,
+            "CampaignId": self.campaign,
             "Description": self.description,
             "LeadSource": self.lead_source,
             "Name": self.name,
@@ -646,7 +646,7 @@ class Opportunity(SalesforceObject):
             if e.content["errorCode"] == "MALFORMED_ID":
                 if e.content["fields"][0] == "CampaignId":
                     logging.warning("bad campaign ID; retrying...")
-                    self.campaign_id = None
+                    self.campaign = None
                     self.save()
                 #elif e.content["fields"][0] == "Referral_ID__c":
                 #    logging.warning("bad referral ID; retrying...")
@@ -690,7 +690,7 @@ class RDO(SalesforceObject):
         self.installments = None
         self.open_ended_status = None
         self.installment_period = None
-        self.campaign_id = None
+        self.campaign = None
         #self.referral_id = None
         self._amount = 0
         self.type = "Recurring Donation"
@@ -751,7 +751,7 @@ class RDO(SalesforceObject):
         recurring_donation = {
             "Name": self.name,
             "npe03__Amount__c": amount,
-            "npe03__Recurring_Donation_Campaign__c": self.campaign_id,
+            "npe03__Recurring_Donation_Campaign__c": self.campaign,
             "npe03__Contact__c": self.contact_id,
             "npe03__Date_Established__c": self.date_established,
             "Anonymous__c": self.anonymous,
@@ -852,7 +852,7 @@ class RDO(SalesforceObject):
             y.name = item["Name"]
             y.account_id = item["AccountId"]
             y.amount = item["Amount"]
-            y.campaign_id = item["CampaignId"]
+            y.campaign = item["CampaignId"]
             y.close_date = item["CloseDate"]
             y.description = item["Description"]
             y.stripe_description = item["Stripe_Description__c"]
@@ -958,7 +958,7 @@ class RDO(SalesforceObject):
 
             y.name = item["Name"]
             y.amount = item["npe03__Amount__c"]
-            y.campaign_id = item["npe03__Recurring_Donation_Campaign__c"]
+            y.campaign = item["npe03__Recurring_Donation_Campaign__c"]
             y.contact_id = item["npe03__Contact__c"]
             y.date_established = item["npe03__Date_Established__c"]
             y.anonymous = item["Anonymous__c"]
@@ -1089,7 +1089,7 @@ class RDO(SalesforceObject):
             if e.content["errorCode"] == "MALFORMED_ID":
                 if e.content["fields"][0] == "npe03__Recurring_Donation_Campaign__c":
                     logging.warning("bad campaign ID; retrying...")
-                    self.campaign_id = None
+                    self.campaign = None
                     self.save()
                 elif e.content["fields"][0] == "Referral_ID__c":
                     logging.warning("bad referral ID; retrying...")

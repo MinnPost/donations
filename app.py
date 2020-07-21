@@ -891,7 +891,7 @@ def donate_form():
         # set defaults that urls can override
         amount = format_amount(donation.amount)
         amount_formatted = format(amount, ",.2f")
-        campaign = donation.campaign_id
+        campaign = donation.campaign
         customer_id = donation.stripe_customer_id
         first_name = donation.donor_first_name
         last_name = donation.donor_last_name
@@ -1205,7 +1205,7 @@ def authorization_notification(payload):
     opportunity.stripe_description = stripe_description
     opportunity.lead_source = "Amazon Alexa"
     opportunity.amazon_order_id = amzn_id
-    opportunity.campaign_id = AMAZON_CAMPAIGN_ID
+    opportunity.campaign = AMAZON_CAMPAIGN_ID
     opportunity.name = (
         f"[Alexa] {contact.first_name} {contact.last_name} ({contact.email})"
     )
@@ -1358,8 +1358,8 @@ def add_or_update_opportunity(contact=None, form=None, customer=None):
 
     # default
     opportunity.amount = form.get("amount", 0)
-    opportunity.campaign_id = form.get("campaign_id", DEFAULT_CAMPAIGN_ONETIME)
     opportunity.stripe_description = "MinnPost Membership"
+    opportunity.campaign = form.get("campaign", DEFAULT_CAMPAIGN_ONETIME)
     opportunity.lead_source = "Stripe"
     opportunity.type = form.get("opportunity_type", "Donation")
     opportunity.close_date = form.get("close_date", today)
@@ -1446,7 +1446,7 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None):
 
     # default
     rdo.amount = form.get("amount", 0)
-    rdo.campaign_id = form.get("campaign_id", DEFAULT_CAMPAIGN_ONETIME)
+    rdo.campaign = form.get("campaign", DEFAULT_CAMPAIGN_ONETIME)
     rdo.stripe_description = "MinnPost Sustaining Membership"
     rdo.lead_source = "Stripe"
     
