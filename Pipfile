@@ -53,6 +53,7 @@ WTForms = "==2.1"
 flask-limiter = "*"
 stopforumspam-api = "*"
 httpbl = "*"
+flask-hcaptcha = "*"
 
 [dev-packages]
 

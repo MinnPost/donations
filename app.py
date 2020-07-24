@@ -8,6 +8,7 @@ from num2words import num2words
 
 from flask import Flask, redirect, render_template, request, session, url_for, jsonify, json, send_from_directory, abort
 from flask_sqlalchemy import SQLAlchemy
+from flask_hcaptcha import hCaptcha
 from flask_cors import CORS, cross_origin
 from flask_limiter import Limiter
 from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
@@ -69,6 +70,7 @@ import batch
 from pprint import pprint
 
 app = Flask(__name__)
+hcaptcha = hCaptcha(app)
 #app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
 limiter = Limiter(
     app,
@@ -1694,7 +1696,7 @@ def charge_ajax():
     stripe_card = ''
     stripe_bank_account = ''
 
-    if email_is_valid and email_is_spam is False and customer_id is '': # this is a new customer
+    if hcaptcha.verify() and email_is_valid and email_is_spam is False and customer_id is '': # this is a new customer
     # if it is a new customer, assume they only have one payment method and it should be the default
         try:
             if 'stripeToken' in request.form:
@@ -1744,7 +1746,7 @@ def charge_ajax():
             body = e.json_body
             print('Stripe returned an unknown error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
             return jsonify(errors=body)
-    elif email_is_valid and email_is_spam is False and customer_id is not None and customer_id != '': # this is an existing customer
+    elif hcaptcha.verify() and email_is_valid and email_is_spam is False and customer_id is not None and customer_id != '': # this is an existing customer
         customer = stripe.Customer.retrieve(customer_id)
         customer.email = email
         customer.save()
@@ -1815,7 +1817,7 @@ def charge_ajax():
             print('Stripe returned an unknown error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
             return jsonify(errors=body)
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
-    elif email_is_spam is True: # email was a spammer
+    elif hcaptcha.verify() is False or email_is_spam is True: # email was a spammer
         print('Error: email found in spam database. {} {} {}; showed error'.format(email, first_name, last_name))        
         body = []
         message = 'Please ensure you have a valid email address. {} has been flagged as a possible spam email address.'.format(email)
