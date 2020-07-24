@@ -1697,6 +1697,7 @@ def charge_ajax():
     stripe_bank_account = ''
 
     if hcaptcha.verify() and email_is_valid and email_is_spam is False and customer_id is '': # this is a new customer
+        print('passed hcaptcha')
     # if it is a new customer, assume they only have one payment method and it should be the default
         try:
             if 'stripeToken' in request.form:
