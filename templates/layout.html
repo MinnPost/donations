@@ -73,6 +73,7 @@
   <!--<![endif]-->
 
   <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://hcaptcha.com/1/api.js" async defer></script>
   {% if show_ach == 'True' %}<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>{% endif %}
   <script src="{{ url_for('static', filename='js/main.min.js') }}?m={{ last_updated }}"></script>
 
