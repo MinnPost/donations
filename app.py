@@ -1636,6 +1636,7 @@ def recaptcha():
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
         use_recaptcha=True,
+        hcaptcha_key=app.config["HCAPTCHA_KEYS"]["site_key"]
     )
 
 
@@ -2041,6 +2042,7 @@ def thanks():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
+            hcaptcha_key=app.config["HCAPTCHA_KEYS"]["site_key"]
         )
 
 
