@@ -93,10 +93,8 @@
       <button class="btn btn--submit give g-recaptcha" data-sitekey="{{ recaptcha }}" data-callback="onSubmit" id="recaptcha-submit" autocomplete="off">Place this Donation</button>
       <p class="recaptcha-terms">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy">Privacy Policy</a> and <a href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
     {% else %}
-      <div class="h-captcha" data-sitekey="f8009fab-be6c-4a2a-87b8-055fb46b3278"></div>
-      <button type="submit" class="btn btn--submit give" autocomplete="off" class="h-captcha"
-      data-sitekey="f8009fab-be6c-4a2a-87b8-055fb46b3278"
-      data-callback="hcaptchaSubmit">Place this Donation</button>
+      <div id="hcaptcha" class="h-captcha" data-sitekey="f8009fab-be6c-4a2a-87b8-055fb46b3278" data-callback="onSubmit" data-size="invisible></div>
+      <button type="submit" class="btn btn--submit give" autocomplete="off">Place this Donation</button>
     {% endif %}
 
   </fieldset>
