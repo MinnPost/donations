@@ -1305,7 +1305,8 @@
 
           });
         } else {
-          supportform.get(0).submit(); // continue submitting the form
+          //supportform.get(0).submit(); // continue submitting the form
+          hcaptcha.execute();
         }
       })
       .error(function(response) {
