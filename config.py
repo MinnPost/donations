@@ -148,6 +148,15 @@ RECAPTCHA_KEYS = {
     "site_key": os.getenv("RECAPTCHA_SITE_KEY"),
 }
 
+########
+# Hcaptcha
+#
+HCAPTCHA_ENABLED = os.getenv('HCAPTCHA_ENABLED', False)
+HCAPTCHA_KEYS = {
+    "secret_key": os.getenv("HCAPTCHA_SECRET_KEY"),
+    "site_key": os.getenv("HCAPTCHA_SITE_KEY"),
+}
+
 #######
 # Slack
 #
