@@ -43,25 +43,8 @@
     </div>
     
     {% if use_recaptcha == True %}
-      <div class="form-group">
-          {% if form.recaptcha.invisible_on_load %}
-              {{ form.recaptcha(form_id=form_id, class_="btn btn-outline-success") }}
-          {% else %}
-              {% if form.recaptcha.errors %}
-                  <div class="">
-                      {{ form.recaptcha(class_="form-control is-invalid") }}
-                      <div class="invalid-feedback">
-                          {% for error in form.recaptcha.errors %}
-                              {{ error }}
-                          {% endfor %}
-                      </div>
-                  </div>
-              {% else %}
-                  {{ form.recaptcha }}
-              {% endif %}
-          {% endif %}
-      </div>
-      <button class="btn btn--submit give g-recaptcha" data-sitekey="{{ recaptcha }}" data-callback="onSubmit" id="recaptcha-submit" autocomplete="off">Submit your order</button>
+      <div class="g-recaptcha" data-sitekey="{{ recaptcha }}"></div>
+      <button type="submit" class="btn btn--submit give" autocomplete="off">Place this Donation</button>
       <p class="recaptcha-terms">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy">Privacy Policy</a> and <a href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
     {% else %}
       <button type="submit" class="btn btn--submit give" autocomplete="off">Submit your order</button>
