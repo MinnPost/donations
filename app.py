@@ -1841,12 +1841,6 @@ def thanks():
     email_is_valid = validate_email(email)
     email_is_spam = is_known_spam_email(email)
 
-    captcha_response = request.form['g-recaptcha-response']
-    if is_human(captcha_response):
-        email_is_spam = False
-    else:
-        email_is_spam = True
-
     if email_is_spam is True:
         print('error: block from ban list. email is {}'.format(email))
         #app.use_recaptcha = True
