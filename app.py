@@ -17,7 +17,7 @@ from werkzeug.contrib.fixers import ProxyFix
 from core import db
 from models import Transaction
 
-from forms import MinnPostForm, ConfirmForm, MinnPostFormRecaptcha
+from forms import MinnPostForm, ConfirmForm
 #from raven.contrib.flask import Sentry
 #from sassutils.wsgi import SassMiddleware # mp put this into grunt instead
 import stripe
@@ -149,11 +149,7 @@ def block_method():
 
 @app.route('/')
 def minnpost_support():
-    #app.use_recaptcha = True
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
+    form = MinnPostForm()
 
     if request.args.get('amount'):
         amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
@@ -220,11 +216,8 @@ def minnpost_support():
 # used at support.minnpost.com/give
 @app.route('/give/')
 def minnpost_form():
-    
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
+
+    form = MinnPostForm()
 
     if request.args.get('amount'):
         amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
@@ -445,11 +438,8 @@ def campaign_report():
 # used at support.minnpost.com/minnpost-advertising
 @app.route('/minnpost-advertising/')
 def minnpost_advertising_form():
-    
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
+
+    form = MinnPostForm()
 
     now = datetime.now()
     year = now.year
@@ -530,11 +520,8 @@ def minnroast_sponsorship_form():
 # used at support.minnpost.com/minnroast-patron/
 @app.route('/minnroast-patron/')
 def minnroast_patron_form():
-    
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
+
+    form = MinnPostForm()
 
     redirect_url = 'minnroast-patron-thanks'
 
@@ -601,11 +588,8 @@ def minnroast_pledge_form():
 # used at support.minnpost.com/pledge-payment
 @app.route('/pledge-payment/')
 def minnpost_pledge_payment():
-    
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
+
+    form = MinnPostForm()
 
     confirm_url = '/pledge-confirm/'
     redirect_url = 'pledge-thanks'
@@ -773,11 +757,8 @@ def minnpost_pledge_payment():
 # used at support.minnpost.com/pledge-payment
 @app.route('/donate/')
 def minnpost_prefill_donate():
-    
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
+
+    form = MinnPostForm()
 
     confirm_url = '/donate-confirm/'
     redirect_url = 'donate-thanks'
@@ -995,10 +976,7 @@ def minnpost_recurring_donation_update_form():
 @app.route('/donation-update/')
 def minnpost_donation_update_form():
 
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
+    form = MinnPostForm()
 
     confirm_url = '/donation-update-confirm/'
     redirect_url = 'donation-update-thanks'
@@ -1230,11 +1208,8 @@ def minnpost_donation_update_form():
 # used at support.minnpost.com/donation-cancel
 @app.route('/donation-cancel/')
 def minnpost_donation_cancel_form():
-    
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
+
+    form = MinnPostForm()
 
     confirm_url = '/donation-cancel-confirm/'
     redirect_url = 'donation-cancel-thanks'
@@ -1355,11 +1330,8 @@ def anniversary_sponsorship_form():
 # used at support.minnpost.com/anniversary-patron
 @app.route('/anniversary-patron/')
 def anniversary_patron_form():
-    
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha()
-    else:
-        form = MinnPostForm()
+
+    form = MinnPostForm()
 
     redirect_url = 'anniversary-patron-thanks'
 
@@ -1494,167 +1466,11 @@ def calculate_fees():
     return jsonify(ret_data)
 
 
-# force recaptcha
-# called by ajax
-@app.route('/give-recaptcha/')
-def recaptcha():
-
-    #if app.use_recaptcha is True:
-    form = MinnPostFormRecaptcha()
-    #else:
-    #    form = MinnPostForm()
-
-    if request.args.get('amount'):
-        amount = float(re.sub('[^\d\.]','',request.args.get('amount')))
-        if (amount).is_integer():
-            amount_formatted = int(amount)
-        else:
-            amount_formatted = format(amount, ',.2f')
-    else:
-        message = "The page you requested can't be found."
-        return render_template('error.html', message=message)
-    if request.args.get('campaign'):
-        campaign = request.args.get('campaign')
-    else:
-        campaign = ''
-    if request.args.get('show_ach'):
-        show_ach = request.args.get('show_ach')
-        if show_ach == 'true':
-            show_ach = True
-        else:
-            show_ach = False
-    else:
-        show_ach = SHOW_ACH
-    frequency = request.args.get('frequency')
-    if frequency is None:
-        frequency = 'one-time'
-    if frequency == 'monthly':
-        yearly = 12
-    else:
-        yearly = 1
-    frequency_label = get_frequency_label(frequency)
-    if request.args.get('customer_id'):
-        customer_id = request.args.get('customer_id')
-    else:
-        customer_id = ''
-    installments = 'None'
-    openended_status = 'Open'
-    level = checkLevel(amount, frequency, yearly)
-    maximum_choose_multiple_int = int(app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))])
-    maximum_choose_multiple_level_text = num2words(int(app.maximum_choose_multiple_level_int['{}'.format(level.get('levelint', 0))]))
-
-    if request.args.get('swag'):
-        swag = request.args.get('swag')
-    else:
-        swag = ''
-
-    if request.args.get('atlantic_subscription'):
-        atlantic_subscription = request.args.get('atlantic_subscription')
-        if atlantic_subscription != 'true':
-            atlantic_subscription = ''
-    else:
-        atlantic_subscription = ''
-
-    if request.args.get('atlantic_id'):
-        atlantic_id = request.args.get('atlantic_id')
-    else:
-        atlantic_id = ''
-
-    if request.args.get('nyt_subscription'):
-        nyt_subscription = request.args.get('nyt_subscription')
-    else:
-        nyt_subscription = ''
-
-    if request.args.get('decline_benefits'):
-        decline_benefits = request.args.get('decline_benefits')
-        if decline_benefits == 'true':
-            swag = ''
-            atlantic_subscription = ''
-            atlantic_id = ''
-            nyt_subscription = ''
-    else:
-        decline_benefits = ''
-
-    if request.args.get('firstname'):
-        first_name = request.args.get('firstname')
-    else:
-        first_name = ''
-    if request.args.get('lastname'):
-        last_name = request.args.get('lastname')
-    else:
-        last_name = ''
-    if request.args.get('email'):
-        email = request.args.get('email')
-    else:
-        email = ''
-
-    if request.args.get('billing_street'):
-        billing_street = request.args.get('billing_street')
-    else:
-        billing_street = ''
-
-    if request.args.get('billing_city'):
-        billing_city = request.args.get('billing_city')
-    else:
-        billing_city = ''
-
-    if request.args.get('billing_state'):
-        billing_state = request.args.get('billing_state')
-    else:
-        billing_state = ''
-
-    if request.args.get('billing_zip'):
-        billing_zip = request.args.get('billing_zip')
-    else:
-        billing_zip = ''
-
-    if request.args.get('billing_country'):
-        billing_country = request.args.get('billing_country')
-    else:
-        billing_country = ''
-
-    fees = calculate_amount_fees(amount, 'visa')
-
-    atlantic_id_url = ''
-    if atlantic_id != '':
-        atlantic_id_url = '&amp;' + atlantic_id
-    
-    step_one_url = f'{app.minnpost_root}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
-
-    return render_template(
-        'minnpost-form.html',
-        form=form, amount=amount_formatted, campaign=campaign, customer_id=customer_id,
-        frequency=frequency, installments=installments, frequency_label=frequency_label,
-        openended_status=openended_status,
-        yearly=yearly,
-        level=level,
-        swag=swag, atlantic_subscription=atlantic_subscription, atlantic_id=atlantic_id, nyt_subscription=nyt_subscription, decline_benefits=decline_benefits,
-        first_name = first_name,last_name = last_name, email=email,
-        billing_street = billing_street, billing_city = billing_city, billing_state=billing_state, billing_zip=billing_zip, billing_country=billing_country,
-        fees = fees,
-        show_upsell = app.show_upsell, allow_donation_notification = app.allow_donation_notification,
-        top_swag_minimum_level = app.top_swag_minimum_level,
-        separate_swag_minimum_level = app.separate_swag_minimum_level,
-        main_swag_minimum_level = app.main_swag_minimum_level,
-        show_thankyou_lists = app.show_thankyou_lists, maximum_choose_multiple_int = maximum_choose_multiple_int, maximum_choose_multiple_level_text = maximum_choose_multiple_level_text,
-        show_ach = show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
-        minnpost_root = app.minnpost_root, step_one_url = step_one_url,
-        key=app.config['STRIPE_KEYS']['publishable_key'],
-        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
-        use_recaptcha=True,
-    )
-
-
-
 ## this is a minnpost url. when submitting a charge, start with ajax, then submit to the /thanks or whatever other url
 @app.route('/charge_ajax/', methods=['POST'])
 def charge_ajax():
 
-    #form = MinnPostForm(request.form)
-    if app.use_recaptcha is True:
-        form = MinnPostFormRecaptcha(request.form)
-    else:
-        form = MinnPostForm(request.form)
+    form = MinnPostForm(request.form)
     #pprint('Request: {}'.format(request))
 
     #next_page_template = 'thanks.html'
