@@ -53,7 +53,6 @@ from config import PLAID_ENVIRONMENT
 from config import SHOW_ACH
 from config import SHOW_THANKYOU_LISTS
 from config import USE_RECAPTCHA
-from config import HCAPTCHA_ENABLED
 from config import DEFAULT_FREQUENCY
 from salesforce import add_customer_and_charge
 from salesforce import update_account
@@ -1636,7 +1635,6 @@ def recaptcha():
         key=app.config['STRIPE_KEYS']['publishable_key'],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
         use_recaptcha=True,
-        hcaptcha_key=app.config["HCAPTCHA_KEYS"]["site_key"]
     )
 
 
@@ -1696,9 +1694,7 @@ def charge_ajax():
     stripe_card = ''
     stripe_bank_account = ''
 
-    captcha_response = request.form['h-recaptcha-response']
-
-    if is_human(captcha_response) and email_is_valid and email_is_spam is False and customer_id is '': # this is a new customer
+    if email_is_valid and email_is_spam is False and customer_id is '': # this is a new customer
     # if it is a new customer, assume they only have one payment method and it should be the default
         try:
             if 'stripeToken' in request.form:
@@ -1748,7 +1744,7 @@ def charge_ajax():
             body = e.json_body
             print('Stripe returned an unknown error before creating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
             return jsonify(errors=body)
-    elif is_human(captcha_response) and email_is_valid and email_is_spam is False and customer_id is not None and customer_id != '': # this is an existing customer
+    elif email_is_valid and email_is_spam is False and customer_id is not None and customer_id != '': # this is an existing customer
         customer = stripe.Customer.retrieve(customer_id)
         customer.email = email
         customer.save()
@@ -1819,7 +1815,7 @@ def charge_ajax():
             print('Stripe returned an unknown error before updating customer: {} {} {} {} {}'.format(email, request.remote_addr, first_name, last_name, e.json_body))
             return jsonify(errors=body)
         print('Existing customer: {} {} {} {}'.format(email, first_name, last_name, customer_id))
-    elif is_human(captcha_response) is False or email_is_spam is True: # email was a spammer
+    elif email_is_spam is True: # email was a spammer
         print('Error: email found in spam database. {} {} {}; showed error'.format(email, first_name, last_name))        
         body = []
         message = 'Please ensure you have a valid email address. {} has been flagged as a possible spam email address.'.format(email)
@@ -1970,17 +1966,6 @@ def charge_ajax():
         return jsonify(errors=body)
 
 
-def is_human(captcha_response):
-    """ Validating recaptcha response from hcaptcha server
-        Returns True captcha test passed for submitted form else returns False.
-    """
-    secret = app.config["HCAPTCHA_KEYS"]["secret_key"]
-    payload = {'response':captcha_response, 'secret':secret}
-    response = requests.post("https://hcaptcha.com/siteverify", payload)
-    response_text = json.loads(response.text)
-    return response_text['success']
-
-
 # this is a minnpost url. it gets called after successful response from stripe
 @app.route('/thanks/', methods=['POST'])
 def thanks():
@@ -2042,7 +2027,6 @@ def thanks():
             key=app.config['STRIPE_KEYS']['publishable_key'],
             recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
             use_recaptcha=app.use_recaptcha,
-            hcaptcha_key=app.config["HCAPTCHA_KEYS"]["site_key"]
         )
 
 

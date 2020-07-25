@@ -2131,8 +2131,7 @@ global.Payment = Payment;
 
           });
         } else {
-          //supportform.get(0).submit(); // continue submitting the form
-          hcaptcha.execute();
+          supportform.get(0).submit(); // continue submitting the form
         }
       })
       .error(function(response) {
