@@ -99,9 +99,6 @@ app.main_swag_minimum_level = MAIN_SWAG_MINIMUM_LEVEL
 app.maximum_choose_multiple_level_int = MAXIMUM_CHOOSE_MULTIPLE_LEVEL_INT
 app.show_thankyou_lists = SHOW_THANKYOU_LISTS
 
-app.site_key = recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"]
-app.secret_key = recaptcha=app.config["RECAPTCHA_KEYS"]["secret_key"]
-
 #app.wsgi_app = SassMiddleware(app.wsgi_app, {
 #        'app': ('static/sass', 'static/css', 'static/css')
 #        })
@@ -113,6 +110,8 @@ app.config.update(
         CELERY_IMPORTS=('app', 'salesforce', 'batch'),
         )
 
+app.site_key = recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"]
+app.secret_key = recaptcha=app.config["RECAPTCHA_KEYS"]["secret_key"]
 stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 
 celery = make_celery(app)
