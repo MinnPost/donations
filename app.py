@@ -1439,6 +1439,19 @@ def page_not_found(error):
         use_recaptcha=app.use_recaptcha,
     )
 
+
+def is_human(captcha_response):
+    """ Validating recaptcha response from google server.
+        Returns True captcha test passed for the submitted form 
+        else returns False.
+    """
+    secret = app.config["RECAPTCHA_KEYS"]["secret_key"]
+    payload = {'response':captcha_response, 'secret':secret}
+    response = requests.post("https://www.google.com/recaptcha/api/siteverify", payload)
+    response_text = json.loads(response.text)
+    return response_text['success']
+
+
 ## this is a minnpost url. use this when sending a request to plaid
 ## if successful, this returns the access token and bank account token for stripe from plaid
 @app.route('/plaid_token/', methods=['POST'])
