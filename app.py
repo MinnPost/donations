@@ -99,6 +99,9 @@ app.main_swag_minimum_level = MAIN_SWAG_MINIMUM_LEVEL
 app.maximum_choose_multiple_level_int = MAXIMUM_CHOOSE_MULTIPLE_LEVEL_INT
 app.show_thankyou_lists = SHOW_THANKYOU_LISTS
 
+app.site_key = recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"]
+app.secret_key = recaptcha=app.config["RECAPTCHA_KEYS"]["secret_key"]
+
 #app.wsgi_app = SassMiddleware(app.wsgi_app, {
 #        'app': ('static/sass', 'static/css', 'static/css')
 #        })
@@ -109,15 +112,6 @@ app.config.update(
         CELERY_ALWAYS_EAGER=False,
         CELERY_IMPORTS=('app', 'salesforce', 'batch'),
         )
-app.config['RECAPTCHA_USE_SSL'] = False
-if 'DYNO' in os.environ:
-    app.config['RECAPTCHA_USE_SSL'] = True
-#app.config['RECAPTCHA_PUBLIC_KEY'] = app.config["RECAPTCHA_KEYS"]["site_key"]
-#app.config['RECAPTCHA_PRIVATE_KEY'] = app.config["RECAPTCHA_KEYS"]["secret_key"]
-#app.config['RECAPTCHA_DATA_ATTRS'] = {'size': 'invisible'}
-
-app.config["RECAPTCHA3_PUBLIC_KEY"] = app.config["RECAPTCHA_KEYS"]["site_key"]
-app.config["RECAPTCHA3_PRIVATE_KEY"] = app.config["RECAPTCHA_KEYS"]["secret_key"]
 
 stripe.api_key = app.config['STRIPE_KEYS']['secret_key']
 
@@ -1694,6 +1688,12 @@ def charge_ajax():
     stripe_card = ''
     stripe_bank_account = ''
 
+    captcha_response = request.form['g-recaptcha-response']
+    if is_human(captcha_response):
+        email_is_spam = False
+    else:
+        email_is_spam = True
+
     if email_is_valid and email_is_spam is False and customer_id is '': # this is a new customer
     # if it is a new customer, assume they only have one payment method and it should be the default
         try:
@@ -2003,6 +2003,12 @@ def thanks():
     last_name = request.form['last_name']
     email_is_valid = validate_email(email)
     email_is_spam = is_known_spam_email(email)
+
+    captcha_response = request.form['g-recaptcha-response']
+    if is_human(captcha_response):
+        email_is_spam = False
+    else:
+        email_is_spam = True
 
     if email_is_spam is True:
         print('error: block from ban list. email is {}'.format(email))
