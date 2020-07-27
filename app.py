@@ -601,7 +601,7 @@ def root_form():
         plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
-        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
 
@@ -737,7 +737,7 @@ def give_form():
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
-        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
 
@@ -831,7 +831,7 @@ def thanks():
         lock_key=lock_key,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
-        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
         last_updated=dir_last_updated('static'),
     )
 
@@ -1046,7 +1046,7 @@ def donate_form():
         minnpost_root=app.config["MINNPOST_ROOT"],
         lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
-        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
         hide_amount_heading=hide_amount_heading, title=title, heading=heading, summary=summary, allow_additional=allow_additional, button=button, show_amount_field=show_amount_field, with_shipping=with_shipping, hide_minnpost_account=hide_minnpost_account, hide_pay_comments=hide_pay_comments, hide_display=hide_display, hide_honor_or_memory=hide_honor_or_memory,
         opportunity_id=opportunity_id, opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype, recurring_id=recurring_id, description=description,
         stage=stage, close_date=close_date,
