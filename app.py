@@ -56,6 +56,7 @@ from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
 from flask import Flask, redirect, render_template, request, send_from_directory, jsonify
 from forms import (
     format_amount,
+    is_human,
     PlaidForm,
     DonateForm,
     MinimalForm,
@@ -512,6 +513,8 @@ def validate_form(FormType, template, function=add_donation.delay):
     form_data = form.data
     form_errors = form.errors
     email = form_data["email"]
+    first_name = form_data["first_name"]
+    last_name = form_data["last_name"]
 
     # currently donation_type is not used for anything. maybe it should be used for the opportunity type
     if FormType is DonateForm or FormType is MinimalForm or FormType is CancelForm or FormType is FinishForm:
@@ -540,6 +543,14 @@ def validate_form(FormType, template, function=add_donation.delay):
         for field in form.errors:
             body.append({"field": field, "message": form.errors[field]})
         return jsonify(errors=body)
+
+    if app.config["USE_RECAPTCHA"] == True:
+        captcha_response = form_data["g-recaptcha-response"]
+        if not is_human(captcha_response):
+            app.logger.error(f"Error: recaptcha failed on donation: {email} {first_name} {last_name}")
+            message = 'Our system was unable to verify that you are a human. Please email members@minnpost.com for assistance.'
+            body.append({'field': 'recaptcha', 'message': message})
+            return jsonify(errors=body)
 
     return do_charge_or_show_errors(
         form_data=form_data,

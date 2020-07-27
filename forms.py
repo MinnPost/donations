@@ -1,5 +1,9 @@
+import os
 import re
+import requests
+import simplejson as json
 from decimal import Decimal, ROUND_HALF_UP
+
 from flask_wtf import FlaskForm
 from wtforms import validators
 from wtforms.fields import (
@@ -12,6 +16,8 @@ from wtforms.fields import (
     SelectMultipleField,
 )
 from wtforms.fields.html5 import EmailField
+
+recaptcha_keys = os.environ.get("RECAPTCHA_KEYS", [])
 
 
 # amount must be $1 or higher
@@ -39,6 +45,19 @@ def strip_whitespace(value):
     if value is not None and hasattr(value, "strip"):
         return value.strip()
     return value
+
+
+def is_human(captcha_response):
+    """ Validating recaptcha response from google server.
+        Returns True captcha test passed for the submitted form 
+        else returns False.
+    """
+    secret = recaptcha_keys.get("secret_key", '')
+    if secret is not '':
+        payload = {'response':captcha_response, 'secret':secret}
+        response = requests.post("https://www.google.com/recaptcha/api/siteverify", payload)
+        response_text = json.loads(response.text)
+        return response_text['success']
 
 
 # all forms can inherit these options
