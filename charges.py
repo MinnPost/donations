@@ -42,11 +42,7 @@ def amount_to_charge(opportunity):
     """
     amount = Decimal(opportunity.amount)
     if opportunity.agreed_to_pay_fees:
-        payment_type = opportunity.payment_type
-        if opportunity.payment_type == 'American Express' or opportunity.card_type == 'American Express':
-            payment_type = 'American Express'
-        elif opportunity.payment_type == 'ach' or opportunity.stripe_bank_account is not None:
-            payment_type = 'ach'
+        payment_type = opportunity.stripe_payment_type
         fees = calculate_amount_fees(amount, payment_type)
     else:
         fees = 0
@@ -61,7 +57,7 @@ def calculate_amount_fees(amount, payment_type):
     if payment_type == 'American Express' or payment_type == 'amex':
         processing_percent = 0.035
         fixed_fee = 0
-    elif payment_type == 'ach':
+    elif payment_type == 'bank_account':
         processing_percent = 0.008
         fixed_fee = 0
     new_amount = (amount + Decimal(fixed_fee)) / (1 - Decimal(processing_percent))

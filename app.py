@@ -469,21 +469,23 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         yearly = 1
     level = check_level(amount, frequency, yearly)
 
+    stripe_payment_type = form_data.get("stripe_payment_type", "card")
+
     try:
         if form_data.get("stripeToken",""):
             customer = stripe.Customer.create(
                     email=email,
                     card=form_data["stripeToken"] 
             )
-            stripe_card = customer.default_source
-            form_data["stripe_type"] = "card"
+            #stripe_card = customer.default_source
+            
         if form_data.get("bankToken",""):
             customer = stripe.Customer.create(
                 email=email,
                 source=form_data["bankToken"]
             )
-            stripe_bank_account = customer.default_source
-            form_data["stripe_type"] = "bank_account"
+            #stripe_bank_account = customer.default_source
+        form_data["stripe_payment_type"] = stripe_payment_type
         amount_formatted = format(amount, ",.2f")
     except stripe.error.CardError as e:
         body = e.json_body
@@ -817,8 +819,6 @@ def thanks():
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
 
-    customer_id = form_data["customer_id"]
-
     email = form_data["email"]
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
@@ -850,6 +850,7 @@ def thanks():
     )
 
 
+# prefill donate page
 @app.route("/donate/", methods=["GET", "POST"])
 def donate_form():
 
@@ -1415,11 +1416,12 @@ def add_or_update_opportunity(contact=None, form=None, customer=None):
     opportunity.shipping_zip = form.get("shipping_zip", "")
     opportunity.shipping_country = form.get("shipping_country", "")
     opportunity.stripe_customer_id = customer["id"]
+    opportunity.stripe_payment_type = form.get("stripe_payment_type", "")
     opportunity.subtype = form.get("opportunity_subtype", "Donation: Individual")
 
     opportunity.lock_key = form.get("lock_key", "")
     
-    if form["stripe_type"] == "card":
+    if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":
         customer = stripe.Customer.retrieve(customer["id"])
         # stripe customer handling
         card = customer.sources.retrieve(customer.sources.data[0].id)
@@ -1483,7 +1485,7 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None):
     rdo.in_honor_memory_of = form.get("in_honor_memory_of", "")
     rdo.notify_someone = form.get("notify_someone", False)
     #rdo.installments = None
-    rdo.installment_period = form["installment_period"]
+    rdo.installment_period = form.get("installment_period", "")
     rdo.member_benefit_request_swag = form.get("member_benefit_request_swag", "")
     rdo.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
     rdo.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
@@ -1499,10 +1501,11 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None):
     rdo.shipping_zip = form.get("shipping_zip", "")
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
+    rdo.stripe_payment_type = form.get("stripe_payment_type", "")
 
     rdo.lock_key = form.get("lock_key", "")
 
-    if form["stripe_type"] == "card":
+    if form["stripe_payment_type"] == "card":
         apply_card_details(rdo=rdo, customer=customer)
 
     rdo.save()

@@ -72,6 +72,11 @@ class BaseForm(FlaskForm):
     customer_id = HiddenField("Customer ID", [validators.Optional()])
     campaign = HiddenField("Campaign ID", [validators.Length(max=18)])
     description = HiddenField(u"Description", [validators.Optional()])
+    stripe_payment_type = HiddenField(u"Stripe Payment Type", [validators.Optional()])
+    stripeToken = HiddenField(u"Stripe token", [validators.Optional()])
+    bankToken = HiddenField(u"Bank token", [validators.Optional()])
+    recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
+    update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
 
     amount = StringField(
         u"Amount",
@@ -106,11 +111,6 @@ class BaseForm(FlaskForm):
     email = EmailField(
         "Email address", [validators.DataRequired(), validators.Email()]
     )
-    payment_type = StringField(u"Payment Type", [validators.Optional()])
-    stripeToken = HiddenField(u"Stripe token", [validators.Optional()])
-    bankToken = HiddenField(u"Bank token", [validators.Optional()])
-    recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
-    update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
 
 
 # used for getting a plaid token
@@ -140,7 +140,20 @@ class DonateForm(BaseForm):
     in_honor_memory_of = StringField(
         u"Honor or memory of", [validators.Optional()]
     )
+    # swag
+    member_benefit_request_swag = StringField(
+        u"Swag choice", [validators.Optional()]
+    )
+    member_benefit_request_nyt = RadioField(
+        u"New York Times subscription?", [validators.Optional()], choices=[('yes', 'Yes'), ('no', 'No')])
 
+    member_benefit_request_atlantic = RadioField(
+        u"The Atlantic subscription?", [validators.Optional()], choices=[('yes', 'Yes'), ('no', 'No')])
+
+    member_benefit_request_atlantic_id = StringField(
+        u"The Atlantic Subscriber ID", [validators.Optional()]
+    )
+    # shipping
     shipping_name = StringField(
         u"Ship to", [validators.Optional()]
     )
@@ -159,11 +172,9 @@ class DonateForm(BaseForm):
     shipping_country = StringField(
         u"Country", [validators.Optional()]
     )
-
     pay_fees = BooleanField(
         u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
     )
-
 
 # used for anniversary-patron, minnpost-default, minnroast-patron, other minimal donate forms
 class MinimalForm(BaseForm):
