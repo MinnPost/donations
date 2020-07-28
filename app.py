@@ -711,7 +711,7 @@ def give_form():
         decline_benefits = ''
 
     # fees
-    fees = calculate_amount_fees(amount, "visa")
+    fees = calculate_amount_fees(amount, "card")
 
     step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
 
@@ -793,9 +793,12 @@ def calculate_fees():
     fees = ''
     
     # get fee amount to send to stripe
-    if "payment_type" in form_data:
-        payment_type = form_data["payment_type"]
-        fees = calculate_amount_fees(amount, payment_type)
+    if "stripe_payment_type" in form_data:
+        payment_type = form_data["stripe_payment_type"]
+    else:
+        payment_type = 'card'
+    
+    fees = calculate_amount_fees(amount, payment_type)
 
     ret_data = {"fees": fees}
     return jsonify(ret_data)
@@ -1005,7 +1008,7 @@ def donate_form():
         show_ach = app.config["SHOW_ACH"]
 
     # fees
-    fees = calculate_amount_fees(amount, "visa")
+    fees = calculate_amount_fees(amount, "card")
     today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
 
     # fields for minimal form

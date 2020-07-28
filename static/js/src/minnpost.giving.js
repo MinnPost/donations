@@ -363,20 +363,20 @@
       $(options.update_amount_selector, element).change(function() {
         $(options.original_amount_selector, element).val($(this).val());
         options.original_amount = parseInt($(options.original_amount_selector, element).val(), 10);
-        if ( payment_type === 'ach' ) {
-          that.calculateFees(that.options.original_amount, 'ach');
+        if ( payment_type === 'bank_account' ) {
+          that.calculateFees(that.options.original_amount, 'bank_account');
         } else {
-          that.calculateFees(that.options.original_amount, 'visa');
+          that.calculateFees(that.options.original_amount, 'card');
         }
       });
     }, // amountUpdated
 
-    calculateFees: function(amount, payment_type) {
-      // this sends the amount and payment type to python; get the fee and display it to the user on the checkbox label
+    calculateFees: function(amount, stripe_payment_type) {
+      // this sends the amount and stripe payment type to python; get the fee and display it to the user on the checkbox label
       var that = this;
       var data = {
         amount: amount,
-        payment_type: payment_type
+        stripe_payment_type: stripe_payment_type
       };
       $.ajax({
         method: 'POST',
@@ -641,7 +641,7 @@
 
       var that = this;
 
-      if ($(options.choose_payment).length > 0) {      
+      if ($(options.choose_payment).length > 0) {
         if ($(options.choose_payment + ' input').is(':checked')) {
           var checked = $(options.choose_payment + ' input:checked').attr('id');
           var checked_value = $(options.choose_payment + ' input:checked').val();
@@ -649,12 +649,13 @@
           $(options.payment_method_selector + '.' + checked).addClass('active');
           $(options.payment_method_selector + ':not(.active) label').removeClass('required');
           $(options.payment_method_selector + ':not(.active) input').prop('required', false);
+          $(options.payment_method_selector + ':not(.active) input').val('');
           $(options.payment_method_selector + '.active label').addClass('required');
           $(options.payment_method_selector + '.active input').prop('required', true);
-          if ( checked_value === 'ach' ) {
-            that.calculateFees(that.options.original_amount, 'ach');
+          if ( checked_value === 'bank_account' ) {
+            that.calculateFees(that.options.original_amount, 'bank_account');
           } else {
-            that.calculateFees(that.options.original_amount, 'visa');
+            that.calculateFees(that.options.original_amount, 'card');
           }
         }
 
@@ -663,13 +664,14 @@
           $(options.payment_method_selector + '.' + this.id).addClass('active');
           $(options.payment_method_selector + ':not(.active) label').removeClass('required');
           $(options.payment_method_selector + ':not(.active) input').prop('required', false);
+          $(options.payment_method_selector + ':not(.active) input').val('');
           $(options.payment_method_selector + '.active label').addClass('required');
           $(options.payment_method_selector + '.active input').prop('required', true);
           $('#bankToken').remove();
-          if ( this.value === 'ach' ) {
-            that.calculateFees(that.options.original_amount, 'ach');
+          if ( this.value === 'bank_account' ) {
+            that.calculateFees(that.options.original_amount, 'bank_account');
           } else {
-            that.calculateFees(that.options.original_amount, 'visa');
+            that.calculateFees(that.options.original_amount, 'card');
           }
         });
       }
@@ -679,6 +681,7 @@
 
       var that = this;
 
+      // todo: we need to make this come from previous place somehow
       $(that.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
 
       var style = {
@@ -721,6 +724,8 @@
         if (event.brand) {
           that.calculateFees(that.options.original_amount, event.brand);
           that.setBrandIcon(event.brand);
+        } else {
+          that.calculateFees(that.options.original_amount, 'card');
         }
         //setOutcome(event);
       });
@@ -822,10 +827,11 @@
               } else {
                 //this.debug('print response here');
                 //this.debug(response);
+                // add the field(s) we need to the form for submitting
                 $(options.donate_form_selector).prepend('<input type="hidden" id="bankToken" name="bankToken" value="' + response.stripe_bank_account_token + '" />');
                 $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
-                that.calculateFees(that.options.original_amount, 'ach'); // calculate the ach fees
-                // add the field(s) we need to the form for submitting
+                that.calculateFees(that.options.original_amount, 'bank_account'); // calculate the ach fees
+                that.choosePaymentMethod(that.element, that.options); // still allow users to switch back to card
               }
             })
             .error(function(response) {
@@ -856,7 +862,8 @@
       // remove the old token so we can generate a new one
       var supportform = $(options.donate_form_selector);
       $('input[name="stripeToken"]', supportform).remove();
-      $('input[name="payment_type"]', supportform).remove();
+      $('input[name="bankToken"]', supportform).remove();
+      $('input[name="stripe_payment_type"]', supportform).remove();
       button.prop('disabled', disabled);
       if (disabled === false) {
         button.text(options.button_text);
@@ -899,7 +906,7 @@
         // if it changed, reset the button
         that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
 
-        if (payment_method === 'ach') {
+        if (payment_method === 'bank_account') {
           if ($('input[name="bankToken"]').length === 0) {
             valid = false;
             $(that.options.payment_method_selector).prepend('<p class="error">You are required to enter credit card information, or to authorize MinnPost to charge your bank account, to make a payment.</p>');
@@ -946,7 +953,7 @@
             that.createToken(that.cardNumberElement, tokenData);
           } else {
             // if it is ach, we already have a token so pass it to stripe.
-            that.stripeTokenHandler( $('#bankToken').val(), 'ach' );
+            that.stripeTokenHandler( $('#bankToken').val(), 'bank_account' );
           }
         } else {
           // this means valid is false
@@ -1058,18 +1065,16 @@
       }
       // Insert the token ID into the form so it gets submitted to the server
       if ( type === 'card' ) {
+        if (token.card.brand.length > 0 && token.card.brand === 'American Express') {
+          type = 'amex';
+        }
         supportform.append($('<input type=\"hidden\" name=\"stripeToken\">').val(token.id));
-        if ($('input[name="payment_type"]').length > 0) {
-          $('input[name="payment_type"]').val(token.card.brand);
-        } else {
-          supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(token.card.brand));  
-        }
-      } else if ( type === 'ach' ) {
-        if ($('input[name="payment_type"]').length > 0) {
-          $('input[name="payment_type"]').val(type);
-        } else {
-          supportform.append($('<input type=\"hidden\" name=\"payment_type\" />').val(type));  
-        }
+      }
+
+      if ($('input[name="stripe_payment_type"]').length > 0) {
+        $('input[name="stripe_payment_type"]').val(type);
+      } else {
+        supportform.append($('<input type=\"hidden\" name=\"stripe_payment_type\" />').val(type));  
       }
 
       // Submit the form
