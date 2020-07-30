@@ -649,37 +649,41 @@
         if ($(options.choose_payment + ' input').is(':checked')) {
           var checked = $(options.choose_payment + ' input:checked').attr('id');
           var checked_value = $(options.choose_payment + ' input:checked').val();
-          $(options.payment_method_selector).removeClass('active');
-          $(options.payment_method_selector + '.' + checked).addClass('active');
-          $(options.payment_method_selector + ':not(.active) label').removeClass('required');
-          $(options.payment_method_selector + ':not(.active) input').prop('required', false);
-          $(options.payment_method_selector + ':not(.active) input').val('');
-          $(options.payment_method_selector + '.active label').addClass('required');
-          $(options.payment_method_selector + '.active input').prop('required', true);
-          if ( checked_value === 'bank_account' ) {
-            that.calculateFees(that.options.original_amount, 'bank_account');
-          } else {
-            that.calculateFees(that.options.original_amount, 'card');
-          }
+          that.setupPaymentMethod(checked, checked_value);
         }
 
         $(options.choose_payment + ' input').change(function (event) {
-          $(options.payment_method_selector).removeClass('active');
-          $(options.payment_method_selector + '.' + this.id).addClass('active');
-          $(options.payment_method_selector + ':not(.active) label').removeClass('required');
-          $(options.payment_method_selector + ':not(.active) input').prop('required', false);
-          $(options.payment_method_selector + ':not(.active) input').val('');
-          $(options.payment_method_selector + '.active label').addClass('required');
-          $(options.payment_method_selector + '.active input').prop('required', true);
+          that.setupPaymentMethod(this.id, this.value);
+
           if ( this.value === 'bank_account' ) {
-            that.calculateFees(that.options.original_amount, 'bank_account');
+            $('input[name="stripeToken"]', $(that.options.donate_form_selector)).remove();
+            that.achFields(that.element, that.options);
           } else {
-            //$('#bankToken').remove();
-            that.calculateFees(that.options.original_amount, 'card');
+            $('input[name="public_token"]', $(that.options.donate_form_selector)).remove();
+            $('input[name="account_id"]', $(that.options.donate_form_selector)).remove();
+            $('input[name="bankToken"]', $(that.options.donate_form_selector)).remove();
+            that.calculateFees(that.options.original_amount, 'card'); // we can't use creditcardfields method here
           }
+          console.log( 'switch' );
         });
+
       }
     }, // choosePaymentMethod
+
+    setupPaymentMethod: function(id, value) {
+      $(this.options.payment_method_selector).removeClass('active');
+      $(this.options.payment_method_selector + '.' + id).addClass('active');
+      $(this.options.payment_method_selector + ':not(.active) label').removeClass('required');
+      $(this.options.payment_method_selector + ':not(.active) input').prop('required', false);
+      $(this.options.payment_method_selector + ':not(.active) input').val('');
+      $(this.options.payment_method_selector + '.active label').addClass('required');
+      $(this.options.payment_method_selector + '.active input').prop('required', true);
+      if ( value === 'bank_account' ) {
+        this.calculateFees(this.options.original_amount, 'bank_account');
+      } else {
+        this.calculateFees(this.options.original_amount, 'card');
+      }
+    }, // setupPaymentMethod
 
     creditCardFields: function(element, options) {
 
@@ -835,8 +839,6 @@
                 // add the field(s) we need to the form for submitting
                 $(options.donate_form_selector).prepend('<input type="hidden" id="bankToken" name="bankToken" value="' + response.stripe_bank_account_token + '" />');
                 $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
-                that.calculateFees(that.options.original_amount, 'bank_account'); // calculate the ach fees
-                that.choosePaymentMethod(that.element, that.options); // still allow users to switch back to card
               }
             })
             .error(function(response) {
