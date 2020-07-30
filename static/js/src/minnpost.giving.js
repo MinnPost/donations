@@ -737,7 +737,6 @@
           that.setBrandIcon(event.brand);
         }
         that.calculateFees(that.options.original_amount, stripe_payment_type);
-        //setOutcome(event);
       });
 
       that.cardExpiryElement.on('change', function(event) {
