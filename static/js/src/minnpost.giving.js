@@ -378,6 +378,7 @@
         amount: amount,
         stripe_payment_type: stripe_payment_type
       };
+      that.setStripePaymentType(stripe_payment_type);
       $.ajax({
         method: 'POST',
         url: '/calculate-fees/',
@@ -398,6 +399,13 @@
           that.creditCardFeeCheckbox(this);
       });
     }, // creditCardProcessingFees
+
+    setStripePaymentType: function(stripe_payment_type) {
+      if ($('input[name="stripe_payment_type"]').length === 0) {
+        $(this.options.donate_form_selector).append('<input type=\"hidden\" name=\"stripe_payment_type\">');
+      }
+      $('input[name="stripe_payment_type"]').val(stripe_payment_type);
+    }, // setStripePaymentType
 
     creditCardFeeCheckbox: function(field) {
       var full_amount;
@@ -712,17 +720,19 @@
 
       // validate/error handle the card fields
       that.cardNumberElement.on('change', function(event) {
+        var stripe_payment_type = 'card';
         // error handling
         that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
         // if it changed, reset the button
-        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false, 'card');
+        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
         // Switch brand logo
         if (event.brand) {
-          that.calculateFees(that.options.original_amount, event.brand);
+          if ( event.brand === 'amex' ) {
+            stripe_payment_type = 'amex';
+          }          
           that.setBrandIcon(event.brand);
-        } else {
-          that.calculateFees(that.options.original_amount, 'card');
         }
+        that.calculateFees(that.options.original_amount, stripe_payment_type);
         //setOutcome(event);
       });
 
@@ -730,14 +740,14 @@
         // error handling
         that.stripeErrorDisplay(event, $(options.cc_exp_selector, element), element, options );
         // if it changed, reset the button
-        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false, 'card');
+        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
       });
 
       that.cardCvcElement.on('change', function(event) {
         // error handling
         that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
         // if it changed, reset the button
-        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false, 'card');
+        that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
       });
 
       // this is the method to create a single card field and mount it
@@ -850,17 +860,10 @@
       return typeof document.createElement('input').checkValidity === 'function';
     }, // hasHtml5Validation
 
-    buttonStatus: function(options, button, disabled, payment_type) {
-      // remove the old token so we can generate a new one
-      var supportform = $(options.donate_form_selector);
-      if ( payment_type === 'bank_account') {
-        $('input[name="stripeToken"]', supportform).remove();
-      } else {
-        $('input[name="bankToken"]', supportform).remove();
-      }
+    buttonStatus: function(options, button, disabled) {
+      // make the button clickable or not
       button.prop('disabled', disabled);
       if (disabled === false) {
-        $('input[name="stripe_payment_type"]', supportform).remove();
         button.text(options.button_text);
       } else {
         button.text('Processing');
@@ -891,17 +894,14 @@
         $('.check-field').remove();
         $('input, label', element).removeClass('error');
         var valid = true;
-        var payment_method = 'card';
-        if ($(that.options.choose_payment).length > 0) {
-          payment_method = $(that.options.choose_payment + ' input:checked').val();
-        }
+        var payment_type = $('input[name="stripe_payment_type"]').val();
         $(that.options.choose_payment + ' input').change(function() {
           $(that.options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
           // if a payment field changed, reset the button
-          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false, payment_method);
+          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
         });
 
-        if (payment_method === 'bank_account') {
+        if (payment_type === 'bank_account') {
           if ($('input[name="bankToken"]').length === 0) {
             valid = false;
             $(that.options.payment_method_selector).prepend('<p class="error">You are required to enter credit card information, or to authorize MinnPost to charge your bank account, to make a payment.</p>');
@@ -909,9 +909,8 @@
         }
 
         if (valid === true) {
-          // 1. process donation to stripe
-          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), true, payment_method);
-
+          // 1. set up the button and remove the hidden fields we don't need
+          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), true);
           var tokenData = that.generateTokenData();
 
           // 2. create minnpost account if specified
@@ -951,7 +950,7 @@
           }
         } else {
           // this means valid is false
-          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false, payment_method);
+          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
         }
 
       });
@@ -1027,7 +1026,7 @@
       that.stripe.createToken(card, tokenData).then(function(result) {
         if (result.error) {
           // Show the errors on the form
-          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false, 'card');
+          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
           var field = result.error.field + '_field_selector';
           var message = '';
           if (typeof result.error.message === 'string') {
@@ -1064,11 +1063,7 @@
         supportform.append($('<input type=\"hidden\" name=\"stripeToken\">').val(token.id));
       }
 
-      if ($('input[name="stripe_payment_type"]').length > 0) {
-        $('input[name="stripe_payment_type"]').val(type);
-      } else {
-        supportform.append($('<input type=\"hidden\" name=\"stripe_payment_type\" />').val(type));  
-      }
+      $('input[name="stripe_payment_type"]').val(type);
 
       // Submit the form
       $.ajax({
@@ -1080,7 +1075,7 @@
       .done(function(response) {
         if (typeof response.errors !== 'undefined') {
           // do not submit. there is an error.
-          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false, 'card');
+          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
           // add some error messages and styles
           $.each(response.errors, function( index, error ) {
             var field = error.field + '_field_selector';
@@ -1138,7 +1133,7 @@
         }
       })
       .error(function(response) {
-        that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false, 'card');
+        that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       });
 
     },
