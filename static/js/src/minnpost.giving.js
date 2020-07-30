@@ -673,11 +673,11 @@
     setupPaymentMethod: function(id, value) {
       $(this.options.payment_method_selector).removeClass('active');
       $(this.options.payment_method_selector + '.' + id).addClass('active');
-      $(this.options.payment_method_selector + ':not(.active) label').removeClass('required');
-      $(this.options.payment_method_selector + ':not(.active) input').prop('required', false);
+      //$(this.options.payment_method_selector + ':not(.active) label').removeClass('required');
+      //$(this.options.payment_method_selector + ':not(.active) input').prop('required', false);
       $(this.options.payment_method_selector + ':not(.active) input').val('');
-      $(this.options.payment_method_selector + '.active label').addClass('required');
-      $(this.options.payment_method_selector + '.active input').prop('required', true);
+      //$(this.options.payment_method_selector + '.active label').addClass('required');
+      //$(this.options.payment_method_selector + '.active input').prop('required', true);
       if ( value === 'bank_account' ) {
         this.calculateFees(this.options.original_amount, 'bank_account');
       } else {
