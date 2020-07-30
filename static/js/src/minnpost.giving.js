@@ -255,7 +255,6 @@
     }, // getQueryStrings
 
     tabNavigation: function(active) {
-      var that = this;
       var title = 'MinnPost | Support Us | ';
       var page = $('.progress--donation li.' + active).text();
       var next = $('.progress--donation li.' + active).next().text();
@@ -309,7 +308,6 @@
 
     analyticsTrackingStep: function(step, title, post_purchase) {
       var level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
-      var levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
       var amount = $(this.options.original_amount_selector).val();
       var recurring = this.options.recurring;
       var opp_id = $(this.options.opp_id_selector).val();
@@ -351,7 +349,6 @@
 
     amountAsRadio: function(element, options) {
       // when amount field is a radio button, we need to check it whenever it changes
-      var that = this;
       $(options.original_amount_selector, element).change(function() {
         if ($(this).is(':radio')) {
             options.original_amount = parseInt($(options.original_amount_selector + ':checked', element).val(), 10);
@@ -433,7 +430,6 @@
     checkLevel: function(element, options, returnvalue) {
       var level = '';
       var levelnum = 0;
-      var levelclass = 'level level--';
       var amount_yearly;
       var frequency = options.frequency;
       var amount = options.original_amount;
@@ -453,21 +449,18 @@
           if (amount_yearly >= min && amount_yearly < max) {
             level = name;
             levelnum = num;
-            levelclass += num;
             return false;
           }
         } else if (typeof max !== 'undefined') {
           if (amount_yearly < max) {
             level = name;
             levelnum = num;
-            levelclass += num;
             return false;
           }
         } else if (typeof min !== 'undefined') {
           if (amount_yearly >= min) {
             level = name;
             levelnum = num;
-            levelclass += num;
             return false;
           }
         }
@@ -782,7 +775,6 @@
     },
 
     achFields: function(element, options) {
-      var that = this;
       if (options.plaid_env != '' && options.key != '' && typeof Plaid !== 'undefined') {
         var linkHandler = Plaid.create({
           selectAccount: true,
@@ -840,9 +832,6 @@
             .error(function(response) {
               $(options.plaid_link).parent().after('<p class="error">' + response.error + '</p>')
             });
-
-
-            
           },
           onExit: function(err, metadata) {
             // The user exited the Link flow.
@@ -859,7 +848,7 @@
     hasHtml5Validation: function(element, options) {
       //this.debug('value is ' + typeof document.createElement('input').checkValidity === 'function');
       return typeof document.createElement('input').checkValidity === 'function';
-    },
+    }, // hasHtml5Validation
 
     buttonStatus: function(options, button, disabled, payment_type) {
       // remove the old token so we can generate a new one
@@ -876,7 +865,7 @@
       } else {
         button.text('Processing');
       }
-    },
+    }, // buttonStatus
 
     validateAndSubmit: function(element, options) {
       var that = this;
@@ -989,7 +978,6 @@
 
     generateTokenData: function() {
       var tokenData = {};
-
       var full_name = '';
       if ($('#full_name').length > 0) {
         full_name = $('#full_name').val();
