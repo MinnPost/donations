@@ -124,6 +124,9 @@
 
     init: function(reset, amount) {
 
+    document.documentElement.classList.remove( 'no-js' );
+    document.documentElement.classList.add( 'js' );
+
       // Place initialization logic here
       // You already have access to the DOM element and
       // the options via the instance, e.g. this.element
