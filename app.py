@@ -454,51 +454,94 @@ def finish_donation(self, form=None):
 
 
 def do_charge_or_show_errors(form_data, template, function, donation_type):
-    app.logger.debug("----Creating Stripe customer...")
+    app.logger.debug("----Creating or updating Stripe customer...")
 
     amount = form_data["amount"]
-
+    amount_formatted = format(amount, ",.2f")
     email = form_data["email"]
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
-
     frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
-    if frequency == "monthly":
-        yearly = 12
-    else:
-        yearly = 1
-    level = check_level(amount, frequency, yearly)
+    customer_id = form_data.get("customer_id", "")
+    update_default_source = form_data.get("update_default_source", "")
 
-    stripe_payment_type = form_data.get("stripe_payment_type", "card")
-
-    try:
-        if form_data.get("stripeToken",""):
-            customer = stripe.Customer.create(
+    if customer_id is "": # this is a new customer
+        app.logger.debug("----Creating new Stripe customer...")
+        # if it is a new customer, assume they only have one payment method and it should be the default
+        try:
+            if form_data.get("stripeToken",""):
+                customer = stripe.Customer.create(
+                        email=email,
+                        card=form_data["stripeToken"] 
+                )
+                #stripe_card = customer.default_source
+                
+            if form_data.get("bankToken",""):
+                customer = stripe.Customer.create(
                     email=email,
-                    card=form_data["stripeToken"] 
-            )
-            #stripe_card = customer.default_source
-            
-        if form_data.get("bankToken",""):
-            customer = stripe.Customer.create(
-                email=email,
-                source=form_data["bankToken"]
-            )
-            #stripe_bank_account = customer.default_source
-        form_data["stripe_payment_type"] = stripe_payment_type
-        amount_formatted = format(amount, ",.2f")
-    except stripe.error.CardError as e:
-        body = e.json_body
-        err = body.get("error", {})
-        message = err.get("message", "")
-        app.logger.error(f"Stripe CardError: {message}")
-        return jsonify(errors=body)
-    except stripe.error.InvalidRequestError as e:
-        body = e.json_body
-        err = body.get("error", {})
-        message = err.get("message", "")
-        app.logger.error(f"Stripe InvalidRequestError: {message}")
-        return jsonify(errors=body)
+                    source=form_data["bankToken"]
+                )
+                #stripe_bank_account = customer.default_source
+        except stripe.error.CardError as e: # Stripe returned a card error
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe CardError: {message}")
+            return jsonify(errors=body)
+        except stripe.error.InvalidRequestError as e:
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe InvalidRequestError: {message}")
+            return jsonify(errors=body)
+    elif customer_id is not None and customer_id != '': # this is an existing customer
+        app.logger.info(f"----Updating existing Stripe customer: ID {customer_id}")
+        customer = stripe.Customer.retrieve(customer_id)
+        customer.email = email
+        customer.save()
+        # since this is an existing customer, add the current payment method to the list.
+        # this does not change the default payment method.
+        # todo: build a checkbox or something that lets users indicate that we should update their default method
+        # maybe anytime someone changes a customer, it should change the default method.
+        try:
+            if update_default_source is not "":
+
+                if form_data.get("stripeToken",""):
+                    customer = stripe.Customer.modify(
+                        customer_id,
+                        card=form_data["stripeToken"] 
+                    )
+                if form_data.get("bankToken",""):
+                    customer = stripe.Customer.modify(
+                        customer_id,
+                        source=form_data["bankToken"]
+                    )
+
+            else:
+                if form_data.get("stripeToken",""):
+                    customer.sources.create(source=form_data.get("stripeToken",""))
+                if form_data.get("bankToken",""):
+                    customer.sources.create(source=form_data.get("bankToken",""))
+        except stripe.error.CardError as e: # Stripe returned a card error
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe CardError: {message}")
+            return jsonify(errors=body)
+        except stripe.error.InvalidRequestError as e: # Stripe returned a bank account error
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            if message == 'A bank account with that routing number and account number already exists for this customer.':
+                # use the account they already have, since it is identical
+                sources = customer.sources
+                for source in sources:
+                    if source.object == 'bank_account':
+                        #stripe_bank_account = source.id
+                        app.logger.debug("----Reuse the bank account already on the Stripe customer...")
+            else:
+                app.logger.error(f"Stripe InvalidRequestError: {message}")
+                return jsonify(errors=body)
 
     app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
     function(customer=customer, form=clean(form_data), donation_type=donation_type)
