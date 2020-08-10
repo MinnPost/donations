@@ -68,7 +68,7 @@ class BaseForm(FlaskForm):
             filters.append(strip_whitespace)
             return unbound_field.bind(form=form, filters=filters, **options)
 
-    source = HiddenField("Source", [validators.Optional()])
+    referring_page = HiddenField("Referring Page", [validators.Optional()])
     customer_id = HiddenField("Customer ID", [validators.Optional()])
     campaign = HiddenField("Campaign ID", [validators.Length(max=18)])
     description = HiddenField(u"Description", [validators.Optional()])
