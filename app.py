@@ -267,7 +267,7 @@ def apply_card_details(rdo=None, customer=None):
 
 
 @celery.task(name="app.add_donation")
-def add_donation(form=None, customer=None, donation_type=None):
+def add_donation(form=None, customer=None, donation_type=None, charge_source=None):
     """
     Add a contact and their donation into SF. This is done in the background
     because there are a lot of API calls and there's no point in making the
@@ -296,7 +296,7 @@ def add_donation(form=None, customer=None, donation_type=None):
 
     if frequency == "one-time":
         logging.info("----Creating one time payment...")
-        opportunity = add_or_update_opportunity(contact=contact, form=form, customer=customer)
+        opportunity = add_or_update_opportunity(contact=contact, form=form, customer=customer, charge_source=charge_source)
         charge(opportunity)
         lock = Lock(key=opportunity.lock_key)
         lock.append(key=opportunity.lock_key, value=opportunity.id)
@@ -305,7 +305,7 @@ def add_donation(form=None, customer=None, donation_type=None):
         return True
     else:
         logging.info("----Creating recurring payment...")
-        rdo = add_or_update_recurring_donation(contact=contact, form=form, customer=customer)
+        rdo = add_or_update_recurring_donation(contact=contact, form=form, customer=customer, charge_source=charge_source)
 
         # get opportunities
         opportunities = rdo.opportunities()
@@ -326,6 +326,7 @@ def add_donation(form=None, customer=None, donation_type=None):
         return True
 
 
+# this isn't being used yet
 @celery.task(name="app.update_donation")
 def update_donation(form=None, customer=None, donation_type=None):
     """
@@ -465,6 +466,8 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     customer_id = form_data.get("customer_id", "")
     update_default_source = form_data.get("update_default_source", "")
 
+    charge_source = None
+
     if customer_id is "": # this is a new customer
         app.logger.debug("----Creating new Stripe customer...")
         # if it is a new customer, assume they only have one payment method and it should be the default
@@ -519,9 +522,9 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
 
             else:
                 if form_data.get("stripeToken",""):
-                    customer.sources.create(source=form_data.get("stripeToken",""))
+                    charge_source = customer.sources.create(source=form_data.get("stripeToken",""))
                 if form_data.get("bankToken",""):
-                    customer.sources.create(source=form_data.get("bankToken",""))
+                    charge_source = customer.sources.create(source=form_data.get("bankToken",""))
         except stripe.error.CardError as e: # Stripe returned a card error
             body = e.json_body
             err = body.get("error", {})
@@ -544,7 +547,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
                 return jsonify(errors=body)
 
     app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
-    function(customer=customer, form=clean(form_data), donation_type=donation_type)
+    function(customer=customer, form=clean(form_data), donation_type=donation_type, charge_source=charge_source)
 
     return jsonify(success=True)
 
@@ -1397,7 +1400,7 @@ def update_contact(form=None):
     return contact
 
 
-def add_or_update_opportunity(contact=None, form=None, customer=None):
+def add_or_update_opportunity(contact=None, form=None, customer=None, charge_source=None):
     """
     This will add or update a single donation in Salesforce.
     """
@@ -1471,22 +1474,32 @@ def add_or_update_opportunity(contact=None, form=None, customer=None):
     opportunity.lock_key = form.get("lock_key", "")
     
     if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":
-        customer = stripe.Customer.retrieve(customer["id"])
-        # stripe customer handling
-        card = customer.sources.retrieve(customer.sources.data[0].id)
-        year = card.exp_year
-        month = card.exp_month
+        # stripe card source handling
+        if charge_source is None:
+            customer = stripe.Customer.retrieve(customer["id"])
+            card = customer.sources.retrieve(customer.sources.data[0].id)
+            year = card.exp_year
+            month = card.exp_month
+            brand = card.brand
+            last4 = card.last4
+        else:
+            card = charge_source
+            year = card["exp_year"]
+            month = card["exp_month"]
+            brand = card["brand"]
+            last4 = card["last4"]
+        
         day = calendar.monthrange(year, month)[1]
 
         opportunity.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
-        opportunity.card_type = card.brand
-        opportunity.stripe_card_last_4 = card.last4
+        opportunity.card_type = brand
+        opportunity.stripe_card_last_4 = last4
 
     opportunity.save()
     return opportunity
 
 
-def add_or_update_recurring_donation(contact=None, form=None, customer=None):
+def add_or_update_recurring_donation(contact=None, form=None, customer=None, charge_source=None):
     """
     This will add or update a recurring donation in Salesforce.
     """
