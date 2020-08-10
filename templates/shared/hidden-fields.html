@@ -1,6 +1,9 @@
 <input type="hidden" name="customer_id" id="customer_id" value="{{ customer_id }}">
 <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
 <input type="hidden" name="lock_key" id="lock_key" value="{{ lock_key }}">
+{% if referring_page != '' %}
+<input type="hidden" name="referring_page" id="referring_page" value="{{ referring_page }}">
+{% endif %}
 {% if update_default_source == True %}
     <input type="hidden" name="update_default_source" id="update_default_source" value="true">
 {% endif %}

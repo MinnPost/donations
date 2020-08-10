@@ -638,6 +638,9 @@ def root_form():
     # stripe customer id
     customer_id = request.args.get("customer_id", "")
 
+    # referring page url
+    referring_page = request.args.get("referring_page", '')
+
     # user first name
     first_name = request.args.get("firstname", '')
 
@@ -653,7 +656,7 @@ def root_form():
         form_action=form_action,
         amount=amount_formatted, frequency=frequency, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email,
-        campaign=campaign, customer_id=customer_id,
+        campaign=campaign, customer_id=customer_id, referring_page=referring_page,
         plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
@@ -693,6 +696,9 @@ def give_form():
 
     # stripe customer id
     customer_id = request.args.get("customer_id", "")
+
+    # referring page url
+    referring_page = request.args.get("referring_page", '')
 
     # user first name
     first_name = request.args.get("firstname", '')
@@ -788,7 +794,7 @@ def give_form():
         amount=amount_formatted, frequency=frequency, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
-        campaign=campaign, customer_id=customer_id,
+        campaign=campaign, customer_id=customer_id, referring_page=referring_page,
         with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
