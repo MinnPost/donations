@@ -689,9 +689,6 @@
 
       var that = this;
 
-      // todo: we need to make this come from previous place somehow
-      $(that.options.donate_form_selector).prepend('<input type="hidden" id="source" name="source" value="' + document.referrer + '" />');
-
       var style = {
         base: {
           iconColor: '#666EE8',
