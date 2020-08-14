@@ -636,7 +636,7 @@ def root_form():
         yearly = 1
 
     # salesforce campaign
-    campaign = request.args.get("campaign", '')
+    campaign = request.args.get("campaign", "")
 
     # stripe customer id
     customer_id = request.args.get("customer_id", "")
@@ -695,39 +695,39 @@ def give_form():
         yearly = 1
 
     # salesforce campaign
-    campaign = request.args.get("campaign", '')
+    campaign = request.args.get("campaign", "")
 
     # stripe customer id
     customer_id = request.args.get("customer_id", "")
 
     # referring page url
-    referring_page = request.args.get("referring_page", '')
+    referring_page = request.args.get("referring_page", "")
 
     # user first name
-    first_name = request.args.get("firstname", '')
+    first_name = request.args.get("firstname", "")
 
     # user last name
-    last_name = request.args.get("lastname", '')
+    last_name = request.args.get("lastname", "")
 
     # user email
-    email = request.args.get("email", '')
+    email = request.args.get("email", "")
 
     # user address
 
     # street
-    billing_street = request.args.get("billing_street", '')
+    billing_street = request.args.get("billing_street", "")
 
     # city
-    billing_city = request.args.get("billing_city", '')
+    billing_city = request.args.get("billing_city", "")
 
     # state
-    billing_state = request.args.get("billing_state", '')
+    billing_state = request.args.get("billing_state", "")
 
     # zip
-    billing_zip = request.args.get("billing_zip", '')
+    billing_zip = request.args.get("billing_zip", "")
 
     # country
-    billing_country = request.args.get("billing_country", '')
+    billing_country = request.args.get("billing_country", "")
 
     # thank you gifts
 
@@ -1426,7 +1426,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     # default
     opportunity.amount = form.get("amount", 0)
     opportunity.stripe_description = "MinnPost Membership"
-    opportunity.campaign = form.get("campaign", DEFAULT_CAMPAIGN_ONETIME)
+    opportunity.campaign = form.get("campaign", "")
     opportunity.lead_source = "Stripe"
     opportunity.type = form.get("opportunity_type", "Donation")
     opportunity.close_date = form.get("close_date", today)
@@ -1472,6 +1472,9 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.subtype = form.get("opportunity_subtype", "Donation: Individual")
 
     opportunity.lock_key = form.get("lock_key", "")
+
+    if opportunity.campaign == "":
+        opportunity.campaign = app.config["DEFAULT_CAMPAIGN_ONETIME"]
     
     if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":
         # stripe card source handling
@@ -1524,7 +1527,7 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
 
     # default
     rdo.amount = form.get("amount", 0)
-    rdo.campaign = form.get("campaign", DEFAULT_CAMPAIGN_ONETIME)
+    rdo.campaign = form.get("campaign", "")
     rdo.stripe_description = "MinnPost Sustaining Membership"
     rdo.lead_source = "Stripe"
     
@@ -1566,6 +1569,9 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
     rdo.stripe_payment_type = form.get("stripe_payment_type", "")
 
     rdo.lock_key = form.get("lock_key", "")
+
+    if rdo.campaign == "":
+        rdo.campaign = app.config["DEFAULT_CAMPAIGN_RECURRING"]
 
     if form["stripe_payment_type"] == "card":
         apply_card_details(rdo=rdo, customer=customer)
