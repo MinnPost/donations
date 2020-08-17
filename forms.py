@@ -258,22 +258,5 @@ class FinishForm(BaseForm):
     reason_shareable = BooleanField(
         u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
     )
-    daily_newsletter = BooleanField(
-        u"Daily Newsletter?", false_values=(False, 'false', 0, '0', None, "None")
-    )
-    sunday_review_newsletter = BooleanField(
-        u"Sunday Review?", false_values=(False, 'false', 0, '0', None, "None")
-    )
-    greater_mn_newsletter = BooleanField(
-        u"Greater MN Newsletter?", false_values=(False, 'false', 0, '0', None, "None")
-    )
-    dc_memo = BooleanField(
-        u"DC Memo?", false_values=(False, 'false', 0, '0', None, "None")
-    )
-    event_messages = BooleanField(
-        u"Events & Membership Messages?", false_values=(False, 'false', 0, '0', None, "None")
-    )
-    feedback_messages = BooleanField(
-        u"Feedback opportunities?", false_values=(False, 'false', 0, '0', None, "None")
-    )
-
+    newsletters = SelectMultipleField(u'Newsletters')
+    other_messages = SelectMultipleField(u'Periodic MinnPost Messages')
