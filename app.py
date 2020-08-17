@@ -56,6 +56,8 @@ from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
 from flask import Flask, redirect, render_template, request, send_from_directory, jsonify
 from forms import (
     format_amount,
+    format_swag,
+    format_swag_subscription,
     is_human,
     PlaidForm,
     DonateForm,
@@ -733,14 +735,11 @@ def give_form():
 
     # swag item
     swag = request.args.get("swag", "")
+    swag_form = format_swag(swag)
 
     # atlantic subscription
-    if request.args.get("atlantic_subscription"):
-        atlantic_subscription = request.args.get("atlantic_subscription")
-        if atlantic_subscription != "true":
-            atlantic_subscription = ""
-    else:
-        atlantic_subscription = ""
+    atlantic_subscription = request.args.get("atlantic_subscription", "")
+    atlantic_subscription_form = format_swag_subscription(atlantic_subscription)
 
     # existing atlantic subscriber
     atlantic_id = request.args.get("atlantic_id", "")
@@ -752,22 +751,27 @@ def give_form():
 
     # new york times subscription
     nyt_subscription = request.args.get("nyt_subscription", "")
+    nyt_subscription_form = format_swag_subscription(nyt_subscription)
 
     # decline all benefits
     if request.args.get("decline_benefits"):
         decline_benefits = request.args.get("decline_benefits")
-        if decline_benefits == 'true':
-            swag = ''
-            atlantic_subscription = ''
-            atlantic_id = ''
-            nyt_subscription = ''
+        if decline_benefits == "true":
+            swag = ""
+            atlantic_subscription = ""
+            atlantic_id = ""
+            nyt_subscription = ""
     else:
-        decline_benefits = ''
+        decline_benefits = ""
+    
+    # url for declining
+    if decline_benefits != "":
+        decline_benefits_url = "&amp;decline_benefits=" + decline_benefits
 
     # fees
     fees = calculate_amount_fees(amount, "card")
 
-    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;decline_benefits={decline_benefits}'
+    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}{decline_benefits}'
 
     # interface settings
     with_shipping = True
@@ -798,6 +802,10 @@ def give_form():
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
+        swag=swag_form,
+        atlantic_subscription=atlantic_subscription_form, atlantic_id=atlantic_id,
+        nyt_subscription=nyt_subscription_form,
+        decline_benefits=decline_benefits,
         with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
@@ -1456,7 +1464,6 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
     opportunity.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     opportunity.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
-    opportunity.member_benefit_request_thank_you_list = form.get("member_benefit_request_thank_you_list", "")
     opportunity.minnpost_invoice = form.get("minnpost_invoice", "")
     opportunity.mrpledge_id = form.get("mrpledge_id", "")
     opportunity.payment_type = "Stripe"
@@ -1555,7 +1562,6 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
     rdo.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
     rdo.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     rdo.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
-    rdo.member_benefit_request_thank_you_list = form.get("member_benefit_request_thank_you_list", "")
     rdo.open_ended_status = "Open"
     rdo.payment_type = "Stripe"
     rdo.referring_page = form.get("source", None)

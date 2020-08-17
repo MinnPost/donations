@@ -321,7 +321,6 @@ class Opportunity(SalesforceObject):
         self.member_benefit_request_nyt = None
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
-        self.member_benefit_request_thank_you_list = None
         self.minnpost_invoice = None
         self.mrpledge_id = None
         self.subtype = None
@@ -417,7 +416,6 @@ class Opportunity(SalesforceObject):
                 Member_benefit_request_New_York_Times__c,
                 Member_benefit_request_Other_benefits__c,
                 Member_benefit_request_Atlantic_sub_ID__c,
-                Member_benefit_special_thank_you_list__c,
                 MinnPost_Invoice__c,
                 MRpledge_com_ID__c,
                 Opportunity_Subtype__c,
@@ -597,7 +595,6 @@ class Opportunity(SalesforceObject):
             "Member_benefit_request_New_York_Times__c": self.member_benefit_request_nyt,
             "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
-            "Member_benefit_special_thank_you_list__c": self.member_benefit_request_thank_you_list,
             "MinnPost_Invoice__c": self.minnpost_invoice,
             "MRpledge_com_ID__c": self.mrpledge_id,
             "Opportunity_Subtype__c": self.subtype,
@@ -725,7 +722,6 @@ class RDO(SalesforceObject):
         self.member_benefit_request_nyt = None
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
-        self.member_benefit_request_thank_you_list = None
         self.payment_type = None
         self.referring_page = None
         self.shipping_name = None
@@ -783,7 +779,6 @@ class RDO(SalesforceObject):
             "Member_benefit_request_New_York_Times__c": self.member_benefit_request_nyt,
             "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
-            "Member_benefit_special_thank_you_list__c": self.member_benefit_request_thank_you_list,
             "npe03__Open_Ended_Status__c": self.open_ended_status,
             "Payment_Type__c": self.payment_type,
             "Referring_page__c": self.referring_page,

@@ -41,6 +41,24 @@ def format_amount(value):
             return None
 
 
+# format the value of a swag item for inserting into Salesforce
+def format_swag(value):
+    if value is not None:
+        if value == "waterbottle":
+            value = "water bottle"
+    return value
+
+
+
+# format the value of a swag subscription for inserting into Salesforce
+def format_swag_subscription(value):
+    if value is not None and value == "true":
+        value = "yes"
+    else:
+        value = ""
+    return value
+
+
 def strip_whitespace(value):
     if value is not None and hasattr(value, "strip"):
         return value.strip()
@@ -141,18 +159,19 @@ class DonateForm(BaseForm):
         u"Honor or memory of", [validators.Optional()]
     )
     # swag
-    member_benefit_request_swag = StringField(
-        u"Swag choice", [validators.Optional()]
+    # this needs to be updated if the swag options change
+    member_benefit_request_swag = HiddenField(
+        u"Swag choice", [validators.Optional(), validators.AnyOf(["mug", "water bottle"])]
     )
-    member_benefit_request_nyt = RadioField(
-        u"New York Times subscription?", [validators.Optional()], choices=[('yes', 'Yes'), ('no', 'No')])
-
-    member_benefit_request_atlantic = RadioField(
-        u"The Atlantic subscription?", [validators.Optional()], choices=[('yes', 'Yes'), ('no', 'No')])
-
-    member_benefit_request_atlantic_id = StringField(
-        u"The Atlantic Subscriber ID", [validators.Optional()]
+    
+    member_benefit_request_atlantic = HiddenField(
+        u"The Atlantic subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
     )
+    member_benefit_request_atlantic_id = HiddenField("The Atlantic Subscriber ID", [validators.Optional()])
+    member_benefit_request_nyt = HiddenField(
+        u"New York Times subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
+    )
+
     # shipping
     shipping_name = StringField(
         u"Ship to", [validators.Optional()]
