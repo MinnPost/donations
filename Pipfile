@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pylint-flask = "*"
+pylint = "*"
 
 [packages]
 gunicorn = "==19.9.0"

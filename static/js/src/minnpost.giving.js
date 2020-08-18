@@ -1157,7 +1157,7 @@
               if ( category.contains.length > 0 ) {
                 newsletter_group_html += '<div class="form-item form-item--newsletter">';
                 $.each(category[category.contains], function( index, item ) {
-                  newsletter_group_html += '<label><input name="groups_submitted[]" type="checkbox" value="' + item.id + '">' + item.name + '</label>';
+                  newsletter_group_html += '<label><input name="groups_submitted" type="checkbox" value="' + item.id + '">' + item.name + '</label>';
                 });
                 newsletter_group_html += '</div>';
               }

@@ -402,7 +402,7 @@ def finish_donation(self, form=None):
     Update the post-submit donation info in SF if supplied
     """
 
-    form = clean(form)
+    # we don't run clean() on this form because the messages field is a list
 
     frequency = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     lock_key = form.get("lock_key", "")
@@ -415,12 +415,37 @@ def finish_donation(self, form=None):
     reason_for_supporting_shareable = form.get("reason_shareable", False)
 
     # newsletters
-    daily_newsletter = form.get("04471b1571", False)
-    sunday_review_newsletter = form.get("94fc1bd7c9", False)
-    greater_mn_newsletter = form.get("ce6fd734b6", False)
-    dc_memo = form.get("d89249e207", False)
-    event_messages = form.get("68449d845c", False)
-    feedback_messages = form.get("958bdb5d3c", False)
+    groups_submitted = form["groups_submitted"]
+
+    if "04471b1571" in groups_submitted:
+        daily_newsletter = True
+    else:
+        daily_newsletter = False
+
+    if "94fc1bd7c9" in groups_submitted:
+        sunday_review_newsletter = True
+    else:
+        sunday_review_newsletter = False
+
+    if "ce6fd734b6" in groups_submitted:
+        greater_mn_newsletter = True
+    else:
+        greater_mn_newsletter = False
+
+    if "d89249e207" in groups_submitted:
+        dc_memo = True
+    else:
+        dc_memo = False
+
+    if "68449d845c" in groups_submitted:
+        event_messages = True
+    else:
+        event_messages = False
+
+    if "958bdb5d3c" in groups_submitted:
+        feedback_messages = True
+    else:
+        feedback_messages = False
 
     # testimonial in salesforce
     post_submit_details["Reason_for_Gift__c"] = reason_for_supporting
@@ -428,8 +453,8 @@ def finish_donation(self, form=None):
 
     # newsletters in salesforce
     post_submit_details["Daily_newsletter_sign_up__c"] = daily_newsletter
-    post_submit_details["Greater_MN_newsletter__c"] = greater_mn_newsletter
     post_submit_details["Sunday_Review_newsletter__c"] = sunday_review_newsletter
+    post_submit_details["Greater_MN_newsletter__c"] = greater_mn_newsletter
     post_submit_details["DC_Memo_sign_up__c"] = dc_memo
     post_submit_details["Event_member_benefit_messages__c"] = event_messages
     post_submit_details["Input_feedback_messages__c"] = feedback_messages

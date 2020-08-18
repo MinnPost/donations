@@ -258,5 +258,4 @@ class FinishForm(BaseForm):
     reason_shareable = BooleanField(
         u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
     )
-    newsletters = SelectMultipleField(u'Newsletters')
-    other_messages = SelectMultipleField(u'Periodic MinnPost Messages')
+    groups_submitted = SelectMultipleField(u'Email Newsletters')
