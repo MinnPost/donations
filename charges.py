@@ -190,7 +190,6 @@ def charge(opportunity):
             opportunity.save()
             logging.error("Charge failed. Check Stripe logs.")
             raise ChargeException(opportunity, "charge failed")
-            return
 
     else:
         logging.info(
