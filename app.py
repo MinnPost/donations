@@ -644,6 +644,7 @@ def robots_txt():
 @app.route("/")
 def root_form():
     template    = "root.html"
+    title       = "Support MinnPost"
     form        = MinimalForm()
     form_action = "/give/"
 
@@ -683,6 +684,7 @@ def root_form():
     return render_template(
         template,
         form=form,
+        title=title,
         form_action=form_action,
         amount=amount_formatted, frequency=frequency, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email,

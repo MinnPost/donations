@@ -255,9 +255,7 @@
     }, // getQueryStrings
 
     tabNavigation: function(active) {
-      var title = 'MinnPost | Support Us | ';
-      var page = $('.progress--donation li.' + active).text();
-      var next = $('.progress--donation li.' + active).next().text();
+      var title = document.title;
       var step = $('.progress--donation li.' + active).index() + 1;
       var nav_item_count = $('.progress--donation li').length;
       var opp_id = $(this.options.opp_id_selector).val();
@@ -292,7 +290,6 @@
         post_purchase = true;
       }
 
-      document.title = title + page;
       this.analyticsTrackingStep(step, title, post_purchase);
 
       // activate the nav tabs
