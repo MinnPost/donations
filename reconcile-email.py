@@ -1,5 +1,7 @@
 import os
-from config import STRIPE_KEYS
+from config import
+STRIPE_KEYS,
+COMBINED_EMAIL_FIELD
 from time import sleep
 
 import stripe
@@ -15,7 +17,10 @@ stripe_emails = set(
 )
 
 # then compare to SF
-query = "SELECT All_In_One_EMail__c FROM Contact"
+query = f"""
+            SELECT {COMBINED_EMAIL_FIELD}
+            FROM Contact
+        """
 
 SALESFORCE = {
     "USERNAME": os.getenv("SALESFORCE_USERNAME"),
@@ -45,8 +50,8 @@ bulk.close_job(job)
 rows = bulk.get_batch_result_iter(job, batch, parse_csv=True)
 bulk_email = list(rows)
 email_list = []
-emails_sf = [x["All_In_One_EMail__c"] for x in bulk_email]
-print("The following email addresses appear in Stripe but not Salesforce: \n")
+emails_sf = [x[COMBINED_EMAIL_FIELD] for x in bulk_email]
+print ("The following email addresses appear in Stripe but not Salesforce: \n")
 for field in emails_sf:
     for email in field.split(","):
         if email != "":

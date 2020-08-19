@@ -1,0 +1,20 @@
+<section class="panel panel--form" id="panel--details">
+  <div class="support support--summary">
+      <h1>MinnPost Advertising</h1>
+  </div>
+
+  <fieldset class="clear-block">
+    <div class="form-item form-item--amount">
+      <label for="amount" class="required">Amount: </label>
+      <div class="input-prepend">
+        <span class="prefix">$</span>
+        <input type="number" id="amount" name="amount" value="{{ amount }}" min="1" step="any" required>
+      </div>
+    </div>
+    <div class="form-item form-item--invoice">
+      <label for="invoice" class="required">Invoice #: </label>
+      <input type="text" id="invoice" name="invoice" value="{{ invoice }}" required>
+    </div>
+  </fieldset>
+  
+</section>
