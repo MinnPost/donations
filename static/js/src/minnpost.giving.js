@@ -255,7 +255,6 @@
     }, // getQueryStrings
 
     tabNavigation: function(active) {
-      var title = document.title;
       var step = $('.progress--donation li.' + active).index() + 1;
       var nav_item_count = $('.progress--donation li').length;
       var opp_id = $(this.options.opp_id_selector).val();
@@ -290,7 +289,7 @@
         post_purchase = true;
       }
 
-      this.analyticsTrackingStep(step, title, post_purchase);
+      this.analyticsTrackingStep(step, post_purchase);
 
       // activate the nav tabs
       if ($('.progress--donation li .active').length === 0) {
@@ -303,7 +302,7 @@
 
     }, // tabNavigation
 
-    analyticsTrackingStep: function(step, title, post_purchase) {
+    analyticsTrackingStep: function(step, post_purchase) {
       var level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
       var amount = $(this.options.original_amount_selector).val();
       var recurring = this.options.recurring;
@@ -338,7 +337,7 @@
 
       ga('set', {
         page: window.location.pathname,
-        title: title
+        title: document.title
       });
       ga('send', 'pageview', window.location.pathname);
 

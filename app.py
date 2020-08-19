@@ -699,6 +699,7 @@ def root_form():
 @app.route("/give/", methods=["GET", "POST"])
 def give_form():
     template    = "give.html"
+    title       = "Payment information | MinnPost"
     form        = DonateForm()
     form_data_action = "/give/"
     form_action = "/thanks/"
@@ -823,6 +824,7 @@ def give_form():
 
     return render_template(
         template,
+        title=title,
         form=form,
         form_action=form_action, form_data_action=form_data_action,
         amount=amount_formatted, frequency=frequency, yearly=yearly,
