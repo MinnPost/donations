@@ -104,7 +104,11 @@ def charge_cards():
         log.it(
             f"---- Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
         )
-        charge(opportunity)
+        try:
+            charge(opportunity)
+        except ChargeException:
+            # TODO should we alert slack? Did not because we had no notifications here before
+            pass
 
     log.send()
 
