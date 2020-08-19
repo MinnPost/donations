@@ -700,6 +700,7 @@ def root_form():
 def give_form():
     template    = "give.html"
     title       = "Payment information | MinnPost"
+    description = "MinnPost Membership"
     form        = DonateForm()
     form_data_action = "/give/"
     form_action = "/thanks/"
@@ -827,7 +828,7 @@ def give_form():
         title=title,
         form=form,
         form_action=form_action, form_data_action=form_data_action,
-        amount=amount_formatted, frequency=frequency, yearly=yearly,
+        amount=amount_formatted, frequency=frequency, yearly=yearly, description=description,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
