@@ -896,6 +896,7 @@ def calculate_fees():
 @app.route("/thanks/", methods=["POST"])
 def thanks():
     template    = "thanks.html"
+    title       = "Thank you for supporting MinnPost"
     form        = DonateForm(request.form)
     form_action = "/finish/"
 
@@ -921,6 +922,7 @@ def thanks():
 
     return render_template(
         template,
+        title=title,
         form_action=form_action,
         amount=amount_formatted,
         frequency=frequency,
@@ -1157,8 +1159,8 @@ def donate_form():
 
 @app.route("/finish/", methods=["GET", "POST"])
 def finish():
-
     template    = "finish.html"
+    title       = "Thank you for supporting MinnPost"
     form = FinishForm(request.form)
     # use form.data instead of request.form from here on out
     # because it includes all filters applied by WTF Forms
@@ -1171,6 +1173,7 @@ def finish():
     lock.release()
     return render_template(
         template,
+        title=title,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
