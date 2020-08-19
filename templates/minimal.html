@@ -5,14 +5,8 @@
 <main>
   <div class="wrapper support--forms">
 
-    <form action="{{ form_action }}" method="post" class="support support--minimal support--donate support--update" id="donate">
-
-      <div id="amount_for_js" class="amount"><span class="level-amount">{{ amount }}</span></div>
-
-      {% if update_default_source == True %}
-        <input type="hidden" name="update_default_source" id="update_default_source" value="true">
-      {% endif %}
-
+    <form action="{{ form_action }}" method="post" class="support support--minimal" id="donate">
+      {% include 'shared/hidden-fields.html' %}
       {% if stage != '' %}
         <input type="hidden" name="stage" id="stage" value="{{ stage }}">
       {% endif %}
@@ -32,16 +26,14 @@
       {% if pledge %}
         <input type="hidden" name="pledge" id="pledge" value="{{ pledge }}">
       {% endif %}
-      {% if description %}
-        <input type="hidden" name="description" id="description" value="{{ description }}">
-      {% endif %}
       {% if opportunity_type %}
         <input type="hidden" name="opportunity_type" id="opportunity_type" value="{{ opportunity_type }}">
       {% endif %}
       {% if opportunity_subtype %}
         <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
       {% endif %}
-      {% include 'shared/hidden-fields.html' %}
+
+      <div id="amount_for_js" class="amount"><span class="level-amount">{{ amount }}</span></div>
 
       {% include 'minimal/details.html' %}
       {% include 'shared/pay.html' %}

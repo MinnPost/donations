@@ -8,7 +8,7 @@
 
     {% include 'shared/name-fields.html' %}
 
-    {% if hide_address != True %}
+    {% if hide_address != True and email_before_billing != True %}
       {% with shipping=with_shipping %}
       {% include '/shared/address-fields.html' %}
       {% endwith %}
@@ -25,6 +25,12 @@
       </div>
       {% endif %}
     </div>
+
+    {% if hide_address != True and email_before_billing == True %}
+      {% with shipping=with_shipping %}
+      {% include '/shared/address-fields.html' %}
+      {% endwith %}
+    {% endif %}
 
     {% if hide_minnpost_account != True %}
       <div class="form-item form-item--password form-item--with-help">

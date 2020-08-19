@@ -7,10 +7,10 @@
   <input type="text" id="last_name" name="last_name" maxlength="80" required value="{{ last_name }}">
 </div>
 <div class="form-group form-group--recognition">
-  {% if hide_display != True %}
+  {% if hide_display_name != True %}
   <div class="form-item form-item--display-name">
     <div>
-      <label for="display_as">Preferred name(s) for donor recognition: </label>
+      <label for="display_as">{% if recognition_label is defined %}{{ recognition_label }}{% else %}Preferred name(s) for donor recognition{% endif %}: </label>
       <input type="text" id="display_as" name="display_as" value="{{ credited_as }}">
     </div>
     <div>

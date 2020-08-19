@@ -844,6 +844,38 @@ def give_form():
     )
 
 
+@app.route("/donate/", methods=["GET", "POST"])
+def donate_form():
+    title       = "MinnPost Donation"
+    heading     = title
+    description = title
+    summary     = "Thank you for supporting MinnPost’s nonprofit newsroom. If you have any questions, please email Tanner Curl at <a href=\"mailto:tcurl@minnpost.com\">tcurl@minnpost.com</a>."
+    # interface settings
+    show_amount_field       = True
+    allow_additional_amount = False
+    hide_amount_heading     = True
+    hide_honor_or_memory    = True
+    hide_display_name       = False
+    button                  = "Make Your Donation"
+    return minimal_form(title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+
+
+@app.route("/pledge-payment/", methods=["GET", "POST"])
+def pledge_payment_form():
+    title       = "MinnPost Pledge Payment"
+    heading     = title
+    description = title
+    summary     = "Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email Tanner Curl at tcurl@minnpost.com."
+    # interface settings
+    show_amount_field       = True
+    allow_additional_amount = False
+    hide_amount_heading     = True
+    hide_honor_or_memory    = True
+    hide_display_name       = False
+    button                  = "Finish Your Pledge"
+    return minimal_form(title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+
+
 ## this is a minnpost url. use this when sending a request to plaid
 ## if successful, this returns the access token and bank account token for stripe from plaid
 @app.route("/plaid_token/", methods=["POST"])
@@ -942,224 +974,6 @@ def thanks():
     )
 
 
-# prefill donate page
-@app.route("/donate/", methods=["GET", "POST"])
-def donate_form():
-
-    template    = "minimal.html"
-    form        = MinimalForm()
-    form_action = "/finish/"
-
-    if request.method == "POST":
-        return validate_form(MinimalForm, template, update_donation.delay)
-
-    # default fields that can be overridden by url
-    opportunity_id = None
-    recurring_id = None
-    opportunity = None
-    recurring = None
-
-    amount = 0
-    amount_formatted = 0
-    campaign = None
-    customer_id = None
-    first_name = None
-    last_name = None
-    email = None
-    billing_street = None
-    billing_city = None
-    billing_state = None
-    billing_zip = None
-    billing_country = None
-
-    # fields from URL
-    if request.args.get("opportunity"):
-        opportunity_id = request.args.get("opportunity")
-        try:
-            opportunity = Opportunity.list(
-                opportunity_id=opportunity_id
-            )
-            donation = opportunity[0]
-        except:
-            donation = None
-    elif request.args.get("recurring"):
-        recurring_id = request.args.get("recurring")
-        try:
-            rdo = RDO.list(
-                recurring_id=recurring_id
-            )
-            donation = rdo[0]
-        except:
-            donation = None
-
-    logging.info(donation)
-
-    if donation is not None:
-        # set defaults that urls can override
-        amount = format_amount(donation.amount)
-        amount_formatted = format(amount, ",.2f")
-        campaign = donation.campaign
-        customer_id = donation.stripe_customer_id
-        first_name = donation.donor_first_name
-        last_name = donation.donor_last_name
-        anonymous = donation.anonymous
-        credited_as = donation.credited_as
-        email = donation.donor_email
-        billing_street = donation.donor_address_one
-        billing_city = donation.donor_city
-        billing_state = donation.donor_state
-        billing_zip = donation.donor_zip
-        billing_country = donation.donor_country
-        opportunity_type = donation.type
-        opportunity_subtype = donation.subtype
-
-    # allow some fields to be overridden on the url
-    if request.args.get("amount"):
-        amount = format_amount(request.args.get("amount"))
-        amount_formatted = format(amount, ",.2f")
-
-    # salesforce campaign
-    if campaign is not None:
-        if request.args.get("campaign"):
-            campaign = request.args.get("campaign")
-    else:
-        campaign = request.args.get("campaign", "")
-
-    # stripe customer id
-    if customer_id is not None:
-        if request.args.get("customer_id"):
-            customer_id = request.args.get("customer_id")
-    else:
-        customer_id = request.args.get("customer_id", "")
-
-    # donor first name
-    if first_name is not None:
-        if request.args.get("first_name"):
-            first_name = request.args.get("first_name")
-    else:
-        first_name = request.args.get("first_name", "")
-
-    # donor last name
-    if last_name is not None:
-        if request.args.get("last_name"):
-            last_name = request.args.get("last_name")
-    else:
-        last_name = request.args.get("last_name", "")
-
-    # donor email
-    if email is not None:
-        if request.args.get("email"):
-            email = request.args.get("email")
-    else:
-        email = request.args.get("email", "")
-
-    # user address
-
-    # street
-    if billing_street is not None:
-        if request.args.get("billing_street"):
-            billing_street = request.args.get("billing_street")
-    else:
-        billing_street = request.args.get("billing_street", "")
-
-    # city
-    if billing_city is not None:
-        if request.args.get("billing_city"):
-            billing_city = request.args.get("billing_city")
-    else:
-        billing_city = request.args.get("billing_city", "")
-
-    # state
-    if billing_state is not None:
-        if request.args.get("billing_city"):
-            billing_state = request.args.get("billing_state")
-    else:
-        billing_state = request.args.get("billing_state", "")
-
-    # zip
-    if billing_zip is not None:
-        if request.args.get("billing_zip"):
-            billing_zip = request.args.get("billing_zip")
-    else:
-        billing_zip = request.args.get("billing_zip", "")
-
-    # country
-    if billing_country is not None:
-        if request.args.get("billing_country"):
-            billing_country = request.args.get("billing_country")
-    else:
-        billing_country = request.args.get("billing_country", "")
-
-    # show ach fields
-    if request.args.get("show_ach"):
-        show_ach = request.args.get("show_ach")
-        if show_ach == 'true':
-            show_ach = True
-        else:
-            show_ach = False
-    else:
-        show_ach = app.config["SHOW_ACH"]
-
-    # fees
-    fees = calculate_amount_fees(amount, "card")
-    today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
-
-    # fields for minimal form
-
-    stage = ""
-    if donation.stage_name is not None:
-        stage = "Pledged" # because it could be failed or closed lost or whatever
-
-    close_date = ""
-    if donation.close_date is not None:
-        three_days_ago = (datetime.now(tz=ZONE) - timedelta(days=3)).strftime('%Y-%m-%d')
-        if donation.close_date <= three_days_ago:
-            close_date = today
-        else: 
-            close_date = donation.close_date
-
-    show_amount_field = True
-    hide_amount_heading = True
-    title = "MinnPost | Donation"
-    heading = "MinnPost Donation"
-    summary = "Thank you for supporting MinnPost’s nonprofit newsroom. If you have any questions, please email Tanner Curl at <a href=\"mailto:tcurl@minnpost.com\">tcurl@minnpost.com</a>."
-    with_shipping = False
-    hide_minnpost_account = True
-    hide_pay_comments = True
-    hide_display = False
-    hide_honor_or_memory = False
-    button = "Make Your Donation"
-    description = "MinnPost Donation"
-    allow_additional = False
-    additional_donation = 0
-    if allow_additional is True:
-        if request.args.get("additional_donation"):
-            additional_donation = format_amount(request.args.get("additional_donation"))
-
-    # make a uuid for redis and lock it
-    lock_key = str(uuid.uuid4())
-    lock = Lock(key=lock_key)
-    lock.acquire()
-
-    return render_template(
-        template,
-        form=form,
-        form_action=form_action,
-        amount=amount, amount_formatted=amount_formatted,
-        first_name=first_name, last_name=last_name, email=email, anonymous=anonymous, credited_as=credited_as,
-        billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
-        campaign=campaign, customer_id=customer_id,
-        show_ach=show_ach, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
-        minnpost_root=app.config["MINNPOST_ROOT"],
-        lock_key=lock_key,
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
-        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
-        hide_amount_heading=hide_amount_heading, title=title, heading=heading, summary=summary, allow_additional=allow_additional, button=button, show_amount_field=show_amount_field, with_shipping=with_shipping, hide_minnpost_account=hide_minnpost_account, hide_pay_comments=hide_pay_comments, hide_display=hide_display, hide_honor_or_memory=hide_honor_or_memory,
-        opportunity_id=opportunity_id, opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype, recurring_id=recurring_id, description=description,
-        stage=stage, close_date=close_date,
-    )
-
-
 @app.route("/finish/", methods=["GET", "POST"])
 def finish():
     template    = "finish.html"
@@ -1201,6 +1015,170 @@ def merchantid():
     """
     return send_from_directory(
         app.static_folder, "apple-developer-merchantid-domain-association"
+    )
+
+
+# prefill configurable minimal form
+def minimal_form(title, heading, description, summary, button, show_amount_field = True, allow_additional_amount = False, hide_amount_heading = True, hide_honor_or_memory = True, hide_display_name = True, recognition_label = 'Preferred name(s) for recognition', email_before_billing = True, hide_minnpost_account = True, hide_pay_comments = True):
+
+    template    = "minimal.html"
+    form        = MinimalForm()
+    #form_data_action = "/give/"
+    form_action = "/finish/"
+
+    if request.method == "POST":
+        return validate_form(MinimalForm, template=template)
+
+    now = datetime.now()
+    today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
+    year = now.year
+
+    # default fields that can be overridden by url
+
+    # salesforce donation object
+    opportunity_id = None
+    recurring_id = None
+    opportunity = None
+    recurring = None
+    donation = None
+
+    # donation and user info
+    amount = 0
+    amount_formatted = 0
+    yearly = 1
+    campaign = None
+    customer_id = None
+    first_name = None
+    last_name = None
+    email = None
+    billing_street = None
+    billing_city = None
+    billing_state = None
+    billing_zip = None
+    billing_country = None
+
+    # default donation fields
+    stage = None
+    close_date = None
+
+    # salesforce donation object
+    opportunity_id = request.args.get("opportunity", "")
+    recurring_id = request.args.get("recurring", "")
+
+    if opportunity_id != "":
+        try:
+            opportunity = Opportunity.list(
+                opportunity_id=opportunity_id
+            )
+            donation = opportunity[0]
+        except:
+            donation = None
+    elif recurring_id != "":
+        try:
+            rdo = RDO.list(
+                recurring_id=recurring_id
+            )
+            donation = rdo[0]
+        except:
+            donation = None
+
+    # amount can be overridden
+    if request.args.get("amount"):
+        amount = format_amount(request.args.get("amount"))
+        amount_formatted = format(amount, ",.2f")
+
+    # frequency
+    if request.args.get("frequency"):
+        frequency = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
+        if frequency == "monthly":
+            yearly = 12
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", "")
+
+    # stripe customer id
+    customer_id = request.args.get("customer_id", "")
+
+    # referring page url
+    referring_page = request.args.get("referring_page", "")
+
+    # user first name
+    first_name = request.args.get("firstname", "")
+
+    # user last name
+    last_name = request.args.get("lastname", "")
+
+    # user email
+    email = request.args.get("email", "")
+
+    # user address
+
+    # street
+    billing_street = request.args.get("billing_street", "")
+
+    # city
+    billing_city = request.args.get("billing_city", "")
+
+    # state
+    billing_state = request.args.get("billing_state", "")
+
+    # zip
+    billing_zip = request.args.get("billing_zip", "")
+
+    # country
+    billing_country = request.args.get("billing_country", "")
+
+    if donation is not None:
+        if donation.stage_name is not None:
+            stage = "Pledged" # because it could be failed or closed lost or whatever
+        if donation.close_date is not None:
+            three_days_ago = (datetime.now(tz=ZONE) - timedelta(days=3)).strftime('%Y-%m-%d')
+            if donation.close_date <= three_days_ago:
+                close_date = today
+            else: 
+                close_date = donation.close_date
+
+    # show ach fields
+    if request.args.get("show_ach"):
+        show_ach = request.args.get("show_ach")
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = app.config["SHOW_ACH"]
+
+    # fees
+    fees = calculate_amount_fees(amount, "card")
+
+    additional_donation = request.args.get("additional_donation", 0)
+    if additional_donation != 0:
+        additional_donation = format_amount(request.args.get("additional_donation"))
+
+    # make a uuid for redis and lock it
+    lock_key = str(uuid.uuid4())
+    lock = Lock(key=lock_key)
+    lock.acquire()
+
+    return render_template(
+        template,
+        title=title,
+        form=form,
+        form_action=form_action,
+        amount=amount_formatted, yearly=yearly,
+        first_name=first_name, last_name=last_name, email=email,
+        billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
+        campaign=campaign, customer_id=customer_id, referring_page=referring_page,
+        hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
+        hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
+        email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account,
+        description=description,
+        stage=stage, close_date=close_date,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        lock_key=lock_key,
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
 
