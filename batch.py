@@ -238,7 +238,7 @@ def update_fees(query, log, donation_type):
         path = item['attributes']['url']
         url = '{}{}'.format(sf.instance_url, path)
 
-        if donation_type = 'recurring':
+        if donation_type == 'recurring':
             amount = float(item['npe03__Amount__c'])
         else:
             amount = float(item['Amount'])
