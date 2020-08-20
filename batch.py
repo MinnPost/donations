@@ -10,7 +10,7 @@ from pytz import timezone
 import requests
 import stripe
 
-from helpers import amount_to_charge
+from helpers import amount_to_charge, calculate_amount_fees
 
 from salesforce import SalesforceConnection
 from config import STRIPE_KEYS
@@ -220,6 +220,46 @@ def process_charges(query, log):
             raise Exception('error')
 
 
+def update_fees(query, log):
+    #print('start the fee updates')
+    #print(query)
+    sf = SalesforceConnection()
+    print('sf connected')
+    response = sf.query(query)
+    # TODO: check response code
+    #print('we have a respoonse')
+    #print(response)
+    log.it('Found {} opportunities available to update fees.'.format(
+        len(response)))
+
+    for item in response:
+
+        # salesforce connect
+        path = item['attributes']['url']
+        url = '{}{}'.format(sf.instance_url, path)
+
+        amount = float(item['Amount'])
+        payment_type = item.get('payment_type')
+        if entry.get('payment_type') == 'American Express' or item.get('Card_type__c') == 'American Express':
+            payment_type = 'American Express'
+        elif item.get('payment_type') == 'ach' or item.get('Stripe_Bank_Account__c') is not None:
+            payment_type = 'ach'
+        fees = calculate_amount_fees(amount, payment_type)
+
+        log.it('---- Updating fee value to ${}'.format(fees))
+
+        update = {
+            'Stripe_Transaction_Fee__c': fees
+            }
+        resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+        if resp.status_code == 204:
+            log.it('salesforce updated with fee value')
+        else:
+            log.it('error updating salesforce with fee value')
+            raise Exception('error')
+        continue
+
+
 class AlreadyExecuting(Exception):
     """
     Here to show when more than one job of the same type is running.
@@ -310,6 +350,31 @@ def update_ach_charges():
         #print('we have a query here for the ach pending stuff')
         #print(query)
         process_charges(query, log)
+    finally:
+        lock.release()
+
+
+@celery.task()
+def save_stripe_fee():
+
+    lock = Lock(key='save-stripe-fee-lock')
+    lock.acquire()
+
+    log = Log()
+
+    log.it('---Starting batch stripe fee job...')
+
+    query = """
+        SELECT Name, npe03__Amount__c, Stripe_Customer_Id__c, Stripe_Card__c, Stripe_Bank_Account__c, Card_type__c, Stripe_Agreed_to_pay_fees__c, Stripe_Transaction_Fee__c
+        FROM npe03__Recurring_Donation__c
+        WHERE npe03__Open_Ended_Status__c = 'Open'
+        AND Stripe_Transaction_Fee__c = null
+        AND Stripe_Customer_Id__c != ''
+        LIMIT 50
+        """
+
+    try:
+        update_fees(query, log)
     finally:
         lock.release()
 

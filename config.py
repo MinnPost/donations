@@ -33,6 +33,7 @@ CELERY_ALWAYS_EAGER = bool_env('CELERY_ALWAYS_EAGER')
 CHARGE_MINUTES_FREQUENCY = int(os.getenv('CHARGE_MINUTES_FREQUENCY', 1440))
 # more of our stuff
 ACH_MINUTES_FREQUENCY = int(os.getenv('ACH_MINUTES_FREQUENCY', 1440))
+STRIPE_FEE_FREQUENCY = int(os.getenv('STRIPE_FEE_FREQUENCY', 60))
 SHOW_ACH = os.getenv('SHOW_ACH', False)
 SHOW_THANKYOU_LISTS = os.getenv('SHOW_THANKYOU_LISTS', False)
 DEFAULT_FREQUENCY = os.getenv('DEFAULT_FREQUENCY', 'one-time')
@@ -40,6 +41,11 @@ CELERYBEAT_SCHEDULE = {
         'every-five-minutes': {
             'task': 'batch.charge_cards',
             'schedule': timedelta(minutes=CHARGE_MINUTES_FREQUENCY)
+            # texas 'schedule': crontab(minute='0', hour=BATCH_HOURS)
+            },
+        'every-hour': {
+            'task': 'batch.save_stripe_fee',
+            'schedule': timedelta(minutes=STRIPE_FEE_FREQUENCY)
             # texas 'schedule': crontab(minute='0', hour=BATCH_HOURS)
             },
         'every-day': {
