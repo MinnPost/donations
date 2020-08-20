@@ -28,7 +28,7 @@
     'active' : 'panel--pay',
     'confirm' : 'panel--confirmation',
     'query' : 'step',
-    'pay_cc_processing_selector' : 'input[id="edit-pay-fees"]',
+    'pay_cc_processing_selector' : 'input[id="pay-fees"]',
     'fee_amount' : '.processing-amount',
     'level_amount_selector' : '#panel--pay .amount .level-amount',
     'original_amount_selector' : '#amount',

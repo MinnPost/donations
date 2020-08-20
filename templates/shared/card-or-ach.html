@@ -24,7 +24,7 @@
     </div>
   </div>
   <ul class="actions actions--pay-fees clear-block">
-    <li><label><input type="checkbox" value="1" id="edit-pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees == True %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label></li>
+    <li><label><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees == True %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label></li>
   </ul>
 </fieldset>
 {% else %}
@@ -66,7 +66,7 @@
     </div>
   </div>
   <ul class="actions actions--pay-fees clear-block">
-    <li><label><input type="checkbox" value="1" id="edit-pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees == True %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label></li>
+    <li><label><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees == True %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label></li>
   </ul>
 </fieldset>
 {% endif %}
