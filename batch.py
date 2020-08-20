@@ -244,7 +244,7 @@ def update_fees(query, log, donation_type):
             amount = float(item['Amount'])
 
         payment_type = item.get('payment_type')
-        if entry.get('payment_type') == 'American Express' or item.get('Card_type__c') == 'American Express':
+        if item.get('payment_type') == 'American Express' or item.get('Card_type__c') == 'American Express':
             payment_type = 'American Express'
         elif item.get('payment_type') == 'ach' or item.get('Stripe_Bank_Account__c') is not None:
             payment_type = 'ach'
