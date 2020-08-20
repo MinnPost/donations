@@ -220,7 +220,7 @@ def process_charges(query, log):
             raise Exception('error')
 
 
-def update_fees(query, log):
+def update_fees(query, log, donation_type):
     #print('start the fee updates')
     #print(query)
     sf = SalesforceConnection()
@@ -229,7 +229,7 @@ def update_fees(query, log):
     # TODO: check response code
     #print('we have a respoonse')
     #print(response)
-    log.it('Found {} opportunities available to update fees.'.format(
+    log.it('Found {} donations available to update fees.'.format(
         len(response)))
 
     for item in response:
@@ -238,7 +238,11 @@ def update_fees(query, log):
         path = item['attributes']['url']
         url = '{}{}'.format(sf.instance_url, path)
 
-        amount = float(item['Amount'])
+        if donation_type = 'recurring':
+            amount = float(item['npe03__Amount__c'])
+        else:
+            amount = float(item['Amount'])
+
         payment_type = item.get('payment_type')
         if entry.get('payment_type') == 'American Express' or item.get('Card_type__c') == 'American Express':
             payment_type = 'American Express'
@@ -374,7 +378,7 @@ def save_stripe_fee():
         """
 
     try:
-        update_fees(query, log)
+        update_fees(query, log, 'recurring')
     finally:
         lock.release()
 
