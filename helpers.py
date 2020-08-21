@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime, timedelta
 from stopforumspam_api import query
 import httpbl
@@ -90,17 +91,17 @@ def amount_to_charge(entry):
 
 
 def calculate_amount_fees(amount, payment_type):
-    amount = float(amount)
+    amount = Decimal(amount)
     processing_percent = 0.022
     fixed_fee = 0.3
     if payment_type == 'American Express' or payment_type == 'amex':
         processing_percent = 0.035
         fixed_fee = 0
-    elif payment_type == 'ach':
+    elif payment_type == 'bank_account':
         processing_percent = 0.008
         fixed_fee = 0
-    new_amount = (amount + fixed_fee) / (1 - processing_percent)
-    processing_fee = new_amount - amount
+    new_amount = (amount + Decimal(fixed_fee)) / (1 - Decimal(processing_percent))
+    processing_fee = quantize(new_amount - amount)
     fees = round(processing_fee, 2)
 
     return fees
