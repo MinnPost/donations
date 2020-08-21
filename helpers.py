@@ -1,7 +1,6 @@
 import os
 import requests
 import json
-from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime, timedelta
 from stopforumspam_api import query
 import httpbl
@@ -11,7 +10,7 @@ from config import EMAIL_BAN_LIST
 bl = httpbl.HttpBL(PROJECT_HONEYPOT_KEY)
 email_ban_list = EMAIL_BAN_LIST
 minnpost_root = MINNPOST_ROOT
-TWOPLACES = Decimal(10) ** -2  # same as Decimal('0.01')
+
 def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
     thisyear = amount * yearly
     level = ''
@@ -91,12 +90,8 @@ def amount_to_charge(entry):
     return int(total_in_cents)
 
 
-def quantize(amount):
-    return Decimal(amount).quantize(TWOPLACES)
-
-
 def calculate_amount_fees(amount, payment_type):
-    amount = Decimal(amount)
+    amount = float(amount)
     processing_percent = 0.022
     fixed_fee = 0.3
     if payment_type == 'American Express' or payment_type == 'amex':
@@ -105,8 +100,8 @@ def calculate_amount_fees(amount, payment_type):
     elif payment_type == 'bank_account':
         processing_percent = 0.008
         fixed_fee = 0
-    new_amount = (amount + Decimal(fixed_fee)) / (1 - Decimal(processing_percent))
-    processing_fee = quantize(new_amount - amount)
+    new_amount = (amount + float(fixed_fee)) / (1 - float(processing_percent))
+    processing_fee = float(new_amount - amount)
     fees = round(processing_fee, 2)
 
     return fees
