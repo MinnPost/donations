@@ -430,6 +430,14 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
     else:
         card_type = ''
 
+    payment_type = ''
+    if stripe_bank_account != '':
+        payment_type = 'bank_account'
+    elif card_type == 'American Express':
+        payment_type = 'amex'
+    else:
+        payment_type = 'card'
+
     #print('opportunity: stripe card is {} and stripe bank is {}'.format(stripe_card, stripe_bank_account))
 
     try:
@@ -847,6 +855,7 @@ def _format_opportunity(contact=None, form=None, customer=None, extra_values=Non
             'Stripe_Bank_Account__c': stripe_bank_account,
             'Stripe_Card__c': stripe_card,
             'Stripe_Customer_ID__c': customer.id,    
+            'Stripe_Payment_Type__c': payment_type,
             'Ticket_count__c': quantity,        
             #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
             # Co Member First name, last name, and email
@@ -1383,6 +1392,14 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
     else:
         card_type = ''
 
+    payment_type = ''
+    if stripe_bank_account != '':
+        payment_type = 'bank_account'
+    elif card_type == 'American Express':
+        payment_type = 'amex'
+    else:
+        payment_type = 'card'
+
     try:
         if form['campaign'] != '':
             campaign = form['campaign']
@@ -1745,6 +1762,7 @@ def _format_recurring_donation(contact=None, form=None, customer=None, extra_val
         'Stripe_Bank_Account__c': stripe_bank_account,
         'Stripe_Card__c': stripe_card,
         'Stripe_Customer_Id__c': customer.id,
+        'Stripe_Payment_Type__c': payment_type,
         'Stripe_Description__c': '{}'.format(form['description']),
         #'Encouraged_to_contribute_by__c': '{}'.format(form['reason']),
         #'Type__c': type__c,
