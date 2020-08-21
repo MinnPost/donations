@@ -77,7 +77,7 @@ def amount_to_charge(entry):
     amount = float(entry['Amount'])
     if entry['Stripe_Agreed_to_pay_fees__c']:
         payment_type = entry.get('payment_type')
-        if entry.get('payment_type') == 'American Express' or entry.get('Card_type__c') == 'American Express':
+        if entry.get('payment_type') == 'American Express' or entry.get('Card_type__c') == 'American Express' or entry.get('Card_type__c') == 'Amex':
             payment_type = 'American Express'
         elif entry.get('payment_type') == 'ach' or entry.get('Stripe_Bank_Account__c') is not None:
             payment_type = 'ach'
@@ -88,6 +88,10 @@ def amount_to_charge(entry):
     total_in_cents = total * 100
 
     return int(total_in_cents)
+
+
+def quantize(amount):
+    return Decimal(amount).quantize(TWOPLACES)
 
 
 def calculate_amount_fees(amount, payment_type):
