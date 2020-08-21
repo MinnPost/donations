@@ -11,6 +11,7 @@ from config import EMAIL_BAN_LIST
 bl = httpbl.HttpBL(PROJECT_HONEYPOT_KEY)
 email_ban_list = EMAIL_BAN_LIST
 minnpost_root = MINNPOST_ROOT
+TWOPLACES = Decimal(10) ** -2  # same as Decimal('0.01')
 def checkLevel(amount, frequency, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
     thisyear = amount * yearly
     level = ''
