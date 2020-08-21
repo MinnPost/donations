@@ -90,7 +90,7 @@ def amount_to_charge(entry):
     return int(total_in_cents)
 
 
-def calculate_amount_fees(amount, payment_type):
+def calculate_amount_fees(amount, payment_type, paying_fees = True):
     amount = float(amount)
     processing_percent = 0.022
     fixed_fee = 0.3
@@ -100,8 +100,11 @@ def calculate_amount_fees(amount, payment_type):
     elif payment_type == 'bank_account' or payment_type == 'ach':
         processing_percent = 0.008
         fixed_fee = 0
-    new_amount = (amount + float(fixed_fee)) / (1 - float(processing_percent))
-    processing_fee = float(new_amount - amount)
+    if paying_fees == True:
+        new_amount = (amount + float(fixed_fee)) / (1 - float(processing_percent))
+        processing_fee = float(new_amount - amount)
+    else:
+        processing_fee = float((amount * float(processing_percent)) + float(fixed_fee))
     fees = round(processing_fee, 2)
 
     return fees

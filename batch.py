@@ -248,7 +248,7 @@ def update_fees(query, log, donation_type):
             payment_type = 'American Express'
         elif item.get('payment_type') == 'ach' or item.get('Stripe_Bank_Account__c') is not None:
             payment_type = 'ach'
-        fees = calculate_amount_fees(amount, payment_type)
+        fees = calculate_amount_fees(amount, payment_type, item.get('Stripe_Agreed_to_pay_fees__c', False))
 
         log.it('---- Updating fee value to ${}'.format(fees))
 
