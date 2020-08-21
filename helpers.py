@@ -97,7 +97,7 @@ def calculate_amount_fees(amount, payment_type):
     if payment_type == 'American Express' or payment_type == 'amex':
         processing_percent = 0.035
         fixed_fee = 0
-    elif payment_type == 'bank_account':
+    elif payment_type == 'bank_account' or payment_type == 'ach':
         processing_percent = 0.008
         fixed_fee = 0
     new_amount = (amount + float(fixed_fee)) / (1 - float(processing_percent))
