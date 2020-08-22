@@ -1501,12 +1501,13 @@ def charge_ajax():
 
     payment_type = ''
     if 'pay_fees' in request.form:
+        # get fee amount to send to stripe; user does not see this
         pay_fees = request.form['pay_fees']
-        if pay_fees == '1':
-            # get fee amount to send to stripe; user does not see this
-            if 'payment_type' in request.form:
-                payment_type = request.form['payment_type']
-                session['payment_type'] = payment_type
+
+    # payment type to store in salesforce
+    if 'payment_type' in request.form:
+        payment_type = request.form['payment_type']
+        session['payment_type'] = payment_type
 
     email = request.form['email']
     first_name = request.form['first_name']
