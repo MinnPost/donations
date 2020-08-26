@@ -794,7 +794,7 @@ class RDO(SalesforceObject):
             "Stripe_Description__c": self.stripe_description,
             "Card_expiration_date__c": self.stripe_card_expiration,
             "Card_acct_last_4__c": self.stripe_card_last_4,
-            "Stripe_Customer_ID__c": self.stripe_customer_id,
+            "Stripe_Customer_Id__c": self.stripe_customer_id,
             "Stripe_Payment_Type__c": self.stripe_payment_type,
             "Flask_Transaction_ID__c": self.lock_key,
         }
@@ -837,7 +837,7 @@ class RDO(SalesforceObject):
                 Stripe_Agreed_to_pay_fees__c,
                 Stripe_Bank_Account__c,
                 Stripe_Card__c,
-                Stripe_Customer_Id__c,
+                Stripe_Customer_ID__c,
                 Stripe_Description__c,
                 Stripe_Error_Message__c,
                 Stripe_Payment_Type__c,
@@ -946,7 +946,7 @@ class RDO(SalesforceObject):
                 Stripe_Description__c,
                 Card_expiration_date__c,
                 Card_acct_last_4__c,
-                Stripe_Customer_ID__c,
+                Stripe_Customer_Id__c,
                 Stripe_Payment_Type__c,
                 Stripe_Transaction_ID__c
             FROM npe03__Recurring_Donation__c
@@ -1000,7 +1000,7 @@ class RDO(SalesforceObject):
             y.stripe_description = item["Stripe_Description__c"]
             y.stripe_card_expiration = item["Card_expiration_date__c"]
             y.stripe_card_last_4 = item["Card_acct_last_4__c"]
-            y.stripe_customer_id = item["Stripe_Customer_ID__c"]
+            y.stripe_customer_id = item["Stripe_Customer_Id__c"]
             y.stripe_payment_type = item["Stripe_Payment_Type__c"]
 
             y.created = False
