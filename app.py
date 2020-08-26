@@ -229,13 +229,13 @@ def minnroast_sponsorship_form():
 # support.minnpost.com/minnroast-pledge
 @app.route("/minnroast-pledge/")
 def minnroast_pledge_form():
-    redirect_to = url_for("minnpost_pledge_form", **request.args)
+    redirect_to = url_for("pledge_payment_form", **request.args)
     return redirect(redirect_to)
 
 # support.minnpost.com/recurring-donation-update
 @app.route("/recurring-donation-update/")
 def minnpost_recurring_donation_update_form():
-    redirect_to = url_for("minnpost_donation_update_form", **request.args)
+    redirect_to = url_for("donation_update_form", **request.args)
     return redirect(redirect_to)
 
 # support.minnpost.com/anniversary-sponsorship
