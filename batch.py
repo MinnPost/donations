@@ -17,6 +17,7 @@ from config import STRIPE_KEYS
 from config import ACCOUNTING_MAIL_RECIPIENT
 from config import TIMEZONE
 from config import REDIS_URL
+from config import UPDATE_STRIPE_FEES
 
 zone = timezone(TIMEZONE)
 
@@ -362,6 +363,9 @@ def update_ach_charges():
 
 @celery.task()
 def save_stripe_fee():
+
+    if UPDATE_STRIPE_FEES is False:
+        return
 
     lock = Lock(key='save-stripe-fee-lock')
     lock.acquire()
