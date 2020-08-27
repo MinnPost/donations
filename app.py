@@ -276,18 +276,41 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
     payer wait for them. It sends a notification about the donation to Slack (if configured).
     """
 
-    today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
-
-    form = clean(form)
-    frequency = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    form               = clean(form)
+    first_name         = form.get("first_name", "")
+    last_name          = form.get("last_name", "")
+    frequency          = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    email              = form.get("email", "")
+    street             = form.get("billing_street", "")
+    city               = form.get("billing_city", "")
+    state              = form.get("billing_state", "")
+    country            = form.get("billing_country", "")
+    zipcode            = form.get("billing_zip", "")
+    stripe_customer_id = form.get("stripe_customer_id", "")
 
     logging.info("----Getting contact....")
-    contact = get_or_add_contact(form=form)
+    contact = Contact.get_or_create(
+        email=email, first_name=first_name, last_name=last_name, stripe_customer_id=stripe_customer_id,
+        street=street, city=city, state=state, zipcode=zipcode, country=country
+    )
     logging.info(contact)
 
-    if contact.created is False:
-        logging.info("Updating contact")
-        contact = update_contact(form=form)
+    if contact.first_name != first_name or contact.last_name != last_name:
+        logging.info(
+            f"Contact name doesn't match: {contact.first_name} {contact.last_name}"
+        )
+
+    if not contact.created:
+        logging.info(f"Updating contact {first_name} {last_name}")
+        contact.first_name          = first_name
+        contact.last_name           = last_name
+        contact.stripe_customer_id  = stripe_customer_id
+        contact.mailing_street      = street
+        contact.mailing_city        = city
+        contact.mailing_state       = state
+        contact.mailing_postal_code = zipcode
+        contact.mailing_country     = country
+        contact.save()
 
     if contact.duplicate_found:
         send_multiple_account_warning(contact)
@@ -297,7 +320,7 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
         form["in_honor_or_memory"] = 'In ' + str(honor_or_memory) + ' of...'
 
     if frequency == "one-time":
-        logging.info("----Creating one time payment...")
+        logging.info("----Creating or updating one time payment...")
         opportunity = add_or_update_opportunity(contact=contact, form=form, customer=customer, charge_source=charge_source)
         charge(opportunity)
         lock = Lock(key=opportunity.lock_key)
@@ -306,7 +329,7 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
         notify_slack(contact=contact, opportunity=opportunity)
         return True
     else:
-        logging.info("----Creating recurring payment...")
+        logging.info("----Creating or updating recurring payment...")
         rdo = add_or_update_recurring_donation(contact=contact, form=form, customer=customer, charge_source=charge_source)
 
         # get opportunities
@@ -336,15 +359,17 @@ def update_donation(form=None, customer=None, donation_type=None):
     because there are a lot of API calls and there's no point in making the
     payer wait for them. It sends a notification about the donation to Slack (if configured).
     """
-
-    form = clean(form)
-    first_name = form["first_name"]
-    last_name = form["last_name"]
-    frequency = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
-    email = form["email"]
-    zipcode = form["billing_zip"]
-
-
+    form               = clean(form)
+    first_name         = form.get("first_name", "")
+    last_name          = form.get("last_name", "")
+    frequency          = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    email              = form.get("email", "")
+    street             = form.get("billing_street", "")
+    city               = form.get("billing_city", "")
+    state              = form.get("billing_state", "")
+    country            = form.get("billing_country", "")
+    zipcode            = form.get("billing_zip", "")
+    stripe_customer_id = form.get("stripe_customer_id", "")
 
     opportunity_id = form.get("opportunity_id", None)
     recurring_id = form.get("recurring_id", None)
@@ -353,24 +378,26 @@ def update_donation(form=None, customer=None, donation_type=None):
 
     logging.info("----Getting contact....")
     contact = Contact.get_or_create(
-        email=email, first_name=first_name, last_name=last_name, zipcode=zipcode
+        email=email, first_name=first_name, last_name=last_name, stripe_customer_id=stripe_customer_id,
+        street=street, city=city, state=state, zipcode=zipcode, country=country
     )
     logging.info(contact)
-
-    if contact.first_name == "Subscriber" and contact.last_name == "Subscriber":
-        logging.info(f"Changing name of contact to {first_name} {last_name}")
-        contact.first_name = first_name
-        contact.last_name = last_name
-        contact.mailing_postal_code = zipcode
-        contact.save()
 
     if contact.first_name != first_name or contact.last_name != last_name:
         logging.info(
             f"Contact name doesn't match: {contact.first_name} {contact.last_name}"
         )
 
-    if zipcode and not contact.created and contact.mailing_postal_code != zipcode:
+    if not contact.created:
+        logging.info(f"Updating contact {first_name} {last_name}")
+        contact.first_name          = first_name
+        contact.last_name           = last_name
+        contact.stripe_customer_id  = stripe_customer_id
+        contact.mailing_street      = street
+        contact.mailing_city        = city
+        contact.mailing_state       = state
         contact.mailing_postal_code = zipcode
+        contact.mailing_country     = country
         contact.save()
 
     if contact.duplicate_found:
@@ -702,7 +729,7 @@ def give_form():
     title       = "Payment information | MinnPost"
     description = "MinnPost Membership"
     form        = DonateForm()
-    form_data_action = "/give/"
+    #form_data_action = "/give/"
     form_action = "/thanks/"
 
     if request.method == "POST":
@@ -827,7 +854,7 @@ def give_form():
         template,
         title=title,
         form=form,
-        form_action=form_action, form_data_action=form_data_action,
+        form_action=form_action,
         amount=amount_formatted, frequency=frequency, yearly=yearly, description=description,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
@@ -1035,7 +1062,7 @@ def minimal_form(title, heading, description, summary, button, show_amount_field
 
     # default fields that can be overridden by url
 
-    # salesforce donation object
+    # salesforce donation object loader
     opportunity_id = None
     recurring_id = None
     opportunity = None

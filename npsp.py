@@ -1292,6 +1292,26 @@ class Contact(SalesforceObject):
         }
 
     @classmethod
+    def get_or_create(cls, email, first_name=None, last_name=None, stripe_customer_id=None, street=None, city=None, state=None, zipcode=None, country=None):
+        contact = cls.get(email=email)
+        if contact:
+            logging.debug(f"Contact found: {contact}")
+            return contact
+        logging.debug("Creating contact...")
+        contact = Contact()
+        contact.email = email
+        contact.first_name          = first_name
+        contact.last_name           = last_name
+        contact.stripe_customer_id  = stripe_customer_id
+        contact.mailing_street      = street
+        contact.mailing_city        = city
+        contact.mailing_state       = state
+        contact.mailing_postal_code = zipcode
+        contact.mailing_country     = country
+        contact.save()
+        return contact
+
+    @classmethod
     def get(cls, id=None, email=None, sf_connection=None):
 
         sf = SalesforceConnection() if sf_connection is None else sf_connection
