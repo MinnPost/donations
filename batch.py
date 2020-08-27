@@ -365,6 +365,7 @@ def update_ach_charges():
 def save_stripe_fee():
 
     if UPDATE_STRIPE_FEES is False:
+        log.it('---Update fee is false. Get out.')
         return
 
     lock = Lock(key='save-stripe-fee-lock')
