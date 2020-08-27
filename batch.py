@@ -364,16 +364,16 @@ def update_ach_charges():
 @celery.task()
 def save_stripe_fee():
 
+    log = Log()
+
+    log.it('---Starting batch stripe fee job...')
+
     if UPDATE_STRIPE_FEES is False:
         log.it('---Update fee is false. Get out.')
         return
 
     lock = Lock(key='save-stripe-fee-lock')
     lock.acquire()
-
-    log = Log()
-
-    log.it('---Starting batch stripe fee job...')
 
     query = """
         SELECT Id, Name, npe03__Amount__c, Stripe_Customer_Id__c, Stripe_Card__c, Stripe_Bank_Account__c, Card_type__c, Stripe_Payment_Type__c, Stripe_Agreed_to_pay_fees__c, Stripe_Transaction_Fee__c
