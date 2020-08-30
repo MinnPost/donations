@@ -30,7 +30,7 @@ def validate_amount(form, field):
 
 
 # if value starts with a dollar sign, remove it
-# then convert to a float
+# then convert to a Decimal
 def format_amount(value):
     if value is not None:
         if value.startswith("$"):
