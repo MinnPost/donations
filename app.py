@@ -730,7 +730,6 @@ def give_form():
     title       = "Payment information | MinnPost"
     description = "MinnPost Membership"
     form        = DonateForm()
-    #form_data_action = "/give/"
     form_action = "/thanks/"
 
     if request.method == "POST":
