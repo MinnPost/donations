@@ -1045,13 +1045,13 @@
     stripeTokenHandler: function(token, type) {
       var that = this;
       var supportform = $(this.options.donate_form_selector);
-      var form_data_action = '';
+      var ajax_url = '';
       var tokenFieldName = 'stripeToken';
       var tokenField = 'input[name="' + tokenFieldName + '"]';
       if (typeof $(supportform).data('action') !== 'undefined') {
-        form_data_action = $(supportform).data('action');
+        ajax_url = $(supportform).data('action');
       } else {
-        form_data_action = window.location.pathname;
+        ajax_url = window.location.pathname;
       }
       // Insert the token ID into the form so it gets submitted to the server
       if ( type === 'card' ) {
@@ -1068,8 +1068,10 @@
       $('input[name="stripe_payment_type"]').val(type);
 
       // Submit the form
+      // the way it works currently is the form submits an ajax request to itself
+      // then it submits a post request to the form's action url
       $.ajax({
-        url: form_data_action,
+        url: ajax_url,
         cache: false,
         data: $(supportform).serialize(),
         type: 'POST'
