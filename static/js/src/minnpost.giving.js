@@ -660,7 +660,6 @@
             $('input[name="bankToken"]', $(that.options.donate_form_selector)).remove();
             that.calculateFees(that.options.original_amount, 'card'); // we can't use creditcardfields method here
           }
-          console.log( 'switch' );
         });
 
       }
@@ -953,6 +952,9 @@
     stripeErrorDisplay: function(event, this_selector, element, options) {
       // listen for errors and display/hide error messages
       var which_error = this_selector.attr('id');
+      // when this field changes, reset its errors
+      $('.card-instruction.' + which_error).removeClass('invalid');
+      $('.card-instruction.' + which_error).empty();
       if (event.error) {
         $('.card-instruction.' + which_error).text(event.error.message + ' Please try again.');
         $('.card-instruction.' + which_error).addClass('invalid');
@@ -1044,6 +1046,8 @@
       var that = this;
       var supportform = $(this.options.donate_form_selector);
       var form_data_action = '';
+      var tokenFieldName = 'stripeToken';
+      var tokenField = 'input[name="' + tokenFieldName + '"]';
       if (typeof $(supportform).data('action') !== 'undefined') {
         form_data_action = $(supportform).data('action');
       } else {
@@ -1054,7 +1058,11 @@
         if (token.card.brand.length > 0 && token.card.brand === 'American Express') {
           type = 'amex';
         }
-        supportform.append($('<input type=\"hidden\" name=\"stripeToken\">').val(token.id));
+        if ($(tokenField).length > 0) {
+          $(tokenField).val(token.id);
+        } else {
+          supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(token.id));
+        }
       }
 
       $('input[name="stripe_payment_type"]').val(type);
@@ -1074,6 +1082,7 @@
           $.each(response.errors, function( index, error ) {
             var field = error.field + '_field_selector';
             var message = '';
+            var stripeErrorSelector = '';
             if (typeof error.message === 'string') {
               message = error.message;
             } else {
@@ -1089,17 +1098,21 @@
               that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false, 'card');
               if (error.code == 'invalid_number' || error.code == 'incorrect_number' || error.code == 'card_declined' || error.code == 'processing_error') {
                 // error handling
-                that.stripeErrorDisplay(response.errors, $(that.options.cc_num_selector), that.element, that.options );
+                stripeErrorSelector = $(that.options.cc_num_selector);
               }
 
               if (error.code == 'invalid_expiry_month' || error.code == 'invalid_expiry_year' || error.code == 'expired_card') {
                 // error handling
-                that.stripeErrorDisplay(response.errors, $(that.options.cc_exp_selector), that.element, that.options );
+                stripeErrorSelector = $(that.options.cc_exp_selector);
               }
 
               if (error.code == 'invalid_cvc' || error.code == 'incorrect_cvc') {
                 // error handling
-                that.stripeErrorDisplay(response.errors, $(that.options.cc_cvv_selector), that.element, that.options );
+                stripeErrorSelector = $(that.options.cc_cvv_selector);
+              }
+
+              if (stripeErrorSelector !== '') {
+                that.stripeErrorDisplay(response.errors, stripeErrorSelector, that.element, that.options );
               }
 
               if (error.field == 'recaptcha') {
@@ -1120,7 +1133,6 @@
                 }, 2000);
               }
             }
-
           });
         } else {
           supportform.get(0).submit(); // continue submitting the form
