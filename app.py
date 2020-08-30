@@ -425,10 +425,10 @@ def update_donation(form=None, customer=None, donation_type=None):
     if frequency == "one-time":
         logging.info("----Updating one time payment...")
         opportunity = add_or_update_opportunity(contact=contact, form=form, customer=customer)
-        charge(opportunity)
         logging.info(opportunity)
         notify_slack(contact=contact, opportunity=opportunity)
         return True
+        # if we want to charge it, we are going to have to do something here
     else:
         logging.info("----Updating recurring payment...")
         rdo = add_or_update_recurring_donation(contact=contact, form=form, customer=customer)
