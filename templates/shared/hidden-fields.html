@@ -7,6 +7,6 @@
 {% if referring_page != '' %}
 <input type="hidden" name="referring_page" id="referring_page" value="{{ referring_page }}">
 {% endif %}
-{% if update_default_source %}
+{% if update_default_source is sameas true %}
     <input type="hidden" name="update_default_source" id="update_default_source" value="true">
 {% endif %}

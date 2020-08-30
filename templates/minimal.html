@@ -33,7 +33,7 @@
         <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
       {% endif %}
 
-      {% if amount != '' and not show_amount_field %}
+      {% if amount != '' and show_amount_field is sameas false %}
         <div id="amount_for_js" class="amount"><span class="level-amount">{{ amount }}</span></div>
       {% endif %}
 
