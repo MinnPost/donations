@@ -246,7 +246,7 @@ def anniversary_sponsorship_form():
 
 
 
-def apply_card_details(rdo=None, customer=None):
+def apply_card_details(rdo=None, customer=None, charge_source=None):
 
     """
     Takes the expiration date, card brand and expiration from a Stripe object and copies
@@ -255,15 +255,27 @@ def apply_card_details(rdo=None, customer=None):
     saved as well.
     """
 
-    customer = stripe.Customer.retrieve(customer["id"])
-    card = customer.sources.retrieve(customer.sources.data[0].id)
-    year = card.exp_year
-    month = card.exp_month
-    day = calendar.monthrange(year, month)[1]
+    if charge_source is None:
+        customer = stripe.Customer.retrieve(customer["id"])
+        card_id = customer.sources.data[0].id
+        card = customer.sources.retrieve(card_id)
+        year = card.exp_year
+        month = card.exp_month
+        brand = card.brand
+        last4 = card.last4
+    else:
+        card = charge_source
+        card_id = card["id"]
+        year = card["exp_year"]
+        month = card["exp_month"]
+        brand = card["brand"]
+        last4 = card["last4"]
 
+    day = calendar.monthrange(year, month)[1]
+    rdo.stripe_card = card_id
     rdo.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
-    rdo.stripe_card_brand = card.brand
-    rdo.stripe_card_last_4 = card.last4
+    rdo.stripe_card_brand = brand
+    rdo.stripe_card_last_4 = last4
 
     return rdo
 
@@ -522,23 +534,19 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
 
     charge_source = None
 
+    if form_data.get("stripeToken", ""):
+        source_token = form_data["stripeToken"]
+    elif form_data.get("bankToken",""):
+        source_token = form_data["bankToken"]
+
     if customer_id is "": # this is a new customer
         app.logger.debug("----Creating new Stripe customer...")
         # if it is a new customer, assume they only have one payment method and it should be the default
         try:
-            if form_data.get("stripeToken",""):
-                customer = stripe.Customer.create(
-                        email=email,
-                        card=form_data["stripeToken"] 
-                )
-                #stripe_card = customer.default_source
-                
-            if form_data.get("bankToken",""):
-                customer = stripe.Customer.create(
-                    email=email,
-                    source=form_data["bankToken"]
-                )
-                #stripe_bank_account = customer.default_source
+            customer = stripe.Customer.create(
+                email=email,
+                source=source_token
+            )
         except stripe.error.CardError as e: # Stripe returned a card error
             body = e.json_body
             err = body.get("error", {})
@@ -554,31 +562,19 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     elif customer_id is not None and customer_id != '': # this is an existing customer
         app.logger.info(f"----Updating existing Stripe customer: ID {customer_id}")
         customer = stripe.Customer.retrieve(customer_id)
-        customer.email = email
-        customer.save()
         # since this is an existing customer, add the current payment method to the list.
-        # this does not change the default payment method.
-        # todo: build a checkbox or something that lets users indicate that we should update their default method
-        # maybe anytime someone changes a customer, it should change the default method.
+        # this changes or does not change the default source based on the field value
+        # currently it is always a hidden field; we might consider adding it as a choice for users.
         try:
             if update_default_source is not "":
-
-                if form_data.get("stripeToken",""):
-                    customer = stripe.Customer.modify(
-                        customer_id,
-                        card=form_data["stripeToken"] 
-                    )
-                if form_data.get("bankToken",""):
-                    customer = stripe.Customer.modify(
-                        customer_id,
-                        source=form_data["bankToken"]
-                    )
-
+                app.logger.info(f"----Update default source for customer: ID {customer_id}. token is {source_token}")
+                customer = stripe.Customer.modify(
+                    customer_id,
+                    email=email,
+                    source=source_token
+                )
             else:
-                if form_data.get("stripeToken",""):
-                    charge_source = customer.sources.create(source=form_data.get("stripeToken",""))
-                if form_data.get("bankToken",""):
-                    charge_source = customer.sources.create(source=form_data.get("bankToken",""))
+                charge_source = customer.sources.create(source=source_token)
         except stripe.error.CardError as e: # Stripe returned a card error
             body = e.json_body
             err = body.get("error", {})
@@ -1525,20 +1521,22 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
         # stripe card source handling
         if charge_source is None:
             customer = stripe.Customer.retrieve(customer["id"])
-            card = customer.sources.retrieve(customer.sources.data[0].id)
+            card_id = customer.sources.data[0].id
+            card = customer.sources.retrieve(card_id)
             year = card.exp_year
             month = card.exp_month
             brand = card.brand
             last4 = card.last4
         else:
             card = charge_source
+            card_id = card["id"]
             year = card["exp_year"]
             month = card["exp_month"]
             brand = card["brand"]
             last4 = card["last4"]
         
         day = calendar.monthrange(year, month)[1]
-
+        opportunity.stripe_card = card_id
         opportunity.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
         opportunity.card_type = brand
         opportunity.stripe_card_last_4 = last4
@@ -1618,7 +1616,7 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
         rdo.campaign = app.config["DEFAULT_CAMPAIGN_RECURRING"]
 
     if form["stripe_payment_type"] == "card":
-        apply_card_details(rdo=rdo, customer=customer)
+        apply_card_details(rdo=rdo, customer=customer, charge_source=charge_source)
 
     rdo.save()
 
