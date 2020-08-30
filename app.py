@@ -334,11 +334,14 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
     if frequency == "one-time":
         logging.info("----Creating or updating one time payment...")
         opportunity = add_or_update_opportunity(contact=contact, form=form, customer=customer, charge_source=charge_source)
-        charge(opportunity)
-        lock = Lock(key=opportunity.lock_key)
-        lock.append(key=opportunity.lock_key, value=opportunity.id)
-        logging.info(opportunity)
-        notify_slack(contact=contact, opportunity=opportunity)
+        try:
+            charge(opportunity)
+            lock = Lock(key=opportunity.lock_key)
+            lock.append(key=opportunity.lock_key, value=opportunity.id)
+            logging.info(opportunity)
+            notify_slack(contact=contact, opportunity=opportunity)
+        except ChargeException as e:
+            e.send_slack_notification()
         return True
     else:
         logging.info("----Creating or updating recurring payment...")
@@ -352,14 +355,14 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
             for opportunity in opportunities
             if opportunity.close_date == today
         ][0]
-        # charge the first one
-        charge(opp)
-
-        # do more rdo stuff
-        lock = Lock(key=rdo.lock_key)
-        lock.append(key=rdo.lock_key, value=rdo.id)
-        logging.info(rdo)
-        notify_slack(contact=contact, rdo=rdo)
+        try:
+            charge(opp)
+            lock = Lock(key=rdo.lock_key)
+            lock.append(key=rdo.lock_key, value=rdo.id)
+            logging.info(rdo)
+            notify_slack(contact=contact, rdo=rdo)
+        except ChargeException as e:
+            e.send_slack_notification()
         return True
 
 
