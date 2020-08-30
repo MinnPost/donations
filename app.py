@@ -602,11 +602,11 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
     function(customer=customer, form=clean(form_data), donation_type=donation_type, charge_source=charge_source)
 
+    # get the json response from the server and put it into the specified template
     return jsonify(success=True)
 
 
 def validate_form(FormType, template, function=add_donation.delay):
-    app.logger.info(pformat(request.form))
 
     form = FormType(request.form)
     # use form.data instead of request.form from here on out
@@ -616,6 +616,8 @@ def validate_form(FormType, template, function=add_donation.delay):
     email = form_data["email"]
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
+
+    app.logger.info(pformat(form_data))
 
     # currently donation_type is not used for anything. maybe it should be used for the opportunity type
     if FormType is DonateForm or FormType is MinimalForm or FormType is CancelForm or FormType is FinishForm:
