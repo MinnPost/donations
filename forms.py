@@ -96,6 +96,10 @@ class BaseForm(FlaskForm):
     recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
     update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
 
+    pay_fees = BooleanField(
+        u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
+    )
+
     amount = StringField(
         u"Amount",
         validators=[
@@ -190,9 +194,6 @@ class DonateForm(BaseForm):
     )
     shipping_country = StringField(
         u"Country", [validators.Optional()]
-    )
-    pay_fees = BooleanField(
-        u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
     )
 
 # used for anniversary-patron, minnpost-default, minnroast-patron, other minimal donate forms
