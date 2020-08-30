@@ -1393,60 +1393,6 @@ def stripehook():
     return "", 200
 
 
-def get_or_add_contact(form=None):
-    """
-    This will get or add a contact in Salesforce.
-    """
-
-    email = form.get("email", "")
-    contact = Contact.get(email=email)
-    if contact:
-        logging.debug(f"Contact found: {contact}")
-        return contact
-
-    contact = Contact()
-    contact.email = email
-    contact.first_name = form.get("first_name", "")
-    contact.last_name = form.get("last_name", "")
-    contact.description = form.get("description", None)
-    contact.stripe_customer_id = form.get("stripe_customer_id", "")
-    contact.mailing_street = form.get("billing_street", "")
-    contact.mailing_city = form.get("billing_city", "")
-    contact.mailing_state = form.get("billing_state", "")
-    contact.mailing_postal_code = form.get("billing_zip", "")
-    contact.mailing_country = form.get("billing_country", "")
-
-    contact.save()
-    return contact
-
-
-def update_contact(form=None):
-    """
-    This will update a contact in Salesforce.
-    """
-
-    email = form.get("email", "")
-    contact = Contact.get(email=email)
-    if not contact:
-        logging.debug(f"Contact not found: {email}")
-        return contact
-
-    contact = Contact()
-    contact.email = email
-    contact.first_name = form.get("first_name", "")
-    contact.last_name = form.get("last_name", "")
-    contact.description = form.get("description", None)
-    contact.stripe_customer_id = form.get("stripe_customer_id", "")
-    contact.mailing_street = form.get("billing_street", "")
-    contact.mailing_city = form.get("billing_city", "")
-    contact.mailing_state = form.get("billing_state", "")
-    contact.mailing_postal_code = form.get("billing_zip", "")
-    contact.mailing_country = form.get("billing_country", "")
-
-    contact.save()
-    return contact
-
-
 def add_or_update_opportunity(contact=None, form=None, customer=None, charge_source=None):
     """
     This will add or update a single donation in Salesforce.
