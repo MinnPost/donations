@@ -131,6 +131,7 @@ def charge(opportunity):
 
     if opportunity.stage_name == 'Pledged':
         opportunity.stage_name = "In Process"
+        opportunity.stripe_error_message = ""
         opportunity.save()
 
         if opportunity.stripe_card is not None:
