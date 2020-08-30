@@ -13,7 +13,7 @@
       {% if close_date != '' %}
         <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
       {% endif %}
-      {% if amount != '' %}
+      {% if amount != '' and not show_amount_field %}
         <input type="hidden" name="amount" id="amount" value="{{ amount }}">
       {% endif %}
       {% if opportunity_id %}
@@ -33,7 +33,9 @@
         <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
       {% endif %}
 
-      <div id="amount_for_js" class="amount"><span class="level-amount">{{ amount }}</span></div>
+      {% if amount != '' and not show_amount_field %}
+        <div id="amount_for_js" class="amount"><span class="level-amount">{{ amount }}</span></div>
+      {% endif %}
 
       {% include 'minimal/details.html' %}
       {% include 'shared/pay.html' %}
