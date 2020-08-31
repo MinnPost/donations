@@ -1133,8 +1133,6 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
         except:
             donation = None
 
-    logging.debug(f"Recurring donation found: {donation}")
-
     if donation is not None:
         # set default values
         amount = donation.amount
@@ -1268,7 +1266,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
         hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
-        description=description,
+        description=description, opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         update_default_source=update_default_source, stage=stage, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
