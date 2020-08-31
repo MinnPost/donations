@@ -1110,11 +1110,12 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
     pay_fees = False
 
     # default donation fields
-    stage = None
-    close_date = None
+    stage = "Pledged"
+    close_date = today
+    opportunity_type = "Donation"
+    opportunity_subtype = "Donation: Individual"
 
     if opportunity_id != "":
-        logging.debug( 'try to find opportunity' )
         try:
             opportunity = Opportunity.list(
                 opportunity_id=opportunity_id
