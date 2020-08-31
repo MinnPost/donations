@@ -10,7 +10,7 @@
       {% if stage != '' %}
         <input type="hidden" name="stage" id="stage" value="{{ stage }}">
       {% endif %}
-      {% if close_date != '' %}
+      {% if close_date %}
         <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
       {% endif %}
       {% if amount != '' and not show_amount_field %}
