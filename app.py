@@ -386,8 +386,8 @@ def update_donation(form=None, customer=None, donation_type=None):
     zipcode            = form.get("billing_zip", "")
     stripe_customer_id = form.get("stripe_customer_id", "")
 
-    opportunity_id = form.get("opportunity_id", None)
-    recurring_id = form.get("recurring_id", None)
+    opportunity_id = form.get("opportunity_id", "")
+    recurring_id = form.get("recurring_id", "")
 
     # if we don't have either, get out
 
@@ -1073,7 +1073,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
     opportunity_id = request.args.get("opportunity", "")
     recurring_id = request.args.get("recurring", "")
 
-    if opportunity_id != "" or recurring_id != "":
+    if opportunity_id or recurring_id:
         function = update_donation.delay
     else:
         function = add_donation.delay
@@ -1115,7 +1115,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
     opportunity_type = "Donation"
     opportunity_subtype = "Donation: Individual"
 
-    if opportunity_id != "":
+    if opportunity_id:
         try:
             opportunity = Opportunity.list(
                 opportunity_id=opportunity_id
@@ -1123,7 +1123,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
             donation = opportunity[0]
         except:
             donation = None
-    elif recurring_id != "":
+    elif recurring_id:
         try:
             rdo = RDO.list(
                 recurring_id=recurring_id
@@ -1467,8 +1467,8 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
     opportunity = Opportunity(contact=contact)
 
-    opportunity_id = form.get("opportunity_id", None)
-    if opportunity_id is not None:
+    opportunity_id = form.get("opportunity_id", "")
+    if opportunity_id:
         try:
             opportunity_list = Opportunity.list(
                 opportunity_id=opportunity_id
@@ -1572,8 +1572,8 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
 
     rdo = RDO(contact=contact)
 
-    recurring_id = form.get("recurring_id", None)
-    if recurring_id is not None:
+    recurring_id = form.get("recurring_id", "")
+    if recurring_id:
         try:
             rdo_list = RDO.list(
                 recurring_id=recurring_id
