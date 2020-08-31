@@ -203,8 +203,8 @@ class MinimalForm(BaseForm):
     close_date = HiddenField("Close Date", [validators.Optional()])
     opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])
     recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()])
-    opp_type = HiddenField("Opportunity Type", [validators.Optional()])
-    opp_subtype = HiddenField("Opportunity Sub-Type", [validators.Optional()])
+    opportunity_type = HiddenField("Opportunity Type", [validators.Optional()])
+    opportunity_subtype = HiddenField("Opportunity Sub-Type", [validators.Optional()])
     redirect_url = HiddenField("Opportunity Type", [validators.Optional()])
     display_as = StringField(
         u"Preferred name", [validators.Optional()]
