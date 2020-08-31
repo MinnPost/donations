@@ -13,7 +13,7 @@
       {% if close_date %}
         <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
       {% endif %}
-      {% if amount != '' and not show_amount_field %}
+      {% if amount != '' and show_amount_field is sameas false %}
         <input type="hidden" name="amount" id="amount" value="{{ amount }}">
       {% endif %}
       {% if opportunity_id %}
