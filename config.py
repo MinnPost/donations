@@ -154,4 +154,4 @@ USE_RECAPTCHA = bool_env("USE_RECAPTCHA")
 #
 DEFAULT_FREQUENCY = os.getenv('DEFAULT_FREQUENCY', 'one-time')
 MINNPOST_ROOT = os.getenv('MINNPOST_ROOT')
-SHOW_ACH = os.getenv('SHOW_ACH', False)
+SHOW_ACH = bool_env("SHOW_ACH")
