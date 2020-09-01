@@ -30,7 +30,7 @@ def validate_amount(form, field):
 
 
 # if value starts with a dollar sign, remove it
-# then convert to a float
+# then convert to a Decimal
 def format_amount(value):
     if value is not None:
         if value.startswith("$"):
@@ -95,6 +95,10 @@ class BaseForm(FlaskForm):
     bankToken = HiddenField(u"Bank token", [validators.Optional()])
     recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
     update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
+
+    pay_fees = BooleanField(
+        u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
+    )
 
     amount = StringField(
         u"Amount",
@@ -191,9 +195,6 @@ class DonateForm(BaseForm):
     shipping_country = StringField(
         u"Country", [validators.Optional()]
     )
-    pay_fees = BooleanField(
-        u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
-    )
 
 # used for anniversary-patron, minnpost-default, minnroast-patron, other minimal donate forms
 class MinimalForm(BaseForm):
@@ -202,8 +203,8 @@ class MinimalForm(BaseForm):
     close_date = HiddenField("Close Date", [validators.Optional()])
     opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])
     recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()])
-    opp_type = HiddenField("Opportunity Type", [validators.Optional()])
-    opp_subtype = HiddenField("Opportunity Sub-Type", [validators.Optional()])
+    opportunity_type = HiddenField("Opportunity Type", [validators.Optional()])
+    opportunity_subtype = HiddenField("Opportunity Sub-Type", [validators.Optional()])
     redirect_url = HiddenField("Opportunity Type", [validators.Optional()])
     display_as = StringField(
         u"Preferred name", [validators.Optional()]

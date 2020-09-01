@@ -246,7 +246,7 @@ def anniversary_sponsorship_form():
 
 
 
-def apply_card_details(rdo=None, customer=None):
+def apply_card_details(rdo=None, customer=None, charge_source=None):
 
     """
     Takes the expiration date, card brand and expiration from a Stripe object and copies
@@ -255,15 +255,27 @@ def apply_card_details(rdo=None, customer=None):
     saved as well.
     """
 
-    customer = stripe.Customer.retrieve(customer["id"])
-    card = customer.sources.retrieve(customer.sources.data[0].id)
-    year = card.exp_year
-    month = card.exp_month
-    day = calendar.monthrange(year, month)[1]
+    if charge_source is None:
+        customer = stripe.Customer.retrieve(customer["id"])
+        card_id = customer.sources.data[0].id
+        card = customer.sources.retrieve(card_id)
+        year = card.exp_year
+        month = card.exp_month
+        brand = card.brand
+        last4 = card.last4
+    else:
+        card = charge_source
+        card_id = card["id"]
+        year = card["exp_year"]
+        month = card["exp_month"]
+        brand = card["brand"]
+        last4 = card["last4"]
 
+    day = calendar.monthrange(year, month)[1]
+    rdo.stripe_card = card_id
     rdo.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
-    rdo.stripe_card_brand = card.brand
-    rdo.stripe_card_last_4 = card.last4
+    rdo.stripe_card_brand = brand
+    rdo.stripe_card_last_4 = last4
 
     return rdo
 
@@ -322,11 +334,14 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
     if frequency == "one-time":
         logging.info("----Creating or updating one time payment...")
         opportunity = add_or_update_opportunity(contact=contact, form=form, customer=customer, charge_source=charge_source)
-        charge(opportunity)
-        lock = Lock(key=opportunity.lock_key)
-        lock.append(key=opportunity.lock_key, value=opportunity.id)
-        logging.info(opportunity)
-        notify_slack(contact=contact, opportunity=opportunity)
+        try:
+            charge(opportunity)
+            lock = Lock(key=opportunity.lock_key)
+            lock.append(key=opportunity.lock_key, value=opportunity.id)
+            logging.info(opportunity)
+            notify_slack(contact=contact, opportunity=opportunity)
+        except ChargeException as e:
+            e.send_slack_notification()
         return True
     else:
         logging.info("----Creating or updating recurring payment...")
@@ -340,14 +355,14 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
             for opportunity in opportunities
             if opportunity.close_date == today
         ][0]
-        # charge the first one
-        charge(opp)
-
-        # do more rdo stuff
-        lock = Lock(key=rdo.lock_key)
-        lock.append(key=rdo.lock_key, value=rdo.id)
-        logging.info(rdo)
-        notify_slack(contact=contact, rdo=rdo)
+        try:
+            charge(opp)
+            lock = Lock(key=rdo.lock_key)
+            lock.append(key=rdo.lock_key, value=rdo.id)
+            logging.info(rdo)
+            notify_slack(contact=contact, rdo=rdo)
+        except ChargeException as e:
+            e.send_slack_notification()
         return True
 
 
@@ -371,8 +386,8 @@ def update_donation(form=None, customer=None, donation_type=None):
     zipcode            = form.get("billing_zip", "")
     stripe_customer_id = form.get("stripe_customer_id", "")
 
-    opportunity_id = form.get("opportunity_id", None)
-    recurring_id = form.get("recurring_id", None)
+    opportunity_id = form.get("opportunity_id", "")
+    recurring_id = form.get("recurring_id", "")
 
     # if we don't have either, get out
 
@@ -410,10 +425,10 @@ def update_donation(form=None, customer=None, donation_type=None):
     if frequency == "one-time":
         logging.info("----Updating one time payment...")
         opportunity = add_or_update_opportunity(contact=contact, form=form, customer=customer)
-        charge(opportunity)
         logging.info(opportunity)
         notify_slack(contact=contact, opportunity=opportunity)
         return True
+        # if we want to charge it, we are going to have to do something here
     else:
         logging.info("----Updating recurring payment...")
         rdo = add_or_update_recurring_donation(contact=contact, form=form, customer=customer)
@@ -522,23 +537,19 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
 
     charge_source = None
 
+    if form_data.get("stripeToken", ""):
+        source_token = form_data["stripeToken"]
+    elif form_data.get("bankToken",""):
+        source_token = form_data["bankToken"]
+
     if customer_id is "": # this is a new customer
         app.logger.debug("----Creating new Stripe customer...")
         # if it is a new customer, assume they only have one payment method and it should be the default
         try:
-            if form_data.get("stripeToken",""):
-                customer = stripe.Customer.create(
-                        email=email,
-                        card=form_data["stripeToken"] 
-                )
-                #stripe_card = customer.default_source
-                
-            if form_data.get("bankToken",""):
-                customer = stripe.Customer.create(
-                    email=email,
-                    source=form_data["bankToken"]
-                )
-                #stripe_bank_account = customer.default_source
+            customer = stripe.Customer.create(
+                email=email,
+                source=source_token
+            )
         except stripe.error.CardError as e: # Stripe returned a card error
             body = e.json_body
             err = body.get("error", {})
@@ -554,31 +565,19 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     elif customer_id is not None and customer_id != '': # this is an existing customer
         app.logger.info(f"----Updating existing Stripe customer: ID {customer_id}")
         customer = stripe.Customer.retrieve(customer_id)
-        customer.email = email
-        customer.save()
         # since this is an existing customer, add the current payment method to the list.
-        # this does not change the default payment method.
-        # todo: build a checkbox or something that lets users indicate that we should update their default method
-        # maybe anytime someone changes a customer, it should change the default method.
+        # this changes or does not change the default source based on the field value
+        # currently it is always a hidden field; we might consider adding it as a choice for users.
         try:
             if update_default_source is not "":
-
-                if form_data.get("stripeToken",""):
-                    customer = stripe.Customer.modify(
-                        customer_id,
-                        card=form_data["stripeToken"] 
-                    )
-                if form_data.get("bankToken",""):
-                    customer = stripe.Customer.modify(
-                        customer_id,
-                        source=form_data["bankToken"]
-                    )
-
+                app.logger.info(f"----Update default source for customer: ID {customer_id}. token is {source_token}")
+                customer = stripe.Customer.modify(
+                    customer_id,
+                    email=email,
+                    source=source_token
+                )
             else:
-                if form_data.get("stripeToken",""):
-                    charge_source = customer.sources.create(source=form_data.get("stripeToken",""))
-                if form_data.get("bankToken",""):
-                    charge_source = customer.sources.create(source=form_data.get("bankToken",""))
+                charge_source = customer.sources.create(source=source_token)
         except stripe.error.CardError as e: # Stripe returned a card error
             body = e.json_body
             err = body.get("error", {})
@@ -603,11 +602,11 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
     function(customer=customer, form=clean(form_data), donation_type=donation_type, charge_source=charge_source)
 
+    # get the json response from the server and put it into the specified template
     return jsonify(success=True)
 
 
 def validate_form(FormType, template, function=add_donation.delay):
-    app.logger.info(pformat(request.form))
 
     form = FormType(request.form)
     # use form.data instead of request.form from here on out
@@ -617,6 +616,8 @@ def validate_form(FormType, template, function=add_donation.delay):
     email = form_data["email"]
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
+
+    app.logger.info(pformat(form_data))
 
     # currently donation_type is not used for anything. maybe it should be used for the opportunity type
     if FormType is DonateForm or FormType is MinimalForm or FormType is CancelForm or FormType is FinishForm:
@@ -729,7 +730,6 @@ def give_form():
     title       = "Payment information | MinnPost"
     description = "MinnPost Membership"
     form        = DonateForm()
-    #form_data_action = "/give/"
     form_action = "/thanks/"
 
     if request.method == "POST":
@@ -871,6 +871,22 @@ def give_form():
     )
 
 
+@app.route("/donation-update/", methods=["GET", "POST"])
+def donation_update_form():
+    title       = "MinnPost Pledge Payment"
+    heading     = title
+    description = title
+    summary     = "Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email Tanner Curl at tcurl@minnpost.com."
+    # interface settings
+    show_amount_field       = True
+    allow_additional_amount = False
+    hide_amount_heading     = True
+    hide_honor_or_memory    = True
+    hide_display_name       = False
+    button                  = "Finish Your Pledge"
+    return minimal_form("donation-update", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+
+
 @app.route("/donate/", methods=["GET", "POST"])
 def donate_form():
     title       = "MinnPost Donation"
@@ -884,7 +900,8 @@ def donate_form():
     hide_honor_or_memory    = True
     hide_display_name       = False
     button                  = "Make Your Donation"
-    return minimal_form(title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+    
+    return minimal_form("donate", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
 
 @app.route("/pledge-payment/", methods=["GET", "POST"])
@@ -900,7 +917,7 @@ def pledge_payment_form():
     hide_honor_or_memory    = True
     hide_display_name       = False
     button                  = "Finish Your Pledge"
-    return minimal_form(title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+    return minimal_form("pledge-payment", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
 
 ## this is a minnpost url. use this when sending a request to plaid
@@ -1046,53 +1063,59 @@ def merchantid():
 
 
 # prefill configurable minimal form
-def minimal_form(title, heading, description, summary, button, show_amount_field = True, allow_additional_amount = False, hide_amount_heading = True, hide_honor_or_memory = True, hide_display_name = True, recognition_label = 'Preferred name(s) for recognition', email_before_billing = True, hide_minnpost_account = True, hide_pay_comments = True):
+def minimal_form(url, title, heading, description, summary, button, show_amount_field = True, allow_additional_amount = False, hide_amount_heading = True, hide_honor_or_memory = True, hide_display_name = True, recognition_label = 'Preferred name(s) for recognition', email_before_billing = True, hide_minnpost_account = True, hide_pay_comments = True):
 
-    template    = "minimal.html"
-    form        = MinimalForm()
-    #form_data_action = "/give/"
-    form_action = "/finish/"
+    template         = "minimal.html"
+    form             = MinimalForm()
+    form_action      = "/finish/" # we might want to make this a parameter but probably not
+
+    # salesforce donation object
+    opportunity_id = request.args.get("opportunity", "")
+    recurring_id = request.args.get("recurring", "")
+
+    if opportunity_id or recurring_id:
+        function = update_donation.delay
+    else:
+        function = add_donation.delay
 
     if request.method == "POST":
-        return validate_form(MinimalForm, template=template)
+        return validate_form(MinimalForm, template=template, function=function)
 
     now = datetime.now()
     today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
     year = now.year
 
-    # default fields that can be overridden by url
-
     # salesforce donation object loader
-    opportunity_id = None
-    recurring_id = None
     opportunity = None
     recurring = None
     donation = None
 
     # donation and user info
     amount = 0
-    amount_formatted = 0
+    amount_formatted = amount
     yearly = 1
-    campaign = None
-    customer_id = None
-    first_name = None
-    last_name = None
-    email = None
-    billing_street = None
-    billing_city = None
-    billing_state = None
-    billing_zip = None
-    billing_country = None
+    campaign = ""
+    customer_id = ""
+    first_name = ""
+    last_name = ""
+    email = ""
+    billing_street = ""
+    billing_city = ""
+    billing_state = ""
+    billing_zip = ""
+    billing_country = ""
+    referring_page = ""
+    credited_as = ""
+    installment_period = None
+    pay_fees = False
 
     # default donation fields
-    stage = None
-    close_date = None
+    stage = "Pledged"
+    close_date = today
+    opportunity_type = "Donation"
+    opportunity_subtype = "Donation: Individual"
 
-    # salesforce donation object
-    opportunity_id = request.args.get("opportunity", "")
-    recurring_id = request.args.get("recurring", "")
-
-    if opportunity_id != "":
+    if opportunity_id:
         try:
             opportunity = Opportunity.list(
                 opportunity_id=opportunity_id
@@ -1100,16 +1123,65 @@ def minimal_form(title, heading, description, summary, button, show_amount_field
             donation = opportunity[0]
         except:
             donation = None
-    elif recurring_id != "":
+    elif recurring_id:
         try:
             rdo = RDO.list(
                 recurring_id=recurring_id
             )
             donation = rdo[0]
+            installment_period = donation.installment_period
         except:
             donation = None
 
-    # amount can be overridden
+    if donation is not None:
+        # set default values
+        amount = donation.amount
+        amount_formatted = amount
+        if installment_period is not None and installment_period == "monthly":
+            yearly = 12
+        else:
+            yearly = 1
+        if donation.campaign is not None:
+            campaign = donation.campaign
+        if donation.stripe_customer_id is not None:
+            customer_id = donation.stripe_customer_id
+        if donation.donor_first_name is not None:
+            first_name = donation.donor_first_name
+        if donation.donor_last_name is not None:
+            last_name = donation.donor_last_name
+        if donation.donor_email is not None:
+            email = donation.donor_email
+        if donation.donor_address_one is not None:
+            billing_street = donation.donor_address_one
+        if donation.donor_city is not None:
+            billing_city = donation.donor_city
+        if donation.donor_state is not None:
+            billing_state = donation.donor_state
+        if donation.donor_zip is not None:
+            billing_zip = donation.donor_zip
+        if donation.donor_country is not None:
+            billing_country = donation.donor_country
+        if donation.referring_page is not None:
+            referring_page = donation.referring_page
+        if donation.credited_as is not None:
+            credited_as = donation.credited_as
+
+        pay_fees = donation.agreed_to_pay_fees
+
+        if opportunity:
+            if donation.stage_name is not None:
+                # because it could be failed or closed lost or whatever and we want it to try again
+                stage = "Pledged"
+            if donation.close_date is not None:
+                three_days_ago = (datetime.now(tz=ZONE) - timedelta(days=3)).strftime('%Y-%m-%d')
+                # 
+                if donation.close_date <= three_days_ago:
+                    close_date = today
+                else: 
+                    close_date = donation.close_date
+
+    # salesforce fields that can be overridden with these url parameters
+    # if there's not an existing donation, we can prepopulate fields with these url parameters
     if request.args.get("amount"):
         amount = format_amount(request.args.get("amount"))
         amount_formatted = format(amount, ",.2f")
@@ -1121,49 +1193,43 @@ def minimal_form(title, heading, description, summary, button, show_amount_field
             yearly = 12
 
     # salesforce campaign
-    campaign = request.args.get("campaign", "")
+    campaign = request.args.get("campaign", campaign)
 
     # stripe customer id
-    customer_id = request.args.get("customer_id", "")
+    customer_id = request.args.get("customer_id", customer_id)
 
     # referring page url
-    referring_page = request.args.get("referring_page", "")
+    referring_page = request.args.get("referring_page", referring_page)
 
     # user first name
-    first_name = request.args.get("firstname", "")
+    first_name = request.args.get("firstname", first_name)
 
     # user last name
-    last_name = request.args.get("lastname", "")
+    last_name = request.args.get("lastname", last_name)
 
     # user email
-    email = request.args.get("email", "")
+    email = request.args.get("email", email)
 
     # user address
 
     # street
-    billing_street = request.args.get("billing_street", "")
+    billing_street = request.args.get("billing_street", billing_street)
 
     # city
-    billing_city = request.args.get("billing_city", "")
+    billing_city = request.args.get("billing_city", billing_city)
 
     # state
-    billing_state = request.args.get("billing_state", "")
+    billing_state = request.args.get("billing_state", billing_state)
 
     # zip
-    billing_zip = request.args.get("billing_zip", "")
+    billing_zip = request.args.get("billing_zip", billing_zip)
 
     # country
-    billing_country = request.args.get("billing_country", "")
+    billing_country = request.args.get("billing_country", billing_country)
 
-    if donation is not None:
-        if donation.stage_name is not None:
-            stage = "Pledged" # because it could be failed or closed lost or whatever
-        if donation.close_date is not None:
-            three_days_ago = (datetime.now(tz=ZONE) - timedelta(days=3)).strftime('%Y-%m-%d')
-            if donation.close_date <= three_days_ago:
-                close_date = today
-            else: 
-                close_date = donation.close_date
+    # stage and close date
+    stage = request.args.get("stage", stage)
+    close_date = request.args.get("close_date", close_date)
 
     # show ach fields
     if request.args.get("show_ach"):
@@ -1187,20 +1253,22 @@ def minimal_form(title, heading, description, summary, button, show_amount_field
     lock = Lock(key=lock_key)
     lock.acquire()
 
+    update_default_source = True # make this configurable by form
+
     return render_template(
         template,
         title=title,
         form=form,
         form_action=form_action,
         amount=amount_formatted, yearly=yearly,
-        first_name=first_name, last_name=last_name, email=email,
+        first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
         hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
-        email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account,
-        description=description,
-        stage=stage, close_date=close_date,
+        email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
+        description=description, opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
+        update_default_source=update_default_source, stage=stage, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         lock_key=lock_key,
@@ -1392,60 +1460,6 @@ def stripehook():
     return "", 200
 
 
-def get_or_add_contact(form=None):
-    """
-    This will get or add a contact in Salesforce.
-    """
-
-    email = form.get("email", "")
-    contact = Contact.get(email=email)
-    if contact:
-        logging.debug(f"Contact found: {contact}")
-        return contact
-
-    contact = Contact()
-    contact.email = email
-    contact.first_name = form.get("first_name", "")
-    contact.last_name = form.get("last_name", "")
-    contact.description = form.get("description", None)
-    contact.stripe_customer_id = form.get("stripe_customer_id", "")
-    contact.mailing_street = form.get("billing_street", "")
-    contact.mailing_city = form.get("billing_city", "")
-    contact.mailing_state = form.get("billing_state", "")
-    contact.mailing_postal_code = form.get("billing_zip", "")
-    contact.mailing_country = form.get("billing_country", "")
-
-    contact.save()
-    return contact
-
-
-def update_contact(form=None):
-    """
-    This will update a contact in Salesforce.
-    """
-
-    email = form.get("email", "")
-    contact = Contact.get(email=email)
-    if not contact:
-        logging.debug(f"Contact not found: {email}")
-        return contact
-
-    contact = Contact()
-    contact.email = email
-    contact.first_name = form.get("first_name", "")
-    contact.last_name = form.get("last_name", "")
-    contact.description = form.get("description", None)
-    contact.stripe_customer_id = form.get("stripe_customer_id", "")
-    contact.mailing_street = form.get("billing_street", "")
-    contact.mailing_city = form.get("billing_city", "")
-    contact.mailing_state = form.get("billing_state", "")
-    contact.mailing_postal_code = form.get("billing_zip", "")
-    contact.mailing_country = form.get("billing_country", "")
-
-    contact.save()
-    return contact
-
-
 def add_or_update_opportunity(contact=None, form=None, customer=None, charge_source=None):
     """
     This will add or update a single donation in Salesforce.
@@ -1454,8 +1468,8 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
     opportunity = Opportunity(contact=contact)
 
-    opportunity_id = form.get("opportunity_id", None)
-    if opportunity_id is not None:
+    opportunity_id = form.get("opportunity_id", "")
+    if opportunity_id:
         try:
             opportunity_list = Opportunity.list(
                 opportunity_id=opportunity_id
@@ -1525,20 +1539,22 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
         # stripe card source handling
         if charge_source is None:
             customer = stripe.Customer.retrieve(customer["id"])
-            card = customer.sources.retrieve(customer.sources.data[0].id)
+            card_id = customer.sources.data[0].id
+            card = customer.sources.retrieve(card_id)
             year = card.exp_year
             month = card.exp_month
             brand = card.brand
             last4 = card.last4
         else:
             card = charge_source
+            card_id = card["id"]
             year = card["exp_year"]
             month = card["exp_month"]
             brand = card["brand"]
             last4 = card["last4"]
         
         day = calendar.monthrange(year, month)[1]
-
+        opportunity.stripe_card = card_id
         opportunity.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
         opportunity.card_type = brand
         opportunity.stripe_card_last_4 = last4
@@ -1557,8 +1573,8 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
 
     rdo = RDO(contact=contact)
 
-    recurring_id = form.get("recurring_id", None)
-    if recurring_id is not None:
+    recurring_id = form.get("recurring_id", "")
+    if recurring_id:
         try:
             rdo_list = RDO.list(
                 recurring_id=recurring_id
@@ -1618,7 +1634,7 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
         rdo.campaign = app.config["DEFAULT_CAMPAIGN_RECURRING"]
 
     if form["stripe_payment_type"] == "card":
-        apply_card_details(rdo=rdo, customer=customer)
+        apply_card_details(rdo=rdo, customer=customer, charge_source=charge_source)
 
     rdo.save()
 

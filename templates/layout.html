@@ -90,16 +90,10 @@
     </div>
   </footer>
 
-  <!--[if lt IE 9]>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-  <![endif]-->
-  <!--[if gte IE 9]><!-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-  <!--<![endif]-->
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <script src="https://js.stripe.com/v3/"></script>
-  {% if use_recaptcha == 'True' %}<script src='https://www.google.com/recaptcha/api.js'></script>{% endif %}
-  {% if show_ach == 'True' %}<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>{% endif %}
+  {% if use_recaptcha is sameas true %}<script src='https://www.google.com/recaptcha/api.js'></script>{% endif %}
+  {% if show_ach is sameas true %}<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>{% endif %}
   <script src="{{ url_for('static', filename='js/main.min.js') }}?m={{ last_updated }}"></script>
 
   <script>
@@ -107,7 +101,7 @@
   $(document).ready(function() {
     // call plugin and pass options if need be
     $('.support--forms').minnpost_giving({
-      'stripe_publishable_key' : '{{stripe}}',{% if show_ach == 'True' %}
+      'stripe_publishable_key' : '{{stripe}}',{% if show_ach is sameas true %}
       'plaid_env' : '{{plaid_env}}',
       'plaid_public_key' : '{{plaid_public_key}}',{% endif %}
       'minnpost_root' : '{{minnpost_root}}',

@@ -28,7 +28,7 @@
     <input type="text" name="billing_country" id="billing_country" maxlength="50" value="{{ billing_country }}">
   </div>
 
-  {% if shipping == True %}
+  {% if shipping is sameas true %}
   <div class="form-item-group">
     <div class="form-item" id="useforshipping-wrapper">
       <label class="option" for="useforshipping">
@@ -39,7 +39,7 @@
 
 </fieldset>
 
-{% if shipping == True %}
+{% if shipping is sameas true %}
 <fieldset class="shipping">
 
   <div class="form-item-group form-item--shipping-name">

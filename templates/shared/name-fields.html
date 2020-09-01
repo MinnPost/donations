@@ -7,7 +7,7 @@
   <input type="text" id="last_name" name="last_name" maxlength="80" required value="{{ last_name }}">
 </div>
 <div class="form-group form-group--recognition">
-  {% if hide_display_name != True %}
+  {% if not hide_display_name or hide_display_name is sameas false %}
   <div class="form-item form-item--display-name">
     <div>
       <label for="display_as">{% if recognition_label is defined %}{{ recognition_label }}{% else %}Preferred name(s) for donor recognition{% endif %}: </label>
@@ -18,7 +18,7 @@
     </div>
   </div>
   {%endif %}
-  {% if hide_honor_or_memory != True %}
+  {% if not hide_honor_or_memory or hide_honor_or_memory is sameas false %}
     <div class="form-item form-item--honor-memory">
       <div>
         <label class="additional-option"><input type="radio" name="in_honor_or_memory" id="in-honor" value="honor"> Make this donation in honor of someone</label>
