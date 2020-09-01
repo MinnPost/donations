@@ -142,7 +142,7 @@ RECAPTCHA_KEYS = {
     "secret_key": os.getenv("RECAPTCHA_SECRET_KEY"),
     "site_key": os.getenv("RECAPTCHA_SITE_KEY"),
 }
-USE_RECAPTCHA = os.getenv("USE_RECAPTCHA")
+USE_RECAPTCHA = bool_env("USE_RECAPTCHA")
 
 #######
 # Tasks
