@@ -1,6 +1,6 @@
 <section class="panel panel--form" id="panel--pay">
 
-  {% if hide_amount_heading is sameas false %}
+  {% if not hide_amount_heading or hide_amount_heading is sameas false %}
     {% include '/give/amount.html' %}
   {% endif %}
 
