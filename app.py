@@ -1168,16 +1168,17 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
 
         pay_fees = donation.agreed_to_pay_fees
 
-        if donation.stage_name is not None:
-            # because it could be failed or closed lost or whatever and we want it to try again
-            stage = "Pledged"
-        if donation.close_date is not None:
-            three_days_ago = (datetime.now(tz=ZONE) - timedelta(days=3)).strftime('%Y-%m-%d')
-            # 
-            if donation.close_date <= three_days_ago:
-                close_date = today
-            else: 
-                close_date = donation.close_date
+        if opportunity:
+            if donation.stage_name is not None:
+                # because it could be failed or closed lost or whatever and we want it to try again
+                stage = "Pledged"
+            if donation.close_date is not None:
+                three_days_ago = (datetime.now(tz=ZONE) - timedelta(days=3)).strftime('%Y-%m-%d')
+                # 
+                if donation.close_date <= three_days_ago:
+                    close_date = today
+                else: 
+                    close_date = donation.close_date
 
     # salesforce fields that can be overridden with these url parameters
     # if there's not an existing donation, we can prepopulate fields with these url parameters
