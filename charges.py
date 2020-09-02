@@ -71,7 +71,7 @@ def calculate_amount_fees(amount, payment_type, paying_fees=True):
         new_amount = (amount + Decimal(fixed_fee)) / (1 - Decimal(processing_percent))
         processing_fee = quantize(new_amount - amount)
     else:
-        processing_fee = quantize((amount * Decimal(processing_percent) - Decimal(amount))
+        processing_fee = quantize((amount * Decimal(processing_percent) - Decimal(amount)))
     fees = round(processing_fee, 2)
     return fees
 
