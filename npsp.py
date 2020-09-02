@@ -341,7 +341,7 @@ class Opportunity(SalesforceObject):
         self.stripe_card_last_4 = None
         self.stripe_customer_id = None
         self.stripe_payment_type = None
-        self.stripe_transaction_fee = None
+        self._stripe_transaction_fee = 0
         self.stripe_transaction_id = None
         self.ticket_count = 0
         self.lock_key = None
@@ -558,9 +558,17 @@ class Opportunity(SalesforceObject):
     def amount(self):
         return str(Decimal(self._amount).quantize(TWOPLACES))
 
+    @property
+    def stripe_transaction_fee(self):
+        return str(Decimal(self._stripe_transaction_fee).quantize(TWOPLACES))
+
     @amount.setter
     def amount(self, amount):
         self._amount = amount
+
+    @stripe_transaction_fee.setter
+    def stripe_transaction_fee(self, stripe_transaction_fee):
+        self._stripe_transaction_fee = stripe_transaction_fee    
 
     def _format(self):
         return {
@@ -741,7 +749,7 @@ class RDO(SalesforceObject):
         self.stripe_customer_id = None
         self.stripe_description = None
         self.stripe_payment_type = None
-        self.stripe_transaction_fee = None
+        self._stripe_transaction_fee = 0
 
         self.lock_key = None
 
@@ -749,6 +757,7 @@ class RDO(SalesforceObject):
 
         # TODO be sure to reverse this on deserialization
         amount = self.amount
+        stripe_transaction_fee = self.stripe_transaction_fee
 
         # TODO should this be in the client?
         #if self.installments:
@@ -1083,9 +1092,17 @@ class RDO(SalesforceObject):
     def amount(self):
         return str(Decimal(self._amount).quantize(TWOPLACES))
 
+    @property
+    def stripe_transaction_fee(self):
+        return str(Decimal(self._stripe_transaction_fee).quantize(TWOPLACES))
+
     @amount.setter
     def amount(self, amount):
         self._amount = amount
+
+    @stripe_transaction_fee.setter
+    def stripe_transaction_fee(self, stripe_transaction_fee):
+        self._stripe_transaction_fee = stripe_transaction_fee
 
     def save(self):
 
