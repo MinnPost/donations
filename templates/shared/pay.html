@@ -32,7 +32,7 @@
       {% endwith %}
     {% endif %}
 
-    {% if hide_minnpost_account is sameas false %}
+    {% if not hide_minnpost_account or hide_minnpost_account is sameas false %}
       <div class="form-item form-item--password form-item--with-help">
         <label for="password">MinnPost.com Password: </label>
         <input type="password" name="password" id="password" maxlength="128">
