@@ -8,7 +8,7 @@ import celery
 import redis
 from charges import amount_to_charge, calculate_amount_fees, charge, ChargeException
 from npsp import Opportunity
-from util import send_email
+from util import send_email, update_fees
 
 zone = timezone(TIMEZONE)
 
