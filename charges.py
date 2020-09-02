@@ -43,6 +43,12 @@ def amount_to_charge(opportunity):
     amount = Decimal(opportunity.amount)
     if opportunity.agreed_to_pay_fees:
         payment_type = opportunity.stripe_payment_type
+
+        if opportunity.stripe_payment_type == 'American Express' or opportunity.stripe_payment_type == 'amex' or opportunity.card_type == 'American Express' or opportunity.card_type == 'Amex':
+            payment_type = 'amex'
+        elif opportunity.stripe_payment_type == 'ach' or opportunity.stripe_payment_type == 'bank_account' or opportunity.stripe_bank_account is not None:
+            payment_type = 'bank_account'
+
         fees = calculate_amount_fees(amount, payment_type)
     else:
         fees = 0
@@ -50,7 +56,7 @@ def amount_to_charge(opportunity):
     return quantize(total)
 
 
-def calculate_amount_fees(amount, payment_type):
+def calculate_amount_fees(amount, payment_type, paying_fees=True):
     amount = Decimal(amount)
     processing_percent = 0.022
     fixed_fee = 0.3
@@ -60,10 +66,13 @@ def calculate_amount_fees(amount, payment_type):
     elif payment_type == 'bank_account':
         processing_percent = 0.008
         fixed_fee = 0
-    new_amount = (amount + Decimal(fixed_fee)) / (1 - Decimal(processing_percent))
-    processing_fee = quantize(new_amount - amount)
-    fees = round(processing_fee, 2)
 
+    if paying_fees == True:
+        new_amount = (amount + Decimal(fixed_fee)) / (1 - Decimal(processing_percent))
+        processing_fee = quantize(new_amount - amount)
+    else:
+        processing_fee = quantize((amount * Decimal(processing_percent) - Decimal(amount))
+    fees = round(processing_fee, 2)
     return fees
 
 

@@ -341,6 +341,7 @@ class Opportunity(SalesforceObject):
         self.stripe_card_last_4 = None
         self.stripe_customer_id = None
         self.stripe_payment_type = None
+        self.stripe_transaction_fee = None
         self.stripe_transaction_id = None
         self.ticket_count = 0
         self.lock_key = None
@@ -436,6 +437,7 @@ class Opportunity(SalesforceObject):
                 Stripe_Customer_ID__c,
                 Stripe_Error_Message__c,
                 Stripe_Payment_Type__c,
+                Stripe_Transaction_Fee__c,
                 Stripe_Transaction_ID__c,
                 Flask_Transaction_ID__c
             FROM Opportunity
@@ -488,6 +490,7 @@ class Opportunity(SalesforceObject):
             y.stripe_customer_id = item["Stripe_Customer_ID__c"]
             y.stripe_description = item["Stripe_Description__c"]
             y.stripe_error_message = item["Stripe_Error_Message__c"]
+            y.stripe_transaction_fee = item["Stripe_Transaction_Fee__c"]
             y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
             y.stripe_payment_type = item["Stripe_Payment_Type__c"]
             y.lock_key = item["Flask_Transaction_ID__c"]
@@ -614,6 +617,7 @@ class Opportunity(SalesforceObject):
             "Card_acct_last_4__c": self.stripe_card_last_4,
             "Stripe_Customer_ID__c": self.stripe_customer_id,
             "Stripe_Error_Message__c": self.stripe_error_message,
+            "Stripe_Transaction_Fee__c": self.stripe_transaction_fee,
             "Stripe_Transaction_ID__c": self.stripe_transaction_id,
             "Stripe_Payment_Type__c": self.stripe_payment_type,
             "Flask_Transaction_ID__c": self.lock_key,
@@ -737,6 +741,7 @@ class RDO(SalesforceObject):
         self.stripe_customer_id = None
         self.stripe_description = None
         self.stripe_payment_type = None
+        self.stripe_transaction_fee = None
 
         self.lock_key = None
 
@@ -796,6 +801,7 @@ class RDO(SalesforceObject):
             "Card_acct_last_4__c": self.stripe_card_last_4,
             "Stripe_Customer_Id__c": self.stripe_customer_id,
             "Stripe_Payment_Type__c": self.stripe_payment_type,
+            "Stripe_Transaction_Fee__c": self.stripe_transaction_fee,
             "Flask_Transaction_ID__c": self.lock_key,
         }
         return recurring_donation
@@ -841,6 +847,7 @@ class RDO(SalesforceObject):
                 Stripe_Description__c,
                 Stripe_Error_Message__c,
                 Stripe_Payment_Type__c,
+                Stripe_Transaction_Fee__c,
                 Stripe_Transaction_ID__c
             FROM Opportunity
             WHERE npe03__Recurring_Donation__c = '{self.id}'
@@ -867,6 +874,7 @@ class RDO(SalesforceObject):
             y.referring_page = item["Referring_page__c"]
             y.lead_source = item["LeadSource"]
             y.stripe_error_message = item["Stripe_Error_Message__c"]
+            y.stripe_transaction_fee = item["Stripe_Transaction_Fee__c"]
             y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
             y.stripe_bank_account = item["Stripe_Bank_Account__c"]
             y.stripe_card = item["Stripe_Card__c"]
@@ -948,7 +956,7 @@ class RDO(SalesforceObject):
                 Card_acct_last_4__c,
                 Stripe_Customer_Id__c,
                 Stripe_Payment_Type__c,
-                Stripe_Transaction_ID__c
+                Stripe_Transaction_Fee__c
             FROM npe03__Recurring_Donation__c
             {where}
         """
@@ -1002,6 +1010,7 @@ class RDO(SalesforceObject):
             y.stripe_card_last_4 = item["Card_acct_last_4__c"]
             y.stripe_customer_id = item["Stripe_Customer_Id__c"]
             y.stripe_payment_type = item["Stripe_Payment_Type__c"]
+            y.stripe_transaction_fee = item["Stripe_Transaction_Fee__c"]
 
             y.created = False
             results.append(y)

@@ -1559,6 +1559,8 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
         opportunity.card_type = brand
         opportunity.stripe_card_last_4 = last4
 
+    opportunity.stripe_transaction_fee = calculate_amount_fees(opportunity.amount, opportunity.stripe_payment_type, opportunity.agreed_to_pay_fees)
+
     opportunity.save()
     return opportunity
 
@@ -1627,6 +1629,8 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
     rdo.stripe_payment_type = form.get("stripe_payment_type", "")
+
+    rdo.stripe_transaction_fee = calculate_amount_fees(rdo.amount, rdo.stripe_payment_type, rdo.agreed_to_pay_fees)
 
     rdo.lock_key = form.get("lock_key", "")
 

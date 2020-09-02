@@ -1,12 +1,12 @@
 import logging
-from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_URL, TIMEZONE
+from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_URL, TIMEZONE, UPDATE_STRIPE_FEES
 from datetime import datetime, timedelta
 
 from pytz import timezone
 
 import celery
 import redis
-from charges import amount_to_charge, charge, ChargeException
+from charges import amount_to_charge, calculate_amount_fees, charge, ChargeException
 from npsp import Opportunity
 from util import send_email
 
@@ -147,6 +147,36 @@ def update_ach_charges():
     log.send()
 
     lock.release()
+
+
+@celery.task()
+def save_stripe_fee():
+
+    log = Log()
+
+    log.it('---Starting batch stripe fee job...')
+
+    if UPDATE_STRIPE_FEES is False:
+        log.it('---Update fee is false. Get out.')
+        return
+
+    lock = Lock(key='save-stripe-fee-lock')
+    lock.acquire()
+
+    query = """
+        SELECT Id, Name, npe03__Amount__c, Stripe_Customer_Id__c, Stripe_Card__c, Stripe_Bank_Account__c, Card_type__c, Stripe_Payment_Type__c, Stripe_Agreed_to_pay_fees__c, Stripe_Transaction_Fee__c
+        FROM npe03__Recurring_Donation__c
+        WHERE npe03__Open_Ended_Status__c = 'Open'
+        AND Stripe_Transaction_Fee__c = null
+        AND Stripe_Customer_Id__c != ''
+        ORDER BY npe03__Date_Established__c DESC
+        LIMIT 50
+        """
+
+    try:
+        update_fees(query, log, 'recurring')
+    finally:
+        lock.release()
 
 
 if __name__ == "__main__":

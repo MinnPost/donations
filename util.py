@@ -234,3 +234,43 @@ def dir_last_updated(folder):
     return str(max(os.path.getmtime(os.path.join(root_path, f))
         for root_path, dirs, files in os.walk(folder)
         for f in files))
+
+
+def update_fees(query, log, donation_type):
+    sf = SalesforceConnection()
+    response = sf.query(query)
+    log.it('Found {} donations available to update fees.'.format(
+        len(response)))
+
+    for item in response:
+
+        # salesforce connect
+        path = item['attributes']['url']
+        url = '{}{}'.format(sf.instance_url, path)
+
+        if donation_type == 'recurring':
+            amount = float(item['npe03__Amount__c'])
+        else:
+            amount = float(item['Amount'])
+
+        opp_id = item.get('Id')
+
+        payment_type = item.get('payment_type')
+        if item.get('payment_type') == 'American Express' or item.get('Card_type__c') == 'American Express' or item.get('Stripe_Payment_Type__c') == 'amex':
+            payment_type = 'amex'
+        elif item.get('payment_type') == 'ach' or item.get('Stripe_Payment_Type__c') == 'bank_account' or item.get('Stripe_Bank_Account__c') is not None:
+            payment_type = 'bank_account'
+        fees = calculate_amount_fees(amount, payment_type, item.get('Stripe_Agreed_to_pay_fees__c', False))
+
+        log.it('---- Updating fee value for {} to ${}'.format(opp_id, fees))
+
+        update = {
+            'Stripe_Transaction_Fee__c': fees
+            }
+        resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+        if resp.status_code == 204:
+            log.it('salesforce updated with fee value')
+        else:
+            log.it('error updating salesforce with fee value')
+            raise Exception('error')
+        continue

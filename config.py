@@ -48,6 +48,7 @@ CELERY_TIMEZONE = TIMEZONE
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 CELERY_ALWAYS_EAGER = bool_env("CELERY_ALWAYS_EAGER")
+UPDATE_STRIPE_FEES = bool_env('UPDATE_STRIPE_FEES')
 
 # either way we need these values
 CELERYD_LOG_FORMAT = "%(levelname)s %(name)s/%(module)s:%(lineno)d - %(message)s"
