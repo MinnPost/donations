@@ -88,6 +88,12 @@
 			margin-bottom: $quarter-space;
 		}
 		&#panel--details {
+			.form-item {
+				margin: 0 0 $milli-space 0;
+				&:last-of-type {
+					margin-bottom: 0;
+				}
+			}
 			.form-item input:last-child {
 				margin-bottom: 0;
 			}
