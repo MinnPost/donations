@@ -14,8 +14,12 @@
 <main>
   <div class="wrapper support--forms">
     <section id="panel--confirmation" class="panel panel--form">
-  	 <h1>Thank you for supporting MinnPost</h1>
-  	 <p>You're all done. Thanks again for your support of MinnPost.</p>
+      {% if url != "" %}
+        {% include '/%s/finish.html' % url %}
+      {% else %}
+        <h1>{{ title }}</h1>
+        <p>You're all done. Thanks again for your support of MinnPost.</p>
+      {% endif %}
     </section>
   </div>
 </main>

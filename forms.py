@@ -254,6 +254,7 @@ class FinishForm(BaseForm):
     installment_period = StringField(
         u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
     )
+    url = HiddenField("URL", [validators.Optional()])
     lock_key = HiddenField(u"Lock Key", [validators.InputRequired()])
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(

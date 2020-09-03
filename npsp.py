@@ -811,6 +811,7 @@ class RDO(SalesforceObject):
             "Stripe_Customer_Id__c": self.stripe_customer_id,
             "Stripe_Payment_Type__c": self.stripe_payment_type,
             "Stripe_Transaction_Fee__c": self.stripe_transaction_fee,
+            #"Type__c": self.type, Texas uses this field on their recurring donation object but we don't currently have it
             "Flask_Transaction_ID__c": self.lock_key,
         }
         return recurring_donation

@@ -1027,6 +1027,7 @@ def finish():
     # because it includes all filters applied by WTF Forms
     form_data = form.data
 
+    url = form_data.get("url", "")
     finish_donation.delay(form_data)
     app.logger.info("clearing lock")
     lock_key = form_data["lock_key"]
@@ -1035,6 +1036,7 @@ def finish():
     return render_template(
         template,
         title=title,
+        url=url, 
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
@@ -1271,7 +1273,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
         update_default_source=update_default_source, stage=stage, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
-        lock_key=lock_key,
+        lock_key=lock_key, url=url,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
