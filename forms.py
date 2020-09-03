@@ -32,7 +32,7 @@ def validate_amount(form, field):
 # if value starts with a dollar sign, remove it
 # then convert to a Decimal
 def format_amount(value):
-    if value is not None:
+    if value:
         if value.startswith("$"):
             value = value[1:]
         try:
@@ -212,6 +212,14 @@ class MinimalForm(BaseForm):
     anonymous = BooleanField(
         u"Anonymous?", false_values=(False, 'false', 0, '0', None, "None")
     )
+    additional_donation = StringField(
+        u"Additional Donation Amount",
+        validators=[
+            validators.Optional(),
+            validate_amount,
+        ],
+        filters=[format_amount],
+    )
 
 
 # used for anniversary-patron, minnroast-patron, other sponsorship things
@@ -255,6 +263,14 @@ class FinishForm(BaseForm):
         u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
     )
     url = HiddenField("URL", [validators.Optional()])
+    additional_donation = StringField(
+        u"Additional Donation Amount",
+        validators=[
+            validators.Optional(),
+            validate_amount,
+        ],
+        filters=[format_amount],
+    )
     lock_key = HiddenField(u"Lock Key", [validators.InputRequired()])
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(

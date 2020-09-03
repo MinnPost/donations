@@ -1026,10 +1026,13 @@ def finish():
     # use form.data instead of request.form from here on out
     # because it includes all filters applied by WTF Forms
     form_data = form.data
-
     url = form_data.get("url", "")
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
+    additional_donation = form_data.get("additional_donation", 0)
+    if additional_donation:
+        additional_donation = format(additional_donation, ",.2f")
+
     finish_donation.delay(form_data)
     lock_key = form_data["lock_key"]
     lock = Lock(key=lock_key)
@@ -1037,7 +1040,7 @@ def finish():
     return render_template(
         template,
         title=title,
-        url=url, amount=amount_formatted,
+        url=url, amount=amount_formatted, additional_donation=additional_donation,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
@@ -1248,7 +1251,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
     fees = calculate_amount_fees(amount, "card")
 
     additional_donation = request.args.get("additional_donation", 0)
-    if additional_donation != 0:
+    if additional_donation:
         additional_donation = format_amount(request.args.get("additional_donation"))
 
     # make a uuid for redis and lock it
@@ -1263,7 +1266,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
         title=title,
         form=form,
         form_action=form_action,
-        amount=amount_formatted, yearly=yearly,
+        amount=amount_formatted, additional_donation=additional_donation, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
@@ -1488,6 +1491,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
 
     # default
     opportunity.amount = form.get("amount", 0)
+    opportunity.additional_donation = form.get("additional_donation", 0)
     opportunity.stripe_description = "MinnPost Membership"
     opportunity.campaign = form.get("campaign", "")
     opportunity.lead_source = "Stripe"
@@ -1593,6 +1597,7 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
 
     # default
     rdo.amount = form.get("amount", 0)
+    rdo.additional_donation = form.get("additional_donation", 0)
     rdo.campaign = form.get("campaign", "")
     rdo.stripe_description = "MinnPost Sustaining Membership"
     rdo.lead_source = "Stripe"

@@ -284,6 +284,7 @@ class Opportunity(SalesforceObject):
 
         self.id = None
         self._amount = 0
+        self.additional_donation = 0
         self.close_date = today
         self.description = None
         self.lead_source = None
@@ -556,7 +557,10 @@ class Opportunity(SalesforceObject):
 
     @property
     def amount(self):
-        return str(Decimal(self._amount).quantize(TWOPLACES))
+        if self.additional_donation != 0:
+            return str(Decimal(self._amount).quantize(TWOPLACES) + Decimal(self.additional_donation).quantize(TWOPLACES))
+        else:
+            return str(Decimal(self._amount).quantize(TWOPLACES))
 
     @property
     def stripe_transaction_fee(self):
@@ -706,6 +710,7 @@ class RDO(SalesforceObject):
         self.campaign = None
         #self.referral_id = None
         self._amount = 0
+        self.additional_donation = 0
         self.type = "Recurring Donation"
         self.date_established = today
         self.lead_source = None
@@ -1091,7 +1096,10 @@ class RDO(SalesforceObject):
 
     @property
     def amount(self):
-        return str(Decimal(self._amount).quantize(TWOPLACES))
+        if self.additional_donation != 0:
+            return str(Decimal(self._amount).quantize(TWOPLACES) + Decimal(self.additional_donation).quantize(TWOPLACES))
+        else:
+            return str(Decimal(self._amount).quantize(TWOPLACES))
 
     @property
     def stripe_transaction_fee(self):
