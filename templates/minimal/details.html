@@ -10,7 +10,7 @@
   </div>
 
   {% if amount == '' or show_amount_field %}
-  <fieldset class="clear-block">
+  <fieldset class="minimal-details clear-block">
     <div class="form-item form-item--amount">
       <label for="amount" class="required">Amount: </label>
       <div class="input-prepend">
@@ -18,25 +18,17 @@
         <input type="number" id="amount" name="amount" value="{{ amount }}" min="1" step="any" required>
       </div>
     </div>
-  </fieldset>
-  {% endif %}
+    {% endif %}
 
-  {% if show_frequency_field is sameas true %}
-  <fieldset class="clear-block">
+    {% if show_frequency_field is sameas true %}
     <div class="form-item form-item--recurring">
       <input type="radio" id="recurring-monthly" name="recurring" value="monthly"{% if frequency == 'monthly' %} checked {% endif %}> <label for="recurring-monthly">monthly</label>
       <input type="radio" id="recurring-yearly" name="recurring" value="yearly"{% if frequency == 'yearly' %} checked {% endif %}> <label for="recurring-yearly">yearly</label>
     </div>
-  </fieldset>
-  {% endif %}
+    {% endif %}
 
-  {% if allow_additional_amount is sameas true %}
-  <fieldset class="clear-block">
-    <div class="form-item form-item--additional-donation">
-      <label for="additional_donation">Additional Donation (optional): </label>
-      <input type="number" id="additional_donation" name="additional_donation" value="{{ additional_donation }}" step="any">
-    </div>
+    {% include "/shared/additional-amount.html" %}
+
   </fieldset>
-  {% endif %}
   
 </section>
