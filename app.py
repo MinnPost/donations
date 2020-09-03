@@ -1028,6 +1028,8 @@ def finish():
     form_data = form.data
 
     url = form_data.get("url", "")
+    amount = form_data["amount"]
+    amount_formatted = format(amount, ",.2f")
     finish_donation.delay(form_data)
     app.logger.info("clearing lock")
     lock_key = form_data["lock_key"]
@@ -1036,7 +1038,7 @@ def finish():
     return render_template(
         template,
         title=title,
-        url=url, 
+        url=url, amount=amount_formatted,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
