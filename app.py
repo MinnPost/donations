@@ -1031,7 +1031,6 @@ def finish():
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
     finish_donation.delay(form_data)
-    app.logger.info("clearing lock")
     lock_key = form_data["lock_key"]
     lock = Lock(key=lock_key)
     lock.release()
