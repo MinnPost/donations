@@ -247,8 +247,7 @@ class AdvertisingForm(MinimalForm):
 # used for minnpost-cancel
 class CancelForm(MinimalForm):
     email_user_when_canceled = HiddenField("Email user when canceled?", [validators.Optional()])
-    sf_id = HiddenField(u"Salesforce ID", [validators.InputRequired()])
-    sf_type = HiddenField(u"Salesforce Object Type", [validators.InputRequired()])
+    open_ended_status = HiddenField("Open Ended Status", [validators.Optional()])
 
 
 # used for post-donate form with newsletter/testimonial options

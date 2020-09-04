@@ -36,10 +36,7 @@
       {% endif %}
 
       {% include 'minimal/details.html' %}
-
-      {% if not url or url != "donation-cancel" %}
-        {% include 'shared/pay.html' %}
-      {% endif %}
+      {% include 'shared/pay.html' %}
 
     </form>
   </div>

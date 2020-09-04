@@ -195,7 +195,7 @@ Talisman(
 )
 
 limiter = Limiter(
-    app, key_func=get_ipaddr, default_limits=["200 per day", "25 per hour"]
+    app, key_func=get_ipaddr, default_limits=["10000 per day", "500 per hour"]
 )
 
 log_level = logging.getLevelName(LOG_LEVEL)
@@ -873,7 +873,7 @@ def give_form():
 
 @app.route("/donation-update/", methods=["GET", "POST"])
 def donation_update_form():
-    title       = "MinnPost Pledge Payment"
+    title       = "Update Your Donation"
     heading     = title
     description = title
     summary     = "Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email Tanner Curl at tcurl@minnpost.com."
@@ -885,6 +885,83 @@ def donation_update_form():
     hide_display_name       = False
     button                  = "Finish Your Pledge"
     return minimal_form("donation-update", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+
+
+@app.route("/donation-cancel/", methods=["GET", "POST"])
+def donation_cancel_form():
+
+    heading     = "Cancel Donation"
+    description = ""
+    url         = "donation-cancel"
+
+    # salesforce donation object
+    opportunity_id = request.args.get("opportunity", "")
+    recurring_id = request.args.get("recurring", "")
+
+    # default donation fields
+    stage = "Closed Lost"
+    open_ended_status = "Closed"
+    
+    if opportunity_id:
+        heading       = "Cancel Single Donation"
+    elif recurring_id:
+        heading       = "Cancel Recurring Donation"
+
+    title = f"{heading} | MinnPost"
+
+    if opportunity_id:
+        try:
+            opportunity = Opportunity.list(
+                opportunity_id=opportunity_id
+            )
+            donation = opportunity[0]
+        except:
+            donation = None
+    elif recurring_id:
+        try:
+            rdo = RDO.list(
+                recurring_id=recurring_id
+            )
+            donation = rdo[0]
+            frequency = donation.installment_period
+        except:
+            donation = None
+
+    if donation is not None:
+        # set default values
+        amount = donation.amount
+        amount_formatted = amount
+        logging.info("what")
+        if frequency:
+            summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} {frequency.lower()} donation, click the button."
+        else:
+            summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation, click the button."
+
+    template    = "cancel.html"
+
+    form        = CancelForm()
+    form_action = "/finish/"
+    function    = update_donation.delay
+
+    if request.method == "POST":
+        return validate_form(CancelForm, template=template, function=function)
+
+    # interface settings
+    button = "Confirm your cancellation"
+    return render_template(
+        template,
+        title=title,
+        form=form,
+        form_action=form_action,
+        amount=amount_formatted, frequency=frequency,
+        description=description,
+        stage=stage, open_ended_status=open_ended_status, opportunity_id=opportunity_id, recurring_id=recurring_id,
+        heading=heading, summary=summary, button=button,
+        last_updated=dir_last_updated('static'),
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
+    )
 
 
 @app.route("/donate/", methods=["GET", "POST"])
@@ -1513,7 +1590,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.donor_zip = form.get("billing_zip", "")
     opportunity.donor_country = form.get("billing_country", "")
     opportunity.email_notify = form.get("email_notify", "")
-    opportunity.email_cancel = form.get("email_cancel", False)
+    opportunity.email_user_when_canceled = form.get("email_user_when_canceled", False)
     opportunity.fair_market_value = form.get("fair_market_value", "")
     opportunity.include_amount_in_notification = form.get("include_amount_in_notification", False)
     opportunity.in_honor_or_memory = form.get("in_honor_or_memory", "")
@@ -1615,7 +1692,7 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
     rdo.donor_zip = form.get("billing_zip", "")
     rdo.donor_country = form.get("billing_country", "")
     rdo.email_notify = form.get("email_notify", "")
-    rdo.email_cancel = form.get("email_cancel", False)
+    rdo.email_user_when_canceled = form.get("email_user_when_canceled", False)
     rdo.include_amount_in_notification = form.get("include_amount_in_notification", False)
     rdo.in_honor_or_memory = form.get("in_honor_or_memory", "")
     rdo.in_honor_memory_of = form.get("in_honor_memory_of", "")
