@@ -14,9 +14,6 @@
       {% if close_date %}
         <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
       {% endif %}
-      {% if amount != '' and show_amount_field is sameas false %}
-        <input type="hidden" name="amount" id="amount" value="{{ amount }}">
-      {% endif %}
       {% if opportunity_id %}
         <input type="hidden" name="opportunity_id" id="opportunity_id" value="{{ opportunity_id }}">
         <input type="hidden" name="installment_period" id="installment_period" value="one-time">
@@ -39,7 +36,10 @@
       {% endif %}
 
       {% include 'minimal/details.html' %}
-      {% include 'shared/pay.html' %}
+
+      {% if not url or url != "donation-cancel" %}
+        {% include 'shared/pay.html' %}
+      {% endif %}
 
     </form>
   </div>

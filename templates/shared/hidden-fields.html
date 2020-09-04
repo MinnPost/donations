@@ -10,3 +10,6 @@
 {% if update_default_source is sameas true %}
     <input type="hidden" name="update_default_source" id="update_default_source" value="true">
 {% endif %}
+{% if amount != '' and show_amount_field is sameas false %}
+    <input type="hidden" name="amount" id="amount" value="{{ amount }}">
+{% endif %}
