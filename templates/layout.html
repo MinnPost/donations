@@ -33,7 +33,7 @@
   <meta property="og:url" content="https://support.minnpost.com/">
   
   <meta name="twitter:site" content="@MinnPost" />
-  <meta property="og:title" content="{% block og_title %}MinnPost | Review Your Donation{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{% if title|length %}{{ title }}{% else %}MinnPost | Make Your Payment{% endif %}{% endblock %}">
 
   <meta name="description" content="">
   <meta property="og:description" content="">
