@@ -310,7 +310,7 @@ class Opportunity(SalesforceObject):
         self.donor_zip = None
         self.donor_country = None
         self.email_notify = False
-        self.email_cancel = False
+        self.email_user_when_canceled = False
         self.event_attendees = None
         self.event_ticket_quantity = None
         self.fair_market_value = None
@@ -600,7 +600,7 @@ class Opportunity(SalesforceObject):
             "Donor_ZIP__c": self.donor_zip,
             "Donor_country__c": self.donor_country,
             "Email_to_notify__c": self.email_notify,
-            "Email_User_When_Canceled__c": self.email_cancel,
+            "Email_User_When_Canceled__c": self.email_user_when_canceled,
             "Fair_market_value__c": self.fair_market_value,
             "Include_amount_in_notification__c": self.include_amount_in_notification,
             "In_Honor_Memory__c": self.in_honor_or_memory,
@@ -730,7 +730,7 @@ class RDO(SalesforceObject):
         self.donor_zip = None
         self.donor_country = None
         self.email_notify = False
-        self.email_cancel = False
+        self.email_user_when_canceled = False
         self.include_amount_in_notification = False
         self.in_honor_or_memory = None
         self.in_honor_memory_of = None
@@ -786,7 +786,7 @@ class RDO(SalesforceObject):
             "Donor_ZIP__c": self.donor_zip,
             "Donor_country__c": self.donor_country,
             "Email_to_notify__c": self.email_notify,
-            "Email_User_When_Canceled__c": self.email_cancel,
+            "Email_User_When_Canceled__c": self.email_user_when_canceled,
             "Include_amount_in_notification__c": self.include_amount_in_notification,
             "In_Honor_Memory__c": self.in_honor_or_memory,
             "In_honor_memory_of__c": self.in_honor_memory_of,
@@ -1000,7 +1000,7 @@ class RDO(SalesforceObject):
             y.donor_zip = item["Donor_ZIP__c"]
             y.donor_country = item["Donor_country__c"]
             y.email_notify = item["Email_to_notify__c"]
-            y.email_cancel = item["Email_User_When_Canceled__c"]
+            y.email_user_when_canceled = item["Email_User_When_Canceled__c"]
             y.include_amount_in_notification = item["Include_amount_in_notification__c"]
             y.in_honor_or_memory = item["In_Honor_Memory__c"]
             y.in_honor_memory_of = item["In_honor_memory_of__c"]
