@@ -195,7 +195,7 @@ Talisman(
 )
 
 limiter = Limiter(
-    app, key_func=get_ipaddr, default_limits=["10000 per day", "500 per hour"]
+    app, key_func=get_ipaddr, default_limits=["200 per day", "250 per hour"]
 )
 
 log_level = logging.getLevelName(LOG_LEVEL)
@@ -931,7 +931,6 @@ def donation_cancel_form():
         # set default values
         amount = donation.amount
         amount_formatted = amount
-        logging.info("what")
         if frequency:
             summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} {frequency.lower()} donation, click the button."
         else:
@@ -953,7 +952,7 @@ def donation_cancel_form():
         title=title,
         form=form,
         form_action=form_action,
-        amount=amount_formatted, frequency=frequency,
+        url=url, amount=amount_formatted, frequency=frequency,
         description=description,
         stage=stage, open_ended_status=open_ended_status, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
