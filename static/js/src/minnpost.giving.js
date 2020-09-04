@@ -30,13 +30,10 @@
     'query' : 'step',
     'pay_cc_processing_selector' : 'input[id="pay-fees"]',
     'fee_amount' : '.processing-amount',
-    'level_amount_selector' : '#panel--pay .amount .level-amount',
+    'level_amount_selector' : '#panel--pay .amount .level-amount', // we can maybe get rid of this
     'original_amount_selector' : '#amount',
     'frequency_selector' : '.frequency',
     'full_amount_selector' : '.full-amount',
-    'update_amount_selector' : '#new-amount',
-    'level_indicator_selector' : 'h2.level',
-    'level_name_selector' : '.level-name',
     'name_selector' : '.form-item--display-name',
     'in_honor_or_memory_field_selector' : '.form-item--honor-memory',
     'honor_or_memory_chooser' : 'input[name="in_honor_or_memory"]', // radio fields
@@ -61,8 +58,6 @@
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.form-item--password',
     'additional_amount_field' : '#additional_donation',
-    'additional_amount_selector' : '.additional_donation',
-    'has_additional_text_selector' : '.has_additional',
     'billing_selector' : 'fieldset.billing',
     'shipping_selector' : 'fieldset.shipping',
     'credit_card_fieldset' : '.payment-method-group',
@@ -73,7 +68,7 @@
     'cc_cvv_selector' : '#card-cvc',
     'payment_button_selector' : '#submit',
     'confirm_button_selector' : '#finish',
-    'opp_id_selector' : '#flask_id',
+    'opp_id_selector' : '#lock_key', // we use this value as the Google Analytics transaction ID
     'recurring_selector' : '#recurring',
     'newsletter_group_selector' : '.support-newsletters',
     'reason_field_selector' : '#reason_for_supporting',
@@ -354,24 +349,38 @@
 
     amountUpdated: function(element, options) {
       // when new amount text field can change, we need to change the hidden field
+      // there is also potentially an additional amount field value to add
       var that = this;
       var payment_type = $(options.choose_payment + ' input').val();
-      $(options.update_amount_selector, element).change(function() {
-        $(options.original_amount_selector, element).val($(this).val());
-        options.original_amount = parseInt($(options.original_amount_selector, element).val(), 10);
+      $(options.original_amount_selector, element).change(function() {
+        that.options.original_amount = parseInt($(this, element).val(), 10);
         if ( payment_type === 'bank_account' ) {
           that.calculateFees(that.options.original_amount, 'bank_account');
         } else {
           that.calculateFees(that.options.original_amount, 'card');
         }
       });
+      $(options.additional_amount_field, element).change(function() {
+        that.options.original_amount = parseInt($(options.original_amount_selector, element).val(), 10);
+        if ( payment_type === 'bank_account' ) {
+          that.calculateFees(that.options.original_amount, 'bank_account');
+        } else {
+          that.calculateFees(that.options.original_amount, 'card');
+        }
+      });
+
     }, // amountUpdated
 
     calculateFees: function(amount, stripe_payment_type) {
       // this sends the amount and stripe payment type to python; get the fee and display it to the user on the checkbox label
       var that = this;
+      var total_amount = amount;
+      if ($(this.options.additional_amount_field).length > 0 && $(this.options.additional_amount_field).val() > 0) {
+        var additional_amount = $(this.options.additional_amount_field).val();
+        total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10);
+      }
       var data = {
-        amount: amount,
+        amount: total_amount,
         stripe_payment_type: stripe_payment_type
       };
       that.setStripePaymentType(stripe_payment_type);
@@ -432,6 +441,7 @@
     }, // donateAnonymously
 
     checkLevel: function(element, options, returnvalue) {
+      // we could maybe get rid of this if we could move this part into wordpress
       var level = '';
       var levelnum = 0;
       var amount_yearly;
