@@ -1225,7 +1225,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
     billing_country = ""
     referring_page = ""
     credited_as = ""
-    installment_period = None
+    installment_period = app.config["DEFAULT_FREQUENCY"]
     pay_fees = False
 
     # default donation fields
