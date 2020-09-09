@@ -10,7 +10,7 @@ pylint = "*"
 [packages]
 gunicorn = "==20.0.4"
 pytz = "==2020.1"
-stripe = "==2.40.0"
+stripe = "==2.51.0"
 celery = "==4.3.0"
 redis = "==3.2.0"
 docopt = "==0.6.2"
