@@ -8,7 +8,7 @@ pylint-flask = "*"
 pylint = "*"
 
 [packages]
-gunicorn = "==19.9.0"
+gunicorn = "==20.0.4"
 pytz = "==2019.3"
 stripe = "==2.40.0"
 celery = "==4.3.0"
