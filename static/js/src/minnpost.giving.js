@@ -790,6 +790,8 @@
     },
 
     achFields: function(element, options) {
+      var bankTokenFieldName = 'bankToken';
+      var bankTokenField = 'input[name="' + bankTokenFieldName + '"]';
       if (options.plaid_env != '' && options.key != '' && typeof Plaid !== 'undefined') {
         var linkHandler = Plaid.create({
           selectAccount: true,
@@ -838,7 +840,11 @@
                 //this.debug('print response here');
                 //this.debug(response);
                 // add the field(s) we need to the form for submitting
-                $(options.donate_form_selector).prepend('<input type="hidden" id="bankToken" name="bankToken" value="' + response.stripe_bank_account_token + '" />');
+                if ($(bankTokenField).length > 0) {
+                  $(bankTokenField).val(response.stripe_bank_account_token);
+                } else {
+                  $(options.donate_form_selector).prepend($('<input type=\"hidden\" name="' + bankTokenFieldName + '">').val(response.stripe_bank_account_token));
+                }
                 $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
               }
             })
