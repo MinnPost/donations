@@ -929,6 +929,7 @@ class RDO(SalesforceObject):
 
         query = f"""
             SELECT
+                Id,
                 Name,
                 npe03__Amount__c,
                 npe03__Recurring_Donation_Campaign__c,
@@ -983,6 +984,7 @@ class RDO(SalesforceObject):
         for item in response:
             y = cls()
 
+            y.id = item["Id"]
             y.name = item["Name"]
             y.amount = item["npe03__Amount__c"]
             y.campaign = item["npe03__Recurring_Donation_Campaign__c"]
