@@ -108,6 +108,10 @@ class BaseForm(FlaskForm):
         ],
         filters=[format_amount],
     )
+    installment_period = StringField(
+        u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
+    )
+
     first_name = StringField(
         u"First name", [validators.required(message="Your first name is required.")]
     )
@@ -148,9 +152,6 @@ class PlaidForm(BaseForm):
 # used for the main donate flow from the website
 class DonateForm(BaseForm):
     lock_key = HiddenField("Lock Key", [validators.Optional()])
-    installment_period = StringField(
-        u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
-    )
     display_as = StringField(
         u"Preferred name", [validators.Optional()]
     )
@@ -199,7 +200,7 @@ class DonateForm(BaseForm):
 # used for anniversary-patron, minnpost-default, minnroast-patron, other minimal donate forms
 class MinimalForm(BaseForm):
     pledge = HiddenField("Pledge", [validators.Optional()])
-    stage = HiddenField("Stage Name", [validators.Optional()])
+    stage_name = HiddenField("Stage Name", [validators.Optional()])
     close_date = HiddenField("Close Date", [validators.Optional()])
     opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])
     recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()])
@@ -258,9 +259,6 @@ class FinishForm(BaseForm):
             filters.append(strip_whitespace)
             return unbound_field.bind(form=form, filters=filters, **options)
 
-    installment_period = StringField(
-        u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
-    )
     url = HiddenField("URL", [validators.Optional()])
     additional_donation = StringField(
         u"Additional Donation Amount",

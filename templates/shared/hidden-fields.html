@@ -1,5 +1,7 @@
 <input type="hidden" name="description" id="description" value="{% if description is defined %}{{ description }}{% else %}MinnPost Payment{% endif %}">
-<input type="hidden" name="customer_id" id="customer_id" value="{{ customer_id }}">
+{% if customer_id %}
+    <input type="hidden" name="customer_id" id="customer_id" value="{{ customer_id }}">
+{% endif %}
 {% if campaign != '' %}
 <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
 {% endif %}
