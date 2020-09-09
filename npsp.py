@@ -512,7 +512,7 @@ class Opportunity(SalesforceObject):
 
         sf = SalesforceConnection() if sf_connection is None else sf_connection
 
-        if lock_key is None:
+        if lock_key is None or lock_key == "":
             return False
 
         where = f"""
@@ -557,7 +557,7 @@ class Opportunity(SalesforceObject):
 
     @property
     def amount(self):
-        if self.additional_donation != 0:
+        if self.additional_donation != 0 and self.additional_donation != None:
             return str(Decimal(self._amount).quantize(TWOPLACES) + Decimal(self.additional_donation).quantize(TWOPLACES))
         else:
             return str(Decimal(self._amount).quantize(TWOPLACES))
@@ -1046,7 +1046,7 @@ class RDO(SalesforceObject):
 
         sf = SalesforceConnection() if sf_connection is None else sf_connection
 
-        if lock_key is None:
+        if lock_key is None or lock_key == "":
             return False
 
         where = f"""
@@ -1098,7 +1098,7 @@ class RDO(SalesforceObject):
 
     @property
     def amount(self):
-        if self.additional_donation != 0:
+        if self.additional_donation != 0 and self.additional_donation != None:
             return str(Decimal(self._amount).quantize(TWOPLACES) + Decimal(self.additional_donation).quantize(TWOPLACES))
         else:
             return str(Decimal(self._amount).quantize(TWOPLACES))
