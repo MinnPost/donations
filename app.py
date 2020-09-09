@@ -457,7 +457,10 @@ def finish_donation(self, form=None):
     reason_for_supporting_shareable = form.get("reason_shareable", False)
 
     # newsletters
-    groups_submitted = form["groups_submitted"]
+    groups_submitted = form.get("groups_submitted", None)
+
+    if reason_for_supporting == "" and groups_submitted is None:
+        return
 
     if "04471b1571" in groups_submitted:
         daily_newsletter = True
@@ -654,6 +657,16 @@ def validate_form(FormType, template, function=add_donation.delay):
             message = 'Our system was unable to verify that you are a human. Please email members@minnpost.com for assistance.'
             body.append({'field': 'recaptcha', 'message': message})
             return jsonify(errors=body)
+
+    # for a cancel form, we go ahead and pass the data to the function and then stop
+    if FormType is CancelForm:
+        customer = None
+        customer_id = form_data["customer_id"]
+        if customer_id:
+            customer = stripe.Customer.retrieve(form_data["customer_id"])
+        function(customer=customer, form=clean(form_data), donation_type=donation_type)
+        # get the json response from the server and put it into the specified template
+        return True
 
     return do_charge_or_show_errors(
         form_data=form_data,
@@ -890,6 +903,10 @@ def donation_update_form():
 @app.route("/donation-cancel/", methods=["GET", "POST"])
 def donation_cancel_form():
 
+    template    = "cancel.html"
+    form        = CancelForm()
+    form_action = "/donation-cancel/"
+    function    = update_donation.delay
     heading     = "Cancel Donation"
     description = ""
     url         = "donation-cancel"
@@ -899,7 +916,7 @@ def donation_cancel_form():
     recurring_id = request.args.get("recurring", "")
 
     # default donation fields
-    stage = "Closed Lost"
+    stage_name = "Closed Lost"
     open_ended_status = "Closed"
     
     if opportunity_id:
@@ -908,6 +925,19 @@ def donation_cancel_form():
         heading       = "Cancel Recurring Donation"
 
     title = f"{heading} | MinnPost"
+    
+    if request.method == "POST":
+        valid_form = validate_form(CancelForm, template=template, function=function)
+        if valid_form is True:
+            return render_template(
+                "finish.html",
+                title=title,
+                url=url,
+                minnpost_root=app.config["MINNPOST_ROOT"],
+                stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
+            )
+        else:
+            return valid_form
 
     if opportunity_id:
         try:
@@ -917,13 +947,16 @@ def donation_cancel_form():
             donation = opportunity[0]
         except:
             donation = None
+        frequency = "one-time"
+        close_date = donation.close_date
+        close_date_formatted = datetime.strptime(close_date, '%Y-%m-%d').strftime('%B %-d, %Y')
     elif recurring_id:
         try:
             rdo = RDO.list(
                 recurring_id=recurring_id
             )
             donation = rdo[0]
-            frequency = donation.installment_period
+            frequency = donation.installment_period.lower()
         except:
             donation = None
 
@@ -931,22 +964,25 @@ def donation_cancel_form():
         # set default values
         amount = donation.amount
         amount_formatted = amount
-        if frequency:
+        if recurring_id:
             summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} {frequency.lower()} donation, click the button."
         else:
-            summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation, click the button."
+            if close_date is not None:
+                summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation scheduled for {close_date_formatted}, click the button."
+            else:
+                summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation, click the button."
 
-    template    = "cancel.html"
-
-    form        = CancelForm()
-    form_action = "/finish/"
-    function    = update_donation.delay
-
-    if request.method == "POST":
-        return validate_form(CancelForm, template=template, function=function)
+    first_name  = donation.donor_first_name
+    last_name   = donation.donor_last_name
+    email       = donation.donor_email
+    customer_id = donation.stripe_customer_id
 
     # interface settings
     button = "Confirm your cancellation"
+    show_amount_field       = False
+    allow_additional_amount = False
+    hide_amount_heading     = True
+   
     return render_template(
         template,
         title=title,
@@ -954,7 +990,8 @@ def donation_cancel_form():
         form_action=form_action,
         url=url, amount=amount_formatted, frequency=frequency,
         description=description,
-        stage=stage, open_ended_status=open_ended_status, opportunity_id=opportunity_id, recurring_id=recurring_id,
+        first_name=first_name, last_name=last_name, email=email, customer_id=customer_id,
+        stage_name=stage_name, open_ended_status=open_ended_status, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
         last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
@@ -1192,7 +1229,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
     pay_fees = False
 
     # default donation fields
-    stage = "Pledged"
+    stage_name = "Pledged"
     close_date = today
     opportunity_type = "Donation"
     opportunity_subtype = "Donation: Individual"
@@ -1205,13 +1242,14 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
             donation = opportunity[0]
         except:
             donation = None
+        installment_period = "one-time"
     elif recurring_id:
         try:
             rdo = RDO.list(
                 recurring_id=recurring_id
             )
             donation = rdo[0]
-            installment_period = donation.installment_period
+            installment_period = donation.installment_period.lower()
         except:
             donation = None
 
@@ -1253,7 +1291,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
         if opportunity:
             if donation.stage_name is not None:
                 # because it could be failed or closed lost or whatever and we want it to try again
-                stage = "Pledged"
+                stage_name = "Pledged"
             if donation.close_date is not None:
                 three_days_ago = (datetime.now(tz=ZONE) - timedelta(days=3)).strftime('%Y-%m-%d')
                 # 
@@ -1310,7 +1348,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
     billing_country = request.args.get("billing_country", billing_country)
 
     # stage and close date
-    stage = request.args.get("stage", stage)
+    stage_name = request.args.get("stage", stage_name)
     close_date = request.args.get("close_date", close_date)
 
     # show ach fields
@@ -1342,7 +1380,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
         title=title,
         form=form,
         form_action=form_action,
-        amount=amount_formatted, additional_donation=additional_donation, yearly=yearly,
+        amount=amount_formatted, additional_donation=additional_donation, yearly=yearly, installment_period=installment_period,
         first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
@@ -1350,7 +1388,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
         description=description, opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
-        update_default_source=update_default_source, stage=stage, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
+        update_default_source=update_default_source, stage_name=stage_name, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         lock_key=lock_key, url=url,
@@ -1573,7 +1611,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.lead_source = "Stripe"
     opportunity.type = form.get("opportunity_type", "Donation")
     opportunity.close_date = form.get("close_date", today)
-    opportunity.stage = form.get("stage", "Pledged")
+    opportunity.stage_name = form.get("stage_name", "Pledged")
     
     # minnpost custom fields
     opportunity.agreed_to_pay_fees = form.get("pay_fees", False)
@@ -1702,7 +1740,7 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
     rdo.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
     rdo.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     rdo.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
-    rdo.open_ended_status = "Open"
+    rdo.open_ended_status = form.get("open_ended_status", "")
     rdo.payment_type = "Stripe"
     rdo.referring_page = form.get("source", None)
     rdo.shipping_name = form.get("shipping_name", "")
@@ -1717,6 +1755,9 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
     rdo.stripe_transaction_fee = calculate_amount_fees(rdo.amount, rdo.stripe_payment_type, rdo.agreed_to_pay_fees)
 
     rdo.lock_key = form.get("lock_key", "")
+
+    if rdo.open_ended_status == "":
+        rdo.open_ended_status = "Open"
 
     if rdo.campaign == "":
         rdo.campaign = app.config["DEFAULT_CAMPAIGN_RECURRING"]

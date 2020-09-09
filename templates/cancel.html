@@ -8,17 +8,20 @@
     <form action="{{ form_action }}" method="post" class="support support--cancel" id="cancel">
       {% include 'shared/hidden-fields.html' %}
       <input type="hidden" name="url" id="url" value="{{ url }}">
-      {% if stage != '' %}
-        <input type="hidden" name="stage" id="stage" value="{{ stage }}">
-      {% endif %}
-      {% if close_date %}
-        <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
-      {% endif %}
+      <input type="hidden" name="email" id="email" value="{{ email }}">
+      <input type="hidden" name="first_name" id="first_name" value="{{ first_name }}">
+      <input type="hidden" name="last_name" id="last_name" value="{{ last_name }}">
       <input type="hidden" name="amount" id="amount" value="{{ amount }}">
       {% if opportunity_id %}
         <input type="hidden" name="opportunity_id" id="opportunity_id" value="{{ opportunity_id }}">
-        <input type="hidden" name="installment_period" id="installment_period" value="one-time">
+        {% if stage != '' %}
+          <input type="hidden" name="stage_name" id="stage_name" value="{{ stage_name }}">
+        {% endif %}
+        {% if close_date %}
+          <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
+        {% endif %}
       {% endif %}
+      <input type="hidden" name="installment_period" id="installment_period" value="{{ frequency }}">
       {% if recurring_id %}
         <input type="hidden" name="recurring_id" id="recurring_id" value="{{ recurring_id }}">
         <input type="hidden" name="open_ended_status" id="open_ended_status" value="{{ open_ended_status }}">
