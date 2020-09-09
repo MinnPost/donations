@@ -1046,7 +1046,7 @@ def plaid_token():
     public_token = form_data["public_token"]
     account_id = form_data["account_id"]
 
-    client = Client(client_id=app.config["PLAID_CLIENT_ID"], secret=app.config["PLAID_SECRET"], public_key=app.config["PLAID_PUBLIC_KEY"], environment=app.config["PLAID_ENVIRONMENT"])
+    client = Client(client_id=app.config["PLAID_CLIENT_ID"], secret=app.config["PLAID_SECRET"], environment=app.config["PLAID_ENVIRONMENT"])
     exchange_token_response = client.Item.public_token.exchange(public_token)
     access_token = exchange_token_response["access_token"]
 
