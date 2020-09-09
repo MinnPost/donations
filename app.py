@@ -635,8 +635,8 @@ def validate_form(FormType, template, function=add_donation.delay):
     body = []
 
     try:
-        v = validate_email(email, allow_smtputf8=False) # validate and get info
-        email = v["email"] # replace with normalized form
+        valid = validate_email(email, allow_smtputf8=False) # validate and get info
+        email = valid.email # replace with normalized form
     except EmailNotValidError as e:
         # email is not valid, exception message is human-readable
         app.logger.error(f"Email validation failed on address: {email}")
