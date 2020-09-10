@@ -1,0 +1,17 @@
+<input type="hidden" name="description" id="description" value="{% if description is defined %}{{ description }}{% else %}MinnPost Payment{% endif %}">
+{% if customer_id %}
+    <input type="hidden" name="customer_id" id="customer_id" value="{{ customer_id }}">
+{% endif %}
+{% if campaign != '' %}
+<input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
+{% endif %}
+<input type="hidden" name="lock_key" id="lock_key" value="{{ lock_key }}">
+{% if referring_page != '' %}
+<input type="hidden" name="referring_page" id="referring_page" value="{{ referring_page }}">
+{% endif %}
+{% if update_default_source is sameas true %}
+    <input type="hidden" name="update_default_source" id="update_default_source" value="true">
+{% endif %}
+{% if amount != '' and show_amount_field is sameas false %}
+    <input type="hidden" name="amount" id="amount" value="{{ amount }}">
+{% endif %}

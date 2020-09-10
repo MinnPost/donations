@@ -76,6 +76,15 @@
 			padding: 0;
 		}
 	}
+	.support--confirm {
+		h1, h2 {
+			margin-bottom: 0.15em;
+		}
+		fieldset {
+			margin: 0;
+			padding: 0;
+		}
+	}
 	.two-radios {
 	    @include row();
 	    > label {

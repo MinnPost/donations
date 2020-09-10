@@ -1,10 +1,3 @@
-.js .panel, .js .panel .honor fieldset, .js .swag.swag--separate, .js .swag .form-item--atlantic_id {
-	display: none;
-}
-.no-js .panel, .no-js .honor fieldset, .no-js .swag .form-item--atlantic_id {
-	display: block;
-}
-
 .panel, .panel--error {
 	h1, h2, h3 {
 		margin-bottom: 0;
@@ -19,47 +12,48 @@
 	.actions {
 		list-style: none;
 		padding-left: 0;
-		font-size: $micro-size;
+		margin-left: 0;
 	}
-	.honor, .actions--edit-amount, .actions--pay-fees {
+	&#panel--pay {
+		.actions {
+			margin: $half-space 0 0 0;
+		}
+		.actions--edit-amount, .actions--pay-fees {
+			font-size: 90%;
+		}
+		.actions--pay-fees {
+			margin-bottom: $h4-space;
+			input[type="checkbox"] {
+				display: block;
+				float: left;
+				margin-top: 0;
+				margin-bottom: $h5-space;
+			}
+		}
+		p.recaptcha-terms {
+			font-size: 75%;
+			margin-top: $h4-space;
+		}
+		p.recaptcha-error {
+			font-size: 80%;
+			color: $minnpost-red-error;
+		}
+	}
+	.actions--edit-amount, .actions--pay-fees {
 		font-family: $helvetica;
-		font-size: $small-size;
 	}
 	.actions--edit-amount {
 		width: auto;
-		float: right;
 	}
-	.honor {
-		position: relative;
-		fieldset {
-			position: absolute;
-			background: $white;
-			top: 0;
-			left: 0;
-			border: 1px solid $gray-light;
-			padding: $milli-space;
-			h3 {
-				margin: 0 0 0.75em;
-			}
-			a.close {
-				display: block;
-				//float: right;
-				@include hide-text;
-				background: transparent url("https://www.minnpost.com/wp-content/uploads/sites/default/modules/custom/minnpost_directedmessages/libs/fancybox/fancybox.png") repeat scroll -40px 0;
-			    cursor: pointer;
-			    height: 30px;
-			    width: 30px;
-			    z-index: 1103;
-				position: absolute;
-				right: -15px;
-				top: -15px;
-			}
+	.form-item--honor-memory {
+		.honor-or-memory {
+			padding: $half-space;
+			margin-bottom: $half-space;
+			background: $gray-lightest;
 		}
 	}
 	.actions--edit-amount, .actions--pay-fees {
 		line-height: normal;
-		font-size: 55%;
-		margin-bottom: $half-space;
 		li {
 			border-right: 1px solid $gray-med;
 			padding: 0 $half-space;
@@ -78,77 +72,41 @@
 			padding-right: 0;
 		}
 	}
-	.benefits {
-		margin-bottom: 0;
-		> label {
-			float: left;
-			max-width: 150px;
-			width: 32%;
-			height: 98px;
-			cursor: pointer;
-			margin-right: $quarter-space;
-			input {
-				display: none;
-			}
-			div {
-				padding: $half-space;
-				width: 100%;
-				height: 100%;
-			}
-			&:hover {
-				background: $gray-dark;
-				color: $white;
-			}
-		}
-		label.swag:last-of-type {
-			box-shadow: 0 0 3px 0 rgba(122,122,122, 1);
-		    display: block;
-		    float: left;
-		    max-width: 150px;
-		    text-align: center;
-		    font-family: $helvetica;
-		    height: 99px;
-		    margin-right: 0;
-		    div {
-		    	padding: $milli-space;
-		    }
-		}
-		label.swag.total--4:last-of-type {
-			max-width: 100%;
-			width: 100%;
-			height: 36px;
-			div {
-				padding: $quarter-space;
-			}
-		}
-		input:checked ~ div {
-		  background: $minnpost-blue;
-		  color: $white;
-		}
-		h3.swag, p.swag {
-			clear: both;
-		}
+	.actions--edit-amount, .actions--pay-fees {
+		font-size: 55%;
+		margin-bottom: $half-space;
 	}
 }
 
-.support--minimal .panel--form {
-	display: block;
-	h1 {
-		margin-bottom: $quarter-space;
+.support--minimal {
+	#amount_for_js {
+		display: none;
 	}
-	&#panel--details {
-		.form-item input:last-child {
-			margin-bottom: 0;
+	.panel--form {
+		display: block;
+		h1 {
+			margin-bottom: $quarter-space;
 		}
-		.form-item--amount {
-			font-size: 1.25em;
-			label, input {
-				font-size: 1em;
+		&#panel--details {
+			.form-item {
+				margin: 0 0 $milli-space 0;
+				&:last-of-type {
+					margin-bottom: 0;
+				}
+			}
+			.form-item input:last-child {
+				margin-bottom: 0;
+			}
+			.form-item--amount {
+				font-size: 1.25em;
+				label, input {
+					font-size: 1em;
+				}
 			}
 		}
-	}
-	&#panel--pay {
-		display: flex;
+		&#panel--pay {
+			display: flex;
+		}
 	}
 }
 
@@ -157,10 +115,25 @@
 	.panel, .panel--error {
 		h1 {
 			font-size: $h1-size;
-
 		}
 		.actions--edit-amount, .actions--pay-fees {
-			font-size: 80%;
+			font-size: 90%;
+		}
+		&#panel--pay {
+			h3, .actions--edit-amount {
+				display: inline-block;
+			}
+			.actions--edit-amount {
+				margin: $half-space 0 0 $h1-space;
+			}
+			.actions--pay-fees {
+				input[type="checkbox"] {
+					display: inline;
+					float: none;
+					margin-top: 0;
+					margin-bottom: 0;
+				}
+			}
 		}
 	}
 }
@@ -169,8 +142,9 @@
 	.support--minimal .panel--form {
 		display: block;
 		&#panel--details {
-			width: 100%;
-			margin-right: 10%;
+			width: auto;
+			padding-right: 5%;
+			max-width: 50%;
 			> fieldset {
 				max-width: none;
 				width: 82%;

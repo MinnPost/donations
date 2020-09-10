@@ -8,21 +8,46 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}MinnPost | Review Your Donation{% endblock %}</title>
-  <meta property="og:title" content="MinnPost | Review Your Donation">
+  <title>{% block title %}{% if title|length %}{{ title }}{% else %}MinnPost | Make Your Payment{% endif %}{% endblock %}</title>
+  
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://www.minnpost.com/wp-content/uploads/sites/default/themes/siteskin/inc/images/MinnPostLogoNewSquare.png"/>
-  <link rel="shortcut icon" href="https://www.minnpost.com/wp-content/uploads/sites/default/themes/siteskin/favicon.ico" type="image/x-icon" />
+  <meta name="theme-color" content="#801018">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="YES">
+  <link rel="apple-touch-startup-image" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon.ico">
+  <meta name="apple-mobile-web-app-title" content="MinnPost">
+  <meta name="application-name" content="MinnPost">
+  <meta property="og:site_name" content="MinnPost">
+  <link rel="shortcut icon" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon.ico?v=1592584327" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon-16x16.png?v=1592584327">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon-32x32.png?v=1592584327">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/apple-touch-icon.png?v=1592584327">
+  <link rel="mask-icon" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/safari-pinned-tab.svg?v=1592584327" color="#801018">
+  <meta name="msapplication-TileColor" content="#801018">
+  <meta name="msapplication-TileImage" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/mstile-144x144.png?v=1592584327">
+  <meta name="msapplication-config" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/browserconfig.xml?v=1592584327">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:locale" content="en_US">
 
-  <link rel="apple-touch-icon" href="https://www.minnpost.com/wp-content/uploads/sites/default/themes/siteskin/inc/images/apple-touch-icon.png" />
+  <meta property="og:url" content="https://support.minnpost.com/">
+  
+  <meta name="twitter:site" content="@MinnPost" />
+  <meta property="og:title" content="{% block og_title %}{% if title|length %}{{ title }}{% else %}MinnPost | Make Your Payment{% endif %}{% endblock %}">
 
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/paymentfont/1.1.2/css/paymentfont.min.css" rel="stylesheet">
-  <link href="{{ url_for('static', filename='css/main.min.css') }}" rel="stylesheet">
+  <meta name="description" content="">
+  <meta property="og:description" content="">
+  <meta property="twitter:description" content="">
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:image" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/MinnPostLogoNewSquare.png">
 
-  <script src="{{ url_for('static', filename='js/vendor/modernizr-2.8.3.min.js') }}"></script>
+
+  <link href="{{ url_for('static', filename='css/main.min.css') }}?m={{ last_updated }}" rel="stylesheet">
 
   <!-- Google Analytics -->
-  <script async src="{{ url_for('static', filename='js/autotrack.js') }}"></script>
+  <script async src="{{ url_for('static', filename='js/autotrack.js') }}?m={{ last_updated }}"></script>
   <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -65,23 +90,18 @@
     </div>
   </footer>
 
-  <!--[if lt IE 9]>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-  <![endif]-->
-  <!--[if gte IE 9]><!-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-  <!--<![endif]-->
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <script src="https://js.stripe.com/v3/"></script>
-  {% if show_ach == 'True' %}<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>{% endif %}
-  <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>
+  {% if use_recaptcha is sameas true %}<script src='https://www.google.com/recaptcha/api.js'></script>{% endif %}
+  {% if show_ach is sameas true %}<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>{% endif %}
+  <script src="{{ url_for('static', filename='js/main.min.js') }}?m={{ last_updated }}"></script>
 
   <script>
   // main.js
   $(document).ready(function() {
     // call plugin and pass options if need be
     $('.support--forms').minnpost_giving({
-      'stripe_publishable_key' : '{{key}}',{% if show_ach == 'True' %}
+      'stripe_publishable_key' : '{{stripe}}',{% if show_ach is sameas true %}
       'plaid_env' : '{{plaid_env}}',
       'plaid_public_key' : '{{plaid_public_key}}',{% endif %}
       'minnpost_root' : '{{minnpost_root}}',
