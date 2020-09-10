@@ -350,20 +350,22 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
         # get opportunities
         opportunities = rdo.opportunities()
         today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
-        opp = [
+        closing_today = [
             opportunity
             for opportunity in opportunities
             if opportunity.close_date == today
-        ][0]
-        try:
-            charge(opp)
-            lock = Lock(key=rdo.lock_key)
-            lock.append(key=rdo.lock_key, value=rdo.id)
-            logging.info(rdo)
-            notify_slack(contact=contact, rdo=rdo)
-        except ChargeException as e:
-            e.send_slack_notification()
-        return True
+        ]
+        if len(closing_today):
+            opp = closing_today[0]
+            try:
+                charge(opp)
+                lock = Lock(key=rdo.lock_key)
+                lock.append(key=rdo.lock_key, value=rdo.id)
+                logging.info(rdo)
+                notify_slack(contact=contact, rdo=rdo)
+            except ChargeException as e:
+                e.send_slack_notification()
+            return True
 
 
 # this isn't being used yet
@@ -889,14 +891,14 @@ def donation_update_form():
     title       = "Update Your Donation"
     heading     = title
     description = title
-    summary     = "Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email Tanner Curl at tcurl@minnpost.com."
+    summary     = "Thank you for your support of MinnPost. Please fill out the fields to update your donation."
     # interface settings
     show_amount_field       = True
     allow_additional_amount = False
     hide_amount_heading     = True
     hide_honor_or_memory    = True
     hide_display_name       = False
-    button                  = "Finish Your Pledge"
+    button                  = "Update Your Donation"
     return minimal_form("donation-update", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
 
