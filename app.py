@@ -53,7 +53,7 @@ from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
-from flask import Flask, redirect, render_template, request, send_from_directory, jsonify
+from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, url_for
 from forms import (
     format_amount,
     format_swag,
