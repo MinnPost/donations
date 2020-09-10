@@ -53,7 +53,7 @@ from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
-from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, url_for
+from flask import Flask, jsonify, redirect, render_template, request, send_from_directory
 from forms import (
     format_amount,
     format_swag,
@@ -223,27 +223,32 @@ Redirects.
 # support.minnpost.com/minnroast-sponsorship
 @app.route("/minnroast-sponsorship/")
 def minnroast_sponsorship_form():
-    redirect_to = url_for("minnroast_patron_form", **request.args)
-    return redirect(redirect_to)
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/minnroast-patron/?%s" % query_string, code=302)
 
 # support.minnpost.com/minnroast-pledge
 @app.route("/minnroast-pledge/")
 def minnroast_pledge_form():
-    redirect_to = url_for("pledge_payment_form", **request.args)
-    return redirect(redirect_to)
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/pledge-payment/?%s" % query_string, code=302)
 
 # support.minnpost.com/recurring-donation-update
 @app.route("/recurring-donation-update/")
 def minnpost_recurring_donation_update_form():
-    redirect_to = url_for("donation_update_form", **request.args)
-    return redirect(redirect_to)
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/donation-update/?%s" % query_string, code=302)
 
 # support.minnpost.com/anniversary-sponsorship
 @app.route("/anniversary-sponsorship/")
 def anniversary_sponsorship_form():
-    redirect_to = url_for("anniversary_patron_form", **request.args)
-    return redirect(redirect_to)
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/anniversary-patron/?%s" % query_string, code=302)
 
+# support.minnpost.com/minnpost-advertising
+@app.route("/minnpost-advertising/")
+def minnpost_advertising_form():
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/advertising-payment/?%s" % query_string, code=302)
 
 
 def apply_card_details(rdo=None, customer=None, charge_source=None):
