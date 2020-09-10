@@ -635,8 +635,8 @@ def validate_form(FormType, template, function=add_donation.delay):
     body = []
 
     try:
-        v = validate_email(email, allow_smtputf8=False) # validate and get info
-        email = v["email"] # replace with normalized form
+        valid = validate_email(email, allow_smtputf8=False) # validate and get info
+        email = valid.email # replace with normalized form
     except EmailNotValidError as e:
         # email is not valid, exception message is human-readable
         app.logger.error(f"Email validation failed on address: {email}")
@@ -1046,7 +1046,7 @@ def plaid_token():
     public_token = form_data["public_token"]
     account_id = form_data["account_id"]
 
-    client = Client(client_id=app.config["PLAID_CLIENT_ID"], secret=app.config["PLAID_SECRET"], public_key=app.config["PLAID_PUBLIC_KEY"], environment=app.config["PLAID_ENVIRONMENT"])
+    client = Client(client_id=app.config["PLAID_CLIENT_ID"], secret=app.config["PLAID_SECRET"], environment=app.config["PLAID_ENVIRONMENT"])
     exchange_token_response = client.Item.public_token.exchange(public_token)
     access_token = exchange_token_response["access_token"]
 
