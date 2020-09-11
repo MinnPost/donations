@@ -1027,7 +1027,7 @@ def donate_form():
 
 @app.route("/advertising-payment/", methods=["GET", "POST"])
 def advertising_form():
-    #url         = "advertising-payment"
+    url         = "advertising-payment"
     template    = "advertising.html"
     title       = "Advertising Payment | MinnPost"
     heading     = "MinnPost Advertising"
@@ -1123,7 +1123,7 @@ def advertising_form():
         title=title,
         form=form,
         form_action=form_action,
-        amount=amount_formatted, frequency=frequency, description=description,
+        url=url, amount=amount_formatted, frequency=frequency, description=description,
         invoice=invoice, client_organization=client_organization,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,

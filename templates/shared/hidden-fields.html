@@ -15,3 +15,6 @@
 {% if amount != '' and show_amount_field is sameas false %}
     <input type="hidden" name="amount" id="amount" value="{{ amount }}">
 {% endif %}
+{% if url %}
+    <input type="hidden" name="url" id="url" value="{{ url }}">
+{% endif %}
