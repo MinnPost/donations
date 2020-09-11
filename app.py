@@ -305,6 +305,10 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
     zipcode            = form.get("billing_zip", "")
     stripe_customer_id = form.get("stripe_customer_id", "")
 
+    opportunity_subtype = form.get('opportunity_subtype', None)
+    if opportunity_subtype is not None and opportunity_subtype == 'Sales: Advertising':
+        email = SALESFORCE_CONTACT_ADVERTISING_EMAIL
+
     logging.info("----Getting contact....")
     contact = Contact.get_or_create(
         email=email, first_name=first_name, last_name=last_name, stripe_customer_id=stripe_customer_id,
@@ -312,22 +316,23 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
     )
     logging.info(contact)
 
-    if contact.first_name != first_name or contact.last_name != last_name:
-        logging.info(
-            f"Contact name doesn't match: {contact.first_name} {contact.last_name}"
-        )
+    if opportunity_subtype is None or opportunity_subtype != 'Sales: Advertising':
+        if contact.first_name != first_name or contact.last_name != last_name:
+            logging.info(
+                f"Contact name doesn't match: {contact.first_name} {contact.last_name}"
+            )
 
-    if not contact.created:
-        logging.info(f"Updating contact {first_name} {last_name}")
-        contact.first_name          = first_name
-        contact.last_name           = last_name
-        contact.stripe_customer_id  = stripe_customer_id
-        contact.mailing_street      = street
-        contact.mailing_city        = city
-        contact.mailing_state       = state
-        contact.mailing_postal_code = zipcode
-        contact.mailing_country     = country
-        contact.save()
+        if not contact.created:
+            logging.info(f"Updating contact {first_name} {last_name}")
+            contact.first_name          = first_name
+            contact.last_name           = last_name
+            contact.stripe_customer_id  = stripe_customer_id
+            contact.mailing_street      = street
+            contact.mailing_city        = city
+            contact.mailing_state       = state
+            contact.mailing_postal_code = zipcode
+            contact.mailing_country     = country
+            contact.save()
 
     if contact.duplicate_found:
         send_multiple_account_warning(contact)
@@ -1090,8 +1095,13 @@ def advertising_form():
     # country
     billing_country = request.args.get("billing_country", "")
 
-    # fees
-    #fees = calculate_amount_fees(amount, "card")
+    # default sf fields
+    stage_name = "Pledged"
+    now = datetime.now()
+    today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
+    close_date = today
+    opportunity_type = "Sales"
+    opportunity_subtype = "Sales: Advertising"
 
     # interface settings
     show_amount_field       = True
@@ -1106,7 +1116,7 @@ def advertising_form():
     hide_pay_comments       = True
     show_invoice            = True
     show_organization       = True
-    pay_fees                = True
+    pay_fees                = False
 
     # show ach fields
     if request.args.get("show_ach"):
@@ -1123,7 +1133,8 @@ def advertising_form():
         title=title,
         form=form,
         form_action=form_action,
-        url=url, amount=amount_formatted, frequency=frequency, description=description,
+        url=url, amount=amount_formatted, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
+        opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         invoice=invoice, client_organization=client_organization,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
@@ -1724,6 +1735,8 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
         logging.info("----Adding opportunity...")
 
     # posted form fields
+    first_name = form.get("first_name", "")
+    last_name = form.get("last_name", "")
 
     # default
     opportunity.amount = form.get("amount", 0)
@@ -1734,14 +1747,18 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.type = form.get("opportunity_type", "Donation")
     opportunity.close_date = form.get("close_date", today)
     opportunity.stage_name = form.get("stage_name", "Pledged")
+
+    opportunity.name = (
+        f"{first_name} {last_name} {opportunity.type} {today}"
+    )
     
     # minnpost custom fields
     opportunity.agreed_to_pay_fees = form.get("pay_fees", False)
     opportunity.anonymous = form.get("anonymous", False)
     opportunity.client_organization = form.get("client_organization", None)
     opportunity.credited_as = form.get("display_as", None)
-    opportunity.donor_first_name = form.get("first_name", "")
-    opportunity.donor_last_name = form.get("last_name", "")
+    opportunity.donor_first_name = first_name
+    opportunity.donor_last_name = last_name
     opportunity.donor_email = form.get("email", "")
     opportunity.donor_address_one = form.get("billing_street", "")
     opportunity.donor_city = form.get("billing_city", "")
@@ -1759,7 +1776,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
     opportunity.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     opportunity.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
-    opportunity.minnpost_invoice = form.get("minnpost_invoice", "")
+    opportunity.invoice = form.get("invoice", "")
     opportunity.mrpledge_id = form.get("mrpledge_id", "")
     opportunity.payment_type = "Stripe"
     opportunity.referring_page = form.get("source", None)
@@ -1772,6 +1789,9 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.stripe_customer_id = customer["id"]
     opportunity.stripe_payment_type = form.get("stripe_payment_type", "")
     opportunity.subtype = form.get("opportunity_subtype", "Donation: Individual")
+
+    if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == "":
+        opportunity.fair_market_value = opportunity.amount
 
     opportunity.lock_key = form.get("lock_key", "")
 
