@@ -852,6 +852,7 @@ def give_form():
     # interface settings
     with_shipping = True
     hide_pay_comments = True
+    show_amount_field = False
 
     # show ach fields
     if request.args.get("show_ach"):
@@ -883,7 +884,7 @@ def give_form():
         atlantic_subscription=atlantic_subscription_form, atlantic_id=atlantic_id,
         nyt_subscription=nyt_subscription_form,
         decline_benefits=decline_benefits,
-        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
@@ -1022,6 +1023,120 @@ def donate_form():
     button                  = "Make Your Donation"
     
     return minimal_form("donate", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+
+
+@app.route("/advertising-payment/", methods=["GET", "POST"])
+def advertising_form():
+    #url         = "advertising-payment"
+    template    = "advertising.html"
+    title       = "Advertising Payment | MinnPost"
+    heading     = "MinnPost Advertising"
+    description = heading
+    summary     = ""
+    form        = AdvertisingForm()
+    form_action = "/finish/"
+
+    if request.method == "POST":
+        return validate_form(AdvertisingForm, template=template)
+
+    # fields from URL
+
+    # amount
+    if request.args.get("amount"):
+        amount = format_amount(request.args.get("amount"))
+        amount_formatted = format(amount, ",.2f")
+    else:
+        amount = 0
+        amount_formatted = amount
+
+    # frequency
+    frequency = "one-time"
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", ADVERTISING_CAMPAIGN_ID)
+
+    # stripe customer id
+    customer_id = request.args.get("customer_id", "")
+
+    # invoice
+    invoice = request.args.get("invoice", "")
+
+    # organization
+    client_organization = request.args.get("client_organization", "")
+
+    # user first name
+    first_name = request.args.get("firstname", "")
+
+    # user last name
+    last_name = request.args.get("lastname", "")
+
+    # user email
+    email = request.args.get("email", "")
+
+    # user address
+
+    # street
+    billing_street = request.args.get("billing_street", "")
+
+    # city
+    billing_city = request.args.get("billing_city", "")
+
+    # state
+    billing_state = request.args.get("billing_state", "")
+
+    # zip
+    billing_zip = request.args.get("billing_zip", "")
+
+    # country
+    billing_country = request.args.get("billing_country", "")
+
+    # fees
+    #fees = calculate_amount_fees(amount, "card")
+
+    # interface settings
+    show_amount_field       = True
+    allow_additional_amount = False
+    hide_amount_heading     = True
+    hide_honor_or_memory    = True
+    hide_display_name       = True
+    button                  = "Make Your Payment"
+    recognition_label       = ""
+    email_before_billing    = True
+    hide_minnpost_account   = True
+    hide_pay_comments       = True
+    show_invoice            = True
+    show_organization       = True
+    pay_fees                = True
+
+    # show ach fields
+    if request.args.get("show_ach"):
+        show_ach = request.args.get("show_ach")
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = app.config["SHOW_ACH"]
+
+    return render_template(
+        template,
+        title=title,
+        form=form,
+        form_action=form_action,
+        amount=amount_formatted, frequency=frequency, description=description,
+        invoice=invoice, client_organization=client_organization,
+        first_name=first_name, last_name=last_name, email=email,
+        billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
+        campaign=campaign, customer_id=customer_id,
+        hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
+        hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
+        email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
+        show_invoice=show_invoice, show_organization=show_organization,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
+    )
 
 
 @app.route("/pledge-payment/", methods=["GET", "POST"])

@@ -1,22 +1,14 @@
-{% extends "minnpost-advertising/layout.html" %}
+{% extends "layout.html" %}
 
 {% block content %}
 
 <main>
   <div class="wrapper support--forms">
-
-    <form action="/minnpost-advertising-confirm/" method="post" class="support support--donate" id="donate">
-
-      <input type="hidden" name="recurring" id="recurring" value="one-time">
-      <input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
-      <input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
-      <input type="hidden" name="description" id="description" value="MinnPost Advertising">
-      <input type="hidden" name="opp_type" id="opp_type" value="{{ opp_type }}">
-      <input type="hidden" name="opp_subtype" id="opp_subtype" value="{{ opp_subtype }}">
-
-      {% include 'minnpost-advertising/includes/details.html' %}
-      {% include 'minnpost-advertising/includes/pay.html' %}
-
+    <form action="{{ form_action }}" method="post" class="support support--advertising" id="donate">
+      {% include 'shared/hidden-fields.html' %}
+      <input type="hidden" name="installment_period" id="installment_period" value="{{ frequency }}">
+      {% include 'minimal/details.html' %}
+      {% include 'shared/pay.html' %}
     </form>
   </div>
 </main>
