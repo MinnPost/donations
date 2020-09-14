@@ -1342,7 +1342,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
     form_action = "/finish/"
 
     if request.method == "POST":
-        return validate_form(AdvertisingForm, template=template)
+        return validate_form(SponsorshipForm, template=template)
 
     # fields from URL
 
