@@ -1150,6 +1150,26 @@ def advertising_form():
     )
 
 
+@app.route("/anniversary-patron/" , methods=["GET", "POST"])
+def anniversary_patron_form():
+    title       = "MinnPost Anniversary Patron"
+    heading     = ""
+    description = title
+    summary     = "Support MinnPost as a Patron at our 13th Anniversary Celebration: Justice, Democracy & the Supreme Court — a conversation with Linda Greenhouse, Pulitzer Prize-winning journalist from the New York Times — on Wednesday, October 14."
+    folder      = "anniversary"
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", ANNIVERSARY_PARTY_CAMPAIGN_ID)
+
+    # interface settings
+    allow_additional_amount = True
+    hide_honor_or_memory    = True
+    hide_display_name       = False
+    button                  = "Purchase your Patron package"
+    
+    return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
+
+
 @app.route("/pledge-payment/", methods=["GET", "POST"])
 def pledge_payment_form():
     title       = "MinnPost Pledge Payment"
@@ -1314,12 +1334,119 @@ def merchantid():
     )
 
 
+def sponsorship_form(folder, title, heading, description, summary, campaign, button = "Purchase your Patron package", allow_additional_amount = True, hide_honor_or_memory = True, hide_display_name = False):
+    
+    template    = "sponsorship.html"
+    form        = SponsorshipForm()
+    url         = "patron"
+    form_action = "/finish/"
+
+    if request.method == "POST":
+        return validate_form(AdvertisingForm, template=template)
+
+    # fields from URL
+
+    # amount
+    if request.args.get("amount"):
+        amount = format_amount(request.args.get("amount"))
+        amount_formatted = format(amount, ",.2f")
+    else:
+        amount = 0
+        amount_formatted = amount
+
+    # frequency
+    frequency = "one-time"
+
+    # stripe customer id
+    customer_id = request.args.get("customer_id", "")
+
+    # invoice
+    invoice = request.args.get("invoice", "")
+
+    # organization
+    client_organization = request.args.get("client_organization", "")
+
+    # user first name
+    first_name = request.args.get("firstname", "")
+
+    # user last name
+    last_name = request.args.get("lastname", "")
+
+    # user email
+    email = request.args.get("email", "")
+
+    # user address
+
+    # street
+    billing_street = request.args.get("billing_street", "")
+
+    # city
+    billing_city = request.args.get("billing_city", "")
+
+    # state
+    billing_state = request.args.get("billing_state", "")
+
+    # zip
+    billing_zip = request.args.get("billing_zip", "")
+
+    # country
+    billing_country = request.args.get("billing_country", "")
+
+    # default sf fields
+    stage_name = "Pledged"
+    now = datetime.now()
+    today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
+    close_date = today
+    opportunity_type = "Sponsorship"
+    opportunity_subtype = "Sponsorship: Event (patron package)"
+
+    # interface settings
+    show_amount_field       = True
+    recognition_label       = "Display as (in public recognition materials)"
+    anonymous_label         = "Remain anonymous"
+    hide_amount_heading     = True
+    email_before_billing    = True
+    hide_minnpost_account   = True
+    hide_pay_comments       = False
+    pay_fees                = False
+
+    # show ach fields
+    if request.args.get("show_ach"):
+        show_ach = request.args.get("show_ach")
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = app.config["SHOW_ACH"]
+
+    return render_template(
+        template,
+        title=title,
+        form=form,
+        form_action=form_action,
+        url=url, folder=folder,
+        amount=amount, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
+        opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
+        first_name=first_name, last_name=last_name, email=email,
+        billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
+        campaign=campaign, customer_id=customer_id,
+        hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
+        hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label, anonymous_label=anonymous_label,
+        email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
+    )
+
+
 # prefill configurable minimal form
 def minimal_form(url, title, heading, description, summary, button, show_amount_field = True, allow_additional_amount = False, hide_amount_heading = True, hide_honor_or_memory = True, hide_display_name = True, recognition_label = 'Preferred name(s) for recognition', email_before_billing = True, hide_minnpost_account = True, hide_pay_comments = True):
 
-    template         = "minimal.html"
-    form             = MinimalForm()
-    form_action      = "/finish/" # we might want to make this a parameter but probably not
+    template    = "minimal.html"
+    form        = MinimalForm()
+    form_action = "/finish/" # we might want to make this a parameter but probably not
 
     # salesforce donation object
     opportunity_id = request.args.get("opportunity", "")
