@@ -921,7 +921,6 @@ def donation_cancel_form():
     form_action = "/donation-cancel/"
     function    = update_donation.delay
     heading     = "Cancel Donation"
-    description = ""
     url         = "donation-cancel"
 
     # salesforce donation object
@@ -1002,7 +1001,6 @@ def donation_cancel_form():
         form=form,
         form_action=form_action,
         url=url, amount=amount_formatted, frequency=frequency,
-        description=description,
         first_name=first_name, last_name=last_name, email=email, customer_id=customer_id,
         stage_name=stage_name, open_ended_status=open_ended_status, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
