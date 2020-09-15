@@ -9,7 +9,7 @@
 
   </div>
 
-  {% if amount == '' or show_amount_field or show_frequency_field is sameas true or allow_additional_amount is sameas true %}
+  {% if amount == '' or show_amount_field or show_frequency_field is sameas true or allow_additional_amount is sameas true or show_invoice is sameas true or show_organization is sameas true %}
     <fieldset class="minimal-details clear-block">
       {% if amount == '' or show_amount_field %}
       <div class="form-item form-item--amount">
@@ -29,7 +29,23 @@
       {% endif %}
 
       {% include "/shared/additional-amount.html" %}
+
+      {% if show_invoice is sameas true %}
+        <div class="form-item form-item--invoice">
+          <label for="invoice" class="required">Invoice Number:</label>
+          <input type="text" id="invoice" name="invoice" value="{{ invoice }}" required>
+        </div>
+      {% endif %}
+
+      {% if show_organization is sameas true %}
+        <div class="form-item form-item--organization">
+          <label for="client_organization" class="required">Organization:</label>
+          <input type="text" id="client_organization" name="client_organization" value="{{ client_organization }}" required>
+        </div>
+      {% endif %}
+
     </fieldset>
+    
   {% endif %}
   
 </section>

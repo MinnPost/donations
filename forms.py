@@ -199,7 +199,7 @@ class DonateForm(BaseForm):
 
 # used for anniversary-patron, minnpost-default, minnroast-patron, other minimal donate forms
 class MinimalForm(BaseForm):
-    pledge = HiddenField("Pledge", [validators.Optional()])
+    mrpledge_id = HiddenField("MrPledge ID", [validators.Optional()])
     stage_name = HiddenField("Stage Name", [validators.Optional()])
     close_date = HiddenField("Close Date", [validators.Optional()])
     opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])
@@ -225,19 +225,24 @@ class MinimalForm(BaseForm):
 
 # used for anniversary-patron, minnroast-patron, other sponsorship things
 class SponsorshipForm(MinimalForm):
-    additional_amount = StringField(
-        u"Additional Donation",
+    folder = HiddenField("Folder", [validators.Optional()])
+    fair_market_value = StringField(
+        u"Fair Market Value",
         validators=[
             validators.Optional(),
             validate_amount,
         ],
         filters=[format_amount],
     )
+    reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
+    reason_shareable = BooleanField(
+        u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
+    )
 
 
 # used for minnpost-advertising
 class AdvertisingForm(MinimalForm):
-    minnpost_invoice = StringField(
+    invoice = StringField(
         u"Invoice #", [validators.required(message="Your invoice number is required.")]
     )
     client_organization = StringField(
@@ -259,7 +264,8 @@ class FinishForm(BaseForm):
             filters.append(strip_whitespace)
             return unbound_field.bind(form=form, filters=filters, **options)
 
-    url = HiddenField("URL", [validators.Optional()])
+    path = HiddenField("Path", [validators.Optional()])
+    folder = HiddenField("Folder", [validators.Optional()])
     additional_donation = StringField(
         u"Additional Donation Amount",
         validators=[

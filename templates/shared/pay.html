@@ -26,7 +26,7 @@
       {% endif %}
     </div>
 
-    {% if hide_address is sameas false and email_before_billing is sameas true %}
+    {% if (not hide_address or hide_address is sameas false) and email_before_billing is sameas true %}
       {% with shipping=with_shipping %}
       {% include '/shared/address-fields.html' %}
       {% endwith %}

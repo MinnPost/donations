@@ -53,7 +53,7 @@ from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
-from flask import Flask, redirect, render_template, request, send_from_directory, jsonify
+from flask import Flask, jsonify, redirect, render_template, request, send_from_directory
 from forms import (
     format_amount,
     format_swag,
@@ -223,27 +223,32 @@ Redirects.
 # support.minnpost.com/minnroast-sponsorship
 @app.route("/minnroast-sponsorship/")
 def minnroast_sponsorship_form():
-    redirect_to = url_for("minnroast_patron_form", **request.args)
-    return redirect(redirect_to)
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/minnroast-patron/?%s" % query_string, code=302)
 
 # support.minnpost.com/minnroast-pledge
 @app.route("/minnroast-pledge/")
 def minnroast_pledge_form():
-    redirect_to = url_for("pledge_payment_form", **request.args)
-    return redirect(redirect_to)
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/pledge-payment/?%s" % query_string, code=302)
 
 # support.minnpost.com/recurring-donation-update
 @app.route("/recurring-donation-update/")
 def minnpost_recurring_donation_update_form():
-    redirect_to = url_for("donation_update_form", **request.args)
-    return redirect(redirect_to)
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/donation-update/?%s" % query_string, code=302)
 
 # support.minnpost.com/anniversary-sponsorship
 @app.route("/anniversary-sponsorship/")
 def anniversary_sponsorship_form():
-    redirect_to = url_for("anniversary_patron_form", **request.args)
-    return redirect(redirect_to)
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/anniversary-patron/?%s" % query_string, code=302)
 
+# support.minnpost.com/minnpost-advertising
+@app.route("/minnpost-advertising/")
+def minnpost_advertising_form():
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/advertising-payment/?%s" % query_string, code=302)
 
 
 def apply_card_details(rdo=None, customer=None, charge_source=None):
@@ -300,6 +305,10 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
     zipcode            = form.get("billing_zip", "")
     stripe_customer_id = form.get("stripe_customer_id", "")
 
+    opportunity_subtype = form.get('opportunity_subtype', None)
+    if opportunity_subtype is not None and opportunity_subtype == 'Sales: Advertising':
+        email = SALESFORCE_CONTACT_ADVERTISING_EMAIL
+
     logging.info("----Getting contact....")
     contact = Contact.get_or_create(
         email=email, first_name=first_name, last_name=last_name, stripe_customer_id=stripe_customer_id,
@@ -307,22 +316,23 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
     )
     logging.info(contact)
 
-    if contact.first_name != first_name or contact.last_name != last_name:
-        logging.info(
-            f"Contact name doesn't match: {contact.first_name} {contact.last_name}"
-        )
+    if opportunity_subtype is None or opportunity_subtype != 'Sales: Advertising':
+        if contact.first_name != first_name or contact.last_name != last_name:
+            logging.info(
+                f"Contact name doesn't match: {contact.first_name} {contact.last_name}"
+            )
 
-    if not contact.created:
-        logging.info(f"Updating contact {first_name} {last_name}")
-        contact.first_name          = first_name
-        contact.last_name           = last_name
-        contact.stripe_customer_id  = stripe_customer_id
-        contact.mailing_street      = street
-        contact.mailing_city        = city
-        contact.mailing_state       = state
-        contact.mailing_postal_code = zipcode
-        contact.mailing_country     = country
-        contact.save()
+        if not contact.created:
+            logging.info(f"Updating contact {first_name} {last_name}")
+            contact.first_name          = first_name
+            contact.last_name           = last_name
+            contact.stripe_customer_id  = stripe_customer_id
+            contact.mailing_street      = street
+            contact.mailing_city        = city
+            contact.mailing_state       = state
+            contact.mailing_postal_code = zipcode
+            contact.mailing_country     = country
+            contact.save()
 
     if contact.duplicate_found:
         send_multiple_account_warning(contact)
@@ -350,23 +360,25 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
         # get opportunities
         opportunities = rdo.opportunities()
         today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
-        opp = [
+        closing_today = [
             opportunity
             for opportunity in opportunities
             if opportunity.close_date == today
-        ][0]
-        try:
-            charge(opp)
-            lock = Lock(key=rdo.lock_key)
-            lock.append(key=rdo.lock_key, value=rdo.id)
-            logging.info(rdo)
-            notify_slack(contact=contact, rdo=rdo)
-        except ChargeException as e:
-            e.send_slack_notification()
-        return True
+        ]
+        if len(closing_today):
+            opp = closing_today[0]
+            try:
+                charge(opp)
+                lock = Lock(key=rdo.lock_key)
+                lock.append(key=rdo.lock_key, value=rdo.id)
+                logging.info(rdo)
+                notify_slack(contact=contact, rdo=rdo)
+            except ChargeException as e:
+                e.send_slack_notification()
+            return True
 
 
-# this isn't being used yet
+# this is used to update or cancel donations
 @celery.task(name="app.update_donation")
 def update_donation(form=None, customer=None, donation_type=None):
     """
@@ -845,6 +857,7 @@ def give_form():
     # interface settings
     with_shipping = True
     hide_pay_comments = True
+    show_amount_field = False
 
     # show ach fields
     if request.args.get("show_ach"):
@@ -876,7 +889,7 @@ def give_form():
         atlantic_subscription=atlantic_subscription_form, atlantic_id=atlantic_id,
         nyt_subscription=nyt_subscription_form,
         decline_benefits=decline_benefits,
-        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
@@ -889,14 +902,14 @@ def donation_update_form():
     title       = "Update Your Donation"
     heading     = title
     description = title
-    summary     = "Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email Tanner Curl at tcurl@minnpost.com."
+    summary     = "Thank you for your support of MinnPost. Please fill out the fields to update your donation."
     # interface settings
     show_amount_field       = True
     allow_additional_amount = False
     hide_amount_heading     = True
     hide_honor_or_memory    = True
     hide_display_name       = False
-    button                  = "Finish Your Pledge"
+    button                  = "Update Your Donation"
     return minimal_form("donation-update", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
 
@@ -908,8 +921,7 @@ def donation_cancel_form():
     form_action = "/donation-cancel/"
     function    = update_donation.delay
     heading     = "Cancel Donation"
-    description = ""
-    url         = "donation-cancel"
+    path         = "donation-cancel"
 
     # salesforce donation object
     opportunity_id = request.args.get("opportunity", "")
@@ -932,7 +944,7 @@ def donation_cancel_form():
             return render_template(
                 "finish.html",
                 title=title,
-                url=url,
+                path=path,
                 minnpost_root=app.config["MINNPOST_ROOT"],
                 stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
             )
@@ -988,8 +1000,7 @@ def donation_cancel_form():
         title=title,
         form=form,
         form_action=form_action,
-        url=url, amount=amount_formatted, frequency=frequency,
-        description=description,
+        path=path, amount=amount_formatted, frequency=frequency,
         first_name=first_name, last_name=last_name, email=email, customer_id=customer_id,
         stage_name=stage_name, open_ended_status=open_ended_status, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
@@ -1014,7 +1025,167 @@ def donate_form():
     hide_display_name       = False
     button                  = "Make Your Donation"
     
-    return minimal_form("donate", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+    return minimal_form("minimal", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+
+
+@app.route("/advertising-payment/", methods=["GET", "POST"])
+def advertising_form():
+    path        = "advertising-payment"
+    template    = "advertising.html"
+    title       = "Advertising Payment | MinnPost"
+    heading     = "MinnPost Advertising"
+    description = heading
+    summary     = ""
+    form        = AdvertisingForm()
+    form_action = "/finish/"
+
+    if request.method == "POST":
+        return validate_form(AdvertisingForm, template=template)
+
+    # fields from URL
+
+    # amount
+    if request.args.get("amount"):
+        amount = format_amount(request.args.get("amount"))
+        amount_formatted = format(amount, ",.2f")
+    else:
+        amount = 0
+        amount_formatted = amount
+
+    # frequency
+    frequency = "one-time"
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", ADVERTISING_CAMPAIGN_ID)
+
+    # stripe customer id
+    customer_id = request.args.get("customer_id", "")
+
+    # invoice
+    invoice = request.args.get("invoice", "")
+
+    # organization
+    client_organization = request.args.get("client_organization", "")
+
+    # user first name
+    first_name = request.args.get("firstname", "")
+
+    # user last name
+    last_name = request.args.get("lastname", "")
+
+    # user email
+    email = request.args.get("email", "")
+
+    # user address
+
+    # street
+    billing_street = request.args.get("billing_street", "")
+
+    # city
+    billing_city = request.args.get("billing_city", "")
+
+    # state
+    billing_state = request.args.get("billing_state", "")
+
+    # zip
+    billing_zip = request.args.get("billing_zip", "")
+
+    # country
+    billing_country = request.args.get("billing_country", "")
+
+    # default sf fields
+    stage_name = "Pledged"
+    now = datetime.now()
+    today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
+    close_date = today
+    opportunity_type = "Sales"
+    opportunity_subtype = "Sales: Advertising"
+
+    # interface settings
+    show_amount_field       = True
+    allow_additional_amount = False
+    hide_amount_heading     = True
+    hide_honor_or_memory    = True
+    hide_display_name       = True
+    button                  = "Make Your Payment"
+    recognition_label       = ""
+    email_before_billing    = True
+    hide_minnpost_account   = True
+    hide_pay_comments       = True
+    show_invoice            = True
+    show_organization       = True
+    pay_fees                = False
+
+    # show ach fields
+    if request.args.get("show_ach"):
+        show_ach = request.args.get("show_ach")
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = app.config["SHOW_ACH"]
+
+    return render_template(
+        template,
+        title=title,
+        form=form,
+        form_action=form_action,
+        path=path, amount=amount_formatted, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
+        opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
+        invoice=invoice, client_organization=client_organization,
+        first_name=first_name, last_name=last_name, email=email,
+        billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
+        campaign=campaign, customer_id=customer_id,
+        hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
+        hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
+        email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
+        show_invoice=show_invoice, show_organization=show_organization,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
+    )
+
+
+@app.route("/anniversary-patron/" , methods=["GET", "POST"])
+def anniversary_patron_form():
+    title       = "MinnPost Anniversary Patron"
+    heading     = ""
+    description = title
+    summary     = "Support MinnPost as a Patron at our 13th Anniversary Celebration: Justice, Democracy & the Supreme Court — a conversation with Linda Greenhouse, Pulitzer Prize-winning journalist from the New York Times — on Wednesday, October 14."
+    folder      = "anniversary"
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", ANNIVERSARY_PARTY_CAMPAIGN_ID)
+
+    # interface settings
+    allow_additional_amount = True
+    hide_honor_or_memory    = True
+    hide_display_name       = False
+    button                  = "Purchase your Patron package"
+    
+    return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
+
+
+@app.route("/minnroast-patron/" , methods=["GET", "POST"])
+def minnroast_patron_form():
+    title       = "MinnRoast Patron Packages"
+    heading     = title
+    description = title
+    summary     = "Thank you for becoming a MinnRoast Patron! As a Patron, you receive the most exclusive access to this unique annual tradition and provide crucial financial support for MinnPost's nonprofit newsroom. Cheers!"
+    folder      = "minnroast"
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", MINNROAST_CAMPAIGN_ID)
+
+    # interface settings
+    allow_additional_amount = True
+    hide_honor_or_memory    = True
+    hide_display_name       = False
+    button                  = "Purchase your Patron package"
+
+    return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
 
 
 @app.route("/pledge-payment/", methods=["GET", "POST"])
@@ -1030,7 +1201,7 @@ def pledge_payment_form():
     hide_honor_or_memory    = True
     hide_display_name       = False
     button                  = "Finish Your Pledge"
-    return minimal_form("pledge-payment", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+    return minimal_form("minimal", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
 
 ## this is a minnpost url. use this when sending a request to plaid
@@ -1139,11 +1310,12 @@ def finish():
     # use form.data instead of request.form from here on out
     # because it includes all filters applied by WTF Forms
     form_data = form.data
-    url = form_data.get("url", "")
+    path = form_data.get("path", "")
+    folder = form_data.get("folder", "")
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
     additional_donation = form_data.get("additional_donation", 0)
-    if additional_donation:
+    if additional_donation and additional_donation != 0:
         additional_donation = format(additional_donation, ",.2f")
 
     finish_donation.delay(form_data)
@@ -1153,7 +1325,7 @@ def finish():
     return render_template(
         template,
         title=title,
-        url=url, amount=amount_formatted, additional_donation=additional_donation,
+        path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
@@ -1181,12 +1353,123 @@ def merchantid():
     )
 
 
-# prefill configurable minimal form
-def minimal_form(url, title, heading, description, summary, button, show_amount_field = True, allow_additional_amount = False, hide_amount_heading = True, hide_honor_or_memory = True, hide_display_name = True, recognition_label = 'Preferred name(s) for recognition', email_before_billing = True, hide_minnpost_account = True, hide_pay_comments = True):
+def sponsorship_form(folder, title, heading, description, summary, campaign, button = "Purchase your Patron package", allow_additional_amount = True, hide_honor_or_memory = True, hide_display_name = False):
+    
+    template    = "sponsorship.html"
+    form        = SponsorshipForm()
+    path        = "patron"
+    form_action = "/finish/"
 
-    template         = "minimal.html"
-    form             = MinimalForm()
-    form_action      = "/finish/" # we might want to make this a parameter but probably not
+    if request.method == "POST":
+        return validate_form(SponsorshipForm, template=template)
+
+    # fields from URL
+
+    # amount
+    if request.args.get("amount"):
+        amount = format_amount(request.args.get("amount"))
+        amount_formatted = format(amount, ",.2f")
+    else:
+        amount = 0
+        amount_formatted = amount
+
+    # frequency
+    frequency = "one-time"
+
+    # stripe customer id
+    customer_id = request.args.get("customer_id", "")
+
+    # invoice
+    invoice = request.args.get("invoice", "")
+
+    # organization
+    client_organization = request.args.get("client_organization", "")
+
+    # user first name
+    first_name = request.args.get("firstname", "")
+
+    # user last name
+    last_name = request.args.get("lastname", "")
+
+    # user email
+    email = request.args.get("email", "")
+
+    # user address
+
+    # street
+    billing_street = request.args.get("billing_street", "")
+
+    # city
+    billing_city = request.args.get("billing_city", "")
+
+    # state
+    billing_state = request.args.get("billing_state", "")
+
+    # zip
+    billing_zip = request.args.get("billing_zip", "")
+
+    # country
+    billing_country = request.args.get("billing_country", "")
+
+    additional_donation = request.args.get("additional_donation", 0)
+    if additional_donation != 0:
+        additional_donation = format_amount(request.args.get("additional_donation"))
+
+    # default sf fields
+    stage_name = "Pledged"
+    now = datetime.now()
+    today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
+    close_date = today
+    opportunity_type = "Sponsorship"
+    opportunity_subtype = "Sponsorship: Event (patron package)"
+
+    # interface settings
+    show_amount_field       = True
+    recognition_label       = "Display as (in public recognition materials)"
+    anonymous_label         = "Remain anonymous"
+    hide_amount_heading     = True
+    email_before_billing    = True
+    hide_minnpost_account   = True
+    hide_pay_comments       = False
+    pay_fees                = False
+
+    # show ach fields
+    if request.args.get("show_ach"):
+        show_ach = request.args.get("show_ach")
+        if show_ach == 'true':
+            show_ach = True
+        else:
+            show_ach = False
+    else:
+        show_ach = app.config["SHOW_ACH"]
+
+    return render_template(
+        template,
+        title=title,
+        form=form,
+        form_action=form_action,
+        path=path, folder=folder,
+        amount=amount, additional_donation=additional_donation, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
+        opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
+        first_name=first_name, last_name=last_name, email=email,
+        billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
+        campaign=campaign, customer_id=customer_id,
+        hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
+        hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label, anonymous_label=anonymous_label,
+        email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        minnpost_root=app.config["MINNPOST_ROOT"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
+    )
+
+
+# prefill configurable minimal form
+def minimal_form(path, title, heading, description, summary, button, show_amount_field = True, allow_additional_amount = False, hide_amount_heading = True, hide_honor_or_memory = True, hide_display_name = True, recognition_label = 'Preferred name(s) for recognition', email_before_billing = True, hide_minnpost_account = True, hide_pay_comments = True):
+
+    template    = "minimal.html"
+    form        = MinimalForm()
+    form_action = "/finish/" # we might want to make this a parameter but probably not
 
     # salesforce donation object
     opportunity_id = request.args.get("opportunity", "")
@@ -1215,6 +1498,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
     yearly = 1
     campaign = ""
     customer_id = ""
+    mrpledge_id = ""
     first_name = ""
     last_name = ""
     email = ""
@@ -1300,6 +1584,9 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
                 else: 
                     close_date = donation.close_date
 
+            if donation.mrpledge_id is not None:
+                mrpledge_id = donation.mrpledge_id
+
     # salesforce fields that can be overridden with these url parameters
     # if there's not an existing donation, we can prepopulate fields with these url parameters
     if request.args.get("amount"):
@@ -1317,6 +1604,9 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
 
     # stripe customer id
     customer_id = request.args.get("customer_id", customer_id)
+
+    # mrpledge ID
+    mrpledge_id = request.args.get("pledge", mrpledge_id)
 
     # referring page url
     referring_page = request.args.get("referring_page", referring_page)
@@ -1383,7 +1673,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
         amount=amount_formatted, additional_donation=additional_donation, yearly=yearly, installment_period=installment_period,
         first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
-        campaign=campaign, customer_id=customer_id, referring_page=referring_page,
+        campaign=campaign, mrpledge_id=mrpledge_id, customer_id=customer_id, referring_page=referring_page,
         hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
@@ -1391,7 +1681,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
         update_default_source=update_default_source, stage_name=stage_name, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
-        lock_key=lock_key, url=url,
+        lock_key=lock_key, path=path,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
@@ -1602,6 +1892,8 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
         logging.info("----Adding opportunity...")
 
     # posted form fields
+    first_name = form.get("first_name", "")
+    last_name = form.get("last_name", "")
 
     # default
     opportunity.amount = form.get("amount", 0)
@@ -1612,14 +1904,18 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.type = form.get("opportunity_type", "Donation")
     opportunity.close_date = form.get("close_date", today)
     opportunity.stage_name = form.get("stage_name", "Pledged")
+
+    opportunity.name = (
+        f"{first_name} {last_name} {opportunity.type} {today}"
+    )
     
     # minnpost custom fields
     opportunity.agreed_to_pay_fees = form.get("pay_fees", False)
     opportunity.anonymous = form.get("anonymous", False)
     opportunity.client_organization = form.get("client_organization", None)
     opportunity.credited_as = form.get("display_as", None)
-    opportunity.donor_first_name = form.get("first_name", "")
-    opportunity.donor_last_name = form.get("last_name", "")
+    opportunity.donor_first_name = first_name
+    opportunity.donor_last_name = last_name
     opportunity.donor_email = form.get("email", "")
     opportunity.donor_address_one = form.get("billing_street", "")
     opportunity.donor_city = form.get("billing_city", "")
@@ -1628,7 +1924,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.donor_country = form.get("billing_country", "")
     opportunity.email_notify = form.get("email_notify", "")
     opportunity.email_user_when_canceled = form.get("email_user_when_canceled", False)
-    opportunity.fair_market_value = form.get("fair_market_value", "")
+    opportunity.fair_market_value = form.get("fair_market_value", 0)
     opportunity.include_amount_in_notification = form.get("include_amount_in_notification", False)
     opportunity.in_honor_or_memory = form.get("in_honor_or_memory", "")
     opportunity.in_honor_memory_of = form.get("in_honor_memory_of", "")
@@ -1637,7 +1933,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
     opportunity.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     opportunity.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
-    opportunity.minnpost_invoice = form.get("minnpost_invoice", "")
+    opportunity.invoice = form.get("invoice", "")
     opportunity.mrpledge_id = form.get("mrpledge_id", "")
     opportunity.payment_type = "Stripe"
     opportunity.referring_page = form.get("source", None)
@@ -1650,6 +1946,15 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.stripe_customer_id = customer["id"]
     opportunity.stripe_payment_type = form.get("stripe_payment_type", "")
     opportunity.subtype = form.get("opportunity_subtype", "Donation: Individual")
+
+    if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == "":
+        opportunity.fair_market_value = opportunity.amount
+
+    # some forms have testimony fields
+    reason_for_supporting = form.get("reason_for_supporting", "")
+    if reason_for_supporting != "":
+        opportunity.reason_for_supporting = reason_for_supporting
+        opportunity.reason_for_supporting_shareable = form.get("reason_shareable", False)
 
     opportunity.lock_key = form.get("lock_key", "")
 
@@ -1751,6 +2056,12 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
     rdo.stripe_payment_type = form.get("stripe_payment_type", "")
+
+    # some forms have testimony fields
+    reason_for_supporting = form.get("reason_for_supporting", "")
+    if reason_for_supporting != "":
+        rdo.reason_for_supporting = reason_for_supporting
+        rdo.reason_for_supporting_shareable = form.get("reason_shareable", False)
 
     rdo.stripe_transaction_fee = calculate_amount_fees(rdo.amount, rdo.stripe_payment_type, rdo.agreed_to_pay_fees)
 

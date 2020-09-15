@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% if not url or url == "" or url == "give" %}
+{% if not path or path == "" or path == "give" %}
   <section class="progress progress--donation">
     <div class="wrapper">
       <ol>
@@ -17,8 +17,10 @@
 <main>
   <div class="wrapper support--forms">
     <section id="panel--confirmation" class="panel panel--form">
-      {% if url != "" %}
-        {% include '/%s/finish.html' % url %}
+      {% if path != "" and folder != "" %}
+        {% include "/" + path + "/" + folder + "/finish.html" %}
+      {% elif path != "" %}
+        {% include "/%s/finish.html" % path %}
       {% else %}
         <h1>{{ title }}</h1>
         <p>You're all done. Thanks again for your support of MinnPost.</p>

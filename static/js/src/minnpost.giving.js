@@ -31,7 +31,8 @@
     'pay_cc_processing_selector' : 'input[id="pay-fees"]',
     'fee_amount' : '.processing-amount',
     'level_amount_selector' : '#panel--pay .amount .level-amount', // we can maybe get rid of this
-    'original_amount_selector' : '#amount',
+    'original_amount_selector' : '[name="amount"]',
+    'fair_market_value_selector' : '#fair_market_value',
     'frequency_selector' : '.frequency',
     'full_amount_selector' : '.full-amount',
     'name_selector' : '.form-item--display-name',
@@ -353,6 +354,14 @@
       // there is also potentially an additional amount field value to add
       var that = this;
       var payment_type = $(options.choose_payment + ' input').val();
+
+      // set the fair market value if applicable
+      var amount_selector_fair_market = $(options.original_amount_selector, element);
+      if (amount_selector_fair_market.is(':radio')) {
+        amount_selector_fair_market = $(options.original_amount_selector + ':checked', element);
+      }
+      that.setFairMarketValue(amount_selector_fair_market);
+
       $(options.original_amount_selector, element).change(function() {
         that.options.original_amount = parseInt($(this, element).val(), 10);
         if ( payment_type === 'bank_account' ) {
@@ -360,6 +369,7 @@
         } else {
           that.calculateFees(that.options.original_amount, 'card');
         }
+        that.setFairMarketValue($(this, element));
       });
       $(options.additional_amount_field, element).change(function() {
         that.options.original_amount = parseInt($(options.original_amount_selector, element).val(), 10);
@@ -371,6 +381,14 @@
       });
 
     }, // amountUpdated
+
+    setFairMarketValue: function(amount_selector) {
+      // if there is a fair market value field, check and see if we can populate it
+      if ($(this.options.fair_market_value_selector).length > 0) {
+        var fairMarketValue = amount_selector.data('fair-market-value');
+        $(this.options.fair_market_value_selector).val(fairMarketValue);
+      }
+    }, // setFairMarketValue
 
     calculateFees: function(amount, stripe_payment_type) {
       // this sends the amount and stripe payment type to python; get the fee and display it to the user on the checkbox label

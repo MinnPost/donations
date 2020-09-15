@@ -274,15 +274,13 @@ class Opportunity(SalesforceObject):
         # set defaults for default opportunity fields
         if account is not None:
             self.account_id = account.id
-            self.name = None
         elif contact is not None:
             self.account_id = contact.account_id
-            self.name = f"{contact.first_name} {contact.last_name} Donation {today}"
         else:
-            self.name = None
             self.account_id = None
 
         self.id = None
+        self.name = None
         self._amount = 0
         self.additional_donation = 0
         self.close_date = today
@@ -322,11 +320,13 @@ class Opportunity(SalesforceObject):
         self.member_benefit_request_nyt = None
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
-        self.minnpost_invoice = None
+        self.invoice = None
         self.mrpledge_id = None
         self.subtype = None
         self.payment_url = None
         self.payment_type = None
+        self.reason_for_supporting = ""
+        self.reason_for_supporting_shareable = True
         self.referring_page = None
         self.shipping_name = None
         self.shipping_street = None
@@ -462,6 +462,7 @@ class Opportunity(SalesforceObject):
             #y.record_type_name = item["RecordType"]["Name"]
             y.stage_name = "Pledged"
             y.type = item["Type"]
+            y.mrpledge_id = item["MRpledge_com_ID__c"]
             y.subtype = item["Opportunity_Subtype__c"]
             y.credited_as = item["Credited_as__c"]
             y.anonymous = item["Anonymous__c"]
@@ -610,10 +611,12 @@ class Opportunity(SalesforceObject):
             "Member_benefit_request_New_York_Times__c": self.member_benefit_request_nyt,
             "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
-            "MinnPost_Invoice__c": self.minnpost_invoice,
+            "MinnPost_Invoice__c": self.invoice,
             "MRpledge_com_ID__c": self.mrpledge_id,
             "Opportunity_Subtype__c": self.subtype,
             "Payment_Type__c": self.payment_type,
+            "Reason_for_Gift__c": self.reason_for_supporting,
+            "Reason_for_gift_shareable__c": self.reason_for_supporting_shareable,
             "Referring_page__c": self.referring_page,
             "Shipping_address_name__c": self.shipping_name,
             "Shipping_address_street__c": self.shipping_street,
@@ -740,6 +743,8 @@ class RDO(SalesforceObject):
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
         self.payment_type = None
+        self.reason_for_supporting = ""
+        self.reason_for_supporting_shareable = True
         self.referring_page = None
         self.shipping_name = None
         self.shipping_street = None
@@ -800,6 +805,8 @@ class RDO(SalesforceObject):
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
             "npe03__Open_Ended_Status__c": self.open_ended_status,
             "Payment_Type__c": self.payment_type,
+            "Reason_for_Gift__c": self.reason_for_supporting,
+            "Reason_for_gift_shareable__c": self.reason_for_supporting_shareable,
             "Referring_page__c": self.referring_page,
             "Shipping_address_name__c": self.shipping_name,
             "Shipping_address_street__c": self.shipping_street,

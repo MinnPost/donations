@@ -4,8 +4,9 @@
 
 <main>
   <div class="wrapper support--forms">
-    <form action="{{ form_action }}" method="post" class="support support--advertising" id="donate">
+    <form action="{{ form_action }}" method="post" class="support support--sponsorship" id="donate">
       {% include 'shared/hidden-fields.html' %}
+      <input type="hidden" name="fair_market_value" id="fair_market_value" value="0">
       <input type="hidden" name="installment_period" id="installment_period" value="{{ frequency }}">
       {% if stage != '' %}
         <input type="hidden" name="stage_name" id="stage_name" value="{{ stage_name }}">
@@ -19,7 +20,16 @@
       {% if opportunity_subtype %}
         <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
       {% endif %}
-      {% include 'minimal/details.html' %}
+      {% if folder %}
+        <input type="hidden" name="folder" id="folder" value="{{ folder }}">
+      {% endif %}
+
+      {% if folder != "" %}
+        {% include 'patron/%s/details.html' % folder %}
+      {% else %}
+        {% include 'minimal/details.html' %}
+      {% endif %}
+
       {% include 'shared/pay.html' %}
     </form>
   </div>

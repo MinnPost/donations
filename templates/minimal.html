@@ -7,12 +7,14 @@
 
     <form action="{{ form_action }}" method="post" class="support support--minimal" id="donate">
       {% include 'shared/hidden-fields.html' %}
-      <input type="hidden" name="url" id="url" value="{{ url }}">
       {% if stage != '' %}
         <input type="hidden" name="stage_name" id="stage_name" value="{{ stage_name }}">
       {% endif %}
       {% if close_date %}
         <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
+      {% endif %}
+      {% if mrpledge_id %}
+        <input type="hidden" name="mrpledge_id" id="mrpledge_id" value="{{ mrpledge_id }}">
       {% endif %}
       {% if opportunity_id %}
         <input type="hidden" name="opportunity_id" id="opportunity_id" value="{{ opportunity_id }}">
