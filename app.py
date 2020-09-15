@@ -212,6 +212,7 @@ app.config.update(
     CELERY_IMPORTS=("app", "npsp", "batch"),
 )
 stripe.api_key = app.config["STRIPE_KEYS"]["secret_key"]
+stripe.api_version = "2020-08-27"
 
 make_celery(app)
 
