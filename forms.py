@@ -225,14 +225,10 @@ class MinimalForm(BaseForm):
 
 # used for anniversary-patron, minnroast-patron, other sponsorship things
 class SponsorshipForm(MinimalForm):
-    additional_amount = StringField(
-        u"Additional Donation",
-        validators=[
-            validators.Optional(),
-            validate_amount,
-        ],
-        filters=[format_amount],
     folder = HiddenField("Folder", [validators.Optional()])
+    reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
+    reason_shareable = BooleanField(
+        u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
     )
 
 

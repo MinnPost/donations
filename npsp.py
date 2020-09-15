@@ -325,6 +325,8 @@ class Opportunity(SalesforceObject):
         self.subtype = None
         self.payment_url = None
         self.payment_type = None
+        self.reason_for_supporting = None
+        self.reason_for_supporting_shareable = None
         self.referring_page = None
         self.shipping_name = None
         self.shipping_street = None
@@ -612,6 +614,8 @@ class Opportunity(SalesforceObject):
             "MRpledge_com_ID__c": self.mrpledge_id,
             "Opportunity_Subtype__c": self.subtype,
             "Payment_Type__c": self.payment_type,
+            "Reason_for_Gift__c": self.reason_for_supporting,
+            "Reason_for_gift_shareable__c": self.reason_for_supporting_shareable,
             "Referring_page__c": self.referring_page,
             "Shipping_address_name__c": self.shipping_name,
             "Shipping_address_street__c": self.shipping_street,
@@ -738,6 +742,8 @@ class RDO(SalesforceObject):
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
         self.payment_type = None
+        self.reason_for_supporting = None
+        self.reason_for_supporting_shareable = None
         self.referring_page = None
         self.shipping_name = None
         self.shipping_street = None
@@ -798,6 +804,8 @@ class RDO(SalesforceObject):
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
             "npe03__Open_Ended_Status__c": self.open_ended_status,
             "Payment_Type__c": self.payment_type,
+            "Reason_for_Gift__c": self.reason_for_supporting,
+            "Reason_for_gift_shareable__c": self.reason_for_supporting_shareable,
             "Referring_page__c": self.referring_page,
             "Shipping_address_name__c": self.shipping_name,
             "Shipping_address_street__c": self.shipping_street,

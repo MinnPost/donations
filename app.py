@@ -378,7 +378,7 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
             return True
 
 
-# this isn't being used yet
+# this is used to update or cancel donations
 @celery.task(name="app.update_donation")
 def update_donation(form=None, customer=None, donation_type=None):
     """
@@ -1170,6 +1170,26 @@ def anniversary_patron_form():
     return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
 
 
+@app.route("/minnroast-patron/" , methods=["GET", "POST"])
+def minnroast_patron_form():
+    title       = "MinnRoast Patron Packages"
+    heading     = title
+    description = title
+    summary     = "Thank you for becoming a MinnRoast Patron! As a Patron, you receive the most exclusive access to this unique annual tradition and provide crucial financial support for MinnPost's nonprofit newsroom. Cheers!"
+    folder      = "minnroast"
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", MINNROAST_CAMPAIGN_ID)
+
+    # interface settings
+    allow_additional_amount = True
+    hide_honor_or_memory    = True
+    hide_display_name       = False
+    button                  = "Purchase your Patron package"
+
+    return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
+
+
 @app.route("/pledge-payment/", methods=["GET", "POST"])
 def pledge_payment_form():
     title       = "MinnPost Pledge Payment"
@@ -1297,7 +1317,7 @@ def finish():
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
     additional_donation = form_data.get("additional_donation", 0)
-    if additional_donation:
+    if additional_donation and additional_donation != 0:
         additional_donation = format(additional_donation, ",.2f")
 
     finish_donation.delay(form_data)
@@ -1393,6 +1413,10 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
     # country
     billing_country = request.args.get("billing_country", "")
 
+    additional_donation = request.args.get("additional_donation", 0)
+    if additional_donation != 0:
+        additional_donation = format_amount(request.args.get("additional_donation"))
+
     # default sf fields
     stage_name = "Pledged"
     now = datetime.now()
@@ -1427,7 +1451,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         form=form,
         form_action=form_action,
         url=url, folder=folder,
-        amount=amount, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
+        amount=amount, additional_donation=additional_donation, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
         opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
@@ -1921,6 +1945,13 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == "":
         opportunity.fair_market_value = opportunity.amount
 
+    # some forms have testimony fields
+    reason_for_supporting = form.get("reason_for_supporting", "")
+    if reason_for_supporting != "":
+        logging.info( 'add reason' )
+        opportunity.reason_for_supporting = reason_for_supporting
+        opportunity.reason_for_supporting_shareable = form.get("reason_shareable", False)
+
     opportunity.lock_key = form.get("lock_key", "")
 
     if opportunity.campaign == "":
@@ -2021,6 +2052,12 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
     rdo.stripe_payment_type = form.get("stripe_payment_type", "")
+
+    # some forms have testimony fields
+    reason_for_supporting = form.get("reason_for_supporting", "")
+    if reason_for_supporting != "":
+        rdo.reason_for_supporting = reason_for_supporting
+        rdo.reason_for_supporting_shareable = form.get("reason_shareable", False)
 
     rdo.stripe_transaction_fee = calculate_amount_fees(rdo.amount, rdo.stripe_payment_type, rdo.agreed_to_pay_fees)
 
