@@ -31,7 +31,7 @@
     'pay_cc_processing_selector' : 'input[id="pay-fees"]',
     'fee_amount' : '.processing-amount',
     'level_amount_selector' : '#panel--pay .amount .level-amount', // we can maybe get rid of this
-    'original_amount_selector' : '#amount',
+    'original_amount_selector' : '[name="amount"]',
     'frequency_selector' : '.frequency',
     'full_amount_selector' : '.full-amount',
     'name_selector' : '.form-item--display-name',
