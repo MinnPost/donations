@@ -264,7 +264,7 @@ class FinishForm(BaseForm):
             filters.append(strip_whitespace)
             return unbound_field.bind(form=form, filters=filters, **options)
 
-    url = HiddenField("URL", [validators.Optional()])
+    path = HiddenField("Path", [validators.Optional()])
     folder = HiddenField("Folder", [validators.Optional()])
     additional_donation = StringField(
         u"Additional Donation Amount",

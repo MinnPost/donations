@@ -921,7 +921,7 @@ def donation_cancel_form():
     form_action = "/donation-cancel/"
     function    = update_donation.delay
     heading     = "Cancel Donation"
-    url         = "donation-cancel"
+    path         = "donation-cancel"
 
     # salesforce donation object
     opportunity_id = request.args.get("opportunity", "")
@@ -944,7 +944,7 @@ def donation_cancel_form():
             return render_template(
                 "finish.html",
                 title=title,
-                url=url,
+                path=path,
                 minnpost_root=app.config["MINNPOST_ROOT"],
                 stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
             )
@@ -1000,7 +1000,7 @@ def donation_cancel_form():
         title=title,
         form=form,
         form_action=form_action,
-        url=url, amount=amount_formatted, frequency=frequency,
+        path=path, amount=amount_formatted, frequency=frequency,
         first_name=first_name, last_name=last_name, email=email, customer_id=customer_id,
         stage_name=stage_name, open_ended_status=open_ended_status, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
@@ -1025,12 +1025,12 @@ def donate_form():
     hide_display_name       = False
     button                  = "Make Your Donation"
     
-    return minimal_form("donate", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+    return minimal_form("minimal", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
 
 @app.route("/advertising-payment/", methods=["GET", "POST"])
 def advertising_form():
-    url         = "advertising-payment"
+    path        = "advertising-payment"
     template    = "advertising.html"
     title       = "Advertising Payment | MinnPost"
     heading     = "MinnPost Advertising"
@@ -1131,7 +1131,7 @@ def advertising_form():
         title=title,
         form=form,
         form_action=form_action,
-        url=url, amount=amount_formatted, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
+        path=path, amount=amount_formatted, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
         opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         invoice=invoice, client_organization=client_organization,
         first_name=first_name, last_name=last_name, email=email,
@@ -1201,7 +1201,7 @@ def pledge_payment_form():
     hide_honor_or_memory    = True
     hide_display_name       = False
     button                  = "Finish Your Pledge"
-    return minimal_form("pledge-payment", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+    return minimal_form("minimal", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
 
 ## this is a minnpost url. use this when sending a request to plaid
@@ -1310,7 +1310,7 @@ def finish():
     # use form.data instead of request.form from here on out
     # because it includes all filters applied by WTF Forms
     form_data = form.data
-    url = form_data.get("url", "")
+    path = form_data.get("path", "")
     folder = form_data.get("folder", "")
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
@@ -1325,7 +1325,7 @@ def finish():
     return render_template(
         template,
         title=title,
-        url=url, folder=folder, amount=amount_formatted, additional_donation=additional_donation,
+        path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
@@ -1357,7 +1357,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
     
     template    = "sponsorship.html"
     form        = SponsorshipForm()
-    url         = "patron"
+    path        = "patron"
     form_action = "/finish/"
 
     if request.method == "POST":
@@ -1448,7 +1448,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         title=title,
         form=form,
         form_action=form_action,
-        url=url, folder=folder,
+        path=path, folder=folder,
         amount=amount, additional_donation=additional_donation, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
         opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         first_name=first_name, last_name=last_name, email=email,
@@ -1465,7 +1465,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
 
 
 # prefill configurable minimal form
-def minimal_form(url, title, heading, description, summary, button, show_amount_field = True, allow_additional_amount = False, hide_amount_heading = True, hide_honor_or_memory = True, hide_display_name = True, recognition_label = 'Preferred name(s) for recognition', email_before_billing = True, hide_minnpost_account = True, hide_pay_comments = True):
+def minimal_form(path, title, heading, description, summary, button, show_amount_field = True, allow_additional_amount = False, hide_amount_heading = True, hide_honor_or_memory = True, hide_display_name = True, recognition_label = 'Preferred name(s) for recognition', email_before_billing = True, hide_minnpost_account = True, hide_pay_comments = True):
 
     template    = "minimal.html"
     form        = MinimalForm()
@@ -1674,7 +1674,7 @@ def minimal_form(url, title, heading, description, summary, button, show_amount_
         update_default_source=update_default_source, stage_name=stage_name, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
-        lock_key=lock_key, url=url,
+        lock_key=lock_key, path=path,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
