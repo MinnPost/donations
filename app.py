@@ -1257,6 +1257,31 @@ def calculate_fees():
     return jsonify(ret_data)
 
 
+@app.route("/create-payment-intent/", methods=['POST'])
+def create_payment_intent():
+    #data = json.loads(request.data)
+
+    form = DonateForm(request.form)
+    # use form.data instead of request.form from here on out
+    # because it includes all filters applied by WTF Forms
+    form_data = form.data
+
+    amount   = form_data["amount"]
+    currency = form_data.get("currency", "usd")
+
+    # Create a PaymentIntent with the order amount and currency
+    intent = stripe.PaymentIntent.create(
+        amount=amount,
+        currency=currency
+    )
+
+    try:
+        # Send publishable key and PaymentIntent details to client
+        return jsonify({'publishableKey': app.config["STRIPE_KEYS"]["publishable_key"], 'clientSecret': intent.client_secret})
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+
+
 @app.route("/thanks/", methods=["POST"])
 def thanks():
     template    = "thanks.html"
