@@ -1919,7 +1919,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     opportunity.donor_country = form.get("billing_country", "")
     opportunity.email_notify = form.get("email_notify", "")
     opportunity.email_user_when_canceled = form.get("email_user_when_canceled", False)
-    opportunity.fair_market_value = form.get("fair_market_value", "")
+    opportunity.fair_market_value = form.get("fair_market_value", 0)
     opportunity.include_amount_in_notification = form.get("include_amount_in_notification", False)
     opportunity.in_honor_or_memory = form.get("in_honor_or_memory", "")
     opportunity.in_honor_memory_of = form.get("in_honor_memory_of", "")
@@ -1948,7 +1948,6 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     # some forms have testimony fields
     reason_for_supporting = form.get("reason_for_supporting", "")
     if reason_for_supporting != "":
-        logging.info( 'add reason' )
         opportunity.reason_for_supporting = reason_for_supporting
         opportunity.reason_for_supporting_shareable = form.get("reason_shareable", False)
 
