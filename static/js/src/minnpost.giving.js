@@ -705,7 +705,7 @@
         currency: "usd",
         total: {
           amount: amount,
-          label: "Total"
+          label: "MinnPost"
         },
         requestPayerName: true,
         requestPayerEmail: true
