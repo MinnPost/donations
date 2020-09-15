@@ -325,8 +325,8 @@ class Opportunity(SalesforceObject):
         self.subtype = None
         self.payment_url = None
         self.payment_type = None
-        self.reason_for_supporting = None
-        self.reason_for_supporting_shareable = None
+        self.reason_for_supporting = ""
+        self.reason_for_supporting_shareable = True
         self.referring_page = None
         self.shipping_name = None
         self.shipping_street = None
@@ -742,8 +742,8 @@ class RDO(SalesforceObject):
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
         self.payment_type = None
-        self.reason_for_supporting = None
-        self.reason_for_supporting_shareable = None
+        self.reason_for_supporting = ""
+        self.reason_for_supporting_shareable = True
         self.referring_page = None
         self.shipping_name = None
         self.shipping_street = None
