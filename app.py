@@ -1293,6 +1293,7 @@ def finish():
     # because it includes all filters applied by WTF Forms
     form_data = form.data
     url = form_data.get("url", "")
+    folder = form_data.get("folder", "")
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
     additional_donation = form_data.get("additional_donation", 0)
@@ -1306,7 +1307,7 @@ def finish():
     return render_template(
         template,
         title=title,
-        url=url, amount=amount_formatted, additional_donation=additional_donation,
+        url=url, folder=folder, amount=amount_formatted, additional_donation=additional_donation,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )

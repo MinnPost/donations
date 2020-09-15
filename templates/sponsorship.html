@@ -19,6 +19,9 @@
       {% if opportunity_subtype %}
         <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
       {% endif %}
+      {% if folder %}
+        <input type="hidden" name="folder" id="folder" value="{{ folder }}">
+      {% endif %}
 
       {% if folder != "" %}
         {% include 'patron/%s/details.html' % folder %}

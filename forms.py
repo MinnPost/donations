@@ -232,6 +232,7 @@ class SponsorshipForm(MinimalForm):
             validate_amount,
         ],
         filters=[format_amount],
+    folder = HiddenField("Folder", [validators.Optional()])
     )
 
 
@@ -260,6 +261,7 @@ class FinishForm(BaseForm):
             return unbound_field.bind(form=form, filters=filters, **options)
 
     url = HiddenField("URL", [validators.Optional()])
+    folder = HiddenField("Folder", [validators.Optional()])
     additional_donation = StringField(
         u"Additional Donation Amount",
         validators=[
