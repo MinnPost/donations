@@ -106,9 +106,9 @@ def charge_cards():
         )
         try:
             charge(opportunity)
-        except ChargeException:
-            # TODO should we alert slack? Did not because we had no notifications here before
-            pass
+        except ChargeException as e:
+            logging.info("Batch charge error")
+            e.send_slack_notification()
 
     log.send()
 
@@ -140,9 +140,9 @@ def update_ach_charges():
         )
         try:
             charge(opportunity)
-        except ChargeException:
-            # TODO should we alert slack? Did not because we had no notifications here before
-            pass
+        except ChargeException as e:
+            logging.info("ACH batch charge error")
+            e.send_slack_notification()
 
     log.send()
 
