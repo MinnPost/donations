@@ -202,49 +202,53 @@ def charge(opportunity):
                 shipping=shipping_details,
                 source=charge_source,
             )
-        except stripe.error.CardError as e:
-            # look for decline code:
-            error = e.json_body["error"]
-            logging.info(f"The card has been declined:")
-            logging.info(f"Message: {error.get('message', '')}")
-            logging.info(f"Decline code: {error.get('decline_code', '')}")
-            opportunity.stripe_error_message = error.get("message", "unknown failure")
+        except Exception as e:
+            logging.info(f"Error charging card: {type(e)}")
+            if isinstance(e, stripe.error.StripeError):
+                message = e.user_message or ''
+                logging.info(f"Message: {message}")
+
+                reason = e.user_message
+
+                if isinstance(e, stripe.error.CardError):
+                    logging.info(f"The card has been declined")
+                    logging.info(f"Decline code: {e.json_body.get('decline_code', '')}")
+
+                    if reason is None:
+                        reason = "card declined for unknown reason"
+
+                if reason is None:
+                    reason = "unknown failure"
+
+            else:
+                reason = "unknown failure"
+
+            opportunity.stripe_error_message = reason
+
+        if charge.status != "succeeded" and charge.status != "pending":
             opportunity.stage_name = "Failed"
+            opportunity.stripe_error_message = "Error: Unknown. Check logs"
             opportunity.save()
             logging.debug(
                 f"Opportunity set to '{opportunity.stage_name}' with reason: {opportunity.stripe_error_message}"
             )
-            raise ChargeException(opportunity, "card error")
-
-        except stripe.error.InvalidRequestError as e:
-            logging.error(f"Problem: {e}")
-            raise ChargeException(opportunity, "invalid request")
-        except Exception as e:
-            logging.error(f"Problem: {e}")
-            raise ChargeException(opportunity, "unknown error")
-
-        if charge.status != 'succeeded' and charge.status != 'pending':
-            opportunity.stage_name = "Failed"
-            opportunity.stripe_error_message = "Error: Unknown. Check logs"
-            opportunity.save()
-            logging.error("Charge failed. Check Stripe logs.")
-            raise ChargeException(opportunity, "charge failed")
+            raise ChargeException(opportunity, reason)
 
     else:
-        logging.info(
+        logging.debug(
             f"---- Checking transaction {opportunity.stripe_transaction_id}"
         )
         charge = stripe.Charge.retrieve(opportunity.stripe_transaction_id)
 
     # this is either pending or finished
-    if charge.status == 'pending':
+    if charge.status == "pending":
         logging.info(f"ACH charge pending. Check at intervals to see if it processes.")
         opportunity.stage_name = "ACH Pending"
         opportunity.stripe_transaction_id = charge.id
         opportunity.save()
 
     # charge was successful
-    if charge.source.object != 'bank_account':
+    if charge.source.object != "bank_account":
         opportunity.stripe_card = charge.source.id
         opportunity.stripe_transaction_id = charge.id
         opportunity.stage_name = "Closed Won"
