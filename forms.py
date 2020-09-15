@@ -199,7 +199,7 @@ class DonateForm(BaseForm):
 
 # used for anniversary-patron, minnpost-default, minnroast-patron, other minimal donate forms
 class MinimalForm(BaseForm):
-    pledge = HiddenField("Pledge", [validators.Optional()])
+    mrpledge_id = HiddenField("MrPledge ID", [validators.Optional()])
     stage_name = HiddenField("Stage Name", [validators.Optional()])
     close_date = HiddenField("Close Date", [validators.Optional()])
     opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])

@@ -462,6 +462,7 @@ class Opportunity(SalesforceObject):
             #y.record_type_name = item["RecordType"]["Name"]
             y.stage_name = "Pledged"
             y.type = item["Type"]
+            y.mrpledge_id = item["MRpledge_com_ID__c"]
             y.subtype = item["Opportunity_Subtype__c"]
             y.credited_as = item["Credited_as__c"]
             y.anonymous = item["Anonymous__c"]

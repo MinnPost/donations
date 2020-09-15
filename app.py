@@ -1498,6 +1498,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     yearly = 1
     campaign = ""
     customer_id = ""
+    mrpledge_id = ""
     first_name = ""
     last_name = ""
     email = ""
@@ -1583,6 +1584,9 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
                 else: 
                     close_date = donation.close_date
 
+            if donation.mrpledge_id is not None:
+                mrpledge_id = donation.mrpledge_id
+
     # salesforce fields that can be overridden with these url parameters
     # if there's not an existing donation, we can prepopulate fields with these url parameters
     if request.args.get("amount"):
@@ -1600,6 +1604,9 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
 
     # stripe customer id
     customer_id = request.args.get("customer_id", customer_id)
+
+    # mrpledge ID
+    mrpledge_id = request.args.get("pledge", mrpledge_id)
 
     # referring page url
     referring_page = request.args.get("referring_page", referring_page)
@@ -1666,7 +1673,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         amount=amount_formatted, additional_donation=additional_donation, yearly=yearly, installment_period=installment_period,
         first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
-        campaign=campaign, customer_id=customer_id, referring_page=referring_page,
+        campaign=campaign, mrpledge_id=mrpledge_id, customer_id=customer_id, referring_page=referring_page,
         hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
