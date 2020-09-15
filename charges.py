@@ -8,6 +8,7 @@ from util import send_slack_message
 import stripe
 
 stripe.api_key = STRIPE_KEYS["secret_key"]
+stripe.api_version = "2020-08-27"
 
 TWOPLACES = Decimal(10) ** -2  # same as Decimal('0.01')
 

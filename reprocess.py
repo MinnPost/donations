@@ -18,7 +18,7 @@ from docopt import docopt
 zone = timezone(TIMEZONE)
 
 stripe.api_key = STRIPE_KEYS["secret_key"]
-
+stripe.api_version = "2020-08-27"
 
 def charge_cards(date):
 
