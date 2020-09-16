@@ -77,6 +77,19 @@ def calculate_amount_fees(amount, payment_type, paying_fees=True):
     return fees
 
 
+def create_payment_intent(amount, payment_type="card", paying_fees=False, currency="usd"):
+    amount=int(amount * 100)
+    if amount is None or amount < 100:
+        return
+    fees = calculate_amount_fees(amount, payment_type, paying_fees)
+    # Create a PaymentIntent with the order amount and currency
+    intent = stripe.PaymentIntent.create(
+        amount=amount,
+        currency=currency
+    )
+    return intent
+
+
 def check_level(amount, frequency, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
     thisyear = amount * yearly
     level = ''

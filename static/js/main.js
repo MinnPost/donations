@@ -1078,6 +1078,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     'level_amount_selector': '#panel--pay .amount .level-amount',
     // we can maybe get rid of this
     'original_amount_selector': '[name="amount"]',
+    'intent_secret_selector': '#intent',
     'fair_market_value_selector': '#fair_market_value',
     'frequency_selector': '.frequency',
     'full_amount_selector': '.full-amount',
@@ -1416,13 +1417,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
 
       that.setFairMarketValue(amount_selector_fair_market);
+      that.setPaymentIntent();
       $(options.original_amount_selector, element).change(function () {
         that.options.original_amount = parseInt($(this, element).val(), 10);
 
         if (payment_type === 'bank_account') {
           that.calculateFees(that.options.original_amount, 'bank_account');
+          that.setPaymentIntent();
         } else {
           that.calculateFees(that.options.original_amount, 'card');
+          that.setPaymentIntent();
         }
 
         that.setFairMarketValue($(this, element));
@@ -1432,12 +1436,58 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         if (payment_type === 'bank_account') {
           that.calculateFees(that.options.original_amount, 'bank_account');
+          that.setPaymentIntent();
         } else {
           that.calculateFees(that.options.original_amount, 'card');
+          that.setPaymentIntent();
         }
       });
     },
     // amountUpdated
+    setPaymentIntent: function setPaymentIntent() {
+      var amount = this.getTotalAmount();
+      var payment_type = $(this.options.choose_payment + ' input').val();
+      var pay_fees = false;
+      var field = $(this.options.pay_cc_processing_selector);
+
+      if ($(field).is(':checked') || $(field).prop('checked')) {
+        pay_fees = true;
+      }
+
+      var that = this;
+      var intentData = {
+        amount: amount,
+        payment_type: payment_type,
+        pay_fees: pay_fees,
+        currency: 'usd'
+      };
+      $.ajax({
+        method: 'POST',
+        url: '/get-payment-intent/',
+        data: intentData
+      }).done(function (result) {
+        $(that.options.intent_secret_selector).val(result.clientSecret);
+      });
+    },
+    // setPaymentIntent
+    getPaymentIntent: function getPaymentIntent() {
+      var intent;
+      intent = $(that.options.intent_secret_selector).val();
+      return intent;
+    },
+    // getPaymentIntent
+    getTotalAmount: function getTotalAmount(amount) {
+      amount = typeof amount !== 'undefined' ? amount : this.options.original_amount;
+      var total_amount = amount;
+
+      if ($(this.options.additional_amount_field).length > 0 && $(this.options.additional_amount_field).val() > 0) {
+        var additional_amount = $(this.options.additional_amount_field).val();
+        total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10);
+      }
+
+      return total_amount;
+    },
+    //getTotalAmount
     setFairMarketValue: function setFairMarketValue(amount_selector) {
       // if there is a fair market value field, check and see if we can populate it
       if ($(this.options.fair_market_value_selector).length > 0) {
@@ -1449,13 +1499,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     calculateFees: function calculateFees(amount, stripe_payment_type) {
       // this sends the amount and stripe payment type to python; get the fee and display it to the user on the checkbox label
       var that = this;
-      var total_amount = amount;
-
-      if ($(this.options.additional_amount_field).length > 0 && $(this.options.additional_amount_field).val() > 0) {
-        var additional_amount = $(this.options.additional_amount_field).val();
-        total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10);
-      }
-
+      var total_amount = that.getTotalAmount(amount);
       var data = {
         amount: total_amount,
         stripe_payment_type: stripe_payment_type
@@ -1479,6 +1523,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       that.creditCardFeeCheckbox($(this.options.pay_cc_processing_selector));
       $(this.options.pay_cc_processing_selector).on('change', function () {
         that.creditCardFeeCheckbox(this);
+        that.setPaymentIntent();
       });
     },
     // creditCardProcessingFees
@@ -1492,13 +1537,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     // setStripePaymentType
     creditCardFeeCheckbox: function creditCardFeeCheckbox(field) {
       var full_amount;
+      var total_amount = this.getTotalAmount();
       var that = this;
 
       if ($(field).is(':checked') || $(field).prop('checked')) {
         $('.amount .level-amount').addClass('full-amount');
-        full_amount = that.options.original_amount + parseFloat($(that.options.fee_amount).text());
+        full_amount = total_amount + parseFloat($(that.options.fee_amount).text());
       } else {
-        full_amount = that.options.original_amount;
+        full_amount = total_amount;
       }
 
       $(that.options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
@@ -1749,6 +1795,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         $(options.choose_payment + ' input').change(function (event) {
           that.setupPaymentMethod(this.id, this.value);
+          that.setPaymentIntent();
 
           if (this.value === 'bank_account') {
             $('input[name="stripeToken"]', $(that.options.donate_form_selector)).remove();
@@ -1824,6 +1871,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         that.calculateFees(that.options.original_amount, stripe_payment_type);
+        that.setPaymentIntent();
       });
       that.cardExpiryElement.on('change', function (event) {
         // error handling

@@ -78,7 +78,7 @@ from util import (
     dir_last_updated,
 )
 from email_validator import validate_email, EmailNotValidError
-from charges import charge, calculate_amount_fees, check_level, ChargeException
+from charges import charge, calculate_amount_fees, create_payment_intent, check_level, ChargeException
 
 ZONE = timezone(TIMEZONE)
 
@@ -853,6 +853,11 @@ def give_form():
     # fees
     fees = calculate_amount_fees(amount, "card")
 
+    # stripe payment intent
+    intent = create_payment_intent(amount)
+    if intent is not None:
+        intent = intent.client_secret
+
     step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}{decline_benefits}'
 
     # interface settings
@@ -893,7 +898,7 @@ def give_form():
         with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], intent=intent,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
@@ -1127,6 +1132,14 @@ def advertising_form():
     else:
         show_ach = app.config["SHOW_ACH"]
 
+    # fees
+    fees = calculate_amount_fees(amount, "card")
+
+    # stripe payment intent
+    intent = create_payment_intent(amount)
+    if intent is not None:
+        intent = intent.client_secret
+
     return render_template(
         template,
         title=title,
@@ -1144,7 +1157,7 @@ def advertising_form():
         show_invoice=show_invoice, show_organization=show_organization,
         hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], intent=intent,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
@@ -1257,8 +1270,8 @@ def calculate_fees():
     return jsonify(ret_data)
 
 
-@app.route("/create-payment-intent/", methods=['POST'])
-def create_payment_intent():
+@app.route("/get-payment-intent/", methods=['POST'])
+def get_payment_intent():
     #data = json.loads(request.data)
 
     form = DonateForm(request.form)
@@ -1267,13 +1280,11 @@ def create_payment_intent():
     form_data = form.data
 
     amount   = form_data["amount"]
+    payment_type = form_data.get("payment_type", "card")
+    pay_fees = form_data.get("pay_fees", False)
     currency = form_data.get("currency", "usd")
 
-    # Create a PaymentIntent with the order amount and currency
-    intent = stripe.PaymentIntent.create(
-        amount=amount,
-        currency=currency
-    )
+    intent = create_payment_intent(amount, payment_type, pay_fees, currency)
 
     try:
         # Send publishable key and PaymentIntent details to client
@@ -1459,6 +1470,14 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
     hide_pay_comments       = False
     pay_fees                = False
 
+    # fees
+    fees = calculate_amount_fees(amount, "card")
+
+    # stripe payment intent
+    intent = create_payment_intent(amount)
+    if intent is not None:
+        intent = intent.client_secret
+
     # show ach fields
     if request.args.get("show_ach"):
         show_ach = request.args.get("show_ach")
@@ -1485,7 +1504,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
         hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], intent=intent,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
@@ -1680,6 +1699,11 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     # fees
     fees = calculate_amount_fees(amount, "card")
 
+    # stripe payment intent
+    intent = create_payment_intent(amount)
+    if intent is not None:
+        intent = intent.client_secret
+
     additional_donation = request.args.get("additional_donation", 0)
     if additional_donation:
         additional_donation = format_amount(request.args.get("additional_donation"))
@@ -1708,7 +1732,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         lock_key=lock_key, path=path,
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], intent=intent,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
