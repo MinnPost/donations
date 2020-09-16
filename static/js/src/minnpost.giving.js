@@ -412,7 +412,7 @@
 
     getPaymentIntent: function() {
       var intent;
-      intent = $(that.options.intent_secret_selector).val();
+      intent = $(this.options.intent_secret_selector).val();
       return intent;
     }, // getPaymentIntent
 
@@ -1013,8 +1013,8 @@
           }
 
           if ($('input[name="bankToken"]').length == 0) {
-            // finally, get a token from stripe, and try to charge it if it is not ach
-            that.createToken(that.cardNumberElement, tokenData);
+            // finally, try to charge it if it is not ach
+            that.confirmCardPayment(that.cardNumberElement);
           } else {
             // if it is ach, we already have a token so pass it to stripe.
             that.stripeTokenHandler( $('#bankToken').val(), 'bank_account' );
@@ -1026,6 +1026,39 @@
 
       });
     }, // validateAndSubmit
+
+    confirmCardPayment: function(cardElement) {
+      var that = this;
+      var supportform = $(that.options.donate_form_selector);
+      intent = that.getPaymentIntent();
+      that.stripe.confirmCardPayment(
+        intent,
+        {
+          payment_method: {card: cardElement}
+        }
+      ).then(function(result) {
+        if (result.error) {
+          // Show the errors on the form
+          that.buttonStatus(that.options, supportform.find('button'), false);
+          var field = result.error.field + '_field_selector';
+          var message = '';
+          if (typeof result.error.message === 'string') {
+            message = result.error.message;
+          } else {
+            message = result.error.message[0];
+          }
+          if ($(field).length > 0) {
+            $(that.options[field], element).addClass('error');
+            $(that.options[field], element).prev().addClass('error');
+            $(that.options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+          }
+        } else {
+          // Send the token to your server
+          supportform.get(0).submit(); // continue submitting the form if the confirmCardPayment was successful
+        }
+      });
+
+    },
 
     stripeErrorDisplay: function(event, this_selector, element, options) {
       // listen for errors and display/hide error messages
