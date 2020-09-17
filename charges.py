@@ -84,6 +84,7 @@ def create_payment_intent(amount, payment_type="card", paying_fees=False, curren
     fees = calculate_amount_fees(amount, payment_type, paying_fees)
     # Create a PaymentIntent with the order amount and currency
     intent = stripe.PaymentIntent.create(
+        setup_future_usage='off_session',
         amount=amount,
         currency=currency
     )
@@ -187,11 +188,11 @@ def charge(opportunity):
         opportunity.save()
 
         if opportunity.stripe_card is not None:
-            charge_source = opportunity.stripe_card
+            charge_payment_method = opportunity.stripe_card
         elif opportunity.stripe_bank_account is not None:
-            charge_source = opportunity.stripe_bank_account
+            charge_payment_method = opportunity.stripe_bank_account
         else:
-            charge_source = None
+            charge_payment_method = None
 
         if opportunity.shipping_name != '':
             shipping_address = {'line1' : opportunity.shipping_street, 'city' : opportunity.shipping_city, 'state' : opportunity.shipping_state, 'postal_code' : opportunity.shipping_zip, 'country' : opportunity.shipping_country}
@@ -214,7 +215,7 @@ def charge(opportunity):
                     "source": opportunity.referring_page,
                 },
                 shipping=shipping_details,
-                source=charge_source,
+                source=charge_payment_method,
             )
         except Exception as e:
             logging.info(f"Error charging card: {type(e)}")
@@ -262,12 +263,12 @@ def charge(opportunity):
         opportunity.save()
 
     # charge was successful
-    if charge.source.object != "bank_account":
-        opportunity.stripe_card = charge.source.id
+    if charge.payment_method_details.type != "bank_account":
+        opportunity.stripe_card = charge.payment_method
         opportunity.stripe_transaction_id = charge.id
         opportunity.stage_name = "Closed Won"
         opportunity.save()
     else:
-        opportunity.stripe_bank_account = charge.source.id
+        opportunity.stripe_bank_account = charge.payment_method
         opportunity.stage_name = "Closed Won"
         opportunity.save()

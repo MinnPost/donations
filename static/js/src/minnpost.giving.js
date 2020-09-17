@@ -1030,6 +1030,9 @@
     confirmCardPayment: function(cardElement) {
       var that = this;
       var supportform = $(that.options.donate_form_selector);
+      var field;
+      var message;
+      var payment_method;
       intent = that.getPaymentIntent();
       that.stripe.confirmCardPayment(
         intent,
@@ -1040,8 +1043,8 @@
         if (result.error) {
           // Show the errors on the form
           that.buttonStatus(that.options, supportform.find('button'), false);
-          var field = result.error.field + '_field_selector';
-          var message = '';
+          field = result.error.field + '_field_selector';
+          message = '';
           if (typeof result.error.message === 'string') {
             message = result.error.message;
           } else {
@@ -1053,8 +1056,11 @@
             $(that.options[field], element).after('<span class="check-field invalid">' + message + '</span>');
           }
         } else {
-          // Send the token to your server
-          supportform.get(0).submit(); // continue submitting the form if the confirmCardPayment was successful
+          //that.debug(result);
+          payment_method = result.paymentIntent.payment_method;
+          console.dir(result);
+          // Send the payment method to the server
+          //that.stripePaymentHandler(payment_method);
         }
       });
 
@@ -1153,7 +1159,7 @@
       });
     }, // createToken
 
-    stripeTokenHandler: function(token, type) {
+    stripePaymentHandler: function(payment_method, type) {
       var that = this;
       var supportform = $(this.options.donate_form_selector);
       var ajax_url = '';
@@ -1164,7 +1170,7 @@
       } else {
         ajax_url = window.location.pathname;
       }
-      // Insert the token ID into the form so it gets submitted to the server
+      // Insert the payment method ID into the form so it gets submitted to the server
       if ( type === 'card' ) {
         if (token.card.brand.length > 0 && token.card.brand === 'American Express') {
           type = 'amex';

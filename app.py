@@ -564,7 +564,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         try:
             customer = stripe.Customer.create(
                 email=email,
-                source=source_token
+                payment_method=source_token
             )
         except stripe.error.CardError as e: # Stripe returned a card error
             body = e.json_body
@@ -2015,7 +2015,7 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
         # stripe card source handling
         if charge_source is None:
             customer = stripe.Customer.retrieve(customer["id"])
-            card_id = customer.sources.data[0].id
+            card_id = customer.invoice_settings.default_payment_method
             card = customer.sources.retrieve(card_id)
             year = card.exp_year
             month = card.exp_month
