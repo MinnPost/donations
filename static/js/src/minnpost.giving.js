@@ -1064,7 +1064,7 @@
         }
       });
 
-    },
+    }, // confirmCardPayment
 
     stripeErrorDisplay: function(event, this_selector, element, options) {
       // listen for errors and display/hide error messages
