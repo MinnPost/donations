@@ -1,53 +1,47 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<form action="/give/" method="get" class="m-form m-form-standalone support--donate" id="donate">
+	{% if customer_id != '' %}
+	<input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
+	{% endif %}
+	{% if campaign != '' %}
+	<input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
+	{% endif %}
+	{% if first_name != '' %}
+	<input type="hidden" name="first_name" id="first_name" value="{{ first_name }}">
+	{% endif %}
+	{% if last_name != '' %}
+	<input type="hidden" name="last_name" id="last_name" value="{{ last_name }}">
+	{% endif %}
+	{% if email != '' %}
+	<input type="hidden" name="email" id="email" value="{{ email }}">
+	{% endif %}
 
-<main>
-	<div class="wrapper support--forms">
-		<div class="wrapper support--forms">
-			<form action="/give/" method="get" class="support support--donate" id="donate">
-				{% if customer_id != '' %}
-				<input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
-				{% endif %}
-				{% if campaign != '' %}
-				<input type="hidden" name="campaign" id="campaign" value="{{ campaign }}">
-				{% endif %}
-				{% if first_name != '' %}
-				<input type="hidden" name="first_name" id="first_name" value="{{ first_name }}">
-				{% endif %}
-				{% if last_name != '' %}
-				<input type="hidden" name="last_name" id="last_name" value="{{ last_name }}">
-				{% endif %}
-				{% if email != '' %}
-				<input type="hidden" name="email" id="email" value="{{ email }}">
-				{% endif %}
-
-				<fieldset class="amount">
-					<div class="form-item form-item--amount">
-						<label for="first_name" class="required">Amount: </label>
-						<input type="tel" id="amount" name="amount" maxlength="40" required value="{{ amount }}">
-					</div>
-					<div class="form-item form-item--frequency">
-						<label for="first_name" class="required">Frequency: </label>
-						<select id="frequency" name="frequency" required>
-							<option value="">Select a frequency</option>
-							<option value="monthly"{% if frequency == 'monthly' %} selected{% endif %}>monthly</option>
-							<option value="yearly"{% if frequency == 'yearly' %} selected{% endif %}>yearly</option>
-							<option value="one-time"{% if frequency == 'one-time' %} selected{% endif %}>one time</option>
-						</select>
-					</div>
-				</fieldset>
-
-				{% if use_recaptcha == True %}
-					<div class="form-item form-item-recaptcha">
-						{{ form.recaptcha }}
-					</div>
-				{% endif %}
-
-				<button type="submit" class="btn btn--submit give" autocomplete="off">Review member benefits and pay</button>
-			</form>
+	<fieldset class="amount">
+		<div class="m-form-item m-form-item-amount">
+			<label for="first_name" class="required">Amount: </label>
+			<input type="tel" id="amount" name="amount" maxlength="40" required value="{{ amount }}">
 		</div>
-	</div>
-</main>
+		<div class="m-form-item m-form-item-frequency">
+			<label for="first_name" class="required">Frequency: </label>
+			<select id="frequency" name="frequency" required>
+				<option value="">Select a frequency</option>
+				<option value="monthly"{% if frequency == 'monthly' %} selected{% endif %}>monthly</option>
+				<option value="yearly"{% if frequency == 'yearly' %} selected{% endif %}>yearly</option>
+				<option value="one-time"{% if frequency == 'one-time' %} selected{% endif %}>one time</option>
+			</select>
+		</div>
+	</fieldset>
 
+	{% if use_recaptcha == True %}
+		<div class="m-form-item m-form-item-recaptcha">
+			{{ form.recaptcha }}
+		</div>
+	{% endif %}
+	
+	<div class="m-form-actions">
+		<button type="submit" class="a-button" autocomplete="off">Review member benefits and pay</button>
+	</div>
+</form>
 {% endblock %}

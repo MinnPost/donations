@@ -1,0 +1,17 @@
+.m-form-group {
+
+    &.m-form-group-recognition {
+        margin-bottom: $standard-block-margin;
+        
+        .a-form-caption-anonymous {
+            margin-bottom: 0;
+        }
+
+        .a-honor-or-memory {
+            padding: $standard-block-padding;
+            margin-bottom: $standard-block-padding;
+            background: neutral-color(border);
+            border-radius: $border-radius;
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{% if not path or path == "" or path == "give" %}
+<section class="m-support-progress" aria-label="progress">
+    <ol>
+        <li>
+            <a href="{{ step_one_url }}">Choose</a>
+        </li>
+        <li>
+            <a class="active" href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--pay">Payment</a>
+        </li>
+        <li>
+            <span>Thank You</span>
+        </li>
+    </ol>
+</section>
+{% endif %}

@@ -10,19 +10,19 @@
   </div>
 
   {% if amount == '' or show_amount_field or show_frequency_field is sameas true or allow_additional_amount is sameas true or show_invoice is sameas true or show_organization is sameas true %}
-    <fieldset class="minimal-details clear-block">
+    <fieldset class="minimal-details">
       {% if amount == '' or show_amount_field %}
-      <div class="form-item form-item--amount">
+      <div class="m-form-item m-form-item-amount">
         <label for="amount" class="required">Amount: </label>
-        <div class="input-prepend">
-          <span class="prefix">$</span>
+        <div class="a-input-prepend">
+          <span class="a-prefix">$</span>
           <input type="number" id="amount" name="amount" value="{{ amount }}" min="1" step="any" required>
         </div>
       </div>
       {% endif %}
 
       {% if show_frequency_field is sameas true %}
-      <div class="form-item form-item--recurring">
+      <div class="m-form-item m-form-item-recurring">
         <input type="radio" id="recurring-monthly" name="recurring" value="monthly"{% if frequency == 'monthly' %} checked {% endif %}> <label for="recurring-monthly">monthly</label>
         <input type="radio" id="recurring-yearly" name="recurring" value="yearly"{% if frequency == 'yearly' %} checked {% endif %}> <label for="recurring-yearly">yearly</label>
       </div>
@@ -31,14 +31,14 @@
       {% include "/shared/additional-amount.html" %}
 
       {% if show_invoice is sameas true %}
-        <div class="form-item form-item--invoice">
+        <div class="m-form-item m-form-item-invoice">
           <label for="invoice" class="required">Invoice Number:</label>
           <input type="text" id="invoice" name="invoice" value="{{ invoice }}" required>
         </div>
       {% endif %}
 
       {% if show_organization is sameas true %}
-        <div class="form-item form-item--organization">
+        <div class="m-form-item m-form-item-organization">
           <label for="client_organization" class="required">Organization:</label>
           <input type="text" id="client_organization" name="client_organization" value="{{ client_organization }}" required>
         </div>

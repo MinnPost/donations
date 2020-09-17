@@ -1,33 +1,33 @@
-<div class="form-item form-item--first-name">
+<div class="m-form-item m-form-item-first-name">
   <label for="first_name" class="required">First Name: </label>
   <input type="text" id="first_name" name="first_name" maxlength="40" required value="{{ first_name }}">
 </div>
-<div class="form-item form-item--last-name">
+<div class="m-form-item m-form-item-last-name">
   <label for="last_name" class="required">Last Name: </label>
   <input type="text" id="last_name" name="last_name" maxlength="80" required value="{{ last_name }}">
 </div>
-<div class="form-group form-group--recognition">
+<div class="m-form-group m-form-group-recognition">
   {% if not hide_display_name or hide_display_name is sameas false %}
-  <div class="form-item form-item--display-name">
+  <div class="m-form-item m-form-item-display-name">
     <div>
       <label for="display_as">{% if recognition_label is defined %}{{ recognition_label }}{% else %}Preferred name(s) for donor recognition{% endif %}: </label>
       <input type="text" id="display_as" name="display_as" value="{{ credited_as }}">
     </div>
     <div>
-      <label class="additional-option"><input type="checkbox" name="anonymous" id="anonymous" value="1"{% if anonymous == True %} checked{%endif %}> {% if anonymous_label is defined %}{{ anonymous_label }}{% else %}Make this donation anonymously{% endif %}</label>
+      <label class="a-form-caption a-form-caption-anonymous"><input type="checkbox" name="anonymous" id="anonymous" value="1"{% if anonymous == True %} checked{%endif %}> {% if anonymous_label is defined %}{{ anonymous_label }}{% else %}Make this donation anonymously{% endif %}</label>
     </div>
   </div>
   {%endif %}
   {% if not hide_honor_or_memory or hide_honor_or_memory is sameas false %}
-    <div class="form-item form-item--honor-memory">
+    <div class="m-form-item m-form-item-honor-memory">
       <div>
-        <label class="additional-option"><input type="radio" name="in_honor_or_memory" id="in-honor" value="honor"> Make this donation in honor of someone</label>
+        <label class="a-form-caption"><input type="radio" name="in_honor_or_memory" id="in-honor" value="honor"> Make this donation in honor of someone</label>
       </div>
       <div>
-        <label class="additional-option"><input type="radio" name="in_honor_or_memory" id="in-memory" value="memory"> Make this donation in memory of someone</label>
+        <label class="a-form-caption"><input type="radio" name="in_honor_or_memory" id="in-memory" value="memory"> Make this donation in memory of someone</label>
       </div>
-      <div class="honor-or-memory">
-        <label for="in_honor_memory_of">In <span class="honor_type">honor</span> of</span>: </label>
+      <div class="a-honor-or-memory">
+        <label for="in_honor_memory_of">In <span class="a-honor-type">honor</span> of</span>: </label>
         <input type="text" id="in-honor-name" name="in_honor_memory_of">
       </div>
     </div>

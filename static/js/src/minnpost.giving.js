@@ -35,19 +35,19 @@
     'fair_market_value_selector' : '#fair_market_value',
     'frequency_selector' : '.frequency',
     'full_amount_selector' : '.full-amount',
-    'name_selector' : '.form-item--display-name',
-    'in_honor_or_memory_field_selector' : '.form-item--honor-memory',
+    'name_selector' : '.m-form-item-display-name',
+    'in_honor_or_memory_field_selector' : '.m-form-item-honor-memory',
     'honor_or_memory_chooser' : 'input[name="in_honor_or_memory"]', // radio fields
-    'honor_type_selector' : '.honor_type', // span inside label
-    'honor_memory_input_group' : '.honor-or-memory', // holds the form field
+    'honor_type_selector' : '.a-honor-type', // span inside label
+    'honor_memory_input_group' : '.a-honor-or-memory', // holds the form field
     'notify_selector' : '.notify_someone',
-    'notify_field_selector' : '.form-item--notify',
+    'notify_field_selector' : '.m-form-item-notify',
     'anonymous_selector' : '#anonymous',
     'show_billing_country_selector' : '#billing_show_country',
-    'billing_country_selector' : '.form-item--country',
+    'billing_country_selector' : '.m-form-item-country',
     'show_shipping_country_selector' : '#shipping_show_country',
-    'shipping_country_selector' : '.form-item--shipping-country',
-    'shipping_address_selector' : '.form-item--shipping-address',
+    'shipping_country_selector' : '.m-form-item-shipping-country',
+    'shipping_address_selector' : '.m-form-item-shipping-address',
     'use_for_shipping_selector' : '#useforshipping',
     'email_field_selector' : '#email',
     'password_field_selector' : '#password',
@@ -57,17 +57,16 @@
     'account_state_selector' : '#billing_state',
     'account_zip_selector' : '#billing_zip',
     'create_mp_selector' : '#creatempaccount',
-    'password_selector' : '.form-item--password',
+    'password_selector' : '.m-form-item-password',
     'additional_amount_field' : '#additional_donation',
-    'billing_selector' : 'fieldset.billing',
-    'shipping_selector' : 'fieldset.shipping',
+    'billing_selector' : 'fieldset.m-billing-information',
+    'shipping_selector' : 'fieldset.m-shipping-information',
     'credit_card_fieldset' : '.payment-method-group',
     'choose_payment' : '#choose-payment-method',
     'payment_method_selector' : '.payment-method',
     'cc_num_selector' : '#card-number',
     'cc_exp_selector' : '#card-expiry',
     'cc_cvv_selector' : '#card-cvc',
-    'payment_button_selector' : '#submit',
     'confirm_button_selector' : '#finish',
     'opp_id_selector' : '#lock_key', // we use this value as the Google Analytics transaction ID
     'recurring_selector' : '#recurring',
@@ -443,20 +442,20 @@
     }, // creditCardFeeCheckbox
 
     donateAnonymously: function(element, options) {
-      if ($(options.anonymous_selector, element).is(':checked')) {
-        $(options.name_selector + ' div:first', element).hide();
-      } else {
-        $(options.name_selector + ' div:first', element).show();
-      }
-
+      var that = this;
+      that.toggleAnonymous($(options.anonymous_selector, element));
       $(options.anonymous_selector, element).change(function() {
-        if ($(this).is(':checked')) {
-          $(options.name_selector + ' div:first', element).hide();
-        } else {
-          $(options.name_selector + ' div:first', element).show();
-        }
+        that.toggleAnonymous($(this));
       });
     }, // donateAnonymously
+
+    toggleAnonymous: function(element) {
+      if (element.is(':checked')) {
+        $(this.options.name_selector + ' div:first', this.element).hide();
+      } else {
+        $(this.options.name_selector + ' div:first', this.element).show();
+      }
+    }, // toggleAnonymous
 
     checkLevel: function(element, options, returnvalue) {
       // we could maybe get rid of this if we could move this part into wordpress
@@ -1199,7 +1198,7 @@
               newsletter_group_html += '<fieldset class="m-form-item support-newsletter m-form-item-' + category.type + '">';
               newsletter_group_html += '<label>' + category.name + ':</label>';
               if ( category.contains.length > 0 ) {
-                newsletter_group_html += '<div class="form-item form-item--newsletter">';
+                newsletter_group_html += '<div class="m-form-item m-form-item-newsletter">';
                 $.each(category[category.contains], function( index, item ) {
                   newsletter_group_html += '<label><input name="groups_submitted" type="checkbox" value="' + item.id + '">' + item.name + '</label>';
                 });

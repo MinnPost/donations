@@ -1,0 +1,41 @@
+// neutral colors
+$neutral-colors: (
+	black: #1a1818, // logo
+	dark: #5e6e76,
+	medium: #869298,
+	border: #d6d6da,
+	highlight: #ebebfb,
+	light: #efeff0,
+	white: #fff
+);
+
+// margin/padding
+$standard-block-margin: 1.5em; // 36px at desktop
+$standard-heading-margin: 0.75em; // 18px at desktop
+$standard-block-padding: 0.5em; // 12px at body
+
+$border-radius: 4px;
+$border-default-style: 1px solid neutral-color(border);
+
+$home-content-sidebar-padding: 35px;
+$archive-content-sidebar-padding: 15px;
+$form-text-indent: 6px;
+
+// redesign theme variables
+$content-font-size: 1em;
+$progress-font-size-large: 3em;
+$progress-font-size-small: 0.75em;
+$large-title-font-size: 215.4%;
+
+// media query sizes. see minnpost-largo for theme queries.
+$size__xs: 30em; // 480px
+$size__sm: 40em; // 640px
+$medium-margins-too-small: 700px;
+$nav-breaks: 768px;
+$wrap-header: 830px;
+$level-widths-change: 890px;
+$nav-wrap-screen: 960px;
+
+// page sizes
+$form-max-width: 50%;
+$summary-max-width: 45%;

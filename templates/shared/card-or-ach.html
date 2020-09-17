@@ -1,6 +1,6 @@
 {% if not show_ach or show_ach is sameas false %}
 <fieldset class="credit-card-group">
-  <div class="form-item" id="cc-number-wrapper">
+  <div class="m-form-item" id="cc-number-wrapper">
     <label class="required">
       Credit Card Number:
       <div class="stripe-field" id="card-number"></div>
@@ -8,14 +8,14 @@
     </label>
   </div>
   <div class="card-group clear-block">
-    <div class="form-item" id="cc-exp-wrapper">
+    <div class="m-form-item" id="cc-exp-wrapper">
       <label class="required">
         Expiration Date:
         <div class="stripe-field" id="card-expiry"></div>
         <p class="card-instruction card-expiry"></p>
        </label>
     </div>
-    <div class="form-item" id="cc-cvc-wrapper">
+    <div class="m-form-item" id="cc-cvc-wrapper">
       <label class="required">
         CVC Number:
         <div class="stripe-field" id="card-cvc"></div>
@@ -23,18 +23,18 @@
        </label>
     </div>
   </div>
-  <ul class="actions actions--pay-fees clear-block">
-    <li><label><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees is sameas true %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label></li>
-  </ul>
+  <div class="m-form-actions">
+    <label class="a-form-caption"><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees is sameas true %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label>
+  </div>
 </fieldset>
 {% else %}
 <fieldset class="payment-method-group">
-  <div class="form-item two-radios" id="choose-payment-method">
+  <div class="m-form-item two-radios" id="choose-payment-method">
     <label><input type="radio" name="method" id="choose-card" value="card" checked /> Pay with credit card</label>
     <label><input type="radio" name="method" id="choose-ach" value="bank_account" /> Pay with bank account</label>
   </div>
   <div class="payment-method choose-card active">
-    <div class="form-item" id="cc-number-wrapper">
+    <div class="m-form-item" id="cc-number-wrapper">
       <label class="required">
         <span>Credit Card Number:</span>
         <div class="stripe-field" id="card-number"></div>
@@ -43,14 +43,14 @@
       </label>
     </div>
     <div class="card-group clear-block">
-      <div class="form-item" id="cc-exp-wrapper">
+      <div class="m-form-item" id="cc-exp-wrapper">
         <label class="required">
           <span>Expiration Date:</span>
           <div class="stripe-field" id="card-expiry"></div>
           <p class="card-instruction card-expiry"></p>
          </label>
       </div>
-      <div class="form-item" id="cc-cvc-wrapper">
+      <div class="m-form-item" id="cc-cvc-wrapper">
         <label class="required">
           <span>CVC Number:</span>
           <div class="stripe-field" id="card-cvc"></div>
@@ -60,13 +60,13 @@
     </div>
   </div>
   <div class="payment-method choose-ach">
-    <div class="form-item" id="ach-button">
+    <div class="m-form-item" id="ach-button">
       <p>You can sign in directly to your bank's system and authorize MinnPost to make charges to your account. None of your credentials or account details are sent to us; we only receive the authorization.</p>
       <p><a href="#" id="authorize-ach">Sign in to your bank account</a></p>
     </div>
   </div>
-  <ul class="actions actions--pay-fees clear-block">
-    <li><label><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees is sameas true %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label></li>
-  </ul>
+  <div class="m-form-actions">
+    <label class="a-form-caption"><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees is sameas true %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label>
+  </div>
 </fieldset>
 {% endif %}

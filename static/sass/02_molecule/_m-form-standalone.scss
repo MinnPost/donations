@@ -1,0 +1,7 @@
+.m-form-standalone {
+    width: 100%;
+
+    @media screen and (min-width: $nav-wrap-screen) {
+        max-width: $form-max-width;
+    }
+}

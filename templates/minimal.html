@@ -1,49 +1,39 @@
 {% extends "layout.html" %}
 
 {% block content %}
-
-<main>
-  <div class="wrapper support--forms">
-
-    <form action="{{ form_action }}" method="post" class="support support--minimal" id="donate">
-      {% include 'shared/hidden-fields.html' %}
-      {% if stage != '' %}
-        <input type="hidden" name="stage_name" id="stage_name" value="{{ stage_name }}">
-      {% endif %}
-      {% if close_date %}
-        <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
-      {% endif %}
-      {% if mrpledge_id %}
-        <input type="hidden" name="mrpledge_id" id="mrpledge_id" value="{{ mrpledge_id }}">
-      {% endif %}
-      {% if opportunity_id %}
-        <input type="hidden" name="opportunity_id" id="opportunity_id" value="{{ opportunity_id }}">
-      {% endif %}
-      {% if installment_period %}
-        <input type="hidden" name="installment_period" id="installment_period" value="{{ installment_period }}">
-      {% endif %}
-      {% if recurring_id %}
-        <input type="hidden" name="recurring_id" id="recurring_id" value="{{ recurring_id }}">
-      {% endif %}
-      {% if pledge %}
-        <input type="hidden" name="pledge" id="pledge" value="{{ pledge }}">
-      {% endif %}
-      {% if opportunity_type %}
-        <input type="hidden" name="opportunity_type" id="opportunity_type" value="{{ opportunity_type }}">
-      {% endif %}
-      {% if opportunity_subtype %}
-        <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
-      {% endif %}
-
-      {% if amount != '' and show_amount_field is sameas false %}
-        <div id="amount_for_js" class="amount"><span class="level-amount">{{ amount }}</span></div>
-      {% endif %}
-
-      {% include 'minimal/details.html' %}
-      {% include 'shared/pay.html' %}
-
-    </form>
-  </div>
-</main>
-
+<form action="{{ form_action }}" method="post" class="m-form m-form-standalone support--minimal" id="donate">
+  {% include 'shared/hidden-fields.html' %}
+  {% if stage != '' %}
+    <input type="hidden" name="stage_name" id="stage_name" value="{{ stage_name }}">
+  {% endif %}
+  {% if close_date %}
+    <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
+  {% endif %}
+  {% if mrpledge_id %}
+    <input type="hidden" name="mrpledge_id" id="mrpledge_id" value="{{ mrpledge_id }}">
+  {% endif %}
+  {% if opportunity_id %}
+    <input type="hidden" name="opportunity_id" id="opportunity_id" value="{{ opportunity_id }}">
+  {% endif %}
+  {% if installment_period %}
+    <input type="hidden" name="installment_period" id="installment_period" value="{{ installment_period }}">
+  {% endif %}
+  {% if recurring_id %}
+    <input type="hidden" name="recurring_id" id="recurring_id" value="{{ recurring_id }}">
+  {% endif %}
+  {% if pledge %}
+    <input type="hidden" name="pledge" id="pledge" value="{{ pledge }}">
+  {% endif %}
+  {% if opportunity_type %}
+    <input type="hidden" name="opportunity_type" id="opportunity_type" value="{{ opportunity_type }}">
+  {% endif %}
+  {% if opportunity_subtype %}
+    <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
+  {% endif %}
+  {% if amount != '' and show_amount_field is sameas false %}
+    <div id="amount_for_js" class="amount"><span class="level-amount">{{ amount }}</span></div>
+  {% endif %}
+  {% include 'minimal/details.html' %}
+  {% include 'shared/pay.html' %}
+</form>
 {% endblock %}

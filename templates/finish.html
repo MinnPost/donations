@@ -1,31 +1,14 @@
 {% extends "layout.html" %}
 
 {% block content %}
-
-{% if not path or path == "" or path == "give" %}
-  <section class="progress progress--donation">
-    <div class="wrapper">
-      <ol>
-        <li class="panel--choose"><span>Choose</span></li>
-        <li class="panel--pay"><span>Payment</span></li>
-        <li class="panel--confirmation"><span class="active">Thank You</span></li>
-      </ol>
-    </div>
-  </section>
-{% endif %}
-
-<main>
-  <div class="wrapper support--forms">
-    <section id="panel--confirmation" class="panel panel--form">
-      {% if path != "" and folder != "" %}
-        {% include "/" + path + "/" + folder + "/finish.html" %}
-      {% elif path != "" %}
-        {% include "/%s/finish.html" % path %}
-      {% else %}
-        <h1>{{ title }}</h1>
-        <p>You're all done. Thanks again for your support of MinnPost.</p>
-      {% endif %}
-    </section>
-  </div>
-</main>
+<section id="panel--confirmation" class="panel panel--form">
+  {% if path != "" and folder != "" %}
+    {% include "/" + path + "/" + folder + "/finish.html" %}
+  {% elif path != "" %}
+    {% include "/%s/finish.html" % path %}
+  {% else %}
+    <h1>{{ title }}</h1>
+    <p>You're all done. Thanks again for your support of MinnPost.</p>
+  {% endif %}
+</section>
 {% endblock %}
