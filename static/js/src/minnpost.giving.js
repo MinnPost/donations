@@ -68,6 +68,7 @@
     'cc_exp_selector' : '#card-expiry',
     'cc_cvv_selector' : '#card-cvc',
     'confirm_button_selector' : '#finish',
+    'pay_button_selector' : '.a-button-pay',
     'opp_id_selector' : '#lock_key', // we use this value as the Google Analytics transaction ID
     'recurring_selector' : '#recurring',
     'newsletter_group_selector' : '.support-newsletters',
@@ -149,7 +150,7 @@
       this.options.cardType = null;
       this.options.create_account = false;
 
-      var button_text = $('button.give, input.give').text();
+      var button_text = $(this.options.pay_button_selector).text();
       this.options.button_text = button_text;
 
       this.stripe = Stripe(this.options.stripe_publishable_key);
@@ -1160,11 +1161,11 @@
               }
 
               if (error.field == 'recaptcha') {
-                $('button.give').before('<p class="recaptcha-error">' + message + '</p>')
+                $(that.options.pay_button_selector).before('<p class="recaptcha-error">' + message + '</p>')
               }
 
               if (error.type == 'invalid_request_error') {
-                $('button.give').before('<p class="error error-invalid-request">' + error.message + '</p>')
+                $(that.options.pay_button_selector).before('<p class="error error-invalid-request">' + error.message + '</p>')
               }
 
             }
