@@ -9,6 +9,16 @@ $neutral-colors: (
 	white: #fff
 );
 
+$breakpoint-xxxs: 0;
+$breakpoint-xxs: 24em; // 384px
+$breakpoint-xs: 30em; // 480px
+$breakpoint-sm: 40em; // 640px
+$breakpoint-md: 50em; // 800px
+$breakpoint-lg: 60em; // 960px
+$breakpoint-xl: 70em; // 1120px
+$breakpoint-xxl: 80em; // 1280px
+$breakpoint-xxxl: 90em; // 1440px
+
 // margin/padding
 $standard-block-margin: 1.5em; // 36px at desktop
 $standard-heading-margin: 0.75em; // 18px at desktop
@@ -34,8 +44,8 @@ $medium-margins-too-small: 700px;
 $nav-breaks: 768px;
 $wrap-header: 830px;
 $level-widths-change: 890px;
-$nav-wrap-screen: 960px;
 
 // page sizes
-$form-max-width: 50%;
-$summary-max-width: 45%;
+$form-width: 74.68354%;
+$form-max-width: calc(94.93671% - 300px);
+$form-item-width: 70%;

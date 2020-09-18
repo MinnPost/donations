@@ -4,22 +4,6 @@
 	flex-direction: column;
 }
 
-.two-radios {
-	background: $gray-lightest;
-	border-radius: $base-border-radius;
-	margin-bottom: 0.5em;
-	> label {
-      padding: $half-space $base-spacing 0 $base-spacing;
-    }
-	> label:last-child {
-      padding-top: 0;
-      padding-bottom: $half-space;
-    }
-	&.form-item input {
-		margin: 0;
-	}
-}
-
 .form-item--recurring {
 	display: flex;
 	flex-direction: row;

@@ -61,7 +61,7 @@
     'additional_amount_field' : '#additional_donation',
     'billing_selector' : 'fieldset.m-billing-information',
     'shipping_selector' : 'fieldset.m-shipping-information',
-    'credit_card_fieldset' : '.payment-method-group',
+    'credit_card_fieldset' : '.m-form-group-payment',
     'choose_payment' : '#choose-payment-method',
     'payment_method_selector' : '.payment-method',
     'cc_num_selector' : '#card-number',
@@ -153,7 +153,14 @@
       this.options.button_text = button_text;
 
       this.stripe = Stripe(this.options.stripe_publishable_key);
-      this.elements = this.stripe.elements();
+      this.elements = this.stripe.elements({
+        fonts: [
+          {
+            // integrate your font into stripe
+            cssSrc: 'https://use.typekit.net/cxj7fzg.css',
+          }
+        ]
+      });
 
       // use a referrer for edit link if we have one
       if (document.referrer !== '') {
@@ -714,10 +721,12 @@
       var style = {
         base: {
           iconColor: '#666EE8',
-          lineHeight: '37px',
+          lineHeight: '43px',
           fontWeight: 400,
-          fontFamily: 'Georgia,Cambria,Times New Roman,Times,serif',
-          fontSize: '16px',
+          fontFamily: 'ff-meta-web-pro',
+          fontSize: '24px',
+          //lineHeight: '37px',
+          //fontSize: '16px',
         },
       };
 

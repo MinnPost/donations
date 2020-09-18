@@ -3,4 +3,30 @@
     &.m-form-item-display-name {
         margin-bottom: $standard-block-padding;
     }
+
+    &.m-form-item-payment-method {
+        border-radius: $border-radius;
+        background: neutral-color(border);
+        margin-bottom: $standard-block-padding;
+
+        > label {
+            padding: $standard-block-padding $standard-block-margin 0 $standard-block-margin;
+
+            &:last-child {
+                padding-top: 0;
+                padding-bottom: $standard-block-padding;
+            }
+        }
+
+        @media screen and (min-width: $breakpoint-sm) {
+            display: flex;
+
+            > label {
+
+                &:last-child {
+                    padding: $standard-block-padding $standard-block-margin 0 $standard-block-margin;
+                }
+            }
+        }
+    }
 }

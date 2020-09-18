@@ -28,8 +28,8 @@
   </div>
 </fieldset>
 {% else %}
-<fieldset class="payment-method-group">
-  <div class="m-form-item two-radios" id="choose-payment-method">
+<fieldset class="m-form-group m-form-group-payment">
+  <div class="m-form-item m-form-item-payment-method m-form-item-two-radios" id="choose-payment-method">
     <label><input type="radio" name="method" id="choose-card" value="card" checked /> Pay with credit card</label>
     <label><input type="radio" name="method" id="choose-ach" value="bank_account" /> Pay with bank account</label>
   </div>
@@ -42,15 +42,15 @@
         <p class="card-instruction card-number"></p>
       </label>
     </div>
-    <div class="card-group clear-block">
-      <div class="m-form-item" id="cc-exp-wrapper">
+    <div class="m-form-group m-form-card-group">
+      <div class="m-form-item m-form-item-exp" id="cc-exp-wrapper">
         <label class="required">
           <span>Expiration Date:</span>
           <div class="stripe-field" id="card-expiry"></div>
           <p class="card-instruction card-expiry"></p>
          </label>
       </div>
-      <div class="m-form-item" id="cc-cvc-wrapper">
+      <div class="m-form-item m-form-item-cvc" id="cc-cvc-wrapper">
         <label class="required">
           <span>CVC Number:</span>
           <div class="stripe-field" id="card-cvc"></div>
