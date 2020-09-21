@@ -1,24 +1,24 @@
 <fieldset class="m-address-information m-billing-information">
   <h4>Billing Information</h4>
   <div class="m-form-item m-form-item-street">
-    <label for="billing_street" class="required">Street Address: </label>
+    <label for="billing_street">Street Address: <span class="a-form-item-required" title="This field is required.">*</span></label>
     <input type="text" name="billing_street" id="billing_street" required maxlength="255" value="{{ billing_street }}">
   </div>
 
   <div class="m-form-group m-form-location-group">
     <div class="m-form-item m-form-item-city">
-      <label for="billing_city" class="required">City: </label>
+      <label for="billing_city">City: <span class="a-form-item-required" title="This field is required.">*</span></label>
       <input type="text" name="billing_city" id="billing_city" required maxlength="255" value="{{ billing_city }}">
     </div>
 
     <div class="m-form-item m-form-item-state">
-      <label for="billing_state" class="required">State: </label>
+      <label for="billing_state">State: <span class="a-form-item-required" title="This field is required.">*</span></label>
       <input type="text" name="billing_state" id="billing_state" maxlength="20" required value="{{ billing_state }}">
     </div>
   </div>
 
   <div class="m-form-item m-form-item-zip">
-    <label for="billing_zip" class="required">Zip Code: </label>
+    <label for="billing_zip">Zip Code: <span class="a-form-item-required" title="This field is required.">*</span></label>
     <input type="tel" name="billing_zip" id="billing_zip" maxlength="10" required value="{{ billing_zip }}">
     <div class="a-form-caption show-country"><a href="#" id="billing_show_country"><small>Not in the US?</small></a></div>
   </div>

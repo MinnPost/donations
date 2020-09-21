@@ -20,11 +20,11 @@
 
 	<fieldset class="amount">
 		<div class="m-form-item m-form-item-amount">
-			<label for="first_name" class="required">Amount: </label>
+			<label for="amount">Amount: <span class="a-form-item-required" title="This field is required.">*</span></label>
 			<input type="tel" id="amount" name="amount" maxlength="40" required value="{{ amount }}">
 		</div>
 		<div class="m-form-item m-form-item-frequency">
-			<label for="first_name" class="required">Frequency: </label>
+			<label for="frequency">Frequency: <span class="a-form-item-required" title="This field is required.">*</span></label>
 			<select id="frequency" name="frequency" required>
 				<option value="">Select a frequency</option>
 				<option value="monthly"{% if frequency == 'monthly' %} selected{% endif %}>monthly</option>

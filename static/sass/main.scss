@@ -1,34 +1,18 @@
 //--------------------------------------*\
-//	Global imports
-//--------------------------------------*/
-
-
-//--------------------------------------*/
-// Tools
+//	Legacy Imports: get rid of all of these
 //--------------------------------------*/
 @import 'tools/bourbon/bourbon';
 @import 'tools/functions';
-//@import 'tools/helpers';
-@import 'tools/paymentfont/paymentfont';
-
-
-//--------------------------------------*/
-// Base
-//--------------------------------------*/
 @import "variables_legacy";
-@import "variables";
-@import "functions";
-
-@import 'base/forms';
-
-
-//--------------------------------------*/
-// Modules
-//--------------------------------------*/
-@import 'module/panels';
 @import 'module/support';
 
+//--------------------------------------*/
+// App Imports
+//--------------------------------------*/
 
+@import 'tools/paymentfont/paymentfont';
+@import "variables";
+@import "functions";
 //@import "00_base/*";
 @import "01_atom/*";
 @import "02_molecule/*";

@@ -1,5 +1,5 @@
-<section class="panel panel--form" id="panel--details">
-  <div class="support support--summary">
+<section class="o-panel o-panel-form" id="panel--details">
+  <div class="support m-support-summary">
     
       <h1>{{ heading }}</h1>
     
@@ -13,7 +13,7 @@
     <fieldset class="minimal-details">
       {% if amount == '' or show_amount_field %}
       <div class="m-form-item m-form-item-amount">
-        <label for="amount" class="required">Amount: </label>
+        <label for="amount">Amount: <span class="a-form-item-required" title="This field is required.">*</span></label>
         <div class="a-input-prepend">
           <span class="a-prefix">$</span>
           <input type="number" id="amount" name="amount" value="{{ amount }}" min="1" step="any" required>
@@ -32,14 +32,14 @@
 
       {% if show_invoice is sameas true %}
         <div class="m-form-item m-form-item-invoice">
-          <label for="invoice" class="required">Invoice Number:</label>
+          <label for="invoice">Invoice Number: <span class="a-form-item-required" title="This field is required.">*</span></label>
           <input type="text" id="invoice" name="invoice" value="{{ invoice }}" required>
         </div>
       {% endif %}
 
       {% if show_organization is sameas true %}
         <div class="m-form-item m-form-item-organization">
-          <label for="client_organization" class="required">Organization:</label>
+          <label for="client_organization">Organization: <span class="a-form-item-required" title="This field is required.">*</span></label>
           <input type="text" id="client_organization" name="client_organization" value="{{ client_organization }}" required>
         </div>
       {% endif %}

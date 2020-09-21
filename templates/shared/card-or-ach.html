@@ -1,23 +1,23 @@
 {% if not show_ach or show_ach is sameas false %}
 <fieldset class="credit-card-group">
   <div class="m-form-item" id="cc-number-wrapper">
-    <label class="required">
-      Credit Card Number:
+    <label>
+      <span class="label">Credit Card Number: </span> <span class="a-form-item-required" title="This field is required.">*</span>
       <div class="stripe-field" id="card-number"></div>
       <p class="card-instruction card-number"></p>
     </label>
   </div>
   <div class="card-group clear-block">
     <div class="m-form-item" id="cc-exp-wrapper">
-      <label class="required">
-        Expiration Date:
+      <label>
+        <span class="label">Expiration Date: </span> <span class="a-form-item-required" title="This field is required.">*</span>
         <div class="stripe-field" id="card-expiry"></div>
         <p class="card-instruction card-expiry"></p>
        </label>
     </div>
     <div class="m-form-item" id="cc-cvc-wrapper">
-      <label class="required">
-        CVC Number:
+      <label>
+        <span class="label">CVC Number: </span> <span class="a-form-item-required" title="This field is required.">*</span>
         <div class="stripe-field" id="card-cvc"></div>
         <p class="card-instruction card-cvc"></p>
        </label>
@@ -35,8 +35,8 @@
   </div>
   <div class="payment-method choose-card active">
     <div class="m-form-item" id="cc-number-wrapper">
-      <label class="required">
-        <span>Credit Card Number:</span>
+      <label>
+        <span class="label">Credit Card Number:</span> <span class="a-form-item-required" title="This field is required.">*</span>
         <div class="stripe-field" id="card-number"></div>
         <span class="brand"><i class="pf pf-credit-card" id="brand-icon"></i></span>
         <p class="card-instruction card-number"></p>
@@ -44,15 +44,15 @@
     </div>
     <div class="m-form-group m-form-card-group">
       <div class="m-form-item m-form-item-exp" id="cc-exp-wrapper">
-        <label class="required">
-          <span>Expiration Date:</span>
+        <label>
+          <span class="label">Expiration Date:</span> <span class="a-form-item-required" title="This field is required.">*</span>
           <div class="stripe-field" id="card-expiry"></div>
           <p class="card-instruction card-expiry"></p>
          </label>
       </div>
       <div class="m-form-item m-form-item-cvc" id="cc-cvc-wrapper">
-        <label class="required">
-          <span>CVC Number:</span>
+        <label>
+          <span class="label">CVC Number:</span> <span class="a-form-item-required" title="This field is required.">*</span>
           <div class="stripe-field" id="card-cvc"></div>
           <p class="card-instruction card-cvc"></p>
          </label>

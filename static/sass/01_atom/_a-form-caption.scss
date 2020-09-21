@@ -3,4 +3,11 @@
     &.a-form-caption-recaptcha-terms {
         margin-top: 1.25em;
     }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+        display: inline;
+        margin-right: $standard-block-padding / 2;
+    }
+
 }

@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<section id="panel--confirmation" class="panel panel--form">
+<section id="panel--confirmation" class="o-panel o-panel-form">
   {% if path != "" and folder != "" %}
     {% include "/" + path + "/" + folder + "/finish.html" %}
   {% elif path != "" %}

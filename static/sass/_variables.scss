@@ -1,3 +1,42 @@
+// brand colors
+$brand-colors: (
+	red: (
+		dark: #4c1016,
+		medium: #7f121c, // logo
+		highlight: #d7757e
+	),
+);
+
+$utility-colors: (
+	green: (
+		dark: #24613b,
+		medium: #1c8745, // donate
+		highlight: #609f78,
+		background: #ddf8e7,
+	),
+	blue: (
+		dark: #135b7e, // link
+		medium: #0c7bb0,
+		highlight: #5e99b5,
+		background: #dcf0fa
+	),
+	purple: (
+		dark: #635077, // opinion
+		medium: #8c64b4,
+		highlight: #a880d0,
+		background: #ebe7ef
+	),
+	yellow: (
+		background: #fbd341
+	),
+	orange: (
+		dark: #873a02,
+		medium: #b94f03, // advertising
+		highlight: #fc9e5b,
+		background: #fee3cf
+	),
+);
+
 // neutral colors
 $neutral-colors: (
 	black: #1a1818, // logo
