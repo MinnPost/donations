@@ -197,7 +197,7 @@
         this.honorOrMemoryToggle(this.element, this.options); // in honor or in memory of someone
         this.outsideUnitedStates(this.element, this.options); // outside US
         this.shippingAddress(this.element, this.options); // shipping address
-        this.allowMinnpostAccount(this.element, this.options, false); // option for creating minnpost account
+        this.allowMinnpostAccount(this.element, this.options); // option for creating minnpost account
         this.choosePaymentMethod(this.element, this.options); // switch between card and ach
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
         this.achFields(this.element, this.options); // do stuff for ach payments, if applicable to the form
@@ -570,16 +570,24 @@
       
     }, // shippingAddress
 
-    allowMinnpostAccount: function(element, options, changed) {
+    allowMinnpostAccount: function(element, options) {
       var that = this;
       var account_exists = false;
 
-      $(options.email_field_selector, element).parent().append('<p class="error spam-email">This email address has been detected as a spammer.</p>');
-      $('.spam-email').hide();
+      // show password as text
+      that.showPassword();
 
+      // calculate password strength
+      that.showPasswordStrength();
+      
+      that.spamEmail($(options.email_field_selector, element));
       $(options.email_field_selector, element).change(function() {
-        $('.spam-email').hide();
-        $(this).removeClass('invalid error');
+        that.spamEmail($(options.email_field_selector, element));
+      });
+
+      that.toggleAccountFields($(options.create_mp_selector, element));
+      $(options.create_mp_selector, element).change(function() {
+        that.toggleAccountFields($(options.create_mp_selector, element));
       });
 
       function doneTyping () {
@@ -598,40 +606,100 @@
           typingTimer = setTimeout(doneTyping, doneTypingInterval);
         }
       });
-
-      //user is "finished typing," do something
-
-      if ($(options.create_mp_selector, element).is(':checked')) {
-        $(options.password_selector, element).show();
-        options.create_account = true;
-      } else {
-        $(options.password_selector, element).hide();
-      }
-
-      $(options.create_mp_selector, element).change(function() {
-        that.allowMinnpostAccount(element, options, true);
-      });
-
-      if (changed === false) {
-        // allow users to show plain text, or to see pw criteria
-        $(options.password_selector, element).append('<div class="help-link"><span>Password help</span></div><div class="form-help">Password must be at least 6 characters.</div><label class="additional-option"><input type="checkbox" name="showpassword" id="showpassword"> Show password</label>');
-        $(options.create_mp_selector, element).parent().before('<p class="account-exists success">There is already a MinnPost.com account with this email.</p>');
-        $('.account-exists').hide();
-        $('#showpassword').click(function() {
-          if ($(this).is(':checked')) {
-            $('#password').get(0).type = 'text';
-          } else {
-            $('#password').get(0).type = 'password';
-          }
-        });
-
-        $('.form-item .form-help').hide();
-      }
-      $('.help-link').click(function() {
-        $(this).next('.form-help').toggle();
-        return false;
-      });
     }, // allowMinnpostAccount
+
+    spamEmail: function(email_field) {
+      var spamErrorContainer = email_field.parent();
+      if ($('.a-spam-email', spamErrorContainer).length === 0 ) {
+        spamErrorContainer.append('<p class="a-form-caption a-error a-spam-email">This email address has been detected as a spammer.</p>');
+      }
+      $('.a-spam-email', spamErrorContainer).hide();
+      spamErrorContainer.removeClass('invalid a-error');
+    }, // spamEmail
+
+    toggleAccountFields: function(create_account_selector) {
+      if (create_account_selector.is(':checked')) {
+        create_account_selector.parent().before('<p class="a-form-caption a-account-exists a-account-exists-success">There is already a MinnPost.com account with this email address.</p>');
+        $('.a-account-exists').hide();
+        $(this.options.password_selector, this.element).show();
+        this.options.create_account = true;
+      } else {
+        $(this.options.password_selector, this.element).hide();
+      }
+    }, // toggleAccountFields
+
+    showPassword: function() {
+      // Cache our jquery elements
+      var $submit = $('.btn-submit');
+      var $container = $(this.options.password_selector, this.element);
+      var $field = $('input[name="password"]', $container);
+      $('.a-account-exists').hide();
+      var show_pass = '<div class="a-form-show-password a-form-caption"><label><input type="checkbox" name="show_password" id="show-password-checkbox" value="1"> Show password</label></div>';
+      // Inject the toggle button into the page
+      $container.append( show_pass );
+      // Cache the toggle button
+      var $toggle = $('#show-password-checkbox');
+      // Toggle the field type
+      $toggle.on('click', function(e) {
+        var checkbox = $(this);
+        if (checkbox.is(':checked')) {
+          $field.attr('type', 'text');
+        } else {
+          $field.attr('type', 'password');
+        }
+      });
+      // Set the form field back to a regular password element
+      $submit.on( 'click', function(e) {
+        $field.attr('type', 'password');
+      });
+    },
+
+    showPasswordStrength: function() {
+      // checkPasswordStrength
+      var that = this;
+      if ($('.a-password-strength').length > 0 ) {
+        var $before = $('.a-form-show-password');
+        $before.after( $('<div class="a-password-strength"><meter max="4" id="password-strength"><div></div></meter><p class="a-form-caption" id="password-strength-text"></p></div>'));
+        $( 'body' ).on( 'keyup', 'input[name=password]',
+          function() {
+            that.checkPasswordStrength(
+              $('input[name=password]'), // Password field
+              $('#password-strength'),           // Strength meter
+              $('#password-strength-text')      // Strength text indicator
+            );
+          }
+        );
+      }
+    }, // showPasswordStrength
+
+    checkPasswordStrength: function( $password, $strengthMeter, $strengthText ) {
+      var password = $password.val();
+      // Get the password strength
+      var result = zxcvbn(password);
+      var strength = result.score;
+
+      $strengthText.removeClass( 'short bad good strong' );
+
+      // Add the strength meter results
+      switch ( strength ) {
+        case 2:
+          $strengthText.addClass( 'bad' ).html( 'Strength: <strong>Weak</strong>' );
+          break;
+        case 3:
+          $strengthText.addClass( 'good' ).html( 'Strength: <strong>Medium</strong>' );
+          break;
+        case 4:
+          $strengthText.addClass( 'strong' ).html( 'Strength: <strong>Strong</strong>' );
+          break;
+        case 5:
+          $strengthText.addClass( 'short' ).html( 'Strength: <strong>Very weak</strong>' );
+          break;
+        default:
+          $strengthText.addClass( 'short' ).html( 'Strength: <strong>Very weak</strong>' );
+      }
+      $strengthMeter.val(strength);
+      return strength;
+    }, // checkPasswordStrength
 
     checkMinnpostAccount: function(element, options, email) {
       var user = {
@@ -647,18 +715,18 @@
           if ($(options.create_mp_selector, element).is(':checked')) {
             $(options.password_selector, element).hide();
             $(options.create_mp_selector, element).parent().hide();
-            $('.account-exists', element).show();
+            $('.a-account-exists', element).show();
           }
           $(options.create_mp_selector, element).on('change', function() {
             if ($(options.create_mp_selector, element).is(':checked')) {
               $(options.password_selector, element).hide();
               $(options.create_mp_selector, element).parent().hide();
-              $('.account-exists', element).show();
+              $('.a-account-exists', element).show();
             }
           });
         } else if ( result.status === 'spam' ) {
-          $(that.options.email_field_selector).addClass('invalid error');
-          $( '.spam-email').show();
+          $(that.options.email_field_selector).addClass('invalid a-error');
+          $( '.a-spam-email').show();
         } else { // user does not exist or ajax call failed
           if ($(options.create_mp_selector, element).is(':checked')) {
             $(options.password_selector, element).show();
@@ -666,7 +734,7 @@
           } else {
             $(options.password_selector, element).hide();
           }
-          $('.account-exists', element).hide();
+          $('.a-account-exists', element).hide();
           return false;
         }
       });
@@ -911,24 +979,9 @@
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
 
-        // do some fallback stuff for non-html5 browsers
-        if (that.hasHtml5Validation(element, options)) {
-            if (!this.checkValidity()) {
-              $(this).addClass('invalid');
-              $('html, body').animate({
-                scrollTop: $(this).find('input:invalid').parent().offset().top
-              }, 2000);
-              //this.debug('top is ' + );
-              $(this).find('input:invalid').parent().addClass('error');
-            } else {
-              $(this).removeClass('invalid');
-              $(this).find('input:invalid').parent().removeClass('error');
-            }
-        }
-
         // validate and submit the form
-        $('.check-field').remove();
-        $('input, label', element).removeClass('error');
+        $('.a-check-field').remove();
+        $('input, label', element).removeClass('a-error');
         var valid = true;
         var payment_type = $('input[name="stripe_payment_type"]').val();
         $(that.options.choose_payment + ' input').change(function() {
@@ -1001,16 +1054,16 @@
       if (event.error) {
         $('.card-instruction.' + which_error).text(event.error.message + ' Please try again.');
         $('.card-instruction.' + which_error).addClass('invalid');
-        this_selector.parent().addClass('error');
+        this_selector.parent().addClass('a-error');
       } else {
         $('.card-instruction.' + which_error).removeClass('invalid');
         $('.card-instruction.' + which_error).empty();
-        $(options.cc_num_selector, element).removeClass('error');
-        $(options.cc_exp_selector, element).removeClass('error');
-        $(options.cc_cvv_selector, element).removeClass('error');
-        $(options.cc_num_selector, element).parent().removeClass('error');
-        $(options.cc_exp_selector, element).parent().removeClass('error');
-        $(options.cc_cvv_selector, element).parent().removeClass('error');
+        $(options.cc_num_selector, element).removeClass('a-error');
+        $(options.cc_exp_selector, element).removeClass('a-rror');
+        $(options.cc_cvv_selector, element).removeClass('a-error');
+        $(options.cc_num_selector, element).parent().removeClass('a-error');
+        $(options.cc_exp_selector, element).parent().removeClass('a-error');
+        $(options.cc_cvv_selector, element).parent().removeClass('a-error');
       }
     }, // stripeErrorDisplay
 
@@ -1074,9 +1127,9 @@
             message = result.error.message[0];
           }
           if ($(field).length > 0) {
-            $(that.options[field], element).addClass('error');
-            $(that.options[field], element).prev().addClass('error');
-            $(that.options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+            $(that.options[field], element).addClass('a-error');
+            $(that.options[field], element).prev().addClass('a-error');
+            $(that.options[field], element).after('<span class="a-check-field invalid">' + message + '</span>');
           }
         } else {
           // Send the token to your server
@@ -1134,9 +1187,9 @@
               message = error.message[0];
             }
             if ($(that.options[field]).length > 0) {
-              $(that.options[field]).addClass('error');
-              $(that.options[field]).prev().addClass('error');
-              $(that.options[field]).after('<span class="check-field invalid">' + message + '</span>');
+              $(that.options[field]).addClass('a-error');
+              $(that.options[field]).prev().addClass('a-error');
+              $(that.options[field]).after('<span class="a-check-field invalid">' + message + '</span>');
             }
 
             if (typeof error !== 'undefined') {
@@ -1161,7 +1214,7 @@
               }
 
               if (error.field == 'recaptcha') {
-                $(that.options.pay_button_selector).before('<p class="recaptcha-error">' + message + '</p>')
+                $(that.options.pay_button_selector).before('<p class="a-form-caption a-recaptcha-error">' + message + '</p>')
               }
 
               if (error.type == 'invalid_request_error') {
