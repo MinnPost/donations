@@ -44,30 +44,6 @@
     &.m-form-item-newsletters input {
         margin-bottom: 0;
     }
-
-    &.m-form-item-with-help {
-        position: relative;
-
-        .a-help-link {
-            cursor: help;
-            position: absolute;
-            top: 2.25em;
-            right: 0.375em;
-            display: inline-block;
-            background: transparent url('/static/img/help.png') no-repeat top left;
-            background-position: 0 0;
-        
-            height: 12px;
-            margin-top: 2px;
-            padding: 0;
-            width: 12px;
-            @include hide-text;
-        }
-        
-        .a-form-help {
-            margin: 0 0 $h5-space 0;
-        }
-    }
 }
 
 .no-js .m-form-item-nojs {
