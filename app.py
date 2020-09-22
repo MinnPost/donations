@@ -663,7 +663,7 @@ def validate_form(FormType, template, function=add_donation.delay):
         return jsonify(errors=body)
 
     if app.config["USE_RECAPTCHA"] == True:
-        captcha_response = form_data["g-recaptcha-response"]
+        captcha_response = request.form['g-recaptcha-response']
         if not is_human(captcha_response):
             app.logger.error(f"Error: recaptcha failed on donation: {email} {first_name} {last_name}")
             message = 'Our system was unable to verify that you are a human. Please email members@minnpost.com for assistance.'
