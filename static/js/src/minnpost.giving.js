@@ -27,7 +27,6 @@
     'confirm_step_selector' : '#panel--confirmation',
     'active' : 'panel--pay',
     'confirm' : 'panel--confirmation',
-    'query' : 'step',
     'pay_cc_processing_selector' : 'input[id="pay-fees"]',
     'fee_amount' : '.processing-amount',
     'level_amount_selector' : '#panel--pay .amount .level-amount', // we can maybe get rid of this
@@ -173,15 +172,9 @@
         // return;
       }
 
-      // tab stuff
-      var query_panel = this.qs[this.options.query];
-      if (typeof query_panel === 'undefined') {
-        query_panel = this.options.active;
-      }
-
       // call functions
 
-      this.tabNavigation(query_panel); // navigating
+      this.analyticsTracking(this.element, this.options); // track analytics events
 
       this.amountAsRadio(this.element, this.options); // if the amount field is a radio button
       this.amountUpdated(this.element, this.options); // if the amount text field can change
@@ -211,22 +204,6 @@
 
     }, // init
 
-    qs: (function(a) {
-      if (a === '') {
-        return {};
-      }
-      var b = {};
-      for (var i = 0; i < a.length; ++i) {
-        var p=a[i].split('=', 2);
-        if (p.length === 1) {
-          b[p[0]] = '';
-        } else {
-          b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, ' '));
-        }
-      }
-      return b;
-    })(window.location.search.substr(1).split('&')),
-
     debug: function(message) {
       if (this.options.debug === true) {
         if (typeof message !== 'object') {
@@ -238,28 +215,13 @@
       }
     }, // debug
 
-    getQueryStrings: function(link) {
-      if (typeof link === 'undefined' || link === '') {
-        return {};
-      } else {
-        link = '?' + link.split('?')[1];
-        link = link.substr(1).split('&');
+    analyticsTracking: function(element, options) {
+      var progress = $('.m-support-progress');
+      if (progress.length > 0) {
+        
       }
-      var b = {};
-      for (var i = 0; i < link.length; ++i) {
-        var p=link[i].split('=', 2);
-        if (p.length === 1) {
-          b[p[0]] = '';
-        } else {
-          b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, ' '));
-        }
-      }
-      return b;
-    }, // getQueryStrings
-
-    tabNavigation: function(active) {
-      var step = $('.progress--donation li.' + active).index() + 1;
-      var nav_item_count = $('.progress--donation li').length;
+      var step = $('.m-support-progress li.' + active).index() + 1;
+      var nav_item_count = $('.m-support-progress li').length;
       var opp_id = $(this.options.opp_id_selector).val();
       var next_step = step + 1;
       var post_purchase = false;
@@ -271,8 +233,8 @@
       // this is the last visible step
       if ($(this.options.confirm_step_selector).length > 0) {
         active = this.options.confirm;
-        $('.progress--donation li.' + active + ' span').addClass('active');
-        step = $('.progress--donation li.' + active).index() + 1;
+        $('.m-support-progress li.' + active + ' span').addClass('active');
+        step = $('.m-support-progress li.' + active).index() + 1;
         // there is a continuation of the main form on this page. there is a button to click
         // this means there is another step
         if ($(this.options.confirm_button_selector).length > 0) {
@@ -295,15 +257,15 @@
       this.analyticsTrackingStep(step, post_purchase);
 
       // activate the nav tabs
-      if ($('.progress--donation li .active').length === 0) {
+      if ($('.m-support-progress li .active').length === 0) {
         $('#' + active).show();
-        $('.progress--donation li.' + active + ' a').addClass('active');
+        $('.m-support-progress li.' + active + ' a').addClass('active');
       } else {
-        active = $('.progress--donation li .active').parent().prop('class');
+        active = $('.m-support-progress li .active').parent().prop('class');
         $('#' + active).show();
       }
 
-    }, // tabNavigation
+    }, // analyticsTracking
 
     analyticsTrackingStep: function(step, post_purchase) {
       var level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
@@ -548,14 +510,6 @@
       if ($(options.use_for_shipping_selector).length > 0) { // we have a shipping checkbox
         show_shipping = true;
       }
-//      show_shipping = !!$(options.use_for_shipping_selector + ':checked', element).length;
-//      //this.debug('show is there');
-
-/*      $(options.use_for_shipping_selector, element).change(function() {
-        that.shippingAddress(element, options);
-        //this.debug('change it');
-      });
-*/
       if (show_shipping === true ) {
         $(options.use_for_shipping_selector, element).parent().show();
         if ($(options.use_for_shipping_selector, element).is(':checked')) { // use same as billing
