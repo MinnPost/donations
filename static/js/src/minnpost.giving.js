@@ -1334,7 +1334,7 @@
           }
           if (result.mailchimp_status === 'subscribed') {
             // user created - show a success message
-            $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
+            $('.a-confirm-instructions').text($('.a-confirm-instructions').attr('data-known-user'));
             var groups = result.groups;
             $.each(groups, function( index, value ) {
               if ( value === true ) {
