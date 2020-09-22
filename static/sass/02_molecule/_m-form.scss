@@ -1,0 +1,27 @@
+.m-form.m-form-standalone.m-form-split {
+    @media screen and (min-width: $breakpoint-lg) {
+        max-width: none;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+
+        .o-panel.o-panel-form {
+            flex: 1 0;
+
+            &#panel--details {
+                max-width: $split-panel-max-width;
+            }
+
+            &#panel--pay {
+                max-width: $split-panel-max-width;
+            }
+        }
+
+        .m-form-item,
+        .m-form-group,
+        .m-membership-choice-group {
+            max-width: none;
+            width: 100%;
+        }
+    }
+}

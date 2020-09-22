@@ -1,0 +1,10 @@
+.m-form-standalone {
+    width: 100%;
+
+    @media screen and (min-width: $breakpoint-xl) {
+        width: $form-width;
+        max-width: $form-max-width;
+    }
+
+
+}

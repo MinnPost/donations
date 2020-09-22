@@ -1,0 +1,15 @@
+// Color functions
+@function brand-color( $brand-color, $tone: "medium" ) {
+
+	@return map-get( map-get( $brand-colors, $brand-color), $tone );
+}
+
+@function utility-color( $utility-color, $tone: "medium" ) {
+
+	@return map-get( map-get( $utility-colors, $utility-color), $tone );
+}
+
+@function neutral-color( $tone: "medium" ) {
+
+	@return map-get( $neutral-colors, $tone );
+}
