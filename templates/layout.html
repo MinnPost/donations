@@ -5,12 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% if title|length %}{{ title }}{% else %}MinnPost | Make Your Payment{% endif %}{% endblock %}</title>
     
-    <link rel='stylesheet' id='all-css-0' href='https://www.minnpost.com/_static/??-eJyNz0sOwjAMBNAL4RoWBbpAnCVN3GKRn+wA4vZEVEIgKOo2M3mZ4C0DR+svjhStKjrWgr1P9gyeezFyRy13T03g2NTCCusNm2KhWDD7y8hRsWYxJy0QKPQkeuKMRpXKZP6IYZBqAEX3F65HgVTNSHWlkhQSmLJ3f7618JnXwCFJgCzJVi4JBMPenjh8/GYZacQap+CGDMY+zSs7kndopvK9+RgOm7brtt1uvW8fQ5aj5Q==' type='text/css' media='all'/>
+    <link rel='stylesheet' id='all-css-0' href='https://www.minnpost.com/_static/??-eJyNkEFuAjEMRS/U4HYB7SyqniXjeMBqnER2BsTt6xYJDSqD2Oa///QdOLXABfOcyADNILF1GHPF75B51KhnsH7OtBEuGwdewBtYS6fSoeV5z8XAs9Kq9SAkI6kduEE0o35x3onDpO4IVNJD8WykISLW2WGJJe5JfvOFfAVZVfqTkJljfrh3u9cv2dK6Tj25/HrzVFVC04quq+oLOeOB5eaDnlNGxZgspKn5vX/OIyfSpWgF+b/5Sz7ftsOwG95fP7Y/mH3D1Q==' type='text/css' media='all'>
     <link rel='stylesheet' id='minnpost-fonts-css'  href='https://use.typekit.net/cxj7fzg.css?ver=1.0.0' media='all'>
-    
-    <link rel='stylesheet' id='all-css-2' href='https://www.minnpost.com/wp-content/themes/minnpost-largo/style.css?m=1600449360g' type='text/css' media='all'>
-
-    <script type='text/javascript' src='https://www.minnpost.com/_static/??-eJzTLy/QTc7PK0nNK9EvyClNz8wr1s8qLE0tqtQtLUhJLEkt0s+CixjrmeoZ6uVm5ullFevok6IzNzO9CCgENMFYzwBqgn2uraGppamRkYmhuWUWAKFEMFQ='></script>
+    <link rel='stylesheet' id='all-css-2' href='https://www.minnpost.com/wp-content/themes/minnpost-largo/style.css?m=1600717687g' type='text/css' media='all'>
 
     <meta name="theme-color" content="#801018">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -205,6 +202,7 @@
   <script src="https://js.stripe.com/v3/"></script>
   {% if use_recaptcha is sameas true %}<script src='https://www.google.com/recaptcha/api.js'></script>{% endif %}
   {% if show_ach is sameas true %}<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>{% endif %}
+  <script src='https://www.minnpost.com/_static/??-eJzTLy/QTc7PK0nNK9EvyClNz8wr1s8qLE0tqtQtLUhJLEkt0s+CixjrmeoZ6uVm5ullFevok6IzNzO9CCgENMFYzwBqgn2uraGppamRkYmhuWUWAKFEMFQ='></script>
   <script src="{{ url_for('static', filename='js/main.min.js') }}?m={{ last_updated }}"></script>
 
   <script>

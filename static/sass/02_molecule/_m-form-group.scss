@@ -29,26 +29,8 @@
 
     &.m-form-group-payment {
 
-        .error {
-            margin-top: 0;
-            color: $minnpost-red-error;
-        }
-
         label {
             position: relative;
-        
-            &.required::after {
-                content: "";
-            }
-            
-            &.required span::after {
-                content: "*";
-                color: $minnpost-red-error;
-            }
-
-            &.required .brand::after {
-                content: "";
-            }
 
             .brand {
                 width: 30px;
@@ -59,29 +41,28 @@
             }
         }
         
-          .stripe-field {
+        .stripe-field {
             background: neutral-color(white);
             padding: $standard-block-padding / 2;
             border: 1px solid neutral-color(border);
-            //margin-bottom: $standard-block-padding;
             width: 100%;
             border-radius: $border-radius;
             box-sizing: border-box;
+        }
 
-            
-          }
-        
-          #cc-number-wrapper {
+        #cc-number-wrapper {
             position: relative;
+            
             .card-image {
-              position: absolute;
-              top: 2.75em;
-              right: 1em;
+                position: absolute;
+                top: 2.75em;
+                right: 1em;
             }
-          }
+        }
 
           // styles for new elements field from stripe
         .credit-card-element {
+            
             .StripeElement {
                 background: neutral-color(white);
                 padding: $standard-block-padding / 2;
@@ -91,9 +72,15 @@
                 border-radius: $border-radius;
                 box-sizing: border-box;
             }
-          }
+        }
 
-        
+        .a-error {
+
+            .stripe-field,
+            .credit-card-element .StripeElement {
+                border-color: brand-color(red, highlight);
+            }
+        }
     }
 
     &.m-form-card-group {
@@ -123,3 +110,4 @@
         }
     }
 }
+

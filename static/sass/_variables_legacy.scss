@@ -43,28 +43,6 @@ $half-size: 0.5rem; //8px
 $_color-base-gray: rgb(122,122,122); // 7a7a7a
 $_color-base-red: rgb(128,16,25); // 801018
 $_color-base-blue: rgb(0,132,168); // 0084a8
-$palettes: (
-    grey: (
-        base:  $_color-base-gray,
-        light: lighten($_color-base-gray, 10%),
-        dark: darken($_color-base-gray, 10%)
-    ),
-    red: (
-        base:  $_color-base-red,
-        light: lighten($_color-base-red, 10%),
-        dark: darken($_color-base-red, 10%)
-    ),
-    blue: (
-        base:  $_color-base-blue,
-        light: lighten($_color-base-blue, 10%),
-        dark: darken($_color-base-blue, 10%)
-    ),
-    purple: (
-        base:   rgb(42,40,80),
-        light:  rgb(51,46,140),
-        dark:   rgb(40,38,65)
-    ),
-);
 
 // Color Names
 $black: #000;
@@ -75,10 +53,10 @@ $dark-gray: #333;
 $base-background-color: #fff;
 $base-font-color: $dark-gray;
 $heading-font-color: $dark-gray;
-$action-color: palette(red);
+$action-color: $_color-base-red;
 
 // Brand colors
-$minnpost-red: palette(red);
+$minnpost-red: $_color-base-red;
 $minnpost-black: #1a1818;
 $minnpost-white: #f0f0f5;
 $minnpost-blue: #1d70a4;
@@ -86,7 +64,7 @@ $minnpost-blue: #1d70a4;
 // Grays
 $gray-lightest: #cdcdd0;
 $gray-light: #ababab;
-$gray-med: palette(gray);
+$gray-med: $_color-base-gray;
 $gray-dark: #404040;
 $gray-darkest: #282828;
 
@@ -98,7 +76,7 @@ $minnpost-platinum: #e5e4e2;
 
 // more colors
 $minnpost-green: #469B61;
-$minnpost-red-error: lighten(palette(red), 10%);
+$minnpost-red-error: $_color-base-red;
 
 
 //--------------------------------------*\

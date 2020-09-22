@@ -797,7 +797,11 @@
           //lineHeight: '37px',
           //fontSize: '16px',
         },
+        invalid: {
+          color: '#1a1818',
+        },
       };
+      
 
       // Add an instance of the card UI component into the `card-element` <div>
       //card.mount('#card-element');
@@ -959,11 +963,6 @@
       }
     }, // achFields
 
-    hasHtml5Validation: function(element, options) {
-      //this.debug('value is ' + typeof document.createElement('input').checkValidity === 'function');
-      return typeof document.createElement('input').checkValidity === 'function';
-    }, // hasHtml5Validation
-
     buttonStatus: function(options, button, disabled) {
       // make the button clickable or not
       button.prop('disabled', disabled);
@@ -974,7 +973,51 @@
       }
     }, // buttonStatus
 
+    scrollToFormError: function() {
+      var form = $( '.m-form' );
+      // listen for `invalid` events on all form inputs
+      form.find( ':input' ).on( 'invalid', function () {
+          var input = $( this );
+          // the first invalid element in the form
+        var first = form.find( '.a-error' ).first();
+        // the form item that contains it
+        var first_holder = first.parent();
+          // only handle if this is the first invalid input
+          if (input[0] === first[0]) {
+              // height of the nav bar plus some padding if there's a fixed nav
+              //var navbarHeight = navbar.height() + 50
+
+              // the position to scroll to (accounting for the navbar if it exists)
+              var elementOffset = first_holder.offset().top;
+
+              // the current scroll position (accounting for the navbar)
+              var pageOffset = window.pageYOffset;
+
+              // don't scroll if the element is already in view
+              if ( elementOffset > pageOffset && elementOffset < pageOffset + window.innerHeight ) {
+                  return true;
+              }
+
+              // note: avoid using animate, as it prevents the validation message displaying correctly
+              $( 'html, body' ).scrollTop( elementOffset );
+          }
+      } );
+    }, // scrollToFormError
+
     validateAndSubmit: function(element, options) {
+
+      var forms = document.querySelectorAll('.m-form');
+      forms.forEach( function ( form ) {
+        ValidForm( form, {
+          validationErrorParentClass: 'm-has-validation-error',
+          validationErrorClass: 'a-validation-error',
+          invalidClass: 'a-error',
+          errorPlacement: 'after'
+        } )
+      } );
+
+      this.scrollToFormError();
+
       var that = this;
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
@@ -1049,15 +1092,15 @@
       // listen for errors and display/hide error messages
       var which_error = this_selector.attr('id');
       // when this field changes, reset its errors
-      $('.card-instruction.' + which_error).removeClass('invalid');
-      $('.card-instruction.' + which_error).empty();
+      $('.a-card-instruction.' + which_error).removeClass('a-error');
+      $('.a-card-instruction.' + which_error).empty();
       if (event.error) {
-        $('.card-instruction.' + which_error).text(event.error.message + ' Please try again.');
-        $('.card-instruction.' + which_error).addClass('invalid');
+        $('.a-card-instruction.' + which_error).text(event.error.message + ' Please try again.');
+        $('.a-card-instruction.' + which_error).addClass('a-error');
         this_selector.parent().addClass('a-error');
       } else {
-        $('.card-instruction.' + which_error).removeClass('invalid');
-        $('.card-instruction.' + which_error).empty();
+        $('.a-card-instruction.' + which_error).removeClass('a-error');
+        $('.a-card-instruction.' + which_error).empty();
         $(options.cc_num_selector, element).removeClass('a-error');
         $(options.cc_exp_selector, element).removeClass('a-rror');
         $(options.cc_cvv_selector, element).removeClass('a-error');
