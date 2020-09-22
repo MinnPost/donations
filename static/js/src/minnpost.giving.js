@@ -36,19 +36,19 @@
     'fair_market_value_selector' : '#fair_market_value',
     'frequency_selector' : '.frequency',
     'full_amount_selector' : '.full-amount',
-    'name_selector' : '.form-item--display-name',
-    'in_honor_or_memory_field_selector' : '.form-item--honor-memory',
+    'name_selector' : '.m-form-item-display-name',
+    'in_honor_or_memory_field_selector' : '.m-form-item-honor-memory',
     'honor_or_memory_chooser' : 'input[name="in_honor_or_memory"]', // radio fields
-    'honor_type_selector' : '.honor_type', // span inside label
-    'honor_memory_input_group' : '.honor-or-memory', // holds the form field
+    'honor_type_selector' : '.a-honor-type', // span inside label
+    'honor_memory_input_group' : '.a-honor-or-memory', // holds the form field
     'notify_selector' : '.notify_someone',
-    'notify_field_selector' : '.form-item--notify',
+    'notify_field_selector' : '.m-form-item-notify',
     'anonymous_selector' : '#anonymous',
     'show_billing_country_selector' : '#billing_show_country',
-    'billing_country_selector' : '.form-item--country',
+    'billing_country_selector' : '.m-form-item-country',
     'show_shipping_country_selector' : '#shipping_show_country',
-    'shipping_country_selector' : '.form-item--shipping-country',
-    'shipping_address_selector' : '.form-item--shipping-address',
+    'shipping_country_selector' : '.m-form-item-shipping-country',
+    'shipping_address_selector' : '.m-form-item-shipping-address',
     'use_for_shipping_selector' : '#useforshipping',
     'email_field_selector' : '#email',
     'password_field_selector' : '#password',
@@ -58,18 +58,18 @@
     'account_state_selector' : '#billing_state',
     'account_zip_selector' : '#billing_zip',
     'create_mp_selector' : '#creatempaccount',
-    'password_selector' : '.form-item--password',
+    'password_selector' : '.m-form-item-password',
     'additional_amount_field' : '#additional_donation',
-    'billing_selector' : 'fieldset.billing',
-    'shipping_selector' : 'fieldset.shipping',
-    'credit_card_fieldset' : '.payment-method-group',
+    'billing_selector' : 'fieldset.m-billing-information',
+    'shipping_selector' : 'fieldset.m-shipping-information',
+    'credit_card_fieldset' : '.m-form-group-payment',
     'choose_payment' : '#choose-payment-method',
     'payment_method_selector' : '.payment-method',
     'cc_num_selector' : '#card-number',
     'cc_exp_selector' : '#card-expiry',
     'cc_cvv_selector' : '#card-cvc',
-    'payment_button_selector' : '#submit',
     'confirm_button_selector' : '#finish',
+    'pay_button_selector' : '.a-button-pay',
     'opp_id_selector' : '#lock_key', // we use this value as the Google Analytics transaction ID
     'recurring_selector' : '#recurring',
     'newsletter_group_selector' : '.support-newsletters',
@@ -151,11 +151,18 @@
       this.options.cardType = null;
       this.options.create_account = false;
 
-      var button_text = $('button.give, input.give').text();
+      var button_text = $(this.options.pay_button_selector).text();
       this.options.button_text = button_text;
 
       this.stripe = Stripe(this.options.stripe_publishable_key);
-      this.elements = this.stripe.elements();
+      this.elements = this.stripe.elements({
+        fonts: [
+          {
+            // integrate your font into stripe
+            cssSrc: 'https://use.typekit.net/cxj7fzg.css',
+          }
+        ]
+      });
 
       // use a referrer for edit link if we have one
       if (document.referrer !== '') {
@@ -191,7 +198,7 @@
         this.honorOrMemoryToggle(this.element, this.options); // in honor or in memory of someone
         this.outsideUnitedStates(this.element, this.options); // outside US
         this.shippingAddress(this.element, this.options); // shipping address
-        this.allowMinnpostAccount(this.element, this.options, false); // option for creating minnpost account
+        this.allowMinnpostAccount(this.element, this.options); // option for creating minnpost account
         this.choosePaymentMethod(this.element, this.options); // switch between card and ach
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
         this.achFields(this.element, this.options); // do stuff for ach payments, if applicable to the form
@@ -486,20 +493,20 @@
     }, // creditCardFeeCheckbox
 
     donateAnonymously: function(element, options) {
-      if ($(options.anonymous_selector, element).is(':checked')) {
-        $(options.name_selector + ' div:first', element).hide();
-      } else {
-        $(options.name_selector + ' div:first', element).show();
-      }
-
+      var that = this;
+      that.toggleAnonymous($(options.anonymous_selector, element));
       $(options.anonymous_selector, element).change(function() {
-        if ($(this).is(':checked')) {
-          $(options.name_selector + ' div:first', element).hide();
-        } else {
-          $(options.name_selector + ' div:first', element).show();
-        }
+        that.toggleAnonymous($(this));
       });
     }, // donateAnonymously
+
+    toggleAnonymous: function(element) {
+      if (element.is(':checked')) {
+        $(this.options.name_selector + ' div:first', this.element).hide();
+      } else {
+        $(this.options.name_selector + ' div:first', this.element).show();
+      }
+    }, // toggleAnonymous
 
     checkLevel: function(element, options, returnvalue) {
       // we could maybe get rid of this if we could move this part into wordpress
@@ -606,16 +613,24 @@
       
     }, // shippingAddress
 
-    allowMinnpostAccount: function(element, options, changed) {
+    allowMinnpostAccount: function(element, options) {
       var that = this;
       var account_exists = false;
 
-      $(options.email_field_selector, element).parent().append('<p class="error spam-email">This email address has been detected as a spammer.</p>');
-      $('.spam-email').hide();
+      // show password as text
+      that.showPassword();
 
+      // calculate password strength
+      that.showPasswordStrength();
+      
+      that.spamEmail($(options.email_field_selector, element));
       $(options.email_field_selector, element).change(function() {
-        $('.spam-email').hide();
-        $(this).removeClass('invalid error');
+        that.spamEmail($(options.email_field_selector, element));
+      });
+
+      that.toggleAccountFields($(options.create_mp_selector, element));
+      $(options.create_mp_selector, element).change(function() {
+        that.toggleAccountFields($(options.create_mp_selector, element));
       });
 
       function doneTyping () {
@@ -634,40 +649,100 @@
           typingTimer = setTimeout(doneTyping, doneTypingInterval);
         }
       });
-
-      //user is "finished typing," do something
-
-      if ($(options.create_mp_selector, element).is(':checked')) {
-        $(options.password_selector, element).show();
-        options.create_account = true;
-      } else {
-        $(options.password_selector, element).hide();
-      }
-
-      $(options.create_mp_selector, element).change(function() {
-        that.allowMinnpostAccount(element, options, true);
-      });
-
-      if (changed === false) {
-        // allow users to show plain text, or to see pw criteria
-        $(options.password_selector, element).append('<div class="help-link"><span>Password help</span></div><div class="form-help">Password must be at least 6 characters.</div><label class="additional-option"><input type="checkbox" name="showpassword" id="showpassword"> Show password</label>');
-        $(options.create_mp_selector, element).parent().before('<p class="account-exists success">There is already a MinnPost.com account with this email.</p>');
-        $('.account-exists').hide();
-        $('#showpassword').click(function() {
-          if ($(this).is(':checked')) {
-            $('#password').get(0).type = 'text';
-          } else {
-            $('#password').get(0).type = 'password';
-          }
-        });
-
-        $('.form-item .form-help').hide();
-      }
-      $('.help-link').click(function() {
-        $(this).next('.form-help').toggle();
-        return false;
-      });
     }, // allowMinnpostAccount
+
+    spamEmail: function(email_field) {
+      var spamErrorContainer = email_field.parent();
+      if ($('.a-spam-email', spamErrorContainer).length === 0 ) {
+        spamErrorContainer.append('<p class="a-form-caption a-error a-spam-email">This email address has been detected as a spammer.</p>');
+      }
+      $('.a-spam-email', spamErrorContainer).hide();
+      spamErrorContainer.removeClass('invalid a-error');
+    }, // spamEmail
+
+    toggleAccountFields: function(create_account_selector) {
+      if (create_account_selector.is(':checked')) {
+        create_account_selector.parent().before('<p class="a-form-caption a-account-exists a-account-exists-success">There is already a MinnPost.com account with this email address.</p>');
+        $('.a-account-exists').hide();
+        $(this.options.password_selector, this.element).show();
+        this.options.create_account = true;
+      } else {
+        $(this.options.password_selector, this.element).hide();
+      }
+    }, // toggleAccountFields
+
+    showPassword: function() {
+      // Cache our jquery elements
+      var $submit = $('.btn-submit');
+      var $container = $(this.options.password_selector, this.element);
+      var $field = $('input[name="password"]', $container);
+      $('.a-account-exists').hide();
+      var show_pass = '<div class="a-form-show-password a-form-caption"><label><input type="checkbox" name="show_password" id="show-password-checkbox" value="1"> Show password</label></div>';
+      // Inject the toggle button into the page
+      $container.append( show_pass );
+      // Cache the toggle button
+      var $toggle = $('#show-password-checkbox');
+      // Toggle the field type
+      $toggle.on('click', function(e) {
+        var checkbox = $(this);
+        if (checkbox.is(':checked')) {
+          $field.attr('type', 'text');
+        } else {
+          $field.attr('type', 'password');
+        }
+      });
+      // Set the form field back to a regular password element
+      $submit.on( 'click', function(e) {
+        $field.attr('type', 'password');
+      });
+    },
+
+    showPasswordStrength: function() {
+      // checkPasswordStrength
+      var that = this;
+      if ($('.a-password-strength').length > 0 ) {
+        var $before = $('.a-form-show-password');
+        $before.after( $('<div class="a-password-strength"><meter max="4" id="password-strength"><div></div></meter><p class="a-form-caption" id="password-strength-text"></p></div>'));
+        $( 'body' ).on( 'keyup', 'input[name=password]',
+          function() {
+            that.checkPasswordStrength(
+              $('input[name=password]'), // Password field
+              $('#password-strength'),           // Strength meter
+              $('#password-strength-text')      // Strength text indicator
+            );
+          }
+        );
+      }
+    }, // showPasswordStrength
+
+    checkPasswordStrength: function( $password, $strengthMeter, $strengthText ) {
+      var password = $password.val();
+      // Get the password strength
+      var result = zxcvbn(password);
+      var strength = result.score;
+
+      $strengthText.removeClass( 'short bad good strong' );
+
+      // Add the strength meter results
+      switch ( strength ) {
+        case 2:
+          $strengthText.addClass( 'bad' ).html( 'Strength: <strong>Weak</strong>' );
+          break;
+        case 3:
+          $strengthText.addClass( 'good' ).html( 'Strength: <strong>Medium</strong>' );
+          break;
+        case 4:
+          $strengthText.addClass( 'strong' ).html( 'Strength: <strong>Strong</strong>' );
+          break;
+        case 5:
+          $strengthText.addClass( 'short' ).html( 'Strength: <strong>Very weak</strong>' );
+          break;
+        default:
+          $strengthText.addClass( 'short' ).html( 'Strength: <strong>Very weak</strong>' );
+      }
+      $strengthMeter.val(strength);
+      return strength;
+    }, // checkPasswordStrength
 
     checkMinnpostAccount: function(element, options, email) {
       var user = {
@@ -683,18 +758,18 @@
           if ($(options.create_mp_selector, element).is(':checked')) {
             $(options.password_selector, element).hide();
             $(options.create_mp_selector, element).parent().hide();
-            $('.account-exists', element).show();
+            $('.a-account-exists', element).show();
           }
           $(options.create_mp_selector, element).on('change', function() {
             if ($(options.create_mp_selector, element).is(':checked')) {
               $(options.password_selector, element).hide();
               $(options.create_mp_selector, element).parent().hide();
-              $('.account-exists', element).show();
+              $('.a-account-exists', element).show();
             }
           });
         } else if ( result.status === 'spam' ) {
-          $(that.options.email_field_selector).addClass('invalid error');
-          $( '.spam-email').show();
+          $(that.options.email_field_selector).addClass('invalid a-error');
+          $( '.a-spam-email').show();
         } else { // user does not exist or ajax call failed
           if ($(options.create_mp_selector, element).is(':checked')) {
             $(options.password_selector, element).show();
@@ -702,7 +777,7 @@
           } else {
             $(options.password_selector, element).hide();
           }
-          $('.account-exists', element).hide();
+          $('.a-account-exists', element).hide();
           return false;
         }
       });
@@ -758,12 +833,18 @@
       var style = {
         base: {
           iconColor: '#666EE8',
-          lineHeight: '37px',
+          lineHeight: '43px',
           fontWeight: 400,
-          fontFamily: 'Georgia,Cambria,Times New Roman,Times,serif',
-          fontSize: '16px',
+          fontFamily: 'ff-meta-web-pro',
+          fontSize: '24px',
+          //lineHeight: '37px',
+          //fontSize: '16px',
+        },
+        invalid: {
+          color: '#1a1818',
         },
       };
+      
 
       // Add an instance of the card UI component into the `card-element` <div>
       //card.mount('#card-element');
@@ -926,11 +1007,6 @@
       }
     }, // achFields
 
-    hasHtml5Validation: function(element, options) {
-      //this.debug('value is ' + typeof document.createElement('input').checkValidity === 'function');
-      return typeof document.createElement('input').checkValidity === 'function';
-    }, // hasHtml5Validation
-
     buttonStatus: function(options, button, disabled) {
       // make the button clickable or not
       button.prop('disabled', disabled);
@@ -941,29 +1017,58 @@
       }
     }, // buttonStatus
 
+    scrollToFormError: function() {
+      var form = $( '.m-form' );
+      // listen for `invalid` events on all form inputs
+      form.find( ':input' ).on( 'invalid', function () {
+          var input = $( this );
+          // the first invalid element in the form
+        var first = form.find( '.a-error' ).first();
+        // the form item that contains it
+        var first_holder = first.parent();
+          // only handle if this is the first invalid input
+          if (input[0] === first[0]) {
+              // height of the nav bar plus some padding if there's a fixed nav
+              //var navbarHeight = navbar.height() + 50
+
+              // the position to scroll to (accounting for the navbar if it exists)
+              var elementOffset = first_holder.offset().top;
+
+              // the current scroll position (accounting for the navbar)
+              var pageOffset = window.pageYOffset;
+
+              // don't scroll if the element is already in view
+              if ( elementOffset > pageOffset && elementOffset < pageOffset + window.innerHeight ) {
+                  return true;
+              }
+
+              // note: avoid using animate, as it prevents the validation message displaying correctly
+              $( 'html, body' ).scrollTop( elementOffset );
+          }
+      } );
+    }, // scrollToFormError
+
     validateAndSubmit: function(element, options) {
+
+      var forms = document.querySelectorAll('.m-form');
+      forms.forEach( function ( form ) {
+        ValidForm( form, {
+          validationErrorParentClass: 'm-has-validation-error',
+          validationErrorClass: 'a-validation-error',
+          invalidClass: 'a-error',
+          errorPlacement: 'after'
+        } )
+      } );
+
+      this.scrollToFormError();
+
       var that = this;
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
 
-        // do some fallback stuff for non-html5 browsers
-        if (that.hasHtml5Validation(element, options)) {
-            if (!this.checkValidity()) {
-              $(this).addClass('invalid');
-              $('html, body').animate({
-                scrollTop: $(this).find('input:invalid').parent().offset().top
-              }, 2000);
-              //this.debug('top is ' + );
-              $(this).find('input:invalid').parent().addClass('error');
-            } else {
-              $(this).removeClass('invalid');
-              $(this).find('input:invalid').parent().removeClass('error');
-            }
-        }
-
         // validate and submit the form
-        $('.check-field').remove();
-        $('input, label', element).removeClass('error');
+        $('.a-check-field').remove();
+        $('input, label', element).removeClass('a-error');
         var valid = true;
         var payment_type = $('input[name="stripe_payment_type"]').val();
         $(that.options.choose_payment + ' input').change(function() {
@@ -1070,21 +1175,21 @@
       // listen for errors and display/hide error messages
       var which_error = this_selector.attr('id');
       // when this field changes, reset its errors
-      $('.card-instruction.' + which_error).removeClass('invalid');
-      $('.card-instruction.' + which_error).empty();
+      $('.a-card-instruction.' + which_error).removeClass('a-error');
+      $('.a-card-instruction.' + which_error).empty();
       if (event.error) {
-        $('.card-instruction.' + which_error).text(event.error.message + ' Please try again.');
-        $('.card-instruction.' + which_error).addClass('invalid');
-        this_selector.parent().addClass('error');
+        $('.a-card-instruction.' + which_error).text(event.error.message + ' Please try again.');
+        $('.a-card-instruction.' + which_error).addClass('a-error');
+        this_selector.parent().addClass('a-error');
       } else {
-        $('.card-instruction.' + which_error).removeClass('invalid');
-        $('.card-instruction.' + which_error).empty();
-        $(options.cc_num_selector, element).removeClass('error');
-        $(options.cc_exp_selector, element).removeClass('error');
-        $(options.cc_cvv_selector, element).removeClass('error');
-        $(options.cc_num_selector, element).parent().removeClass('error');
-        $(options.cc_exp_selector, element).parent().removeClass('error');
-        $(options.cc_cvv_selector, element).parent().removeClass('error');
+        $('.a-card-instruction.' + which_error).removeClass('a-error');
+        $('.a-card-instruction.' + which_error).empty();
+        $(options.cc_num_selector, element).removeClass('a-error');
+        $(options.cc_exp_selector, element).removeClass('a-rror');
+        $(options.cc_cvv_selector, element).removeClass('a-error');
+        $(options.cc_num_selector, element).parent().removeClass('a-error');
+        $(options.cc_exp_selector, element).parent().removeClass('a-error');
+        $(options.cc_cvv_selector, element).parent().removeClass('a-error');
       }
     }, // stripeErrorDisplay
 
@@ -1148,9 +1253,9 @@
             message = result.error.message[0];
           }
           if ($(field).length > 0) {
-            $(that.options[field], element).addClass('error');
-            $(that.options[field], element).prev().addClass('error');
-            $(that.options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+            $(that.options[field], element).addClass('a-error');
+            $(that.options[field], element).prev().addClass('a-error');
+            $(that.options[field], element).after('<span class="a-check-field invalid">' + message + '</span>');
           }
         } else {
           // Send the token to your server
@@ -1208,9 +1313,9 @@
               message = error.message[0];
             }
             if ($(that.options[field]).length > 0) {
-              $(that.options[field]).addClass('error');
-              $(that.options[field]).prev().addClass('error');
-              $(that.options[field]).after('<span class="check-field invalid">' + message + '</span>');
+              $(that.options[field]).addClass('a-error');
+              $(that.options[field]).prev().addClass('a-error');
+              $(that.options[field]).after('<span class="a-check-field invalid">' + message + '</span>');
             }
 
             if (typeof error !== 'undefined') {
@@ -1235,11 +1340,11 @@
               }
 
               if (error.field == 'recaptcha') {
-                $('button.give').before('<p class="recaptcha-error">' + message + '</p>')
+                $(that.options.pay_button_selector).before('<p class="a-form-caption a-recaptcha-error">' + message + '</p>')
               }
 
               if (error.type == 'invalid_request_error') {
-                $('button.give').before('<p class="error error-invalid-request">' + error.message + '</p>')
+                $(that.options.pay_button_selector).before('<p class="error error-invalid-request">' + error.message + '</p>')
               }
 
             }
@@ -1282,7 +1387,7 @@
               newsletter_group_html += '<fieldset class="m-form-item support-newsletter m-form-item-' + category.type + '">';
               newsletter_group_html += '<label>' + category.name + ':</label>';
               if ( category.contains.length > 0 ) {
-                newsletter_group_html += '<div class="form-item form-item--newsletter">';
+                newsletter_group_html += '<div class="m-form-item m-form-item-newsletter">';
                 $.each(category[category.contains], function( index, item ) {
                   newsletter_group_html += '<label><input name="groups_submitted" type="checkbox" value="' + item.id + '">' + item.name + '</label>';
                 });
@@ -1312,7 +1417,7 @@
           }
           if (result.mailchimp_status === 'subscribed') {
             // user created - show a success message
-            $('.confirm-instructions').text($('.confirm-instructions').attr('data-known-user'));
+            $('.a-confirm-instructions').text($('.a-confirm-instructions').attr('data-known-user'));
             var groups = result.groups;
             $.each(groups, function( index, value ) {
               if ( value === true ) {

@@ -1,5 +1,5 @@
-<section class="panel panel--form" id="panel--details">
-  <div class="support support--summary">
+<section class="o-panel o-panel-form" id="panel--details">
+  <div class="support m-support-summary">
     
       <h1>{{ heading }}</h1>
     
@@ -9,37 +9,48 @@
 
   </div>
 
-  {% if amount == '' or show_amount_field or show_frequency_field is sameas true or allow_additional_amount is sameas true or show_invoice is sameas true or show_organization is sameas true %}
-    <fieldset class="minimal-details clear-block">
+  {% if amount == '' or show_amount_field or show_frequency is sameas true or allow_additional_amount is sameas true or show_invoice is sameas true or show_organization is sameas true %}
+    <fieldset class="minimal-details">
       {% if amount == '' or show_amount_field %}
-      <div class="form-item form-item--amount">
-        <label for="amount" class="required">Amount: </label>
-        <div class="input-prepend">
-          <span class="prefix">$</span>
+      <div class="m-form-item m-form-item-amount">
+        <label for="amount">Amount: <span class="a-form-item-required" title="This field is required.">*</span></label>
+        <div class="a-input-prepend">
+          <span class="a-prefix">$</span>
           <input type="number" id="amount" name="amount" value="{{ amount }}" min="1" step="any" required>
         </div>
       </div>
       {% endif %}
 
-      {% if show_frequency_field is sameas true %}
-      <div class="form-item form-item--recurring">
-        <input type="radio" id="recurring-monthly" name="recurring" value="monthly"{% if frequency == 'monthly' %} checked {% endif %}> <label for="recurring-monthly">monthly</label>
-        <input type="radio" id="recurring-yearly" name="recurring" value="yearly"{% if frequency == 'yearly' %} checked {% endif %}> <label for="recurring-yearly">yearly</label>
+      {% if show_installment_period is sameas true %}
+      <div class="m-membership-choice-group m-installment-period-choose">
+        <fieldset>
+          <div class="m-form-radios m-update-installment-frequency">
+            <div class="m-form-item">
+              <input type="radio" name="recurring" value="monthly" id="recurring-monthly"{% if installment_period == 'monthly' %} checked {% endif %}>
+              <label for="recurring-monthly" class="a-decline-benefits-option">monthly</label>
+            </div>
+            <div class="m-form-item">
+              <input type="radio" name="recurring" value="yearly" id="recurring-yearly"{% if installment_period == 'yearly' %} checked {% endif %}>
+              <label for="recurring-yearly" class="a-decline-benefits-option">yearly</label>
+            </div>
+          </div>
+        </fieldset>
       </div>
+
       {% endif %}
 
       {% include "/shared/additional-amount.html" %}
 
       {% if show_invoice is sameas true %}
-        <div class="form-item form-item--invoice">
-          <label for="invoice" class="required">Invoice Number:</label>
+        <div class="m-form-item m-form-item-invoice">
+          <label for="invoice">Invoice Number: <span class="a-form-item-required" title="This field is required.">*</span></label>
           <input type="text" id="invoice" name="invoice" value="{{ invoice }}" required>
         </div>
       {% endif %}
 
       {% if show_organization is sameas true %}
-        <div class="form-item form-item--organization">
-          <label for="client_organization" class="required">Organization:</label>
+        <div class="m-form-item m-form-item-organization">
+          <label for="client_organization">Organization: <span class="a-form-item-required" title="This field is required.">*</span></label>
           <input type="text" id="client_organization" name="client_organization" value="{{ client_organization }}" required>
         </div>
       {% endif %}

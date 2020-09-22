@@ -1,6 +1,6 @@
 <img src="https://www.minnpost.com/wp-content/uploads/2020/01/2020MRLogo600-1.png" alt="MinnPost presents MinnRoast 2020" />
-<section class="panel panel--form" id="panel--details">
-    <div class="support support--summary">
+<section class="o-panel o-panel-form" id="panel--details">
+    <div class="support m-support-summary">
     
         <h1>{{ heading }}</h1>
       
@@ -8,7 +8,7 @@
         <p>{{ summary|safe }}</p>
         {% endif %}
 
-        <fieldset class="sponsorship-levels">
+        <fieldset class="m-sponsorship-levels">
             <label><input type="radio" name="amount" value="8000" data-fair-market-value="600"{% if amount == 8000 %} checked{% endif %} required> Executive Co-Producer - $8,000 (12 tickets)</label>
             <label><input type="radio" name="amount" value="5000" data-fair-market-value="500"{% if amount == 5000 %} checked{% endif %} required> Smokey &amp; the Miracle Workers - $5,000 (10 tickets)</label>
             <label><input type="radio" name="amount" value="3000" data-fair-market-value="400"{% if amount == 3000 %} checked{% endif %} required> Four Seasonings - $3,000 (8 tickets)</label>

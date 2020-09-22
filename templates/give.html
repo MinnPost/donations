@@ -1,28 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<section class="progress progress--donation">
-	<div class="wrapper">
-	  <ol>
-	    <li class="panel--choose"><a href="{{ step_one_url }}">Choose</a></li>
-	    <li class="panel--pay"><a href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--pay">Payment</a></li>
-	    <li class="panel--confirmation"><span>Thank You</span></li>
-	  </ol>
-	</div>
-</section>
-
-<main>
-	<div class="wrapper support--forms">
-	  <form action="{{ form_action }}" method="post" class="support support--donate" id="donate">
-
-	    <input type="hidden" name="installment_period" id="installment_period" value="{{ frequency }}">
-		{% include 'shared/hidden-fields.html' %}
-		{% include 'give/swag-fields.html' %}
-
-		{% include 'shared/pay.html' %}
-
-	  </form>
-	</div>
-</main>
-
+<form action="{{ form_action }}" method="post" class="m-form m-form-standalone support--donate" id="donate">
+    <input type="hidden" name="installment_period" id="installment_period" value="{{ frequency }}">
+    {% include 'shared/hidden-fields.html' %}
+    {% include 'give/swag-fields.html' %}
+    {% include 'shared/pay.html' %}
+</form>
 {% endblock %}

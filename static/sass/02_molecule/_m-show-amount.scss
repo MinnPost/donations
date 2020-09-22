@@ -1,0 +1,13 @@
+fieldset.m-show-amount {
+    display: flex;
+    align-items: center;
+    margin-bottom: $standard-heading-margin;
+
+    h2 {
+        margin-bottom: 0;
+    }
+
+    .a-edit-amount {
+        margin-left: $standard-block-margin;
+    }
+}

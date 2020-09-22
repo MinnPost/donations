@@ -664,7 +664,7 @@ def validate_form(FormType, template, function=add_donation.delay):
         return jsonify(errors=body)
 
     if app.config["USE_RECAPTCHA"] == True:
-        captcha_response = form_data["g-recaptcha-response"]
+        captcha_response = request.form['g-recaptcha-response']
         if not is_human(captcha_response):
             app.logger.error(f"Error: recaptcha failed on donation: {email} {first_name} {last_name}")
             message = 'Our system was unable to verify that you are a human. Please email members@minnpost.com for assistance.'
@@ -757,6 +757,7 @@ def give_form():
     description = "MinnPost Membership"
     form        = DonateForm()
     form_action = "/thanks/"
+    step        = "pay"
 
     if request.method == "POST":
         return validate_form(DonateForm, template=template)
@@ -885,7 +886,7 @@ def give_form():
     return render_template(
         template,
         title=title,
-        form=form,
+        form=form, step=step,
         form_action=form_action,
         amount=amount_formatted, frequency=frequency, yearly=yearly, description=description,
         first_name=first_name, last_name=last_name, email=email,
@@ -932,10 +933,15 @@ def donation_cancel_form():
     # salesforce donation object
     opportunity_id = request.args.get("opportunity", "")
     recurring_id = request.args.get("recurring", "")
+    donation = None
 
     # default donation fields
     stage_name = "Closed Lost"
     open_ended_status = "Closed"
+    first_name  = ""
+    last_name   = ""
+    email       = ""
+    customer_id = ""
     
     if opportunity_id:
         heading       = "Cancel Single Donation"
@@ -990,10 +996,10 @@ def donation_cancel_form():
             else:
                 summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation, click the button."
 
-    first_name  = donation.donor_first_name
-    last_name   = donation.donor_last_name
-    email       = donation.donor_email
-    customer_id = donation.stripe_customer_id
+        first_name  = donation.donor_first_name
+        last_name   = donation.donor_last_name
+        email       = donation.donor_email
+        customer_id = donation.stripe_customer_id
 
     # interface settings
     button = "Confirm your cancellation"
@@ -1299,6 +1305,7 @@ def thanks():
     title       = "Thank you for supporting MinnPost"
     form        = DonateForm(request.form)
     form_action = "/finish/"
+    step        = "thanks"
 
     # use form.data instead of request.form from here on out
     # because it includes all filters applied by WTF Forms
@@ -1323,7 +1330,7 @@ def thanks():
     return render_template(
         template,
         title=title,
-        form_action=form_action,
+        step=step, form_action=form_action,
         amount=amount_formatted,
         frequency=frequency,
         yearly=yearly,
@@ -1343,7 +1350,8 @@ def thanks():
 def finish():
     template    = "finish.html"
     title       = "Thank you for supporting MinnPost"
-    form = FinishForm(request.form)
+    step        = "finish"
+    form        = FinishForm(request.form)
     # use form.data instead of request.form from here on out
     # because it includes all filters applied by WTF Forms
     form_data = form.data
@@ -1362,6 +1370,7 @@ def finish():
     return render_template(
         template,
         title=title,
+        step=step,
         path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
@@ -1556,6 +1565,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     credited_as = ""
     installment_period = app.config["DEFAULT_FREQUENCY"]
     pay_fees = False
+    show_installment_period = False
 
     # default donation fields
     stage_name = "Pledged"
@@ -1572,6 +1582,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         except:
             donation = None
         installment_period = "one-time"
+        show_installment_period = False
     elif recurring_id:
         try:
             rdo = RDO.list(
@@ -1579,6 +1590,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
             )
             donation = rdo[0]
             installment_period = donation.installment_period.lower()
+            show_installment_period = True
         except:
             donation = None
 
@@ -1720,7 +1732,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         title=title,
         form=form,
         form_action=form_action,
-        amount=amount_formatted, additional_donation=additional_donation, yearly=yearly, installment_period=installment_period,
+        amount=amount_formatted, additional_donation=additional_donation, show_installment_period=show_installment_period, yearly=yearly, installment_period=installment_period,
         first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, mrpledge_id=mrpledge_id, customer_id=customer_id, referring_page=referring_page,
