@@ -9,7 +9,7 @@
 
   </div>
 
-  {% if amount == '' or show_amount_field or show_frequency_field is sameas true or allow_additional_amount is sameas true or show_invoice is sameas true or show_organization is sameas true %}
+  {% if amount == '' or show_amount_field or show_frequency is sameas true or allow_additional_amount is sameas true or show_invoice is sameas true or show_organization is sameas true %}
     <fieldset class="minimal-details">
       {% if amount == '' or show_amount_field %}
       <div class="m-form-item m-form-item-amount">
@@ -21,7 +21,7 @@
       </div>
       {% endif %}
 
-      {% if show_frequency_field is sameas true %}
+      {% if show_frequency is sameas true %}
       <div class="m-form-item m-form-item-recurring">
         <input type="radio" id="recurring-monthly" name="recurring" value="monthly"{% if frequency == 'monthly' %} checked {% endif %}> <label for="recurring-monthly">monthly</label>
         <input type="radio" id="recurring-yearly" name="recurring" value="yearly"{% if frequency == 'yearly' %} checked {% endif %}> <label for="recurring-yearly">yearly</label>

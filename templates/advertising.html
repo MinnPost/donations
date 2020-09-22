@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<form action="{{ form_action }}" method="post" class="m-form m-form-standalone support--advertising" id="donate">
+<form action="{{ form_action }}" method="post" class="m-form m-form-standalone m-form-split" id="donate">
   {% include 'shared/hidden-fields.html' %}
   <input type="hidden" name="installment_period" id="installment_period" value="{{ frequency }}">
   {% if stage != '' %}

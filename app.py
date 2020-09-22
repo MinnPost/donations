@@ -927,10 +927,15 @@ def donation_cancel_form():
     # salesforce donation object
     opportunity_id = request.args.get("opportunity", "")
     recurring_id = request.args.get("recurring", "")
+    donation = None
 
     # default donation fields
     stage_name = "Closed Lost"
     open_ended_status = "Closed"
+    first_name  = ""
+    last_name   = ""
+    email       = ""
+    customer_id = ""
     
     if opportunity_id:
         heading       = "Cancel Single Donation"
@@ -985,10 +990,10 @@ def donation_cancel_form():
             else:
                 summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation, click the button."
 
-    first_name  = donation.donor_first_name
-    last_name   = donation.donor_last_name
-    email       = donation.donor_email
-    customer_id = donation.stripe_customer_id
+        first_name  = donation.donor_first_name
+        last_name   = donation.donor_last_name
+        email       = donation.donor_email
+        customer_id = donation.stripe_customer_id
 
     # interface settings
     button = "Confirm your cancellation"
@@ -1515,6 +1520,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     credited_as = ""
     installment_period = app.config["DEFAULT_FREQUENCY"]
     pay_fees = False
+    show_frequency = False
 
     # default donation fields
     stage_name = "Pledged"
@@ -1531,6 +1537,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         except:
             donation = None
         installment_period = "one-time"
+        show_frequency = False
     elif recurring_id:
         try:
             rdo = RDO.list(
@@ -1538,6 +1545,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
             )
             donation = rdo[0]
             installment_period = donation.installment_period.lower()
+            show_frequency = True
         except:
             donation = None
 
@@ -1674,7 +1682,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         title=title,
         form=form,
         form_action=form_action,
-        amount=amount_formatted, additional_donation=additional_donation, yearly=yearly, installment_period=installment_period,
+        amount=amount_formatted, additional_donation=additional_donation, show_frequency=show_frequency, yearly=yearly, installment_period=installment_period,
         first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, mrpledge_id=mrpledge_id, customer_id=customer_id, referring_page=referring_page,
