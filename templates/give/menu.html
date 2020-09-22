@@ -2,13 +2,27 @@
 <section class="m-support-progress" aria-label="progress">
     <ol>
         <li>
-            <a href="{{ step_one_url }}">Choose</a>
+            {% if step_one_url %}
+                <a href="{{ step_one_url }}">Choose</a>
+            {% else %}
+                <span>Choose</span>
+            {% endif %}
         </li>
         <li>
-            <a class="active" href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--pay">Payment</a>
+            {% if step == "pay" %}
+                <a class="active" href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--pay">Payment</a>
+            {% elif step == "thanks" or step == "finish" %}
+                <span>Payment</span>
+            {% else %}
+                <a href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--pay">Payment</a>
+            {% endif %}
         </li>
         <li>
-            <span>Thank You</span>
+            {% if step == "thanks" or step == "finish" %}
+                <span class="active">Thank You</span>
+            {% else %}
+                <span>Thank You</span>
+            {% endif %}
         </li>
     </ol>
 </section>

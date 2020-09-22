@@ -756,6 +756,7 @@ def give_form():
     description = "MinnPost Membership"
     form        = DonateForm()
     form_action = "/thanks/"
+    step        = "pay"
 
     if request.method == "POST":
         return validate_form(DonateForm, template=template)
@@ -879,7 +880,7 @@ def give_form():
     return render_template(
         template,
         title=title,
-        form=form,
+        form=form, step=step,
         form_action=form_action,
         amount=amount_formatted, frequency=frequency, yearly=yearly, description=description,
         first_name=first_name, last_name=last_name, email=email,
@@ -1262,6 +1263,7 @@ def thanks():
     title       = "Thank you for supporting MinnPost"
     form        = DonateForm(request.form)
     form_action = "/finish/"
+    step        = "thanks"
 
     # use form.data instead of request.form from here on out
     # because it includes all filters applied by WTF Forms
@@ -1286,7 +1288,7 @@ def thanks():
     return render_template(
         template,
         title=title,
-        form_action=form_action,
+        step=step, form_action=form_action,
         amount=amount_formatted,
         frequency=frequency,
         yearly=yearly,
@@ -1306,7 +1308,8 @@ def thanks():
 def finish():
     template    = "finish.html"
     title       = "Thank you for supporting MinnPost"
-    form = FinishForm(request.form)
+    step        = "finish"
+    form        = FinishForm(request.form)
     # use form.data instead of request.form from here on out
     # because it includes all filters applied by WTF Forms
     form_data = form.data
@@ -1325,6 +1328,7 @@ def finish():
     return render_template(
         template,
         title=title,
+        step=step,
         path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),

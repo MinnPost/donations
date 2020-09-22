@@ -44,6 +44,15 @@
     &.m-form-item-newsletters input {
         margin-bottom: 0;
     }
+
+    &.m-form-item-newsletter label {
+        
+        input[type="checkbox"],
+        input[type="radio"] {
+            display: inline;
+            margin-right: $standard-block-padding / 2;
+        }
+    }
 }
 
 .no-js .m-form-item-nojs {
