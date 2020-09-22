@@ -21,11 +21,22 @@
       </div>
       {% endif %}
 
-      {% if show_frequency is sameas true %}
-      <div class="m-form-item m-form-item-recurring">
-        <input type="radio" id="recurring-monthly" name="recurring" value="monthly"{% if frequency == 'monthly' %} checked {% endif %}> <label for="recurring-monthly">monthly</label>
-        <input type="radio" id="recurring-yearly" name="recurring" value="yearly"{% if frequency == 'yearly' %} checked {% endif %}> <label for="recurring-yearly">yearly</label>
+      {% if show_installment_period is sameas true %}
+      <div class="m-membership-choice-group m-installment-period-choose">
+        <fieldset>
+          <div class="m-form-radios m-update-installment-frequency">
+            <div class="m-form-item">
+              <input type="radio" name="recurring" value="monthly" id="recurring-monthly"{% if installment_period == 'monthly' %} checked {% endif %}>
+              <label for="recurring-monthly" class="a-decline-benefits-option">monthly</label>
+            </div>
+            <div class="m-form-item">
+              <input type="radio" name="recurring" value="yearly" id="recurring-yearly"{% if installment_period == 'yearly' %} checked {% endif %}>
+              <label for="recurring-yearly" class="a-decline-benefits-option">yearly</label>
+            </div>
+          </div>
+        </fieldset>
       </div>
+
       {% endif %}
 
       {% include "/shared/additional-amount.html" %}

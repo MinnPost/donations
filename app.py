@@ -1520,7 +1520,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     credited_as = ""
     installment_period = app.config["DEFAULT_FREQUENCY"]
     pay_fees = False
-    show_frequency = False
+    show_installment_period = False
 
     # default donation fields
     stage_name = "Pledged"
@@ -1537,7 +1537,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         except:
             donation = None
         installment_period = "one-time"
-        show_frequency = False
+        show_installment_period = False
     elif recurring_id:
         try:
             rdo = RDO.list(
@@ -1545,7 +1545,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
             )
             donation = rdo[0]
             installment_period = donation.installment_period.lower()
-            show_frequency = True
+            show_installment_period = True
         except:
             donation = None
 
@@ -1682,7 +1682,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         title=title,
         form=form,
         form_action=form_action,
-        amount=amount_formatted, additional_donation=additional_donation, show_frequency=show_frequency, yearly=yearly, installment_period=installment_period,
+        amount=amount_formatted, additional_donation=additional_donation, show_installment_period=show_installment_period, yearly=yearly, installment_period=installment_period,
         first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, mrpledge_id=mrpledge_id, customer_id=customer_id, referring_page=referring_page,
