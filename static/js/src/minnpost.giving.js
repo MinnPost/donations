@@ -21,27 +21,22 @@
     'plaid_public_key' : '',
     'plaid_link' : '#authorize-ach',
     'minnpost_root' : 'https://www.minnpost.com',
+    'progress_selector' : '.m-support-progress',
     'donate_form_selector': '#donate',
-    'donate_step_selector' : '#panel--pay',
     'confirm_form_selector' : '#confirm',
-    'confirm_step_selector' : '#panel--confirmation',
-    'active' : 'panel--pay',
-    'confirm' : 'panel--confirmation',
-    'query' : 'step',
+    'finish_section_selector' : '#panel--confirmation',
     'pay_cc_processing_selector' : 'input[id="pay-fees"]',
     'fee_amount' : '.processing-amount',
     'level_amount_selector' : '#panel--pay .amount .level-amount', // we can maybe get rid of this
     'original_amount_selector' : '[name="amount"]',
     'fair_market_value_selector' : '#fair_market_value',
-    'frequency_selector' : '.frequency',
     'full_amount_selector' : '.full-amount',
+    'installment_period_selector' : '[name="installment_period"]',
     'name_selector' : '.m-form-item-display-name',
     'in_honor_or_memory_field_selector' : '.m-form-item-honor-memory',
     'honor_or_memory_chooser' : 'input[name="in_honor_or_memory"]', // radio fields
     'honor_type_selector' : '.a-honor-type', // span inside label
     'honor_memory_input_group' : '.a-honor-or-memory', // holds the form field
-    'notify_selector' : '.notify_someone',
-    'notify_field_selector' : '.m-form-item-notify',
     'anonymous_selector' : '#anonymous',
     'show_billing_country_selector' : '#billing_show_country',
     'billing_country_selector' : '.m-form-item-country',
@@ -59,44 +54,15 @@
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.m-form-item-password',
     'additional_amount_field' : '#additional_donation',
-    'billing_selector' : 'fieldset.m-billing-information',
     'shipping_selector' : 'fieldset.m-shipping-information',
-    'credit_card_fieldset' : '.m-form-group-payment',
     'choose_payment' : '#choose-payment-method',
     'payment_method_selector' : '.payment-method',
     'cc_num_selector' : '#card-number',
     'cc_exp_selector' : '#card-expiry',
     'cc_cvv_selector' : '#card-cvc',
-    'confirm_button_selector' : '#finish',
     'pay_button_selector' : '.a-button-pay',
     'opp_id_selector' : '#lock_key', // we use this value as the Google Analytics transaction ID
-    'recurring_selector' : '#recurring',
-    'newsletter_group_selector' : '.support-newsletters',
-    'reason_field_selector' : '#reason_for_supporting',
-    'share_reason_selector' : '#reason_shareable',
-    'confirm_top_selector' : '.support--post-confirm',
-    'existing_newsletter_settings' : '',
-    'levels' : {
-      1 : {
-        'name' : 'bronze',
-        'max' : 60
-      },
-      2 : {
-        'name' : 'silver',
-        'min' : 60,
-        'max' : 120
-      },
-      3 : {
-        'name' : 'gold',
-        'min' : 120,
-        'max' : 240
-      },
-      4 : {
-        'name' : 'platinum',
-        'min' : 240
-      }
-    }
-
+    'newsletter_group_selector' : '.support-newsletters'
   }; // end defaults
 
   // The actual plugin constructor
@@ -137,18 +103,10 @@
       } else {
         this.options.amount = amount;
       }
-      this.options.original_amount = parseInt($(this.options.original_amount_selector, this.element).val(), 10);
-      this.options.frequency = parseFloat($(this.options.frequency_selector, this.element).attr('data-year-freq'));
-      var recurring = $(this.options.recurring_selector, this.element).val();
-      if (typeof recurring !== 'undefined') {
-        this.options.recurring = recurring.charAt(0).toUpperCase() + recurring.slice(1);
-      }
-      
-      this.options.processing_fee = (Math.round(parseFloat(this.options.fee_amount)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
+      this.options.original_amount     = parseInt($(this.options.original_amount_selector, this.element).val(), 10);
+      this.options.processing_fee      = (Math.round(parseFloat(this.options.fee_amount)*Math.pow(10,2))/Math.pow(10,2)).toFixed(2);
       this.options.processing_fee_text = this.options.processing_fee;
-      
-      this.options.cardType = null;
-      this.options.create_account = false;
+      this.options.create_account      = false;
 
       var button_text = $(this.options.pay_button_selector).text();
       this.options.button_text = button_text;
@@ -173,26 +131,17 @@
         // return;
       }
 
-      // tab stuff
-      var query_panel = this.qs[this.options.query];
-      if (typeof query_panel === 'undefined') {
-        query_panel = this.options.active;
-      }
-
       // call functions
-
-      this.tabNavigation(query_panel); // navigating
-
+      this.analyticsTracking(this.options); // track analytics events
       this.amountAsRadio(this.element, this.options); // if the amount field is a radio button
       this.amountUpdated(this.element, this.options); // if the amount text field can change
 
       if ($(this.options.pay_cc_processing_selector).length > 0) {
-        this.creditCardProcessingFees(this.options, reset); // processing fees
+        this.creditCardProcessingFees(this.options); // processing fees
       }
       
-      if ($(this.options.donate_step_selector).length > 0) {
-        this.options.level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
-        this.options.levelnum = this.checkLevel(this.element, this.options, 'num'); // check what level it is as a number
+      // the main form ID. this is not used for cancelling
+      if ($(this.options.donate_form_selector).length > 0) {
         this.donateAnonymously(this.element, this.options); // anonymous
         this.honorOrMemoryToggle(this.element, this.options); // in honor or in memory of someone
         this.outsideUnitedStates(this.element, this.options); // outside US
@@ -204,28 +153,12 @@
         this.validateAndSubmit(this.element, this.options); // validate and submit the form
       }
 
-      if ($(this.options.confirm_step_selector).length > 0) {
+      if ($(this.options.confirm_form_selector).length > 0) {
         this.showNewsletterSettings(this.element, this.options);
         this.confirmMessageSubmit(this.element, this.options); // submit the stuff on the confirmation page
       }
 
     }, // init
-
-    qs: (function(a) {
-      if (a === '') {
-        return {};
-      }
-      var b = {};
-      for (var i = 0; i < a.length; ++i) {
-        var p=a[i].split('=', 2);
-        if (p.length === 1) {
-          b[p[0]] = '';
-        } else {
-          b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, ' '));
-        }
-      }
-      return b;
-    })(window.location.search.substr(1).split('&')),
 
     debug: function(message) {
       if (this.options.debug === true) {
@@ -238,89 +171,71 @@
       }
     }, // debug
 
-    getQueryStrings: function(link) {
-      if (typeof link === 'undefined' || link === '') {
-        return {};
-      } else {
-        link = '?' + link.split('?')[1];
-        link = link.substr(1).split('&');
-      }
-      var b = {};
-      for (var i = 0; i < link.length; ++i) {
-        var p=link[i].split('=', 2);
-        if (p.length === 1) {
-          b[p[0]] = '';
-        } else {
-          b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, ' '));
-        }
-      }
-      return b;
-    }, // getQueryStrings
-
-    tabNavigation: function(active) {
-      var step = $('.progress--donation li.' + active).index() + 1;
-      var nav_item_count = $('.progress--donation li').length;
-      var opp_id = $(this.options.opp_id_selector).val();
-      var next_step = step + 1;
+    analyticsTracking: function(options) {
+      var progress = $(options.progress_selector);
+      var step;
+      var nav_item_count = 0;
+      var opp_id = $(options.opp_id_selector).val();
       var post_purchase = false;
-
-      // we will have to update this because no more flask id
-
-      this.debug( 'step is ' + step + ' and nav item count is ' + nav_item_count + ' and opp id is ' + opp_id + ' and next step is ' + next_step );
-
-      // this is the last visible step
-      if ($(this.options.confirm_step_selector).length > 0) {
-        active = this.options.confirm;
-        $('.progress--donation li.' + active + ' span').addClass('active');
-        step = $('.progress--donation li.' + active).index() + 1;
-        // there is a continuation of the main form on this page. there is a button to click
-        // this means there is another step
-        if ($(this.options.confirm_button_selector).length > 0) {
-          nav_item_count += 1;
+      if (progress.length > 0) {
+        nav_item_count = $('li', progress).length; // length is not zero based
+        step = $('li .active', progress).parent().index() + 1; // index is zero based
+      }
+      // there is a progress menu, AND there IS NOT a confirm form selector
+      // if that is the case, we're not on the purchase step
+      if (progress.length > 0 && $(options.confirm_form_selector).length === 0) {
+        // the active tab matches the count of items AND there is NOT a confirm form to be submitted
+        // that means we're on a post purchase step.
+        if (step === nav_item_count && $(options.confirm_form_selector).length === 0) {
+          step = step + 1;
+          post_purchase = true;
         }
-      }
-
-      if (step === nav_item_count - 1 && $(this.options.opp_id_selector).length > 0) {
-        this.debug('this is a payment step but there is a step after it');
+      } else if (progress.length > 0 && $(options.confirm_form_selector).length > 0 || $(options.finish_section_selector).length > 0) {
+        // we are on the confirm form selector and there is a progress measure
+        // OR, we are on the finish selector and there is NOT a progress measure
+        // these mean the user just purchased.
         step = 'purchase';
-      } else if (step === nav_item_count && $(this.options.opp_id_selector).length > 0) {
-        this.debug('this is a payment step and there is no step after it');
-        step = 'purchase';
-      } else if (step === nav_item_count && $(this.options.opp_id_selector).length === 0) {
-        this.debug('this is a post-finish step. it does not have an id');
-        step = step + 1;
-        post_purchase = true;
+      } else if (progress.length === 0) {
+        return;
       }
-
+      this.debug( 'step is ' + step + ' and nav item count is ' + nav_item_count + ' and opp id is ' + opp_id + ' and post purchase is ' + post_purchase );
       this.analyticsTrackingStep(step, post_purchase);
-
-      // activate the nav tabs
-      if ($('.progress--donation li .active').length === 0) {
-        $('#' + active).show();
-        $('.progress--donation li.' + active + ' a').addClass('active');
-      } else {
-        active = $('.progress--donation li .active').parent().prop('class');
-        $('#' + active).show();
-      }
-
-    }, // tabNavigation
+    }, // analyticsTracking
 
     analyticsTrackingStep: function(step, post_purchase) {
-      var level = this.checkLevel(this.element, this.options, 'name'); // check what level it is
+      var progress = $(options.progress_selector);
       var amount = $(this.options.original_amount_selector).val();
-      var recurring = this.options.recurring;
       var opp_id = $(this.options.opp_id_selector).val();
-
+      var installment_period = 'one-time';
+      var level;
+      var that = this;
+      if ($(this.options.installment_period_selector).length > 0 ) {
+        installment_period = $(this.options.installment_period_selector).val();
+      }
       // if we're not after the purchase, use addProduct
-      if ( post_purchase !== true ) {
-        ga('ec:addProduct', {
-          'id': 'minnpost_' + level.toLowerCase() + '_membership',
-          'name': 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership',
-          'category': 'Donation',
-          'brand': 'MinnPost',
-          'variant':  recurring,
-          'price': amount,
-          'quantity': 1
+      if (progress.length > 0 && post_purchase !== true) {
+        var data = {
+          amount: amount,
+          installment_period: installment_period
+        };
+        $.ajax({
+          method: 'POST',
+          url: '/calculate-member-level/',
+          data: data
+        }).done(function( data ) {
+          if ($(data.level).length > 0) {
+            level = data.level.level;
+            that.debug('add product: id is ' + 'minnpost_' + level.toLowerCase() + '_membership' + ' and name is ' + 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership' + ' and variant is ' + installment_period.charAt(0).toUpperCase() + installment_period.slice(1));
+            ga('ec:addProduct', {
+              'id': 'minnpost_' + level.toLowerCase() + '_membership',
+              'name': 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership',
+              'category': 'Donation',
+              'brand': 'MinnPost',
+              'variant': installment_period.charAt(0).toUpperCase() + installment_period.slice(1),
+              'price': amount,
+              'quantity': 1
+            });
+          }
         });
       }
 
@@ -334,7 +249,7 @@
       } else {
         this.debug('add a checkout action. step is ' + step);
         ga('ec:setAction','checkout', {
-          'step': step,            // A value of 1 indicates first checkout step.Value of 2 indicates second checkout step
+          'step': step, // A value of 1 indicates first checkout step. Value of 2 indicates second checkout step
         });
       }
 
@@ -421,11 +336,11 @@
       });
     }, // calculateFees
 
-    creditCardProcessingFees: function(options, reset) {
+    creditCardProcessingFees: function(options) {
       // this adds or subtracts the fee to the original amount when the user indicates they do or do not want to pay the fees
       var that = this;
-      that.creditCardFeeCheckbox($(this.options.pay_cc_processing_selector));
-      $(this.options.pay_cc_processing_selector).on('change', function () {
+      that.creditCardFeeCheckbox($(options.pay_cc_processing_selector));
+      $(options.pay_cc_processing_selector).on('change', function () {
           that.creditCardFeeCheckbox(this);
       });
     }, // creditCardProcessingFees
@@ -465,52 +380,6 @@
       }
     }, // toggleAnonymous
 
-    checkLevel: function(element, options, returnvalue) {
-      // we could maybe get rid of this if we could move this part into wordpress
-      var level = '';
-      var levelnum = 0;
-      var amount_yearly;
-      var frequency = options.frequency;
-      var amount = options.original_amount;
-
-      if (frequency === 12) {
-        amount_yearly = amount * frequency;
-      } else if (frequency === 1) {
-        amount_yearly = amount;
-      }
-      
-      $.each(options.levels, function(index, value) {
-        var name = value.name;
-        var num = index;
-        var max = value.max;
-        var min = value.min;
-        if (typeof min !== 'undefined' && typeof max !== 'undefined') {
-          if (amount_yearly >= min && amount_yearly < max) {
-            level = name;
-            levelnum = num;
-            return false;
-          }
-        } else if (typeof max !== 'undefined') {
-          if (amount_yearly < max) {
-            level = name;
-            levelnum = num;
-            return false;
-          }
-        } else if (typeof min !== 'undefined') {
-          if (amount_yearly >= min) {
-            level = name;
-            levelnum = num;
-            return false;
-          }
-        }
-      });
-      if (returnvalue === 'name') {
-        return level;
-      } else if (returnvalue === 'num') {
-        return levelnum;  
-      }
-    }, // checkLevel
-
     honorOrMemory: function(element, options) {
       if ($(options.honor_or_memory_chooser + ':checked').val()) {
         $(options.honor_memory_input_group, element).show();
@@ -548,14 +417,6 @@
       if ($(options.use_for_shipping_selector).length > 0) { // we have a shipping checkbox
         show_shipping = true;
       }
-//      show_shipping = !!$(options.use_for_shipping_selector + ':checked', element).length;
-//      //this.debug('show is there');
-
-/*      $(options.use_for_shipping_selector, element).change(function() {
-        that.shippingAddress(element, options);
-        //this.debug('change it');
-      });
-*/
       if (show_shipping === true ) {
         $(options.use_for_shipping_selector, element).parent().show();
         if ($(options.use_for_shipping_selector, element).is(':checked')) { // use same as billing

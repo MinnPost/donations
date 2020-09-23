@@ -10,11 +10,11 @@
         </li>
         <li>
             {% if step == "pay" %}
-                <a class="active" href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--pay">Payment</a>
+                <a class="active" href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}">Payment</a>
             {% elif step == "thanks" or step == "finish" %}
                 <span>Payment</span>
             {% else %}
-                <a href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}&amp;step=panel--pay">Payment</a>
+                <a href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}">Payment</a>
             {% endif %}
         </li>
         <li>

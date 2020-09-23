@@ -1262,6 +1262,28 @@ def calculate_fees():
     return jsonify(ret_data)
 
 
+# used to calculate the member level. Used for Analytics, for example
+# called by ajax
+@app.route("/calculate-member-level/", methods=["POST"])
+def calculate_member_level():
+
+    form = DonateForm(request.form)
+    # use form.data instead of request.form from here on out
+    # because it includes all filters applied by WTF Forms
+    form_data = form.data
+
+    amount = form_data["amount"]
+    frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    if frequency == "monthly":
+        yearly = 12
+    else:
+        yearly = 1
+    level = check_level(amount, frequency, yearly)
+
+    ret_data = {"level": level}
+    return jsonify(ret_data)
+
+
 @app.route("/thanks/", methods=["POST"])
 def thanks():
     template    = "thanks.html"
