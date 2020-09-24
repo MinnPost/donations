@@ -1,0 +1,16 @@
+fieldset.m-show-amount {
+    margin-bottom: $standard-heading-margin;
+
+    h2,
+    .a-edit-amount {
+        display: inline-block;
+    }
+
+    h2 {
+        margin-bottom: 0;
+    }
+
+    .a-edit-amount {
+        margin-left: $standard-heading-margin;
+    }
+}

@@ -1,106 +1,194 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{% if title|length %}{{ title }}{% else %}MinnPost | Make Your Payment{% endif %}{% endblock %}</title>
+<html class="no-js" lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% if title|length %}{{ title }}{% else %}MinnPost | Make Your Payment{% endif %}{% endblock %}</title>
+    
+    <link rel='stylesheet' id='all-css-0' href='https://www.minnpost.com/_static/??-eJyNkEFuAjEMRS/U4HYB7SyqniXjeMBqnER2BsTt6xYJDSqD2Oa///QdOLXABfOcyADNILF1GHPF75B51KhnsH7OtBEuGwdewBtYS6fSoeV5z8XAs9Kq9SAkI6kduEE0o35x3onDpO4IVNJD8WykISLW2WGJJe5JfvOFfAVZVfqTkJljfrh3u9cv2dK6Tj25/HrzVFVC04quq+oLOeOB5eaDnlNGxZgspKn5vX/OIyfSpWgF+b/5Sz7ftsOwG95fP7Y/mH3D1Q==' type='text/css' media='all'>
+    <link rel='stylesheet' id='minnpost-fonts-css'  href='https://use.typekit.net/cxj7fzg.css?ver=1.0.0' media='all'>
+    <link rel='stylesheet' id='all-css-2' href='https://www.minnpost.com/wp-content/themes/minnpost-largo/style.css?m=1600717687g' type='text/css' media='all'>
+
+    <meta name="theme-color" content="#801018">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="YES">
+    <link rel="apple-touch-startup-image" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon.ico">
+    <meta name="apple-mobile-web-app-title" content="MinnPost">
+    <meta name="application-name" content="MinnPost">
+    <meta property="og:site_name" content="MinnPost">
+    <link rel="shortcut icon" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon.ico?v=1595224187" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon-16x16.png?v=1595224187">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon-32x32.png?v=1595224187">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/apple-touch-icon.png?v=1595224187">
+    <link rel="mask-icon" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/safari-pinned-tab.svg?v=1595224187" color="#801018">
+    <meta name="msapplication-TileColor" content="#801018">
+    <meta name="msapplication-TileImage" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/mstile-144x144.png?v=1595224187">
+    <meta name="msapplication-config" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/browserconfig.xml?v=1595224187">
+    <meta name="theme-color" content="#ffffff">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url" content="https://support.minnpost.com">
+    <meta name="twitter:site" content="@MinnPost"/>
+    <meta property="twitter:card" content="summary">
+    
+    <meta property="og:title" content="{% block og_title %}{% if title|length %}{{ title }}{% else %}MinnPost | Make Your Payment{% endif %}{% endblock %}">
+    <meta name="description" content="">
+    <meta property="og:description" content="">
+    <meta property="twitter:description" content="">
   
-  <meta property="og:type" content="website">
-  <meta name="theme-color" content="#801018">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-touch-fullscreen" content="YES">
-  <link rel="apple-touch-startup-image" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon.ico">
-  <meta name="apple-mobile-web-app-title" content="MinnPost">
-  <meta name="application-name" content="MinnPost">
-  <meta property="og:site_name" content="MinnPost">
-  <link rel="shortcut icon" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon.ico?v=1592584327" type="image/x-icon">
-  <link rel="icon" type="image/png" sizes="16x16" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon-16x16.png?v=1592584327">
-  <link rel="icon" type="image/png" sizes="32x32" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/favicon-32x32.png?v=1592584327">
-  <link rel="apple-touch-icon" sizes="180x180" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/apple-touch-icon.png?v=1592584327">
-  <link rel="mask-icon" href="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/safari-pinned-tab.svg?v=1592584327" color="#801018">
-  <meta name="msapplication-TileColor" content="#801018">
-  <meta name="msapplication-TileImage" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/mstile-144x144.png?v=1592584327">
-  <meta name="msapplication-config" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/app-icons/browserconfig.xml?v=1592584327">
-  <meta name="theme-color" content="#ffffff">
-  <meta property="og:locale" content="en_US">
-
-  <meta property="og:url" content="https://support.minnpost.com/">
-  
-  <meta name="twitter:site" content="@MinnPost" />
-  <meta property="og:title" content="{% block og_title %}{% if title|length %}{{ title }}{% else %}MinnPost | Make Your Payment{% endif %}{% endblock %}">
-
-  <meta name="description" content="">
-  <meta property="og:description" content="">
-  <meta property="twitter:description" content="">
-  
-  <meta property="twitter:card" content="summary">
-  
-  <meta property="og:image" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/MinnPostLogoNewSquare.png">
+    <meta property="og:image" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/MinnPostLogoNewSquare.png">
 
 
-  <link href="{{ url_for('static', filename='css/main.min.css') }}?m={{ last_updated }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.min.css') }}?m={{ last_updated }}" rel="stylesheet">
 
-  <!-- Google Analytics -->
-  <script async src="{{ url_for('static', filename='js/autotrack.js') }}?m={{ last_updated }}"></script>
-  <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    <!-- Google Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-3385191-1', 'auto');
-  ga('require', 'urlChangeTracker');
-  ga('require', 'ec');
-  ga('send', 'pageview');
+    ga('create', 'UA-3385191-1', 'auto');
+    ga('require', 'ec');
+    ga('send', 'pageview');
 
-  </script>
-  <!-- End Google Analytics -->
+    </script>
+    <!-- End Google Analytics -->
 
-</head>
-<body>
-  <header class="l-header" id="header">
-    <div class="wrapper">
-      <div class="a-site-branding">
-        <a class="a-logo a-logo-svg" rel="home" href="https://www.minnpost.com/">
-          <picture>
-            <source type="image/svg+xml" srcset="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/minnpost-logo.svg">
-            <img src="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/logo.png" alt="MinnPost">
-          </picture>
-        </a>
+  </head>
+  <body{% if path and path != "" and path != "give" %} class="support-single"{% endif %}>
+    <header id="masthead" class="o-header o-header-support">
+      <div class="o-wrapper o-wrapper-site-header">
+          <div class="a-site-branding">
+              <a class="a-logo a-logo-svg" rel="home" href="https://www.minnpost.com/" title="Return to MinnPost Homepage">
+                  <picture>
+                      <source type="image/svg+xml" srcset="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/minnpost-logo.svg">
+                      <img src="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/logo.png" alt="MinnPost">
+                  </picture>
+              </a>
+          </div>
+          <!-- .a-site-branding -->
+
+          <div class="m-support-cta m-support-cta-top">
+              <h2 class="a-support-tagline">Nonprofit, nonpartisan journalism. Supported by&nbsp;readers.</h2>
+          </div>
       </div>
-      <div class="m-support-cta m-support-cta-top">
-        <h2 class="a-support-tagline">Nonprofit, nonpartisan journalism. Supported by&nbsp;readers.</h2>
-      </div>
-      <nav class="sections">
-      </nav>
-    </div>
   </header>
 
-  {% block content %}{% endblock %}
-    
-  <footer>
-    <div class="wrapper">
+  <div id="content" class="o-wrapper o-wrapper-content">
+    <div id="primary" class="m-layout-membership o-support">
+      {% include 'give/menu.html' %}
+      <main id="site-main" class="site-main">
+        <div class="m-entry-content m-membership-support-wrapper m-payment-wrapper">
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+    </div>
+  </div>
 
+  <footer id="site-footer" class="o-footer">
+
+    <div class="o-wrapper o-wrapper-site-footer">
+
+        <aside class="o-footer-hat">
+            <section id="custom_html-70" class="m-widget m-widget-text m-widget-custom-html m-widget-site-branding">
+                <div class="m-widget-contents m-textwidget m-custom-html-widget">
+                    <div class="a-site-branding">
+                        <a class="a-logo a-logo-svg" rel="home" href="https://www.minnpost.com/" title="MinnPost">
+                            <picture>
+                                <source type="image/svg+xml" srcset="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/minnpost-logo.svg">
+                                <img src="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/logo-bw.png" alt="MinnPost" data-lazy-src="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/logo-bw.png?is-pending-load=1" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class=" jetpack-lazy-image">
+                                <noscript>
+                                    <img src="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/logo-bw.png" alt="MinnPost">
+                                </noscript>
+                                </source>
+                            </picture>
+                        </a>
+                    </div>
+                    <!-- .a-site-branding -->
+                    <p class="a-tagline-bottom">is a 501(c)(3) nonprofit newsroom</p>
+                </div>
+            </section>
+        </aside>
+
+        <aside class="o-footer-links">
+            <nav id="footer-primary" class="m-secondary-navigation">
+                <ul id="footer-primary-links" class="menu">
+                    <li>
+                        <a href="https://www.minnpost.com/about">About Us</a>
+                    </li>
+                    <li>
+                        <a href="https://www.minnpost.com/advertise">Advertise</a>
+                    </li>
+                    <li class="active ">
+                        <a href="https://www.minnpost.com/support">Membership</a>
+                    </li>
+                    <li>
+                        <a href="https://www.minnpost.com/help">Help</a>
+                    </li>
+                    <li>
+                        <a href="https://www.minnpost.com/contact-us">Contact</a>
+                    </li>
+                    <li>
+                        <a href="https://www.minnpost.com/minnpost-code-of-ethics">Code of Ethics</a>
+                    </li>
+                    <li>
+                        <a href="https://www.minnpost.com/terms-of-use">Terms of Use</a>
+                    </li>
+                    <li>
+                        <a href="https://www.minnpost.com/privacy">MinnPost Privacy Policy</a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- #footer-primary -->
+
+            <nav id="footer-network" class="m-secondary-navigation">
+                <ul id="minnpost-network" class="menu">
+                    <li>
+                        <a href="https://twitter.com/MinnPost">
+                            <i title="Twitter" class="fab fa-twitter-square"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.facebook.com/MinnPost">
+                            <i title="Facebook" class="fab fa-facebook-square"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.instagram.com/MinnPost">
+                            <i title="Instagram" class="fab fa-instagram-square"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.minnpost.com/rss-feed-list">
+                            <i title="RSS Feeds List" class="fas fa-rss-square"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- #footer-network -->
+
+            <p class="a-footer-message">
+                MinnPost | P.O. Box 18438 | Minneapolis, MN 55418 | 
+                <a href="tel:612.455.6950">612.455.6950</a>
+            </p>
+
+        </aside>
     </div>
   </footer>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="https://www.minnpost.com/wp-includes/js/zxcvbn.min.js"></script>
   <script src="https://js.stripe.com/v3/"></script>
   {% if use_recaptcha is sameas true %}<script src='https://www.google.com/recaptcha/api.js'></script>{% endif %}
   {% if show_ach is sameas true %}<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>{% endif %}
+  <script src='https://www.minnpost.com/_static/??-eJzTLy/QTc7PK0nNK9EvyClNz8wr1s8qLE0tqtQtLUhJLEkt0s+CixjrmeoZ6uVm5ullFevok6IzNzO9CCgENMFYzwBqgn2uraGppamRkYmhuWUWAKFEMFQ='></script>
   <script src="{{ url_for('static', filename='js/main.min.js') }}?m={{ last_updated }}"></script>
 
   <script>
   // main.js
   $(document).ready(function() {
     // call plugin and pass options if need be
-    $('.support--forms').minnpost_giving({
+    $('.m-payment-wrapper').minnpost_giving({
       'stripe_publishable_key' : '{{stripe}}',{% if show_ach is sameas true %}
       'plaid_env' : '{{plaid_env}}',
       'plaid_public_key' : '{{plaid_public_key}}',{% endif %}

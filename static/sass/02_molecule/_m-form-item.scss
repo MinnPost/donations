@@ -1,0 +1,71 @@
+.m-form-item {
+
+    span.label {
+        display: inline-block;
+    }
+
+    &.m-form-item-email-address {
+
+        > div {
+            margin-bottom: $standard-block-padding;
+        }
+    }
+
+    &.m-form-item-display-name {
+        margin-bottom: $standard-block-padding;
+    }
+
+    &.m-form-item-payment-method {
+        border-radius: $border-radius;
+        background: neutral-color(border);
+        margin-bottom: $standard-block-padding;
+
+        > label {
+            padding: $standard-block-padding $standard-block-margin 0 $standard-block-margin;
+
+            &:last-child {
+                padding-top: 0;
+                padding-bottom: $standard-block-padding;
+            }
+        }
+
+        @media screen and (min-width: $breakpoint-sm) {
+            display: flex;
+
+            > label {
+
+                &:last-child {
+                    padding: $standard-block-padding $standard-block-margin 0 $standard-block-margin;
+                }
+            }
+        }
+    }
+
+    &.m-form-item-newsletters input {
+        margin-bottom: 0;
+    }
+
+    &.m-form-item-newsletter label {
+        
+        input[type="checkbox"],
+        input[type="radio"] {
+            display: inline;
+            margin-right: $standard-block-padding / 2;
+        }
+    }
+}
+
+.m-form.m-form-standalone .m-membership-choice-group.m-installment-period-choose .m-form-radios {
+
+    .m-form-item {
+        width: 46%;   
+    }
+}
+
+.no-js .m-form-item-nojs {
+    display: block;
+}
+
+.js .m-form-item-nojs {
+    display: none;
+}

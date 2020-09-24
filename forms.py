@@ -16,8 +16,9 @@ from wtforms.fields import (
     SelectMultipleField,
 )
 from wtforms.fields.html5 import EmailField
-
-recaptcha_keys = os.environ.get("RECAPTCHA_KEYS", [])
+from config import (
+    RECAPTCHA_KEYS,
+)
 
 
 # amount must be $1 or higher
@@ -70,7 +71,7 @@ def is_human(captcha_response):
         Returns True captcha test passed for the submitted form 
         else returns False.
     """
-    secret = recaptcha_keys.get("secret_key", '')
+    secret = RECAPTCHA_KEYS["secret_key"]
     if secret is not '':
         payload = {'response':captcha_response, 'secret':secret}
         response = requests.post("https://www.google.com/recaptcha/api/siteverify", payload)
