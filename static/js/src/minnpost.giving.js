@@ -203,7 +203,7 @@
     }, // analyticsTracking
 
     analyticsTrackingStep: function(step, post_purchase) {
-      var progress = $(options.progress_selector);
+      var progress = $(this.options.progress_selector);
       var amount = $(this.options.original_amount_selector).val();
       var opp_id = $(this.options.opp_id_selector).val();
       var installment_period = 'one-time';
