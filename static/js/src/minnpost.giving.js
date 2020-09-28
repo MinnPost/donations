@@ -60,7 +60,7 @@
     'payment_method_selector' : '.payment-method',
     'cc_num_selector' : '#card-number',
     'cc_exp_selector' : '#card-expiry',
-    'cc_cvv_selector' : '#card-cvc',
+    'cc_cvc_selector' : '#card-cvc',
     'pay_button_selector' : '.a-button-pay',
     'opp_id_selector' : '#lock_key', // we use this value as the Google Analytics transaction ID
     'newsletter_group_selector' : '.support-newsletters'
@@ -725,7 +725,7 @@
       that.cardCvcElement = that.elements.create('cardCvc', {
         style: style
       });
-      that.cardCvcElement.mount(options.cc_cvv_selector);
+      that.cardCvcElement.mount(options.cc_cvc_selector);
 
       // validate/error handle the card fields
       that.cardNumberElement.on('change', function(event) {
@@ -754,7 +754,7 @@
 
       that.cardCvcElement.on('change', function(event) {
         // error handling
-        that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
+        that.stripeErrorDisplay(event, $(options.cc_cvc_selector, element), element, options );
         // if it changed, reset the button
         that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
       });
@@ -930,10 +930,13 @@
         // validate and submit the form
         $('.a-check-field').remove();
         $('input, label', element).removeClass('a-error');
+        $(that.options.payment_method_selector, that.element).removeClass('a-error invalid');
+        $('.a-validation-error').remove();
         var valid = true;
         var payment_type = $('input[name="stripe_payment_type"]').val();
         $(that.options.choose_payment + ' input').change(function() {
-          $(that.options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
+          $(that.options.payment_method_selector + ' .a-error').remove(); // remove method error message if it is there
+          $(that.options.payment_method_selector).parent().find('.a-validation-error').remove();
           // if a payment field changed, reset the button
           that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
         });
@@ -998,7 +1001,6 @@
       var supportform = $(that.options.donate_form_selector);
       var field;
       var message;
-      var payment_method;
       intent = that.getPaymentIntent();
       that.stripe.confirmCardPayment(
         intent,
@@ -1009,24 +1011,26 @@
         if (result.error) {
           // Show the errors on the form
           that.buttonStatus(that.options, supportform.find('button'), false);
-          field = result.error.field + '_field_selector';
+          field = 'cc_' + result.error.param + '_selector';
           message = '';
           if (typeof result.error.message === 'string') {
             message = result.error.message;
           } else {
             message = result.error.message[0];
           }
-          if ($(field).length > 0) {
-            $(that.options[field], element).addClass('error');
-            $(that.options[field], element).prev().addClass('error');
-            $(that.options[field], element).after('<span class="check-field invalid">' + message + '</span>');
+          if ($(that.options[field]).length > 0) {
+            $(that.options[field], that.element).addClass('a-error invalid');
+            $(that.options[field], that.element).after('<div class="a-validation-error">' + message + '</div>');
+          } else {
+            $(that.options.payment_method_selector, that.element).addClass('a-error invalid');
+            $(that.options.payment_method_selector, that.element).append('<div class="a-validation-error">' + message + '</div>');
           }
         } else {
           //that.debug(result);
-          payment_method = result.paymentIntent.payment_method;
-          console.dir(result);
+          //console.dir(result);
           // Send the payment method to the server
           //that.stripePaymentHandler(payment_method);
+          // todo: continue submitting here
         }
       });
 
@@ -1036,21 +1040,24 @@
       // listen for errors and display/hide error messages
       var which_error = this_selector.attr('id');
       // when this field changes, reset its errors
-      $('.a-card-instruction.' + which_error).removeClass('a-error');
+      $('.a-card-instruction.' + which_error).removeClass('a-validation-error');
       $('.a-card-instruction.' + which_error).empty();
+      $(this_selector).removeClass('a-error');
       if (event.error) {
         $('.a-card-instruction.' + which_error).text(event.error.message + ' Please try again.');
-        $('.a-card-instruction.' + which_error).addClass('a-error');
-        this_selector.parent().addClass('a-error');
+        $('.a-card-instruction.' + which_error).addClass('a-validation-error');
+        this_selector.parent().addClass('m-has-validation-error');
+        $(this_selector).addClass('a-error');
       } else {
-        $('.a-card-instruction.' + which_error).removeClass('a-error');
+        $(this_selector).removeClass('a-error');
+        $('.a-card-instruction.' + which_error).removeClass('a-validation-error');
         $('.a-card-instruction.' + which_error).empty();
-        $(options.cc_num_selector, element).removeClass('a-error');
-        $(options.cc_exp_selector, element).removeClass('a-rror');
-        $(options.cc_cvv_selector, element).removeClass('a-error');
-        $(options.cc_num_selector, element).parent().removeClass('a-error');
-        $(options.cc_exp_selector, element).parent().removeClass('a-error');
-        $(options.cc_cvv_selector, element).parent().removeClass('a-error');
+        $(options.cc_num_selector, element).removeClass('a-validation-error');
+        $(options.cc_exp_selector, element).removeClass('a-validation-error');
+        $(options.cc_cvc_selector, element).removeClass('a-validation-error');
+        $(options.cc_num_selector, element).parent().removeClass('m-has-validation-error');
+        $(options.cc_exp_selector, element).parent().removeClass('m-has-validation-error');
+        $(options.cc_cvc_selector, element).parent().removeClass('m-has-validation-error');
       }
     }, // stripeErrorDisplay
 
@@ -1125,7 +1132,7 @@
       });
     }, // createToken
 
-    stripePaymentHandler: function(payment_method, type) {
+    /*stripePaymentHandler: function(payment_method, type) {
       var that = this;
       var supportform = $(this.options.donate_form_selector);
       var ajax_url = '';
@@ -1193,7 +1200,7 @@
 
               if (error.code == 'invalid_cvc' || error.code == 'incorrect_cvc') {
                 // error handling
-                stripeErrorSelector = $(that.options.cc_cvv_selector);
+                stripeErrorSelector = $(that.options.cc_cvc_selector);
               }
 
               if (stripeErrorSelector !== '') {
@@ -1227,7 +1234,7 @@
         that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       });
 
-    },
+    },*/
 
     showNewsletterSettings: function(element, options) {
       var that = this;
