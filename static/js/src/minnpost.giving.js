@@ -935,8 +935,8 @@
           }
 
           if ($('input[name="bankToken"]').length == 0) {
-            // finally, get a token from stripe, and try to charge it if it is not ach
-            that.createToken(that.cardNumberElement, tokenData);
+            // finally, get a payment method from stripe, and try to charge it if it is not ach
+            that.createPaymentMethod(that.cardNumberElement, tokenData);
           } else {
             // if it is ach, we already have a token so pass it to stripe.
             that.stripeTokenHandler( $('#bankToken').val(), 'bank_account' );
@@ -1041,6 +1041,10 @@
         }
       });
     }, // createToken
+
+    createPaymentMethod: function(cardElement, tokenData) {
+      var that = this;
+    }, // createPaymentMethod
 
     stripeTokenHandler: function(token, type) {
       var that = this;
