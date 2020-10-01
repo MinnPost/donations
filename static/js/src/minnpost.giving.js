@@ -303,6 +303,16 @@
 
     }, // amountUpdated
 
+    getTotalAmount: function(amount) {
+      amount = (typeof amount !== 'undefined') ?  amount : this.options.original_amount;
+      var total_amount = amount;
+      if ($(this.options.additional_amount_field).length > 0 && $(this.options.additional_amount_field).val() > 0) {
+        var additional_amount = $(this.options.additional_amount_field).val();
+        total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10);
+      }
+      return total_amount;
+    }, // getTotalAmount
+
     setFairMarketValue: function(amount_selector) {
       // if there is a fair market value field, check and see if we can populate it
       if ($(this.options.fair_market_value_selector).length > 0) {
@@ -314,11 +324,7 @@
     calculateFees: function(amount, stripe_payment_type) {
       // this sends the amount and stripe payment type to python; get the fee and display it to the user on the checkbox label
       var that = this;
-      var total_amount = amount;
-      if ($(this.options.additional_amount_field).length > 0 && $(this.options.additional_amount_field).val() > 0) {
-        var additional_amount = $(this.options.additional_amount_field).val();
-        total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10);
-      }
+      var total_amount = that.getTotalAmount(amount);
       var data = {
         amount: total_amount,
         stripe_payment_type: stripe_payment_type
@@ -354,12 +360,13 @@
 
     creditCardFeeCheckbox: function(field) {
       var full_amount;
+      var total_amount = this.getTotalAmount();
       var that = this;
       if ($(field).is(':checked') || $(field).prop('checked')) {
         $('.amount .level-amount').addClass('full-amount');
-        full_amount = (that.options.original_amount + parseFloat($(that.options.fee_amount).text()));
+        full_amount = (total_amount + parseFloat($(that.options.fee_amount).text()));
       } else {
-        full_amount = that.options.original_amount;
+        full_amount = total_amount;
       }
       $(that.options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
     }, // creditCardFeeCheckbox
