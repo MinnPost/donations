@@ -48,9 +48,11 @@
     'password_field_selector' : '#password',
     'first_name_field_selector' : '#first_name',
     'last_name_field_selector' : '#last_name',
+    'billing_street_field_selector' : '#billing_street',
     'account_city_selector' : '#billing_city',
     'account_state_selector' : '#billing_state',
     'account_zip_selector' : '#billing_zip',
+    'billing_country_field_selector' : '#billing_country',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.m-form-item-password',
     'additional_amount_field' : '#additional_donation',
@@ -915,7 +917,7 @@
         if (valid === true) {
           // 1. set up the button and remove the hidden fields we don't need
           that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), true);
-          var tokenData = that.generateTokenData();
+          var billingDetails = that.generateBillingDetails();
 
           // 2. create minnpost account if specified
           if (that.options.create_account === true) {
@@ -985,51 +987,61 @@
       }
     }, // stripeErrorDisplay
 
-    generateTokenData: function() {
-      var tokenData = {};
+    generateBillingDetails: function() {
+      var billingDetails = {};
+      var addressDetails = {};
+
+      if ($(this.options.email_field_selector).val() != '') {
+        billingDetails.email = $(this.options.email_field_selector).val();
+      }
+      
       var full_name = '';
       if ($('#full_name').length > 0) {
         full_name = $('#full_name').val();
       } else {
-        full_name = $('#first_name').val() + ' ' + $('#last_name').val();
+        full_name = $(this.options.first_name_field_selector).val() + ' ' + $(this.options.last_name_field_selector).val().val();
       }
-      tokenData.name = full_name;
+      billingDetails.name = full_name;
 
       var street = 'None';
       if ($('input[name="full_address"]').val() != '') {
         street = $('#full_address').val();
-        if ($('input[name="billing_street"]').val() != '') {
-          street = $('input[name="billing_street"]').val();
+        if ($(this.options.billing_street_field_selector).val() != '') {
+          street = $(this.options.billing_street_field_selector).val();
         }
-        tokenData.address_line1 = street;
+        addressDetails.address_line1 = street;
       }
 
       var city = 'None';
-      if ($('input[name="billing_city"]').val() != '') {
-        city = $('input[name="billing_city"]').val();
-        tokenData.address_city = city;
+      if ($(this.options.account_city_selector).val() != '') {
+        city = $(this.options.account_city_selector).val();
+        addressDetails.address_city = city;
       }
 
       var state = 'None';
-      if ($('input[name="billing_state"]').val() != '') {
-        state = $('input[name="billing_state"]').val();
-        tokenData.address_state = state;
+      if ($(this.options.account_state_selector).val() != '') {
+        state = $(this.options.account_state_selector).val();
+        addressDetails.address_state = state;
       }
 
       var zip = 'None';
-      if ($('input[name="billing_zip"]').val() != '') {
-        zip = $('input[name="billing_zip"]').val();
-        tokenData.address_zip = zip;
+      if ($(this.options.account_zip_selector).val() != '') {
+        zip = $(this.options.account_zip_selector).val();
+        addressDetails.address_zip = zip;
       }
 
       var country = 'US';
-      if ($('input[name="billing_country"]').val() != '') {
-        country = $('input[name="billing_country"]').val();
+      if ($(this.options.billing_country_field_selector).val() != '') {
+        country = $(this.options.billing_country_field_selector).val();
       }
-      tokenData.address_country = country;
+      addressDetails.address_country = country;
 
-      return tokenData;
-    }, // generateTokenData
+      if (street !== 'None' || city !== 'None' || state !== 'None' || zip !== 'None') {
+        billingDetails.address = addressDetails;
+      }
+
+      return billingDetails;
+    }, // generateBillingDetails
 
     createToken: function(card, tokenData) {
       var that = this;
