@@ -998,7 +998,7 @@
       if ($('#full_name').length > 0) {
         full_name = $('#full_name').val();
       } else {
-        full_name = $(this.options.first_name_field_selector).val() + ' ' + $(this.options.last_name_field_selector).val().val();
+        full_name = $(this.options.first_name_field_selector).val() + ' ' + $(this.options.last_name_field_selector).val();
       }
       billingDetails.name = full_name;
 
@@ -1008,32 +1008,32 @@
         if ($(this.options.billing_street_field_selector).val() != '') {
           street = $(this.options.billing_street_field_selector).val();
         }
-        addressDetails.address_line1 = street;
+        addressDetails.line1 = street;
       }
 
       var city = 'None';
       if ($(this.options.account_city_selector).val() != '') {
         city = $(this.options.account_city_selector).val();
-        addressDetails.address_city = city;
+        addressDetails.city = city;
       }
 
       var state = 'None';
       if ($(this.options.account_state_selector).val() != '') {
         state = $(this.options.account_state_selector).val();
-        addressDetails.address_state = state;
+        addressDetails.state = state;
       }
 
       var zip = 'None';
       if ($(this.options.account_zip_selector).val() != '') {
         zip = $(this.options.account_zip_selector).val();
-        addressDetails.address_zip = zip;
+        addressDetails.postal_code = zip;
       }
 
       var country = 'US';
       if ($(this.options.billing_country_field_selector).val() != '') {
         country = $(this.options.billing_country_field_selector).val();
       }
-      addressDetails.address_country = country;
+      addressDetails.country = country;
 
       if (street !== 'None' || city !== 'None' || state !== 'None' || zip !== 'None') {
         billingDetails.address = addressDetails;
