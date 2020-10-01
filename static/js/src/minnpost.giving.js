@@ -671,7 +671,6 @@
           color: '#1a1818',
         },
       };
-      
 
       // Add an instance of the card UI component into the `card-element` <div>
       //card.mount('#card-element');
@@ -949,7 +948,7 @@
 
           if ($('input[name="bankToken"]').length == 0) {
             // finally, get a payment method from stripe, and try to charge it if it is not ach
-            that.createPaymentMethod(that.cardNumberElement, tokenData);
+            that.createPaymentMethod(that.cardNumberElement, billingDetails);
           } else {
             // if it is ach, we already have a token so pass it to stripe.
             that.stripeTokenHandler( $('#bankToken').val(), 'bank_account' );
@@ -1068,7 +1067,7 @@
       });
     }, // createToken
 
-    createPaymentMethod: function(cardElement, tokenData) {
+    createPaymentMethod: function(cardElement, billingDetails) {
       var that = this;
     }, // createPaymentMethod
 
@@ -1173,7 +1172,6 @@
       .error(function(response) {
         that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       });
-
     },
 
     showNewsletterSettings: function(element, options) {
