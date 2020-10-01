@@ -94,6 +94,7 @@ class BaseForm(FlaskForm):
     stripe_payment_type = HiddenField(u"Stripe Payment Type", [validators.Optional()])
     stripeToken = HiddenField(u"Stripe token", [validators.Optional()])
     bankToken = HiddenField(u"Bank token", [validators.Optional()])
+    payment_method_id = HiddenField(u"Payment Method ID", [validators.Optional()])
     recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
     update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
 
