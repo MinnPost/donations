@@ -1005,7 +1005,8 @@
       that.stripe.confirmCardPayment(
         intent,
         {
-          payment_method: {card: cardElement}
+          payment_method: {card: cardElement},
+          setup_future_usage: 'off_session'
         }
       ).then(function(result) {
         if (result.error) {
@@ -1029,8 +1030,7 @@
           //that.debug(result);
           //console.dir(result);
           // Send the payment method to the server
-          //that.stripePaymentHandler(payment_method);
-          // todo: continue submitting here
+          that.stripePaymentHandler(result.paymentIntent.payment_method);
         }
       });
 
@@ -1132,7 +1132,7 @@
       });
     }, // createToken
 
-    /*stripePaymentHandler: function(payment_method, type) {
+    stripePaymentHandler: function(payment_method) {
       var that = this;
       var supportform = $(this.options.donate_form_selector);
       var ajax_url = '';
@@ -1143,8 +1143,16 @@
       } else {
         ajax_url = window.location.pathname;
       }
+
+      console.log('payment method is ' + payment_method );
+      if ($(tokenField).length > 0) {
+        $(tokenField).val(payment_method);
+      } else {
+        supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(payment_method));
+      }
+
       // Insert the payment method ID into the form so it gets submitted to the server
-      if ( type === 'card' ) {
+      /*if ( type === 'card' ) {
         if (token.card.brand.length > 0 && token.card.brand === 'American Express') {
           type = 'amex';
         }
@@ -1155,7 +1163,7 @@
         }
       }
 
-      $('input[name="stripe_payment_type"]').val(type);
+      $('input[name="stripe_payment_type"]').val(type);*/
 
       // Submit the form
       // the way it works currently is the form submits an ajax request to itself
@@ -1234,7 +1242,7 @@
         that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       });
 
-    },*/
+    },
 
     showNewsletterSettings: function(element, options) {
       var that = this;
