@@ -677,6 +677,7 @@
         return;
       }
       that.cardNumberElement = that.elements.create('cardNumber', {
+        showIcon: true,
         style: style
       });
       that.cardNumberElement.mount(options.cc_num_selector);
