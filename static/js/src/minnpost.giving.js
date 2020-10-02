@@ -625,7 +625,7 @@
           that.setupPaymentMethod(this.id, this.value);
 
           if ( this.value === 'bank_account' ) {
-            $('input[name="stripeToken"]', $(that.options.donate_form_selector)).remove();
+            $('input[name="payment_method_id"]', $(that.options.donate_form_selector)).remove();
             that.achFields(that.element, that.options);
           } else {
             $('input[name="public_token"]', $(that.options.donate_form_selector)).remove();
@@ -700,13 +700,6 @@
         that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
         // if it changed, reset the button
         that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
-        // Switch brand logo
-        if (event.brand) {
-          if ( event.brand === 'amex' ) {
-            stripe_payment_type = 'amex';
-          }          
-          that.setBrandIcon(event.brand);
-        }
         that.calculateFees(that.options.original_amount, stripe_payment_type);
       });
 
@@ -735,28 +728,6 @@
       card.mount('#card-element');*/
 
     }, // creditCardFields
-
-    setBrandIcon: function(brand) {
-      var cardBrandToPfClass = {
-        'visa': 'pf-visa',
-        'mastercard': 'pf-mastercard',
-        'amex': 'pf-american-express',
-        'discover': 'pf-discover',
-        'diners': 'pf-diners',
-        'jcb': 'pf-jcb',
-        'unknown': 'pf-credit-card',
-      }
-      var brandIconElement = document.getElementById('brand-icon');
-      var pfClass = 'pf-credit-card';
-      if (brand in cardBrandToPfClass) {
-        pfClass = cardBrandToPfClass[brand];
-      }
-      for (var i = brandIconElement.classList.length - 1; i >= 0; i--) {
-        brandIconElement.classList.remove(brandIconElement.classList[i]);
-      }
-      brandIconElement.classList.add('pf');
-      brandIconElement.classList.add(pfClass);
-    },
 
     achFields: function(element, options) {
       var bankTokenFieldName = 'bankToken';
@@ -797,7 +768,6 @@
             // get the account validated by ajax
             $.ajax({
               url:'/plaid_token/',
-              //cache: false,
               data: $(supportform).serialize(),
               type: 'POST'
             })
@@ -950,7 +920,8 @@
             // finally, get a payment method from stripe, and try to charge it if it is not ach
             that.createPaymentMethod(that.cardNumberElement, billingDetails);
           } else {
-            // if it is ach, we already have a token so pass it to stripe.
+            console.log('we have a bank token. the value is ' + $('#bankToken').val() );
+            // if it is ach, we already have a token so submit the form
             that.stripeTokenHandler( $('#bankToken').val(), 'bank_account' );
           }
         } else {
@@ -1042,9 +1013,13 @@
       return billingDetails;
     }, // generateBillingDetails
 
-    createToken: function(card, tokenData) {
+    createPaymentMethod: function(cardElement, billingDetails) {
       var that = this;
-      that.stripe.createToken(card, tokenData).then(function(result) {
+      that.stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+        billing_details: billingDetails
+      }).then(function(result) {
         if (result.error) {
           // Show the errors on the form
           that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
@@ -1061,38 +1036,39 @@
             $(that.options[field], element).after('<span class="a-check-field invalid">' + message + '</span>');
           }
         } else {
-          // Send the token to your server
-          that.stripeTokenHandler(result.token, 'card');
+          // Send paymentMethod.id to server
+          var supportform = $(that.options.donate_form_selector);
+          var ajax_url = window.location.pathname;
+          var tokenFieldName = 'payment_method_id';
+          var tokenField = 'input[name="' + tokenFieldName + '"]';
+
+          // Insert the payment method ID into the form so it gets submitted to the server
+          if ($(tokenField).length > 0) {
+            $(tokenField).val(result.paymentMethod.id);
+          } else {
+            supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(result.paymentMethod.id));
+          }
+
+          fetch(ajax_url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: $(supportform).serialize()
+          }).then(function(result) {
+            // Handle server response (see Step 3)
+            result.json().then(function(json) {
+              that.handleServerResponse(json);
+            })
+          });
         }
       });
-    }, // createToken
-
-    createPaymentMethod: function(cardElement, billingDetails) {
-      var that = this;
     }, // createPaymentMethod
 
     stripeTokenHandler: function(token, type) {
       var that = this;
       var supportform = $(this.options.donate_form_selector);
-      var ajax_url = '';
-      var tokenFieldName = 'stripeToken';
-      var tokenField = 'input[name="' + tokenFieldName + '"]';
-      if (typeof $(supportform).data('action') !== 'undefined') {
-        ajax_url = $(supportform).data('action');
-      } else {
-        ajax_url = window.location.pathname;
-      }
-      // Insert the token ID into the form so it gets submitted to the server
-      if ( type === 'card' ) {
-        if (token.card.brand.length > 0 && token.card.brand === 'American Express') {
-          type = 'amex';
-        }
-        if ($(tokenField).length > 0) {
-          $(tokenField).val(token.id);
-        } else {
-          supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(token.id));
-        }
-      }
+      var ajax_url = window.location.pathname;
 
       $('input[name="stripe_payment_type"]').val(type);
 
@@ -1127,20 +1103,6 @@
 
             if (typeof error !== 'undefined') {
               that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false, 'card');
-              if (error.code == 'invalid_number' || error.code == 'incorrect_number' || error.code == 'card_declined' || error.code == 'processing_error') {
-                // error handling
-                stripeErrorSelector = $(that.options.cc_num_selector);
-              }
-
-              if (error.code == 'invalid_expiry_month' || error.code == 'invalid_expiry_year' || error.code == 'expired_card') {
-                // error handling
-                stripeErrorSelector = $(that.options.cc_exp_selector);
-              }
-
-              if (error.code == 'invalid_cvc' || error.code == 'incorrect_cvc') {
-                // error handling
-                stripeErrorSelector = $(that.options.cc_cvc_selector);
-              }
 
               if (stripeErrorSelector !== '') {
                 that.stripeErrorDisplay(response.errors, stripeErrorSelector, that.element, that.options );
@@ -1173,6 +1135,81 @@
         that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       });
     },
+
+    handleServerResponse: function(response) {
+      var supportform = $(this.options.donate_form_selector);
+      if (response.error) {
+        // Show error from server on payment form
+        that.handleServerError(response);
+      } else if (response.requires_action) {
+        // Use Stripe.js to handle required card action
+        //handleAction(response);
+      } else {
+        supportform.get(0).submit(); // continue submitting the form if the ajax was successful
+      }
+    }, // handleServerResponse
+
+    handleServerError: function(response) {
+      // do not submit. there is an error.
+      var that = this;
+      that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
+      // add some error messages and styles
+      $.each(response.errors, function( index, error ) {
+        var field = error.field + '_field_selector';
+        var message = '';
+        var stripeErrorSelector = '';
+        if (typeof error.message === 'string') {
+          message = error.message;
+        } else {
+          message = error.message[0];
+        }
+        if ($(that.options[field]).length > 0) {
+          $(that.options[field]).addClass('a-error');
+          $(that.options[field]).prev().addClass('a-error');
+          $(that.options[field]).after('<span class="a-check-field invalid">' + message + '</span>');
+        }
+
+        if (typeof error !== 'undefined') {
+          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false, 'card');
+          if (error.code == 'invalid_number' || error.code == 'incorrect_number' || error.code == 'card_declined' || error.code == 'processing_error') {
+            // error handling
+            stripeErrorSelector = $(that.options.cc_num_selector);
+          }
+
+          if (error.code == 'invalid_expiry_month' || error.code == 'invalid_expiry_year' || error.code == 'expired_card') {
+            // error handling
+            stripeErrorSelector = $(that.options.cc_exp_selector);
+          }
+
+          if (error.code == 'invalid_cvc' || error.code == 'incorrect_cvc') {
+            // error handling
+            stripeErrorSelector = $(that.options.cc_cvc_selector);
+          }
+
+          if (stripeErrorSelector !== '') {
+            that.stripeErrorDisplay(response.errors, stripeErrorSelector, that.element, that.options );
+          }
+
+          if (error.field == 'recaptcha') {
+            $(that.options.pay_button_selector).before('<p class="a-form-caption a-recaptcha-error">' + message + '</p>')
+          }
+
+          if (error.type == 'invalid_request_error') {
+            $(that.options.pay_button_selector).before('<p class="error error-invalid-request">' + error.message + '</p>')
+          }
+
+        }
+
+        if (typeof response.errors[0] !== 'undefined') {
+          var field = response.errors[0].field + '_field_selector';
+          if ($(field).length > 0) {
+            $('html, body').animate({
+              scrollTop: $(options[field]).parent().offset().top
+            }, 2000);
+          }
+        }
+      });
+    }, // handleServerError
 
     showNewsletterSettings: function(element, options) {
       var that = this;
