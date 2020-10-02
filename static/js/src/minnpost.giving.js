@@ -49,9 +49,9 @@
     'first_name_field_selector' : '#first_name',
     'last_name_field_selector' : '#last_name',
     'billing_street_field_selector' : '#billing_street',
-    'account_city_selector' : '#billing_city',
-    'account_state_selector' : '#billing_state',
-    'account_zip_selector' : '#billing_zip',
+    'billing_city_field_selector' : '#billing_city',
+    'billing_state_field_selector' : '#billing_state',
+    'billing_zip_field_selector': '#billing_zip',
     'billing_country_field_selector' : '#billing_country',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.m-form-item-password',
@@ -863,7 +863,7 @@
         event.preventDefault();
 
         // validate and submit the form
-        $('.a-check-field').remove();
+        $('.a-validation-error').remove();
         $('input, label', element).removeClass('a-error');
         $(that.options.payment_method_selector, that.element).removeClass('a-error invalid');
         $('.a-validation-error').remove();
@@ -895,9 +895,9 @@
               first_name: $(that.options.first_name_field_selector, element).val(),
               last_name: $(that.options.last_name_field_selector, element).val(),
               password: $(that.options.password_field_selector, element).val(),
-              city: $(that.options.account_city_selector, element).val(),
-              state: $(that.options.account_state_selector, element).val(),
-              zip: $(that.options.account_zip_selector, element).val(),
+              city: $(that.options.billing_city_field_selector, element).val(),
+              state: $(that.options.billing_state_field_selector, element).val(),
+              zip: $(that.options.billing_zip_field_selector, element).val(),
             };
             $.ajax({
               method: 'POST',
@@ -1019,22 +1019,9 @@
         type: 'card',
         card: cardElement,
         billing_details: billingDetails
-      }).then(function(result) {
-        if (result.error) {
-          // Show the errors on the form
-          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
-          var field = result.error.field + '_field_selector';
-          var message = '';
-          if (typeof result.error.message === 'string') {
-            message = result.error.message;
-          } else {
-            message = result.error.message[0];
-          }
-          if ($(field).length > 0) {
-            $(that.options[field], element).addClass('a-error');
-            $(that.options[field], element).prev().addClass('a-error');
-            $(that.options[field], element).after('<span class="a-check-field invalid">' + message + '</span>');
-          }
+      }).then(function(response) {
+        if (response.error) {
+          that.handleServerError(response);
         } else {
           // Send paymentMethod.id to server
           var supportform = $(that.options.donate_form_selector);
@@ -1044,9 +1031,9 @@
 
           // Insert the payment method ID into the form so it gets submitted to the server
           if ($(tokenField).length > 0) {
-            $(tokenField).val(result.paymentMethod.id);
+            $(tokenField).val(response.paymentMethod.id);
           } else {
-            supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(result.paymentMethod.id));
+            supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(response.paymentMethod.id));
           }
 
           fetch(ajax_url, {
@@ -1055,9 +1042,9 @@
               'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: $(supportform).serialize()
-          }).then(function(result) {
+          }).then(function(response) {
             // Handle server response (see Step 3)
-            result.json().then(function(json) {
+            response.json().then(function(json) {
               that.handleServerResponse(json);
             })
           });
@@ -1083,50 +1070,7 @@
       })
       .done(function(response) {
         if (typeof response.errors !== 'undefined') {
-          // do not submit. there is an error.
-          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
-          // add some error messages and styles
-          $.each(response.errors, function( index, error ) {
-            var field = error.field + '_field_selector';
-            var message = '';
-            var stripeErrorSelector = '';
-            if (typeof error.message === 'string') {
-              message = error.message;
-            } else {
-              message = error.message[0];
-            }
-            if ($(that.options[field]).length > 0) {
-              $(that.options[field]).addClass('a-error');
-              $(that.options[field]).prev().addClass('a-error');
-              $(that.options[field]).after('<span class="a-check-field invalid">' + message + '</span>');
-            }
-
-            if (typeof error !== 'undefined') {
-              that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false, 'card');
-
-              if (stripeErrorSelector !== '') {
-                that.stripeErrorDisplay(response.errors, stripeErrorSelector, that.element, that.options );
-              }
-
-              if (error.field == 'recaptcha') {
-                $(that.options.pay_button_selector).before('<p class="a-form-caption a-recaptcha-error">' + message + '</p>')
-              }
-
-              if (error.type == 'invalid_request_error') {
-                $(that.options.pay_button_selector).before('<p class="error error-invalid-request">' + error.message + '</p>')
-              }
-
-            }
-
-            if (typeof response.errors[0] !== 'undefined') {
-              var field = response.errors[0].field + '_field_selector';
-              if ($(field).length > 0) {
-                $('html, body').animate({
-                  scrollTop: $(options[field]).parent().offset().top
-                }, 2000);
-              }
-            }
-          });
+          that.handleServerError(response);
         } else {
           supportform.get(0).submit(); // continue submitting the form if the ajax was successful
         }
@@ -1138,9 +1082,9 @@
 
     handleServerResponse: function(response) {
       var supportform = $(this.options.donate_form_selector);
-      if (response.error) {
+      if (response.errors) {
         // Show error from server on payment form
-        that.handleServerError(response);
+        this.handleServerError(response);
       } else if (response.requires_action) {
         // Use Stripe.js to handle required card action
         //handleAction(response);
@@ -1150,8 +1094,8 @@
     }, // handleServerResponse
 
     handleServerError: function(response) {
-      // do not submit. there is an error.
       var that = this;
+      // do not submit. there is an error.
       that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       // add some error messages and styles
       $.each(response.errors, function( index, error ) {
@@ -1166,7 +1110,7 @@
         if ($(that.options[field]).length > 0) {
           $(that.options[field]).addClass('a-error');
           $(that.options[field]).prev().addClass('a-error');
-          $(that.options[field]).after('<span class="a-check-field invalid">' + message + '</span>');
+          $(that.options[field]).after('<span class="a-validation-error invalid">' + message + '</span>');
         }
 
         if (typeof error !== 'undefined') {
@@ -1199,16 +1143,15 @@
           }
 
         }
-
-        if (typeof response.errors[0] !== 'undefined') {
-          var field = response.errors[0].field + '_field_selector';
-          if ($(field).length > 0) {
-            $('html, body').animate({
-              scrollTop: $(options[field]).parent().offset().top
-            }, 2000);
-          }
-        }
       });
+      if (typeof response.errors[0] !== 'undefined') {
+        var field = response.errors[0].field + '_field_selector';
+        if ($(that.options[field]).length > 0) {
+          $('html, body').animate({
+            scrollTop: $(that.options[field]).parent().offset().top
+          }, 2000);
+        }
+      }
     }, // handleServerError
 
     showNewsletterSettings: function(element, options) {

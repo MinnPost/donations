@@ -679,7 +679,7 @@ def validate_form(FormType, template, function=add_donation.delay):
         return jsonify(errors=body)
         
     if not form.validate():
-        app.logger.error(f"Form validation errors: {form_errors}")
+        app.logger.error(f"Form validation errors: {form.errors}")
         for field in form.errors:
             body.append({"field": field, "message": form.errors[field]})
         return jsonify(errors=body)
@@ -944,7 +944,8 @@ def donation_cancel_form():
     form_action = "/donation-cancel/"
     function    = update_donation.delay
     heading     = "Cancel Donation"
-    path         = "donation-cancel"
+    path        = "donation-cancel"
+    folder      = ""
 
     # salesforce donation object
     opportunity_id = request.args.get("opportunity", "")
@@ -953,6 +954,7 @@ def donation_cancel_form():
 
     # default donation fields
     stage_name = "Closed Lost"
+    close_date = ""
     open_ended_status = "Closed"
     first_name  = ""
     last_name   = ""
@@ -972,7 +974,7 @@ def donation_cancel_form():
             return render_template(
                 "finish.html",
                 title=title,
-                path=path,
+                path=path, folder=folder,
                 minnpost_root=app.config["MINNPOST_ROOT"],
                 stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
             )
@@ -1044,7 +1046,7 @@ def donate_form():
     title       = "MinnPost Donation"
     heading     = title
     description = title
-    summary     = "Thank you for supporting MinnPost’s nonprofit newsroom. If you have any questions, please email Tanner Curl at <a href=\"mailto:tcurl@minnpost.com\">tcurl@minnpost.com</a>."
+    summary     = "Thank you for supporting MinnPost’s nonprofit newsroom. If you have any questions, please email us at <a href=\"mailto:members@minnpost.com\">members@minnpost.com</a>."
     # interface settings
     show_amount_field       = True
     allow_additional_amount = False
@@ -1221,7 +1223,7 @@ def pledge_payment_form():
     title       = "MinnPost Pledge Payment"
     heading     = title
     description = title
-    summary     = "Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email Tanner Curl at tcurl@minnpost.com."
+    summary     = "Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email us at members@minnpost.com."
     # interface settings
     show_amount_field       = True
     allow_additional_amount = False
