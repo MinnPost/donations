@@ -1986,6 +1986,10 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, charge_sou
     if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == "":
         opportunity.fair_market_value = opportunity.amount
 
+    # if there is an honor/memory radio but no value, clear the radio out
+    if opportunity.in_honor_memory_of == "":
+        opportunity.in_honor_or_memory = ""
+
     # some forms have testimony fields
     reason_for_supporting = form.get("reason_for_supporting", "")
     if reason_for_supporting != "":
@@ -2092,6 +2096,10 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, cha
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
     rdo.stripe_payment_type = form.get("stripe_payment_type", "")
+
+    # if there is an honor/memory radio but no value, clear the radio out
+    if rdo.in_honor_memory_of == "":
+        rdo.in_honor_or_memory = ""
 
     # some forms have testimony fields
     reason_for_supporting = form.get("reason_for_supporting", "")
