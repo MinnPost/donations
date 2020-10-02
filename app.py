@@ -931,6 +931,7 @@ def donation_cancel_form():
 
     # default donation fields
     stage_name = "Closed Lost"
+    close_date = ""
     open_ended_status = "Closed"
     first_name  = ""
     last_name   = ""
