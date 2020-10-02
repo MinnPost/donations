@@ -192,7 +192,7 @@ class DonateForm(BaseForm):
         u"State", [validators.Optional()]
     )
     shipping_zip = StringField(
-        u"ZIP Code", [validators.Length(max=5)]
+        u"ZIP Code", [validators.Optional()]
     )
     shipping_country = StringField(
         u"Country", [validators.Optional()]
