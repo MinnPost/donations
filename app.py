@@ -1022,7 +1022,7 @@ def donate_form():
     title       = "MinnPost Donation"
     heading     = title
     description = title
-    summary     = "Thank you for supporting MinnPost’s nonprofit newsroom. If you have any questions, please email Tanner Curl at <a href=\"mailto:tcurl@minnpost.com\">tcurl@minnpost.com</a>."
+    summary     = "Thank you for supporting MinnPost’s nonprofit newsroom. If you have any questions, please email us at <a href=\"mailto:members@minnpost.com\">members@minnpost.com</a>."
     # interface settings
     show_amount_field       = True
     allow_additional_amount = False
@@ -1199,7 +1199,7 @@ def pledge_payment_form():
     title       = "MinnPost Pledge Payment"
     heading     = title
     description = title
-    summary     = "Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email Tanner Curl at tcurl@minnpost.com."
+    summary     = "Thank you for being a loyal supporter of MinnPost. Please fill out the fields below to fulfill your pledge payment for MinnPost. If you have any questions, please email us at members@minnpost.com."
     # interface settings
     show_amount_field       = True
     allow_additional_amount = False
