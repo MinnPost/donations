@@ -922,7 +922,8 @@ def donation_cancel_form():
     form_action = "/donation-cancel/"
     function    = update_donation.delay
     heading     = "Cancel Donation"
-    path         = "donation-cancel"
+    path        = "donation-cancel"
+    folder      = ""
 
     # salesforce donation object
     opportunity_id = request.args.get("opportunity", "")
@@ -951,7 +952,7 @@ def donation_cancel_form():
             return render_template(
                 "finish.html",
                 title=title,
-                path=path,
+                path=path, folder=folder,
                 minnpost_root=app.config["MINNPOST_ROOT"],
                 stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
             )
