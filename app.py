@@ -657,7 +657,7 @@ def validate_form(FormType, template, function=add_donation.delay):
         return jsonify(errors=body)
         
     if not form.validate():
-        app.logger.error(f"Form validation errors: {form_errors}")
+        app.logger.error(f"Form validation errors: {form.errors}")
         for field in form.errors:
             body.append({"field": field, "message": form.errors[field]})
         return jsonify(errors=body)

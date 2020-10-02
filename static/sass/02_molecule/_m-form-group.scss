@@ -48,6 +48,10 @@
             width: 100%;
             border-radius: $border-radius;
             box-sizing: border-box;
+
+            &.a-error {
+                border-color: brand-color(red, highlight);
+            }
         }
 
         #cc-number-wrapper {

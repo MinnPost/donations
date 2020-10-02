@@ -48,9 +48,9 @@
     'password_field_selector' : '#password',
     'first_name_field_selector' : '#first_name',
     'last_name_field_selector' : '#last_name',
-    'account_city_selector' : '#billing_city',
-    'account_state_selector' : '#billing_state',
-    'account_zip_selector' : '#billing_zip',
+    'billing_city_field_selector' : '#billing_city',
+    'billing_state_field_selector' : '#billing_state',
+    'billing_zip_field_selector': '#billing_zip',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.m-form-item-password',
     'additional_amount_field' : '#additional_donation',
@@ -59,7 +59,7 @@
     'payment_method_selector' : '.payment-method',
     'cc_num_selector' : '#card-number',
     'cc_exp_selector' : '#card-expiry',
-    'cc_cvv_selector' : '#card-cvc',
+    'cc_cvc_selector' : '#card-cvc',
     'pay_button_selector' : '.a-button-pay',
     'opp_id_selector' : '#lock_key', // we use this value as the Google Analytics transaction ID
     'newsletter_group_selector' : '.support-newsletters'
@@ -682,7 +682,7 @@
       that.cardCvcElement = that.elements.create('cardCvc', {
         style: style
       });
-      that.cardCvcElement.mount(options.cc_cvv_selector);
+      that.cardCvcElement.mount(options.cc_cvc_selector);
 
       // validate/error handle the card fields
       that.cardNumberElement.on('change', function(event) {
@@ -710,7 +710,7 @@
 
       that.cardCvcElement.on('change', function(event) {
         // error handling
-        that.stripeErrorDisplay(event, $(options.cc_cvv_selector, element), element, options );
+        that.stripeErrorDisplay(event, $(options.cc_cvc_selector, element), element, options );
         // if it changed, reset the button
         that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
       });
@@ -886,10 +886,13 @@
         // validate and submit the form
         $('.a-check-field').remove();
         $('input, label', element).removeClass('a-error');
+        $(that.options.payment_method_selector, that.element).removeClass('a-error invalid');
+        $('.a-validation-error').remove();
         var valid = true;
         var payment_type = $('input[name="stripe_payment_type"]').val();
         $(that.options.choose_payment + ' input').change(function() {
-          $(that.options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
+          $(that.options.payment_method_selector + ' .a-error').remove(); // remove method error message if it is there
+          $(that.options.payment_method_selector).parent().find('.a-validation-error').remove();
           // if a payment field changed, reset the button
           that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
         });
@@ -913,9 +916,9 @@
               first_name: $(that.options.first_name_field_selector, element).val(),
               last_name: $(that.options.last_name_field_selector, element).val(),
               password: $(that.options.password_field_selector, element).val(),
-              city: $(that.options.account_city_selector, element).val(),
-              state: $(that.options.account_state_selector, element).val(),
-              zip: $(that.options.account_zip_selector, element).val(),
+              city: $(that.options.billing_city_field_selector, element).val(),
+              state: $(that.options.billing_state_field_selector, element).val(),
+              zip: $(that.options.billing_zip_field_selector, element).val(),
             };
             $.ajax({
               method: 'POST',
@@ -953,21 +956,23 @@
       // listen for errors and display/hide error messages
       var which_error = this_selector.attr('id');
       // when this field changes, reset its errors
-      $('.a-card-instruction.' + which_error).removeClass('a-error');
+      $('.a-card-instruction.' + which_error).removeClass('a-validation-error');
       $('.a-card-instruction.' + which_error).empty();
+      $(this_selector).removeClass('a-error');
       if (event.error) {
-        $('.a-card-instruction.' + which_error).text(event.error.message + ' Please try again.');
-        $('.a-card-instruction.' + which_error).addClass('a-error');
-        this_selector.parent().addClass('a-error');
+        $('.a-card-instruction.' + which_error).addClass('a-validation-error');
+        this_selector.parent().addClass('m-has-validation-error');
+        $(this_selector).addClass('a-error');
       } else {
-        $('.a-card-instruction.' + which_error).removeClass('a-error');
+        $(this_selector).removeClass('a-error');
+        $('.a-card-instruction.' + which_error).removeClass('a-validation-error');
         $('.a-card-instruction.' + which_error).empty();
-        $(options.cc_num_selector, element).removeClass('a-error');
-        $(options.cc_exp_selector, element).removeClass('a-rror');
-        $(options.cc_cvv_selector, element).removeClass('a-error');
-        $(options.cc_num_selector, element).parent().removeClass('a-error');
-        $(options.cc_exp_selector, element).parent().removeClass('a-error');
-        $(options.cc_cvv_selector, element).parent().removeClass('a-error');
+        $(options.cc_num_selector, element).removeClass('a-validation-error');
+        $(options.cc_exp_selector, element).removeClass('a-validation-error');
+        $(options.cc_cvc_selector, element).removeClass('a-validation-error');
+        $(options.cc_num_selector, element).parent().removeClass('m-has-validation-error');
+        $(options.cc_exp_selector, element).parent().removeClass('m-has-validation-error');
+        $(options.cc_cvc_selector, element).parent().removeClass('m-has-validation-error');
       }
     }, // stripeErrorDisplay
 
@@ -1110,7 +1115,7 @@
 
               if (error.code == 'invalid_cvc' || error.code == 'incorrect_cvc') {
                 // error handling
-                stripeErrorSelector = $(that.options.cc_cvv_selector);
+                stripeErrorSelector = $(that.options.cc_cvc_selector);
               }
 
               if (stripeErrorSelector !== '') {
@@ -1129,9 +1134,9 @@
 
             if (typeof response.errors[0] !== 'undefined') {
               var field = response.errors[0].field + '_field_selector';
-              if ($(field).length > 0) {
+              if ($(that.options[field]).length > 0) {
                 $('html, body').animate({
-                  scrollTop: $(options[field]).parent().offset().top
+                  scrollTop: $(that.options[field]).parent().offset().top
                 }, 2000);
               }
             }
