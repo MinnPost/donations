@@ -122,16 +122,16 @@ class BaseForm(FlaskForm):
     )
     
     billing_street = StringField(
-        u"Street Address", [validators.Optional()]
+        u"Street Address", [validators.required(message="Your billing street address is required.")]
     )
     billing_city = StringField(
-        u"City", [validators.Optional()]
+        u"City", [validators.required(message="Your billing city is required.")]
     )
     billing_state = StringField(
-        u"State", [validators.Optional()]
+        u"State", [validators.required(message="Your billing state is required.")]
     )
     billing_zip = StringField(
-        u"ZIP Code", [validators.Length(max=5)]
+        u"ZIP Code", [validators.required(message="Your billing zip code is required.")]
     )
     billing_country = StringField(
         u"Country", [validators.Optional()]
@@ -193,7 +193,7 @@ class DonateForm(BaseForm):
         u"State", [validators.Optional()]
     )
     shipping_zip = StringField(
-        u"ZIP Code", [validators.Length(max=5)]
+        u"ZIP Code", [validators.Optional()]
     )
     shipping_country = StringField(
         u"Country", [validators.Optional()]
