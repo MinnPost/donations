@@ -846,15 +846,36 @@ class RDO(SalesforceObject):
                 Id,
                 LeadSource,
                 Name,
-                RecordType.Name,
                 StageName,
                 Type,
-                Payment_Type__c,
-                Card_acct_last_4__c,
-                Card_expiration_date__c,
+                Anonymous__c,
                 Card_type__c,
-                Flask_Transaction_ID__c,
                 npsp__Closed_Lost_Reason__c,
+                Credited_as__c,
+                Client_Organization__c,
+                Donor_first_name__c,
+                Donor_last_name__c,
+                Donor_e_mail__c,
+                Donor_address_line_1__c,
+                Donor_city__c,
+                Donor_state__c,
+                Donor_ZIP__c,
+                Donor_country__c,
+                Email_to_notify__c,
+                Email_User_When_Canceled__c,
+                Fair_market_value__c,
+                Include_amount_in_notification__c,
+                In_Honor_Memory__c,
+                In_Honor_of_In_Memory__c,
+                Notify_someone__c,
+                Member_benefit_request_Swag__c,
+                Member_benefit_request_New_York_Times__c,
+                Member_benefit_request_Other_benefits__c,
+                Member_benefit_request_Atlantic_sub_ID__c,
+                MinnPost_Invoice__c,
+                MRpledge_com_ID__c,
+                Opportunity_Subtype__c,
+                Payment_Type__c,
                 Referring_page__c,
                 Shipping_address_name__c,
                 Shipping_address_street__c,
@@ -865,12 +886,15 @@ class RDO(SalesforceObject):
                 Stripe_Agreed_to_pay_fees__c,
                 Stripe_Bank_Account__c,
                 Stripe_Card__c,
-                Stripe_Customer_ID__c,
                 Stripe_Description__c,
+                Card_expiration_date__c,
+                Card_acct_last_4__c,
+                Stripe_Customer_ID__c,
                 Stripe_Error_Message__c,
                 Stripe_Payment_Type__c,
                 Stripe_Transaction_Fee__c,
-                Stripe_Transaction_ID__c
+                Stripe_Transaction_ID__c,
+                Flask_Transaction_ID__c
             FROM Opportunity
             WHERE npe03__Recurring_Donation__c = '{self.id}'
         """
@@ -880,37 +904,51 @@ class RDO(SalesforceObject):
         for item in response:
             y = Opportunity(sf_connection=self.sf)
             y.id = item["Id"]
-            y.name = item["Name"]
             y.account_id = item["AccountId"]
             y.amount = item["Amount"]
-            y.campaign = item["CampaignId"]
             y.close_date = item["CloseDate"]
+            y.campaign = item["CampaignId"]
             y.description = item["Description"]
-            y.stripe_description = item["Stripe_Description__c"]
+            y.id = item["Id"]
+            y.lead_source = item["LeadSource"]
+            y.name = item["Name"]
             y.stage_name = "Pledged"
             y.type = item["Type"]
-            y.payment_type = item["Payment_Type__c"]
-            y.stripe_customer_id = item["Stripe_Customer_ID__c"]
-            y.agreed_to_pay_fees = item["Stripe_Agreed_to_pay_fees__c"]
+            y.mrpledge_id = item["MRpledge_com_ID__c"]
+            y.subtype = item["Opportunity_Subtype__c"]
+            y.credited_as = item["Credited_as__c"]
+            y.anonymous = item["Anonymous__c"]
+            y.in_honor_or_memory = item["In_Honor_Memory__c"]
+            y.in_honor_or_memory_of = item["In_Honor_of_In_Memory__c"]
+            y.donor_address_one = item["Donor_address_line_1__c"]
+            y.donor_city = item["Donor_city__c"]
+            y.donor_state = item["Donor_state__c"]
+            y.donor_zip = item["Donor_ZIP__c"]
+            y.donor_country = item["Donor_country__c"]
+            y.donor_first_name = item["Donor_first_name__c"]
+            y.donor_last_name = item["Donor_last_name__c"]
+            y.donor_email = item["Donor_e_mail__c"]
             y.card_type = item["Card_type__c"]
+            y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
+            y.payment_type = item["Payment_Type__c"]
             y.referring_page = item["Referring_page__c"]
-            y.lead_source = item["LeadSource"]
-            y.stripe_error_message = item["Stripe_Error_Message__c"]
-            y.stripe_transaction_fee = item["Stripe_Transaction_Fee__c"]
-            y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
-            y.stripe_bank_account = item["Stripe_Bank_Account__c"]
-            y.stripe_card = item["Stripe_Card__c"]
-            y.stripe_card_expiration = item["Card_expiration_date__c"]
-            y.stripe_card_last_4 = item["Card_acct_last_4__c"]
-            y.stripe_card = item["Stripe_Card__c"]
-            y.stripe_payment_type = item["Stripe_Payment_Type__c"]
             y.shipping_name = item["Shipping_address_name__c"]
             y.shipping_street = item["Shipping_address_street__c"]
             y.shipping_city = item["Shipping_address_city__c"]
             y.shipping_state = item["Shipping_address_state__c"]
             y.shipping_zip = item["Shipping_address_ZIP__c"]
             y.shipping_country = item["Shipping_address_country__c"]
-            y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
+            y.agreed_to_pay_fees = item["Stripe_Agreed_to_pay_fees__c"]
+            y.stripe_bank_account = item["Stripe_Bank_Account__c"]
+            y.stripe_card = item["Stripe_Card__c"]
+            y.stripe_card_expiration = item["Card_expiration_date__c"]
+            y.stripe_card_last_4 = item["Card_acct_last_4__c"]
+            y.stripe_customer_id = item["Stripe_Customer_ID__c"]
+            y.stripe_description = item["Stripe_Description__c"]
+            y.stripe_error_message = item["Stripe_Error_Message__c"]
+            y.stripe_transaction_fee = item["Stripe_Transaction_Fee__c"]
+            y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
+            y.stripe_payment_type = item["Stripe_Payment_Type__c"]
             y.lock_key = item["Flask_Transaction_ID__c"]
             y.created = False
             results.append(y)
