@@ -120,17 +120,18 @@ class BaseForm(FlaskForm):
         u"Last name", [validators.required(message="Your last name is required.")]
     )
     
+    # billing
     billing_street = StringField(
-        u"Street Address", [validators.required(message="Your billing street address is required.")]
+        u"Street Address", [validators.Optional()]
     )
     billing_city = StringField(
-        u"City", [validators.required(message="Your billing city is required.")]
+        u"City", [validators.Optional()]
     )
     billing_state = StringField(
-        u"State", [validators.required(message="Your billing state is required.")]
+        u"State", [validators.Optional()]
     )
     billing_zip = StringField(
-        u"ZIP Code", [validators.required(message="Your billing zip code is required.")]
+        u"ZIP Code", [validators.Optional()]
     )
     billing_country = StringField(
         u"Country", [validators.Optional()]
@@ -176,6 +177,23 @@ class DonateForm(BaseForm):
     member_benefit_request_atlantic_id = HiddenField("The Atlantic Subscriber ID", [validators.Optional()])
     member_benefit_request_nyt = HiddenField(
         u"New York Times subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
+    )
+
+    # billing
+    billing_street = StringField(
+        u"Street Address", [validators.required(message="Your billing street address is required.")]
+    )
+    billing_city = StringField(
+        u"City", [validators.required(message="Your billing city is required.")]
+    )
+    billing_state = StringField(
+        u"State", [validators.required(message="Your billing state is required.")]
+    )
+    billing_zip = StringField(
+        u"ZIP Code", [validators.required(message="Your billing zip code is required.")]
+    )
+    billing_country = StringField(
+        u"Country", [validators.Optional()]
     )
 
     # shipping
