@@ -270,7 +270,15 @@ class AdvertisingForm(MinimalForm):
 
 
 # used for minnpost-cancel
-class CancelForm(MinimalForm):
+class CancelForm(BaseForm):
+    path = HiddenField("Path", [validators.Optional()])
+    folder = HiddenField("Folder", [validators.Optional()])
+
+    stage_name = HiddenField("Stage Name", [validators.Optional()])
+    close_date = HiddenField("Close Date", [validators.Optional()])
+    opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])
+    recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()])
+
     email_user_when_canceled = HiddenField("Email user when canceled?", [validators.Optional()])
     open_ended_status = HiddenField("Open Ended Status", [validators.Optional()])
 
