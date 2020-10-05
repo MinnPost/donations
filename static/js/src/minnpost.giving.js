@@ -922,7 +922,8 @@
           } else {
             console.log('we have a bank token. the value is ' + $('#bankToken').val() );
             // if it is ach, we already have a token so submit the form
-            that.stripeTokenHandler( $('#bankToken').val(), 'bank_account' );
+            // todo: see if we can delete the token from this call
+            that.bankTokenHandler( $('#bankToken').val(), 'bank_account' );
           }
         } else {
           // this means valid is false
@@ -1052,7 +1053,7 @@
       });
     }, // createPaymentMethod
 
-    stripeTokenHandler: function(token, type) {
+    bankTokenHandler: function(token, type) {
       var that = this;
       var supportform = $(this.options.donate_form_selector);
       var ajax_url = window.location.pathname;
