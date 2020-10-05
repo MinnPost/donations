@@ -277,11 +277,6 @@ class CancelForm(MinimalForm):
 
 # used for post-donate form with newsletter/testimonial options
 class FinishForm(BaseForm):
-    class Meta:
-        def bind_field(self, form, unbound_field, options):
-            filters = unbound_field.kwargs.get("filters", [])
-            filters.append(strip_whitespace)
-            return unbound_field.bind(form=form, filters=filters, **options)
 
     path = HiddenField("Path", [validators.Optional()])
     folder = HiddenField("Folder", [validators.Optional()])
