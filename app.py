@@ -950,16 +950,21 @@ def donation_cancel_form():
     # salesforce donation object
     opportunity_id = request.args.get("opportunity", "")
     recurring_id = request.args.get("recurring", "")
-    donation = None
+
+    # salesforce donation object loader
+    opportunity = None
+    recurring = None
+
+    # donation and user info
+    amount = 0
+    amount_formatted = amount
+    yearly = 1
+    installment_period = app.config["DEFAULT_FREQUENCY"]
 
     # default donation fields
     stage_name = "Closed Lost"
-    close_date = ""
     open_ended_status = "Closed"
-    first_name  = ""
-    last_name   = ""
-    email       = ""
-    customer_id = ""
+    close_date = None
     
     if opportunity_id:
         heading       = "Cancel Single Donation"
@@ -1014,11 +1019,6 @@ def donation_cancel_form():
             else:
                 summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation, click the button."
 
-        first_name  = donation.donor_first_name
-        last_name   = donation.donor_last_name
-        email       = donation.donor_email
-        customer_id = donation.stripe_customer_id
-
     # interface settings
     button = "Confirm your cancellation"
     show_amount_field       = False
@@ -1031,7 +1031,6 @@ def donation_cancel_form():
         form=form,
         form_action=form_action,
         path=path, amount=amount_formatted, frequency=frequency,
-        first_name=first_name, last_name=last_name, email=email, customer_id=customer_id,
         stage_name=stage_name, open_ended_status=open_ended_status, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
         last_updated=dir_last_updated('static'),
@@ -2008,6 +2007,10 @@ def add_or_update_opportunity(contact=None, form=None, customer=None, payment_me
     if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == "":
         opportunity.fair_market_value = opportunity.amount
 
+    # if there is an honor/memory radio but no value, clear the radio out
+    if opportunity.in_honor_memory_of == "":
+        opportunity.in_honor_or_memory = ""
+
     # some forms have testimony fields
     reason_for_supporting = form.get("reason_for_supporting", "")
     if reason_for_supporting != "":
@@ -2129,6 +2132,10 @@ def add_or_update_recurring_donation(contact=None, form=None, customer=None, pay
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
     rdo.stripe_payment_type = form.get("stripe_payment_type", "")
+
+    # if there is an honor/memory radio but no value, clear the radio out
+    if rdo.in_honor_memory_of == "":
+        rdo.in_honor_or_memory = ""
 
     # some forms have testimony fields
     reason_for_supporting = form.get("reason_for_supporting", "")

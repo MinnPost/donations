@@ -121,17 +121,18 @@ class BaseForm(FlaskForm):
         u"Last name", [validators.required(message="Your last name is required.")]
     )
     
+    # billing
     billing_street = StringField(
-        u"Street Address", [validators.required(message="Your billing street address is required.")]
+        u"Street Address", [validators.Optional()]
     )
     billing_city = StringField(
-        u"City", [validators.required(message="Your billing city is required.")]
+        u"City", [validators.Optional()]
     )
     billing_state = StringField(
-        u"State", [validators.required(message="Your billing state is required.")]
+        u"State", [validators.Optional()]
     )
     billing_zip = StringField(
-        u"ZIP Code", [validators.required(message="Your billing zip code is required.")]
+        u"ZIP Code", [validators.Optional()]
     )
     billing_country = StringField(
         u"Country", [validators.Optional()]
@@ -177,6 +178,23 @@ class DonateForm(BaseForm):
     member_benefit_request_atlantic_id = HiddenField("The Atlantic Subscriber ID", [validators.Optional()])
     member_benefit_request_nyt = HiddenField(
         u"New York Times subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
+    )
+
+    # billing
+    billing_street = StringField(
+        u"Street Address", [validators.required(message="Your billing street address is required.")]
+    )
+    billing_city = StringField(
+        u"City", [validators.required(message="Your billing city is required.")]
+    )
+    billing_state = StringField(
+        u"State", [validators.required(message="Your billing state is required.")]
+    )
+    billing_zip = StringField(
+        u"ZIP Code", [validators.required(message="Your billing zip code is required.")]
+    )
+    billing_country = StringField(
+        u"Country", [validators.Optional()]
     )
 
     # shipping
@@ -253,18 +271,21 @@ class AdvertisingForm(MinimalForm):
 
 
 # used for minnpost-cancel
-class CancelForm(MinimalForm):
+class CancelForm(BaseForm):
+    path = HiddenField("Path", [validators.Optional()])
+    folder = HiddenField("Folder", [validators.Optional()])
+
+    stage_name = HiddenField("Stage Name", [validators.Optional()])
+    close_date = HiddenField("Close Date", [validators.Optional()])
+    opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])
+    recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()])
+
     email_user_when_canceled = HiddenField("Email user when canceled?", [validators.Optional()])
     open_ended_status = HiddenField("Open Ended Status", [validators.Optional()])
 
 
 # used for post-donate form with newsletter/testimonial options
 class FinishForm(BaseForm):
-    class Meta:
-        def bind_field(self, form, unbound_field, options):
-            filters = unbound_field.kwargs.get("filters", [])
-            filters.append(strip_whitespace)
-            return unbound_field.bind(form=form, filters=filters, **options)
 
     path = HiddenField("Path", [validators.Optional()])
     folder = HiddenField("Folder", [validators.Optional()])
