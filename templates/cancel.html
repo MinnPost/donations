@@ -3,6 +3,9 @@
 {% block content %}
 <form action="{{ form_action }}" method="post" class="m-form m-form-standalone support--cancel" id="cancel">
   <input type="hidden" name="amount" id="amount" value="{{ amount }}">
+  <input type="hidden" name="email" id="email" value="{{ email }}">
+  <input type="hidden" name="first_name" id="first_name" value="{{ first_name }}">
+  <input type="hidden" name="last_name" id="last_name" value="{{ last_name }}">
   {% if opportunity_id %}
     <input type="hidden" name="opportunity_id" id="opportunity_id" value="{{ opportunity_id }}">
     {% if stage != '' %}

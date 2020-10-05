@@ -939,10 +939,13 @@ def donation_cancel_form():
     yearly = 1
     installment_period = app.config["DEFAULT_FREQUENCY"]
 
-    # default donation fields
+    # required field values
     stage_name = "Closed Lost"
     open_ended_status = "Closed"
     close_date = None
+    first_name = ""
+    last_name = ""
+    email = ""
     
     if opportunity_id:
         heading       = "Cancel Single Donation"
@@ -989,6 +992,9 @@ def donation_cancel_form():
         # set default values
         amount = donation.amount
         amount_formatted = amount
+        first_name = donation.donor_first_name
+        last_name = donation.donor_last_name
+        email = donation.donor_email
         if recurring_id:
             summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} {frequency.lower()} donation, click the button."
         else:
@@ -1008,6 +1014,7 @@ def donation_cancel_form():
         title=title,
         form=form,
         form_action=form_action,
+        first_name=first_name, last_name=last_name, email=email,
         path=path, amount=amount_formatted, frequency=frequency,
         stage_name=stage_name, open_ended_status=open_ended_status, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
