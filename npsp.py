@@ -307,7 +307,7 @@ class Opportunity(SalesforceObject):
         self.donor_state = None
         self.donor_zip = None
         self.donor_country = None
-        self.email_notify = False
+        self.email_notify = None
         self.email_user_when_canceled = False
         self.event_attendees = None
         self.event_ticket_quantity = None
@@ -732,7 +732,7 @@ class RDO(SalesforceObject):
         self.donor_state = None
         self.donor_zip = None
         self.donor_country = None
-        self.email_notify = False
+        self.email_notify = None
         self.email_user_when_canceled = False
         self.include_amount_in_notification = False
         self.in_honor_or_memory = None
