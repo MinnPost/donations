@@ -937,7 +937,7 @@ class RDO(SalesforceObject):
             y.fair_market_value = item["Fair_market_value__c"]
             y.include_amount_in_notification = item["Include_amount_in_notification__c"]
             y.in_honor_or_memory = item["In_Honor_Memory__c"]
-            y.in_honor_or_memory_of = item["In_Honor_of_In_Memory__c"]
+            y.in_honor_memory_of = item["In_Honor_of_In_Memory__c"]
             y.notify_someone = item["Notify_someone__c"]
             y.member_benefit_request_swag = item["Member_benefit_request_Swag__c"]
             y.member_benefit_request_nyt = item["Member_benefit_request_New_York_Times__c"]
