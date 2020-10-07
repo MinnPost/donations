@@ -422,6 +422,8 @@ class Opportunity(SalesforceObject):
                 MRpledge_com_ID__c,
                 Opportunity_Subtype__c,
                 Payment_Type__c,
+                Reason_for_Gift__c,
+                Reason_for_gift_shareable__c,
                 Referring_page__c,
                 Shipping_address_name__c,
                 Shipping_address_street__c,
@@ -479,6 +481,8 @@ class Opportunity(SalesforceObject):
             y.card_type = item["Card_type__c"]
             y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
             y.payment_type = item["Payment_Type__c"]
+            y.reason_for_supporting = item["Reason_for_Gift__c"]
+            y.reason_for_supporting_shareable = item["Reason_for_gift_shareable__c"]
             y.referring_page = item["Referring_page__c"]
             y.shipping_name = item["Shipping_address_name__c"]
             y.shipping_street = item["Shipping_address_street__c"]
@@ -876,6 +880,8 @@ class RDO(SalesforceObject):
                 MRpledge_com_ID__c,
                 Opportunity_Subtype__c,
                 Payment_Type__c,
+                Reason_for_Gift__c,
+                Reason_for_gift_shareable__c,
                 Referring_page__c,
                 Shipping_address_name__c,
                 Shipping_address_street__c,
@@ -903,7 +909,6 @@ class RDO(SalesforceObject):
         results = list()
         for item in response:
             y = Opportunity(sf_connection=self.sf)
-            y.id = item["Id"]
             y.account_id = item["AccountId"]
             y.amount = item["Amount"]
             y.close_date = item["CloseDate"]
@@ -914,23 +919,36 @@ class RDO(SalesforceObject):
             y.name = item["Name"]
             y.stage_name = "Pledged"
             y.type = item["Type"]
-            y.mrpledge_id = item["MRpledge_com_ID__c"]
-            y.subtype = item["Opportunity_Subtype__c"]
-            y.credited_as = item["Credited_as__c"]
             y.anonymous = item["Anonymous__c"]
-            y.in_honor_or_memory = item["In_Honor_Memory__c"]
-            y.in_honor_or_memory_of = item["In_Honor_of_In_Memory__c"]
+            y.card_type = item["Card_type__c"]
+            y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
+            y.credited_as = item["Credited_as__c"]
+            y.client_organization = item["Client_Organization__c"]
+            y.donor_first_name = item["Donor_first_name__c"]
+            y.donor_last_name = item["Donor_last_name__c"]
+            y.donor_email = item["Donor_e_mail__c"]
             y.donor_address_one = item["Donor_address_line_1__c"]
             y.donor_city = item["Donor_city__c"]
             y.donor_state = item["Donor_state__c"]
             y.donor_zip = item["Donor_ZIP__c"]
             y.donor_country = item["Donor_country__c"]
-            y.donor_first_name = item["Donor_first_name__c"]
-            y.donor_last_name = item["Donor_last_name__c"]
-            y.donor_email = item["Donor_e_mail__c"]
-            y.card_type = item["Card_type__c"]
-            y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
+            y.email_notify = item["Email_to_notify__c"]
+            y.email_user_when_canceled = item["Email_User_When_Canceled__c"]
+            y.fair_market_value = item["Fair_market_value__c"]
+            y.include_amount_in_notification = item["Include_amount_in_notification__c"]
+            y.in_honor_or_memory = item["In_Honor_Memory__c"]
+            y.in_honor_memory_of = item["In_Honor_of_In_Memory__c"]
+            y.notify_someone = item["Notify_someone__c"]
+            y.member_benefit_request_swag = item["Member_benefit_request_Swag__c"]
+            y.member_benefit_request_nyt = item["Member_benefit_request_New_York_Times__c"]
+            y.member_benefit_request_atlantic = item["Member_benefit_request_Other_benefits__c"]
+            y.member_benefit_request_atlantic_id = item["Member_benefit_request_Atlantic_sub_ID__c"]
+            y.invoice = item["MinnPost_Invoice__c"]
+            y.mrpledge_id = item["MRpledge_com_ID__c"]
+            y.subtype = item["Opportunity_Subtype__c"]
             y.payment_type = item["Payment_Type__c"]
+            y.reason_for_supporting = item["Reason_for_Gift__c"]
+            y.reason_for_supporting_shareable = item["Reason_for_gift_shareable__c"]
             y.referring_page = item["Referring_page__c"]
             y.shipping_name = item["Shipping_address_name__c"]
             y.shipping_street = item["Shipping_address_street__c"]
@@ -941,15 +959,15 @@ class RDO(SalesforceObject):
             y.agreed_to_pay_fees = item["Stripe_Agreed_to_pay_fees__c"]
             y.stripe_bank_account = item["Stripe_Bank_Account__c"]
             y.stripe_card = item["Stripe_Card__c"]
+            y.stripe_description = item["Stripe_Description__c"]
             y.stripe_card_expiration = item["Card_expiration_date__c"]
             y.stripe_card_last_4 = item["Card_acct_last_4__c"]
             y.stripe_customer_id = item["Stripe_Customer_ID__c"]
-            y.stripe_description = item["Stripe_Description__c"]
             y.stripe_error_message = item["Stripe_Error_Message__c"]
+            y.stripe_payment_type = item["Stripe_Payment_Type__c"]
             y.stripe_transaction_fee = item["Stripe_Transaction_Fee__c"]
             y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
-            y.stripe_payment_type = item["Stripe_Payment_Type__c"]
-            y.lock_key = item["Flask_Transaction_ID__c"]
+            y.lock_key = item["Flask_Transaction_ID__c"]            
             y.created = False
             results.append(y)
         return results
@@ -997,11 +1015,17 @@ class RDO(SalesforceObject):
                 In_Honor_Memory__c,
                 In_honor_memory_of__c,
                 Notify_someone__c,
+                Member_benefit_request_Swag__c,
+                Member_benefit_request_New_York_Times__c,
+                Member_benefit_request_Other_benefits__c,
+                Member_benefit_request_Atlantic_sub_ID__c,
                 npe03__Installments__c,
                 npe03__Installment_Period__c,
                 Lead_Source__c,
                 npe03__Open_Ended_Status__c,
                 Payment_Type__c,
+                Reason_for_Gift__c,
+                Reason_for_gift_shareable__c,
                 Referring_page__c,
                 Shipping_address_name__c,
                 Shipping_address_street__c,
@@ -1052,11 +1076,17 @@ class RDO(SalesforceObject):
             y.in_honor_or_memory = item["In_Honor_Memory__c"]
             y.in_honor_memory_of = item["In_honor_memory_of__c"]
             y.notify_someone = item["Notify_someone__c"]
+            y.member_benefit_request_swag = item["Member_benefit_request_Swag__c"]
+            y.member_benefit_request_nyt = item["Member_benefit_request_New_York_Times__c"]
+            y.member_benefit_request_atlantic = item["Member_benefit_request_Other_benefits__c"]
+            y.member_benefit_request_atlantic_id = item["Member_benefit_request_Atlantic_sub_ID__c"]
             y.installments = item["npe03__Installments__c"]
             y.installment_period = item["npe03__Installment_Period__c"]
             y.lead_source = item["Lead_Source__c"]
             y.open_ended_status = item["npe03__Open_Ended_Status__c"]
             y.payment_type = item["Payment_Type__c"]
+            y.reason_for_supporting = item["Reason_for_Gift__c"]
+            y.reason_for_supporting_shareable = item["Reason_for_gift_shareable__c"]
             y.referring_page = item["Referring_page__c"]
             y.shipping_name = item["Shipping_address_name__c"]
             y.shipping_street = item["Shipping_address_street__c"]
