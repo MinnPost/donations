@@ -422,6 +422,8 @@ class Opportunity(SalesforceObject):
                 MRpledge_com_ID__c,
                 Opportunity_Subtype__c,
                 Payment_Type__c,
+                Reason_for_Gift__c,
+                Reason_for_gift_shareable__c,
                 Referring_page__c,
                 Shipping_address_name__c,
                 Shipping_address_street__c,
@@ -479,6 +481,8 @@ class Opportunity(SalesforceObject):
             y.card_type = item["Card_type__c"]
             y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
             y.payment_type = item["Payment_Type__c"]
+            y.reason_for_supporting = item["Reason_for_Gift__c"]
+            y.reason_for_supporting_shareable = item["Reason_for_gift_shareable__c"]
             y.referring_page = item["Referring_page__c"]
             y.shipping_name = item["Shipping_address_name__c"]
             y.shipping_street = item["Shipping_address_street__c"]
@@ -876,6 +880,8 @@ class RDO(SalesforceObject):
                 MRpledge_com_ID__c,
                 Opportunity_Subtype__c,
                 Payment_Type__c,
+                Reason_for_Gift__c,
+                Reason_for_gift_shareable__c,
                 Referring_page__c,
                 Shipping_address_name__c,
                 Shipping_address_street__c,
@@ -931,6 +937,8 @@ class RDO(SalesforceObject):
             y.card_type = item["Card_type__c"]
             y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
             y.payment_type = item["Payment_Type__c"]
+            y.reason_for_supporting = item["Reason_for_Gift__c"]
+            y.reason_for_supporting_shareable = item["Reason_for_gift_shareable__c"]
             y.referring_page = item["Referring_page__c"]
             y.shipping_name = item["Shipping_address_name__c"]
             y.shipping_street = item["Shipping_address_street__c"]
@@ -1002,6 +1010,8 @@ class RDO(SalesforceObject):
                 Lead_Source__c,
                 npe03__Open_Ended_Status__c,
                 Payment_Type__c,
+                Reason_for_Gift__c,
+                Reason_for_gift_shareable__c,
                 Referring_page__c,
                 Shipping_address_name__c,
                 Shipping_address_street__c,
@@ -1057,6 +1067,8 @@ class RDO(SalesforceObject):
             y.lead_source = item["Lead_Source__c"]
             y.open_ended_status = item["npe03__Open_Ended_Status__c"]
             y.payment_type = item["Payment_Type__c"]
+            y.reason_for_supporting = item["Reason_for_Gift__c"]
+            y.reason_for_supporting_shareable = item["Reason_for_gift_shareable__c"]
             y.referring_page = item["Referring_page__c"]
             y.shipping_name = item["Shipping_address_name__c"]
             y.shipping_street = item["Shipping_address_street__c"]

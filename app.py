@@ -476,10 +476,10 @@ def finish_donation(self, form=None):
     reason_for_supporting_shareable = form.get("reason_shareable", False)
 
     # newsletters
-    groups_submitted = form.get("groups_submitted", None)
+    groups_submitted = form.get("groups_submitted", [])
 
-    if reason_for_supporting == "" and groups_submitted is None:
-        return
+    if reason_for_supporting == "" and groups_submitted == []:
+        return False
 
     if "04471b1571" in groups_submitted:
         daily_newsletter = True
