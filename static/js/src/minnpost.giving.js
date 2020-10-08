@@ -868,7 +868,8 @@
 
         // validate and submit the form
         $('.a-validation-error').remove();
-        $('input, label', element).removeClass('a-error');
+        $('input, label, div', element).removeClass('a-error');
+        $('label', element).removeClass('m-has-validation-error');
         $(that.options.payment_method_selector, that.element).removeClass('a-error invalid');
         $('.a-validation-error').remove();
         var valid = true;
@@ -945,7 +946,7 @@
       $('.a-card-instruction.' + which_error).empty();
       $(this_selector).removeClass('a-error');
       if (error) {
-        $('.a-card-instruction.' + which_error).text(error.message + ' Please try again.');
+        $('.a-card-instruction.' + which_error).text(error.message);
         $('.a-card-instruction.' + which_error).addClass('a-validation-error');
         this_selector.parent().addClass('m-has-validation-error');
         $(this_selector).addClass('a-error');
@@ -1100,22 +1101,26 @@
 
     handleServerError: function(response) {
       var that = this;
-      var field = '';
+      var this_field = '';
       // do not submit. there is an error.
       that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       // handle error display
       if (typeof response.errors !== 'undefined') {
         if (typeof response.errors[0] !== 'undefined') {
-          field = response.errors[0].field + '_field_selector';
+          this_field = response.errors[0].field + '_field_selector';
         }
         $.each(response.errors, function( index, error ) {
-          this_field = error.field + '_field_selector';
+          if (typeof error.field !== 'undefined') {
+            this_field = error.field + '_field_selector';
+          } else if (typeof error.param !== 'undefined' && error.param !== '') {
+            this_field = 'cc_' + error.param + '_selector';  
+          }
           that.displayErrorMessage(error, this_field);
         });
       }
-      if ($(that.options[field]).length > 0) {
+      if ($(that.options[this_field]).length > 0) {
         $('html, body').animate({
-          scrollTop: $(that.options[field]).parent().offset().top
+          scrollTop: $(that.options[this_field]).parent().offset().top
         }, 2000);
       }
     }, // handleServerError
@@ -1123,6 +1128,7 @@
     displayErrorMessage(error, field) {
       var message = '';
       var stripeErrorSelector = '';
+      var fieldParent = $(this.options[field]).parent();
       if (typeof error.message === 'string') {
         message = error.message;
       } else {
@@ -1131,9 +1137,13 @@
       if ($(this.options[field]).length > 0) {
         $(this.options[field]).addClass('a-error');
         $(this.options[field]).prev().addClass('a-error');
-        $(this.options[field]).after('<span class="a-validation-error invalid">' + message + '</span>');
-      }
-      if (typeof error !== 'undefined') {
+        if ($('.a-card-instruction', fieldParent).length > 0) {
+          $('.a-card-instruction', fieldParent).addClass('a-validation-error');
+          $('.a-card-instruction', fieldParent).text(message);
+        } else {
+          $(this.options[field]).after('<p class="a-card-instruction a-validation-error">' + message + '</p>');
+        }
+      } else if (typeof error !== 'undefined') {
         this.buttonStatus(this.options, $(this.options.donate_form_selector).find('button'), false);
         if (error.code === 'incomplete_number' || error.code == 'invalid_number' || error.code == 'incorrect_number' || error.code == 'card_declined' || error.code == 'processing_error') {
           // error handling
