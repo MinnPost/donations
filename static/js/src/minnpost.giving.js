@@ -276,7 +276,7 @@
       // when new amount text field can change, we need to change the hidden field
       // there is also potentially an additional amount field value to add
       var that = this;
-      var payment_type = $(options.choose_payment + ' input').val();
+      var stripe_payment_type = that.getStripePaymentType();
 
       // set the fair market value if applicable
       var amount_selector_fair_market = $(options.original_amount_selector, element);
@@ -287,20 +287,12 @@
 
       $(options.original_amount_selector, element).change(function() {
         that.options.original_amount = parseInt($(this, element).val(), 10);
-        if ( payment_type === 'bank_account' ) {
-          that.calculateFees(that.options.original_amount, 'bank_account');
-        } else {
-          that.calculateFees(that.options.original_amount, 'card');
-        }
+        that.calculateFees(that.options.original_amount, stripe_payment_type);
         that.setFairMarketValue($(this, element));
       });
       $(options.additional_amount_field, element).change(function() {
         that.options.original_amount = parseInt($(options.original_amount_selector, element).val(), 10);
-        if ( payment_type === 'bank_account' ) {
-          that.calculateFees(that.options.original_amount, 'bank_account');
-        } else {
-          that.calculateFees(that.options.original_amount, 'card');
-        }
+        that.calculateFees(that.options.original_amount, stripe_payment_type);
       });
 
     }, // amountUpdated
@@ -353,11 +345,20 @@
       });
     }, // creditCardProcessingFees
 
+    getStripePaymentType: function() {
+      var stripe_payment_type = 'card';
+      if ($('input[name="stripe_payment_type"]').length > 0) {
+        stripe_payment_type = $('input[name="stripe_payment_type"]').val();
+      }
+      return stripe_payment_type;
+    }, // getStripePaymentType
+
     setStripePaymentType: function(stripe_payment_type) {
       if ($('input[name="stripe_payment_type"]').length === 0) {
         $(this.options.donate_form_selector).append('<input type=\"hidden\" name=\"stripe_payment_type\">');
       }
       $('input[name="stripe_payment_type"]').val(stripe_payment_type);
+      return stripe_payment_type;
     }, // setStripePaymentType
 
     creditCardFeeCheckbox: function(field) {
@@ -616,42 +617,39 @@
 
       if ($(options.choose_payment).length > 0) {
         if ($(options.choose_payment + ' input').is(':checked')) {
-          var checked = $(options.choose_payment + ' input:checked').attr('id');
+          var checked_id = $(options.choose_payment + ' input:checked').attr('id');
           var checked_value = $(options.choose_payment + ' input:checked').val();
-          that.setupPaymentMethod(checked, checked_value);
+          that.setupPaymentMethod(checked_id, checked_value);
         }
 
-        $(options.choose_payment + ' input').change(function (event) {
-          that.setupPaymentMethod(this.id, this.value);
-
-          if ( this.value === 'bank_account' ) {
-            $('input[name="payment_method_id"]', $(that.options.donate_form_selector)).remove();
-            that.achFields(that.element, that.options);
-          } else {
-            $('input[name="public_token"]', $(that.options.donate_form_selector)).remove();
-            $('input[name="account_id"]', $(that.options.donate_form_selector)).remove();
-            $('input[name="bankToken"]', $(that.options.donate_form_selector)).remove();
-            that.calculateFees(that.options.original_amount, 'card'); // we can't use creditcardfields method here
-          }
+        $(options.choose_payment + ' input').change(function () {
+          var checked_id = this.id;
+          var checked_value = this.value;
+          that.setupPaymentMethod(checked_id, checked_value);
         });
 
       }
     }, // choosePaymentMethod
 
-    setupPaymentMethod: function(id, value) {
-      $(this.options.payment_method_selector).removeClass('active');
-      $(this.options.payment_method_selector + '.' + id).addClass('active');
-      //$(this.options.payment_method_selector + ':not(.active) label').removeClass('required');
-      //$(this.options.payment_method_selector + ':not(.active) input').prop('required', false);
-      $(this.options.payment_method_selector + ':not(.active) input').val('');
-      //$(this.options.payment_method_selector + '.active label').addClass('required');
-      //$(this.options.payment_method_selector + '.active input').prop('required', true);
-      if ( value === 'bank_account' ) {
-        this.calculateFees(this.options.original_amount, 'bank_account');
+    setupPaymentMethod: function(element_id, element_value) {
+      var stripe_payment_type = this.setStripePaymentType(element_value);
+      if ( element_value === 'bank_account' ) {
+        $('input[name="payment_method_id"]', $(this.options.donate_form_selector)).remove();
+        this.achFields(this.element, this.options);
       } else {
-        this.calculateFees(this.options.original_amount, 'card');
+        this.removeAchFields(this.options);
       }
+      $(this.options.payment_method_selector).removeClass('active');
+      $(this.options.payment_method_selector + '.' + element_id).addClass('active');
+      $(this.options.payment_method_selector + ':not(.active) input').val('');
+      this.calculateFees(this.options.original_amount, stripe_payment_type);
     }, // setupPaymentMethod
+
+    removeAchFields: function(options) {
+      $('input[name="public_token"]', $(options.donate_form_selector)).remove();
+      $('input[name="account_id"]', $(options.donate_form_selector)).remove();
+      $('input[name="bankToken"]', $(options.donate_form_selector)).remove();
+    }, // removeAchFields
 
     creditCardFields: function(element, options) {
 
@@ -696,8 +694,14 @@
       // validate/error handle the card fields
       that.cardNumberElement.on('change', function(event) {
         var stripe_payment_type = 'card';
+        // Switch payment type if it's one that we recognize as distinct
+        if (event.brand) {
+          if ( event.brand === 'amex' ) {
+            stripe_payment_type = 'amex';
+          }          
+        }
         // error handling
-        that.stripeErrorDisplay(event, $(options.cc_num_selector, element), element, options );
+        that.stripeErrorDisplay(event.error, $(options.cc_num_selector, element), element, options );
         // if it changed, reset the button
         that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
         that.calculateFees(that.options.original_amount, stripe_payment_type);
@@ -705,14 +709,14 @@
 
       that.cardExpiryElement.on('change', function(event) {
         // error handling
-        that.stripeErrorDisplay(event, $(options.cc_exp_selector, element), element, options );
+        that.stripeErrorDisplay(event.error, $(options.cc_exp_selector, element), element, options );
         // if it changed, reset the button
         that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
       });
 
       that.cardCvcElement.on('change', function(event) {
         // error handling
-        that.stripeErrorDisplay(event, $(options.cc_cvc_selector, element), element, options );
+        that.stripeErrorDisplay(event.error, $(options.cc_cvc_selector, element), element, options );
         // if it changed, reset the button
         that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
       });
@@ -933,15 +937,15 @@
       });
     }, // validateAndSubmit
 
-    stripeErrorDisplay: function(event, this_selector, element, options) {
+    stripeErrorDisplay: function(error, this_selector, element, options) {
       // listen for errors and display/hide error messages
       var which_error = this_selector.attr('id');
       // when this field changes, reset its errors
       $('.a-card-instruction.' + which_error).removeClass('a-validation-error');
       $('.a-card-instruction.' + which_error).empty();
       $(this_selector).removeClass('a-error');
-      if (event.error) {
-        $('.a-card-instruction.' + which_error).text(event.error.message + ' Please try again.');
+      if (error) {
+        $('.a-card-instruction.' + which_error).text(error.message + ' Please try again.');
         $('.a-card-instruction.' + which_error).addClass('a-validation-error');
         this_selector.parent().addClass('m-has-validation-error');
         $(this_selector).addClass('a-error');
@@ -1058,7 +1062,7 @@
       var supportform = $(this.options.donate_form_selector);
       var ajax_url = window.location.pathname;
 
-      $('input[name="stripe_payment_type"]').val(type);
+      that.setStripePaymentType(type);
 
       // Submit the form
       // the way it works currently is the form submits an ajax request to itself
@@ -1096,64 +1100,64 @@
 
     handleServerError: function(response) {
       var that = this;
+      var field = '';
       // do not submit. there is an error.
       that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
-      // add some error messages and styles
-      $.each(response.errors, function( index, error ) {
-        var field = error.field + '_field_selector';
-        var message = '';
-        var stripeErrorSelector = '';
-        if (typeof error.message === 'string') {
-          message = error.message;
-        } else {
-          message = error.message[0];
+      // handle error display
+      if (typeof response.errors !== 'undefined') {
+        if (typeof response.errors[0] !== 'undefined') {
+          field = response.errors[0].field + '_field_selector';
         }
-        if ($(that.options[field]).length > 0) {
-          $(that.options[field]).addClass('a-error');
-          $(that.options[field]).prev().addClass('a-error');
-          $(that.options[field]).after('<span class="a-validation-error invalid">' + message + '</span>');
-        }
-
-        if (typeof error !== 'undefined') {
-          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false, 'card');
-          if (error.code == 'invalid_number' || error.code == 'incorrect_number' || error.code == 'card_declined' || error.code == 'processing_error') {
-            // error handling
-            stripeErrorSelector = $(that.options.cc_num_selector);
-          }
-
-          if (error.code == 'invalid_expiry_month' || error.code == 'invalid_expiry_year' || error.code == 'expired_card') {
-            // error handling
-            stripeErrorSelector = $(that.options.cc_exp_selector);
-          }
-
-          if (error.code == 'invalid_cvc' || error.code == 'incorrect_cvc') {
-            // error handling
-            stripeErrorSelector = $(that.options.cc_cvc_selector);
-          }
-
-          if (stripeErrorSelector !== '') {
-            that.stripeErrorDisplay(response.errors, stripeErrorSelector, that.element, that.options );
-          }
-
-          if (error.field == 'recaptcha') {
-            $(that.options.pay_button_selector).before('<p class="a-form-caption a-recaptcha-error">' + message + '</p>')
-          }
-
-          if (error.type == 'invalid_request_error') {
-            $(that.options.pay_button_selector).before('<p class="error error-invalid-request">' + error.message + '</p>')
-          }
-
-        }
-      });
-      if (typeof response.errors[0] !== 'undefined') {
-        var field = response.errors[0].field + '_field_selector';
-        if ($(that.options[field]).length > 0) {
-          $('html, body').animate({
-            scrollTop: $(that.options[field]).parent().offset().top
-          }, 2000);
-        }
+        $.each(response.errors, function( index, error ) {
+          this_field = error.field + '_field_selector';
+          that.displayErrorMessage(error, this_field);
+        });
+      }
+      if ($(that.options[field]).length > 0) {
+        $('html, body').animate({
+          scrollTop: $(that.options[field]).parent().offset().top
+        }, 2000);
       }
     }, // handleServerError
+
+    displayErrorMessage(error, field) {
+      var message = '';
+      var stripeErrorSelector = '';
+      if (typeof error.message === 'string') {
+        message = error.message;
+      } else {
+        message = error.message[0];
+      }
+      if ($(this.options[field]).length > 0) {
+        $(this.options[field]).addClass('a-error');
+        $(this.options[field]).prev().addClass('a-error');
+        $(this.options[field]).after('<span class="a-validation-error invalid">' + message + '</span>');
+      }
+      if (typeof error !== 'undefined') {
+        this.buttonStatus(this.options, $(this.options.donate_form_selector).find('button'), false);
+        if (error.code === 'incomplete_number' || error.code == 'invalid_number' || error.code == 'incorrect_number' || error.code == 'card_declined' || error.code == 'processing_error') {
+          // error handling
+          stripeErrorSelector = $(this.options.cc_num_selector);
+        }
+        if (error.code == 'invalid_expiry_month' || error.code == 'invalid_expiry_year' || error.code == 'expired_card') {
+          // error handling
+          stripeErrorSelector = $(this.options.cc_exp_selector);
+        }
+        if (error.code == 'invalid_cvc' || error.code == 'incorrect_cvc') {
+          // error handling
+          stripeErrorSelector = $(this.options.cc_cvc_selector);
+        }
+        if (stripeErrorSelector !== '') {
+          this.stripeErrorDisplay(error, stripeErrorSelector, this.element, this.options );
+        }
+        if (error.field == 'recaptcha') {
+          $(this.options.pay_button_selector).before('<p class="a-form-caption a-recaptcha-error">' + message + '</p>')
+        }
+        if (error.type == 'invalid_request_error') {
+          $(this.options.pay_button_selector).before('<p class="error error-invalid-request">' + error.message + '</p>')
+        }
+      }
+    }, // displayErrorMessage
 
     showNewsletterSettings: function(element, options) {
       var that = this;
