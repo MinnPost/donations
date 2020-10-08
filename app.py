@@ -2234,7 +2234,7 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     if rdo.campaign == "":
         rdo.campaign = app.config["DEFAULT_CAMPAIGN_RECURRING"]
 
-    if form["stripe_payment_type"] == "card":
+    if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":        
         apply_card_details(rdo=rdo, customer=customer, payment_method=payment_method, charge_source=charge_source)
 
     rdo.save()
@@ -2343,7 +2343,7 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
 
     rdo.stripe_transaction_fee = calculate_amount_fees(rdo.amount, rdo.stripe_payment_type, rdo.agreed_to_pay_fees)
 
-    if form["stripe_payment_type"] == "card":
+    if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":
         apply_card_details(rdo=rdo, customer=customer, charge_source=charge_source)
 
     rdo.save()
