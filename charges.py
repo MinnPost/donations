@@ -246,10 +246,7 @@ def charge(opportunity):
                 reason = "unknown failure"
 
             opportunity.stripe_error_message = reason
-        
-        if (payment_intent and payment_intent.status != 'succeeded') or (charge and charge.status != "succeeded" and charge.status != "pending"):
             opportunity.stage_name = "Failed"
-            opportunity.stripe_error_message = "Error: Unknown. Check logs"
             opportunity.save()
             logging.debug(
                 f"Opportunity set to '{opportunity.stage_name}' with reason: {opportunity.stripe_error_message}"
@@ -267,6 +264,10 @@ def charge(opportunity):
         elif charge_source is not None:
             charge = stripe.Charge.retrieve(opportunity.stripe_transaction_id)
 
+    if (payment_intent and payment_intent.status != 'succeeded') or (charge and charge.status != "succeeded" and charge.status != "pending"):
+        logging.error("Charge failed. Check Stripe logs.")
+        raise ChargeException(opportunity, "charge failed")
+    
     # this is either pending or finished
     if charge and charge.status == "pending":
         logging.info(f"ACH charge pending. Check at intervals to see if it processes.")
