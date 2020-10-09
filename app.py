@@ -2363,11 +2363,10 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
     if amount != 0:
         rdo.amount = amount
 
-    if agreed_to_pay_fees != False:
-        rdo.agreed_to_pay_fees = agreed_to_pay_fees
-
-    if anonymous != False:
-        rdo.anonymous = anonymous
+    # always change these checkbox values based on the user's input
+    rdo.agreed_to_pay_fees = agreed_to_pay_fees
+    rdo.anonymous = anonymous
+    rdo.email_user_when_canceled = email_user_when_canceled
 
     if credited_as != "":
         rdo.credited_as = credited_as
