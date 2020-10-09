@@ -2180,8 +2180,8 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     opportunity.anonymous = anonymous
     opportunity.email_user_when_canceled = email_user_when_canceled
 
-    if credited_as != "":
-        opportunity.credited_as = credited_as
+    # always change these text values based on user's input
+    opportunity.credited_as = credited_as
 
     if donor_first_name != "":
         opportunity.donor_first_name = donor_first_name
@@ -2405,8 +2405,8 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
     rdo.anonymous = anonymous
     rdo.email_user_when_canceled = email_user_when_canceled
 
-    if credited_as != "":
-        rdo.credited_as = credited_as
+    # always change these text values based on user's input
+    rdo.credited_as = credited_as        
 
     if donor_first_name != "":
         rdo.donor_first_name = donor_first_name
