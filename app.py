@@ -2392,9 +2392,6 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
     if email_notify != "":
         rdo.email_notify = email_notify
 
-    if email_user_when_canceled != False:
-        rdo.email_user_when_canceled = email_user_when_canceled
-
     if installment_period != "":
         rdo.installment_period = installment_period
 
