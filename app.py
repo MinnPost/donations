@@ -620,16 +620,44 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         # this changes or does not change the default source based on the field value
         # currently it is always a hidden field; we might consider adding it as a choice for users.
         try:
-            if update_default_source is not "":
-                app.logger.info(f"----Add new default source for customer: ID {customer_id}.")
-                customer = stripe.Customer.modify(
-                    customer_id,
-                    email=email,
-                    source=source_token
-                )
-            else:
-                app.logger.info(f"----Add new source for customer: ID {customer_id}")
-                charge_source = customer.sources.create(source=source_token)
+            if payment_method_id is not None:
+                if update_default_source is not "":
+                    app.logger.info(f"----Update customer: ID {customer_id} and set default invoice payment method.")
+                    customer = stripe.Customer.modify(
+                        customer_id,
+                        email=email,
+                        invoice_settings={
+                            "default_payment_method": payment_method_id,
+                        },
+                    )
+                else:
+                    app.logger.info(f"----Update customer: ID {customer_id}. Do not change default invoice method.")
+                    customer = stripe.Customer.modify(
+                        customer_id,
+                        email=email,
+                    )
+            elif bank_token is not None:
+                if update_default_source is not "":
+                    app.logger.info(f"----Add new default source for customer: ID {customer_id}.")
+                    customer = stripe.Customer.modify(
+                        customer_id,
+                        email=email,
+                        source=bank_token
+                    )
+                else:
+                    app.logger.info(f"----Add new source for customer: ID {customer_id}")
+                    charge_source = customer.sources.create(source=source_token)
+            elif source_token is None:
+                if update_default_source is not "":
+                    app.logger.info(f"----Add new default source for customer: ID {customer_id}.")
+                    customer = stripe.Customer.modify(
+                        customer_id,
+                        email=email,
+                        source=source_token
+                    )
+                else:
+                    app.logger.info(f"----Add new source for customer: ID {customer_id}")
+                    charge_source = customer.sources.create(source=source_token)
         except stripe.error.CardError as e: # Stripe returned a card error
             body = e.json_body
             err = body.get("error", {})
