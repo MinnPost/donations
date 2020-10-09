@@ -258,6 +258,8 @@ def apply_card_details(rdo=None, customer=None, payment_method=None, charge_sour
     it to an RDO. The RDO is NOT saved and must be done after calling this function.
     That's to save an API call since other RDO details will almost certainly need to be
     saved as well.
+
+    This method is not called if the payment type is bank account.
     """
 
     if payment_method is None and charge_source is None:
@@ -617,8 +619,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         app.logger.info(f"----Updating existing Stripe customer: ID {customer_id}")
         customer = stripe.Customer.retrieve(customer_id)
         # since this is an existing customer, add the current payment method to the list.
-        # this changes or does not change the default source based on the field value
-        # currently it is always a hidden field; we might consider adding it as a choice for users.
+        # we may want to discontinue the default source thing since Stripe doesn't use it as much now
         try:
             if payment_method_id is not None:
                 if update_default_source is not "":
@@ -636,6 +637,10 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
                         customer_id,
                         email=email,
                     )
+                # retrieve the payment method object for consistency
+                payment_method = stripe.PaymentMethod.retrieve(
+                    payment_method_id
+                )
             elif bank_token is not None:
                 if update_default_source is not "":
                     app.logger.info(f"----Add new default source for customer: ID {customer_id}.")
@@ -646,7 +651,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
                     )
                 else:
                     app.logger.info(f"----Add new source for customer: ID {customer_id}")
-                    charge_source = customer.sources.create(source=source_token)
+                    charge_source = customer.sources.create(source=bank_token)
             elif source_token is None:
                 if update_default_source is not "":
                     app.logger.info(f"----Add new default source for customer: ID {customer_id}.")
