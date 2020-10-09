@@ -928,7 +928,7 @@
             console.log('we have a bank token. the value is ' + $('#bankToken').val() );
             // if it is ach, we already have a token so submit the form
             // todo: see if we can delete the token from this call
-            that.bankTokenHandler( $('#bankToken').val(), 'bank_account' );
+            that.bankTokenHandler( $('input[name="bankToken"]').val(), 'bank_account' );
           }
         } else {
           // this means valid is false
