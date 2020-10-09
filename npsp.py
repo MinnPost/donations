@@ -767,6 +767,144 @@ class RDO(SalesforceObject):
 
         self.lock_key = None
 
+    
+    @classmethod
+    def list(
+        cls,
+        begin=None,
+        end=None,
+        stripe_customer_id=None,
+        recurring_id=None,
+        sf_connection=None,
+    ):
+
+        sf = SalesforceConnection() if sf_connection is None else sf_connection
+
+        if recurring_id is not None:
+            where = f"""
+                WHERE Id = '{recurring_id}'
+            """
+
+        query = f"""
+            SELECT
+                Id,
+                Name,
+                npe03__Amount__c,
+                npe03__Recurring_Donation_Campaign__c,
+                npe03__Contact__c,
+                npe03__Date_Established__c,
+                Anonymous__c,
+                Credited_as__c,
+                Card_type__c,
+                Donor_first_name__c,
+                Donor_last_name__c,
+                Donor_e_mail__c,
+                Donor_address_line_1__c,
+                Donor_city__c,
+                Donor_state__c,
+                Donor_ZIP__c,
+                Donor_country__c,
+                Email_to_notify__c,
+                Email_User_When_Canceled__c,
+                Include_amount_in_notification__c,
+                In_Honor_Memory__c,
+                In_honor_memory_of__c,
+                Notify_someone__c,
+                Member_benefit_request_Swag__c,
+                Member_benefit_request_New_York_Times__c,
+                Member_benefit_request_Other_benefits__c,
+                Member_benefit_request_Atlantic_sub_ID__c,
+                npe03__Installments__c,
+                npe03__Installment_Period__c,
+                Lead_Source__c,
+                npe03__Open_Ended_Status__c,
+                Payment_Type__c,
+                Reason_for_Gift__c,
+                Reason_for_gift_shareable__c,
+                Referring_page__c,
+                Shipping_address_name__c,
+                Shipping_address_street__c,
+                Shipping_address_city__c,
+                Shipping_address_state__c,
+                Shipping_address_ZIP__c,
+                Shipping_address_country__c,
+                Stripe_Agreed_to_pay_fees__c,
+                Stripe_Bank_Account__c,
+                Stripe_Card__c,
+                Stripe_Description__c,
+                Card_expiration_date__c,
+                Card_acct_last_4__c,
+                Stripe_Customer_Id__c,
+                Stripe_Payment_Type__c,
+                Stripe_Transaction_Fee__c
+            FROM npe03__Recurring_Donation__c
+            {where}
+        """
+
+        response = sf.query(query)
+        logging.debug(response)
+
+        results = list()
+        for item in response:
+            y = cls()
+
+            y.id = item["Id"]
+            y.name = item["Name"]
+            y.amount = item["npe03__Amount__c"]
+            y.campaign = item["npe03__Recurring_Donation_Campaign__c"]
+            y.contact_id = item["npe03__Contact__c"]
+            y.date_established = item["npe03__Date_Established__c"]
+            y.anonymous = item["Anonymous__c"]
+            y.credited_as = item["Credited_as__c"]
+            y.card_type = item["Card_type__c"]
+            y.donor_first_name = item["Donor_first_name__c"]
+            y.donor_last_name = item["Donor_last_name__c"]
+            y.donor_email = item["Donor_e_mail__c"]
+            y.donor_address_one = item["Donor_address_line_1__c"]
+            y.donor_city = item["Donor_city__c"]
+            y.donor_state = item["Donor_state__c"]
+            y.donor_zip = item["Donor_ZIP__c"]
+            y.donor_country = item["Donor_country__c"]
+            y.email_notify = item["Email_to_notify__c"]
+            y.email_user_when_canceled = item["Email_User_When_Canceled__c"]
+            y.include_amount_in_notification = item["Include_amount_in_notification__c"]
+            y.in_honor_or_memory = item["In_Honor_Memory__c"]
+            y.in_honor_memory_of = item["In_honor_memory_of__c"]
+            y.notify_someone = item["Notify_someone__c"]
+            y.member_benefit_request_swag = item["Member_benefit_request_Swag__c"]
+            y.member_benefit_request_nyt = item["Member_benefit_request_New_York_Times__c"]
+            y.member_benefit_request_atlantic = item["Member_benefit_request_Other_benefits__c"]
+            y.member_benefit_request_atlantic_id = item["Member_benefit_request_Atlantic_sub_ID__c"]
+            y.installments = item["npe03__Installments__c"]
+            y.installment_period = item["npe03__Installment_Period__c"]
+            y.lead_source = item["Lead_Source__c"]
+            y.open_ended_status = item["npe03__Open_Ended_Status__c"]
+            y.payment_type = item["Payment_Type__c"]
+            y.reason_for_supporting = item["Reason_for_Gift__c"]
+            y.reason_for_supporting_shareable = item["Reason_for_gift_shareable__c"]
+            y.referring_page = item["Referring_page__c"]
+            y.shipping_name = item["Shipping_address_name__c"]
+            y.shipping_street = item["Shipping_address_street__c"]
+            y.shipping_city = item["Shipping_address_city__c"]
+            y.shipping_state = item["Shipping_address_state__c"]
+            y.shipping_zip = item["Shipping_address_ZIP__c"]
+            y.shipping_country = item["Shipping_address_country__c"]
+            y.agreed_to_pay_fees = item["Stripe_Agreed_to_pay_fees__c"]
+            y.stripe_bank_account = item["Stripe_Bank_Account__c"]
+            y.stripe_card = item["Stripe_Card__c"]
+            y.stripe_description = item["Stripe_Description__c"]
+            y.stripe_card_expiration = item["Card_expiration_date__c"]
+            y.stripe_card_last_4 = item["Card_acct_last_4__c"]
+            y.stripe_customer_id = item["Stripe_Customer_Id__c"]
+            y.stripe_payment_type = item["Stripe_Payment_Type__c"]
+            y.stripe_transaction_fee = item["Stripe_Transaction_Fee__c"]
+
+            y.created = False
+            results.append(y)
+
+        return results
+    
+    
     def _format(self):
 
         # TODO be sure to reverse this on deserialization
