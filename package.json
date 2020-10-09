@@ -32,7 +32,7 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-svgmin": "^3.0.0",
     "gulp-uglify": "^3.0.2",
-    "npm-check-updates": "^9.0.1"
+    "npm-check-updates": "^9.0.4"
   },
   "browserslist": [
     "last 2 version",
