@@ -289,7 +289,7 @@ def apply_card_details(rdo=None, customer=None, payment_method=None, charge_sour
     day = calendar.monthrange(year, month)[1]
     rdo.stripe_card = card_id
     rdo.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
-    rdo.stripe_card_brand = brand
+    rdo.card_type = brand
     rdo.stripe_card_last_4 = last4
 
     return rdo
@@ -2144,7 +2144,7 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
             opportunity = None
     else:
         raise Exception("opportunity_id must have a value")
-
+    
     # fields that can be updated by a user should go here
     first_name = form.get("first_name", "")
     last_name = form.get("last_name", "")
