@@ -619,42 +619,29 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         app.logger.info(f"----Updating existing Stripe customer: ID {customer_id}")
         customer = stripe.Customer.retrieve(customer_id)
         # since this is an existing customer, add the current payment method to the list.
-        # we may want to discontinue the default source thing since Stripe doesn't use it as much now
+        # we don't keep doing the default source thing since Stripe doesn't push it now.
         try:
             if payment_method_id is not None:
-                if update_default_source is not "":
-                    app.logger.info(f"----Update customer: ID {customer_id} and set default invoice payment method.")
-                    customer = stripe.Customer.modify(
-                        customer_id,
-                        email=email,
-                        invoice_settings={
-                            "default_payment_method": payment_method_id,
-                        },
-                    )
-                else:
-                    app.logger.info(f"----Update customer: ID {customer_id}. Do not change default invoice method.")
-                    customer = stripe.Customer.modify(
-                        customer_id,
-                        email=email,
-                    )
-                # retrieve the payment method object for consistency
+                app.logger.info(f"----Update customer: ID {customer_id}. Retrieve payment method.")
+                customer = stripe.Customer.modify(
+                    customer_id,
+                    email=email,
+                )
+                # retrieve the payment method object
                 payment_method = stripe.PaymentMethod.retrieve(
                     payment_method_id
-                )
+                ) 
             elif bank_token is not None:
-                if update_default_source is not "":
-                    app.logger.info(f"----Add new default bank account for customer: ID {customer_id}.")
-                    customer = stripe.Customer.modify(
-                        customer_id,
-                        email=email,
-                        source=bank_token
-                    )
-                else:
-                    app.logger.info(f"----Add new bank account for customer: ID {customer_id}.")
-                    charge_source = stripe.Customer.create_source(
-                        customer_id,
-                        source=bank_token,
-                    )
+                app.logger.info(f"----Update customer: ID {customer_id}. Retrieve bank account.")
+                customer = stripe.Customer.modify(
+                    customer_id,
+                    email=email,
+                )
+                # retrieve the bank account object
+                charge_source = stripe.Customer.create_source(
+                    customer_id,
+                    source=bank_token,
+                )
             elif source_token is None:
                 if update_default_source is not "":
                     app.logger.info(f"----Add new default source for customer: ID {customer_id}.")
@@ -681,22 +668,27 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
             message = err.get("message", "")
             if message == 'A bank account with that routing number and account number already exists for this customer.':
                 # try to get the bank account that matches the token they've supplied
-                token = stripe.Token.retrieve(bank_token)
-                bank_accounts = stripe.Customer.list_sources(
-                    customer_id,
-                    object="bank_account",
-                )
-                for bank_account in bank_accounts:
-                    if bank_account.object == 'bank_account' and bank_account.routing_number == token.bank_account.routing_number and bank_account.last4 == token.bank_account.last4:
-                        charge_source = bank_account
-                        if update_default_source is not "":
+                try:
+                    token = stripe.Token.retrieve(bank_token)
+                    bank_accounts = stripe.Customer.list_sources(
+                        customer_id,
+                        object="bank_account",
+                    )
+                    for bank_account in bank_accounts:
+                        if bank_account.object == 'bank_account' and bank_account.routing_number == token.bank_account.routing_number and bank_account.last4 == token.bank_account.last4:
                             customer = stripe.Customer.modify(
                                 customer_id,
                                 email=email,
-                                source=stripe_bank_account
                             )
-                        app.logger.debug("----Reuse this bank account that was already on the Stripe customer...")
-                    break
+                            charge_source = bank_account
+                            app.logger.debug("----Reuse this bank account that was already on the Stripe customer...")
+                        break
+                except stripe.error.InvalidRequestError as e: # give up
+                    body = e.json_body
+                    err = body.get("error", {})
+                    message = err.get("message", "")
+                    app.logger.error(f"Stripe InvalidRequestError: {message}")
+                    return jsonify(errors=body)
             else:
                 app.logger.error(f"Stripe InvalidRequestError: {message}")
                 return jsonify(errors=body)
