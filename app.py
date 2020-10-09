@@ -251,16 +251,18 @@ def minnpost_advertising_form():
     return redirect("/advertising-payment/?%s" % query_string, code=302)
 
 
-def apply_card_details(rdo=None, customer=None, charge_source=None):
+def apply_card_details(rdo=None, customer=None, payment_method=None, charge_source=None):
 
     """
     Takes the expiration date, card brand and expiration from a Stripe object and copies
     it to an RDO. The RDO is NOT saved and must be done after calling this function.
     That's to save an API call since other RDO details will almost certainly need to be
     saved as well.
+
+    This method is not called if the payment type is bank account.
     """
 
-    if charge_source is None:
+    if payment_method is None and charge_source is None:
         customer = stripe.Customer.retrieve(customer["id"])
         card_id = customer.sources.data[0].id
         card = customer.sources.retrieve(card_id)
@@ -268,7 +270,15 @@ def apply_card_details(rdo=None, customer=None, charge_source=None):
         month = card.exp_month
         brand = card.brand
         last4 = card.last4
-    else:
+    elif payment_method is not None:
+        card = payment_method["card"]
+        card_id = payment_method["id"]
+        year = card["exp_year"]
+        month = card["exp_month"]
+        brand = card["brand"]
+        last4 = card["last4"]
+    elif charge_source is not None:
+        # the charge already has a payment method id on it
         card = charge_source
         card_id = card["id"]
         year = card["exp_year"]
@@ -286,7 +296,7 @@ def apply_card_details(rdo=None, customer=None, charge_source=None):
 
 
 @celery.task(name="app.add_donation")
-def add_donation(form=None, customer=None, donation_type=None, charge_source=None):
+def add_donation(form=None, customer=None, donation_type=None, payment_method=None, charge_source=None):
     """
     Add a contact and their donation into SF. This is done in the background
     because there are a lot of API calls and there's no point in making the
@@ -343,7 +353,7 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
 
     if frequency == "one-time":
         logging.info("----Creating one time payment...")
-        opportunity = add_opportunity(contact=contact, form=form, customer=customer, charge_source=charge_source)
+        opportunity = add_opportunity(contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source)
         try:
             charge(opportunity)
             lock = Lock(key=opportunity.lock_key)
@@ -355,7 +365,7 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
         return True
     else:
         logging.info("----Creating recurring payment...")
-        rdo = add_recurring_donation(contact=contact, form=form, customer=customer, charge_source=charge_source)
+        rdo = add_recurring_donation(contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source)
 
         # get opportunities
         opportunities = rdo.opportunities()
@@ -380,9 +390,9 @@ def add_donation(form=None, customer=None, donation_type=None, charge_source=Non
 
 # this is used to update or cancel donations
 @celery.task(name="app.update_donation")
-def update_donation(form=None, customer=None, donation_type=None, charge_source=None):
+def update_donation(form=None, customer=None, donation_type=None, payment_method=None, charge_source=None):
     """
-    Add a contact and their donation into SF. This is done in the background
+    Update a contact and their donation in SF. This is done in the background
     because there are a lot of API calls and there's no point in making the
     payer wait for them. It sends a notification about the donation to Slack (if configured).
     """
@@ -437,11 +447,11 @@ def update_donation(form=None, customer=None, donation_type=None, charge_source=
 
     if frequency == "one-time":
         logging.info("----Updating one time payment...")
-        opportunity = update_opportunity(contact=contact, form=form, customer=customer, charge_source=charge_source)
+        opportunity = update_opportunity(contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source)
         return True
     else:
         logging.info("----Updating recurring payment...")
-        rdo = update_recurring_donation(contact=contact, form=form, customer=customer, charge_source=charge_source)
+        rdo = update_recurring_donation(contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source)
 
         # get opportunities
         opportunities = rdo.opportunities()
@@ -558,20 +568,41 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     update_default_source = form_data.get("update_default_source", "")
 
     charge_source = None
+    payment_method_id = None
+    payment_method = None
+    bank_token = None
 
-    if form_data.get("stripeToken", ""):
-        source_token = form_data["stripeToken"]
+    if form_data.get("payment_method_id", ""):
+        payment_method_id = form_data["payment_method_id"]
     elif form_data.get("bankToken",""):
-        source_token = form_data["bankToken"]
+        bank_token = form_data["bankToken"]
+    elif form_data.get("stripeToken", ""):
+        source_token = form_data["stripeToken"]
 
     if customer_id is "": # this is a new customer
         app.logger.debug("----Creating new Stripe customer...")
         # if it is a new customer, assume they only have one payment method and it should be the default
         try:
-            customer = stripe.Customer.create(
-                email=email,
-                source=source_token
-            )
+            if payment_method_id is not None:
+                customer = stripe.Customer.create(
+                    email=email,
+                    payment_method=payment_method_id
+                )
+                # retrieve the payment method object for consistency
+                payment_method = stripe.PaymentMethod.retrieve(
+                    payment_method_id
+                )
+            elif bank_token is not None:
+                customer = stripe.Customer.create(
+                    email=email,
+                    source=bank_token
+                )
+            elif source_token is not None:
+                customer = stripe.Customer.create(
+                    email=email,
+                    source=source_token
+                )
+            app.logger.info(customer)
         except stripe.error.CardError as e: # Stripe returned a card error
             body = e.json_body
             err = body.get("error", {})
@@ -588,18 +619,43 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         app.logger.info(f"----Updating existing Stripe customer: ID {customer_id}")
         customer = stripe.Customer.retrieve(customer_id)
         # since this is an existing customer, add the current payment method to the list.
-        # this changes or does not change the default source based on the field value
-        # currently it is always a hidden field; we might consider adding it as a choice for users.
+        # we don't keep doing the default source thing since Stripe doesn't push it now.
         try:
-            if update_default_source is not "":
-                app.logger.info(f"----Update default source for customer: ID {customer_id}. token is {source_token}")
+            if payment_method_id is not None:
+                app.logger.info(f"----Update customer: ID {customer_id}. Retrieve payment method.")
                 customer = stripe.Customer.modify(
                     customer_id,
                     email=email,
-                    source=source_token
                 )
-            else:
-                charge_source = customer.sources.create(source=source_token)
+                # retrieve the payment method object
+                payment_method = stripe.PaymentMethod.retrieve(
+                    payment_method_id
+                ) 
+            elif bank_token is not None:
+                app.logger.info(f"----Update customer: ID {customer_id}. Retrieve bank account.")
+                customer = stripe.Customer.modify(
+                    customer_id,
+                    email=email,
+                )
+                # retrieve the bank account object
+                charge_source = stripe.Customer.create_source(
+                    customer_id,
+                    source=bank_token,
+                )
+            elif source_token is None:
+                if update_default_source is not "":
+                    app.logger.info(f"----Add new default source for customer: ID {customer_id}.")
+                    customer = stripe.Customer.modify(
+                        customer_id,
+                        email=email,
+                        source=source_token
+                    )
+                else:
+                    app.logger.info(f"----Add new source for customer: ID {customer_id}")
+                    charge_source = stripe.Customer.create_source(
+                        customer_id,
+                        source=source_token,
+                    )
         except stripe.error.CardError as e: # Stripe returned a card error
             body = e.json_body
             err = body.get("error", {})
@@ -611,18 +667,34 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
             err = body.get("error", {})
             message = err.get("message", "")
             if message == 'A bank account with that routing number and account number already exists for this customer.':
-                # use the account they already have, since it is identical
-                sources = customer.sources
-                for source in sources:
-                    if source.object == 'bank_account':
-                        #stripe_bank_account = source.id
-                        app.logger.debug("----Reuse the bank account already on the Stripe customer...")
+                # try to get the bank account that matches the token they've supplied
+                try:
+                    token = stripe.Token.retrieve(bank_token)
+                    bank_accounts = stripe.Customer.list_sources(
+                        customer_id,
+                        object="bank_account",
+                    )
+                    for bank_account in bank_accounts:
+                        if bank_account.object == 'bank_account' and bank_account.routing_number == token.bank_account.routing_number and bank_account.last4 == token.bank_account.last4:
+                            customer = stripe.Customer.modify(
+                                customer_id,
+                                email=email,
+                            )
+                            charge_source = bank_account
+                            app.logger.debug("----Reuse this bank account that was already on the Stripe customer...")
+                        break
+                except stripe.error.InvalidRequestError as e: # give up
+                    body = e.json_body
+                    err = body.get("error", {})
+                    message = err.get("message", "")
+                    app.logger.error(f"Stripe InvalidRequestError: {message}")
+                    return jsonify(errors=body)
             else:
                 app.logger.error(f"Stripe InvalidRequestError: {message}")
                 return jsonify(errors=body)
 
     app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
-    function(customer=customer, form=clean(form_data), donation_type=donation_type, charge_source=charge_source)
+    function(customer=customer, form=clean(form_data), donation_type=donation_type, payment_method=payment_method, charge_source=charge_source)
 
     # get the json response from the server and put it into the specified template
     return jsonify(success=True)
@@ -1921,7 +1993,7 @@ def stripehook():
     return "", 200
 
 
-def add_opportunity(contact=None, form=None, customer=None, charge_source=None):
+def add_opportunity(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None):
     """
     This will add a single donation in Salesforce.
     """
@@ -2006,16 +2078,31 @@ def add_opportunity(contact=None, form=None, customer=None, charge_source=None):
         opportunity.campaign = app.config["DEFAULT_CAMPAIGN_ONETIME"]
     
     if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":
-        # stripe card source handling
-        if charge_source is None:
-            customer = stripe.Customer.retrieve(customer["id"])
-            card_id = customer.sources.data[0].id
-            card = customer.sources.retrieve(card_id)
+        # stripe payment method handling
+        
+        # if the charge does not specify a payment method
+        if payment_method is None and charge_source is None:
+            payment_methods = stripe.PaymentMethod.list(
+                customer=customer["id"],
+                type="card",
+                limit=1,
+            )
+            card_id = payment_methods.data[0].id
+            card = payment_methods.data[0].card
             year = card.exp_year
             month = card.exp_month
             brand = card.brand
             last4 = card.last4
-        else:
+        elif payment_method is not None:
+            # this is an object
+            card = payment_method["card"]
+            card_id = payment_method["id"]
+            year = card["exp_year"]
+            month = card["exp_month"]
+            brand = card["brand"]
+            last4 = card["last4"]
+        elif charge_source is not None:
+            # the charge already has a payment method id on it
             card = charge_source
             card_id = card["id"]
             year = card["exp_year"]
@@ -2028,6 +2115,8 @@ def add_opportunity(contact=None, form=None, customer=None, charge_source=None):
         opportunity.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
         opportunity.card_type = brand
         opportunity.stripe_card_last_4 = last4
+    elif form["stripe_payment_type"] == "bank_account" and charge_source is not None:
+        opportunity.stripe_bank_account = charge_source["id"]
 
     opportunity.stripe_transaction_fee = calculate_amount_fees(opportunity.amount, opportunity.stripe_payment_type, opportunity.agreed_to_pay_fees)
 
@@ -2035,7 +2124,7 @@ def add_opportunity(contact=None, form=None, customer=None, charge_source=None):
     return opportunity
 
 
-def update_opportunity(contact=None, form=None, customer=None, charge_source=None):
+def update_opportunity(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None):
     """
     This will update a single donation in Salesforce.
     """
@@ -2116,6 +2205,8 @@ def update_opportunity(contact=None, form=None, customer=None, charge_source=Non
         opportunity.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
         opportunity.card_type = brand
         opportunity.stripe_card_last_4 = last4
+    elif form["stripe_payment_type"] == "bank_account" and charge_source is not None:
+        opportunity.stripe_bank_account = charge_source["id"]
 
     opportunity.stripe_transaction_fee = calculate_amount_fees(opportunity.amount, opportunity.stripe_payment_type, opportunity.agreed_to_pay_fees)
 
@@ -2123,7 +2214,7 @@ def update_opportunity(contact=None, form=None, customer=None, charge_source=Non
     return opportunity
 
 
-def add_recurring_donation(contact=None, form=None, customer=None, charge_source=None):
+def add_recurring_donation(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None):
     """
     This will add a recurring donation in Salesforce.
     """
@@ -2197,15 +2288,16 @@ def add_recurring_donation(contact=None, form=None, customer=None, charge_source
     if rdo.campaign == "":
         rdo.campaign = app.config["DEFAULT_CAMPAIGN_RECURRING"]
 
-    if form["stripe_payment_type"] == "card":
-        apply_card_details(rdo=rdo, customer=customer, charge_source=charge_source)
-
+    if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":        
+        apply_card_details(rdo=rdo, customer=customer, payment_method=payment_method, charge_source=charge_source)
+    elif form["stripe_payment_type"] == "bank_account" and charge_source is not None:
+        rdo.stripe_bank_account = charge_source["id"]
     rdo.save()
 
     return rdo
 
 
-def update_recurring_donation(contact=None, form=None, customer=None, charge_source=None):
+def update_recurring_donation(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None):
     """
     This will update a recurring donation in Salesforce.
     """
@@ -2306,8 +2398,10 @@ def update_recurring_donation(contact=None, form=None, customer=None, charge_sou
 
     rdo.stripe_transaction_fee = calculate_amount_fees(rdo.amount, rdo.stripe_payment_type, rdo.agreed_to_pay_fees)
 
-    if form["stripe_payment_type"] == "card":
+    if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":
         apply_card_details(rdo=rdo, customer=customer, charge_source=charge_source)
+    elif form["stripe_payment_type"] == "bank_account" and charge_source is not None:
+        rdo.stripe_bank_account = charge_source["id"]
 
     rdo.save()
 
