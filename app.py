@@ -574,6 +574,8 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         payment_method_id = form_data["payment_method_id"]
     elif form_data.get("bankToken",""):
         bank_token = form_data["bankToken"]
+    elif form_data.get("stripeToken", ""):
+        source_token = form_data["stripeToken"]
 
     if customer_id is "": # this is a new customer
         app.logger.debug("----Creating new Stripe customer...")
@@ -592,6 +594,11 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
                 customer = stripe.Customer.create(
                     email=email,
                     source=bank_token
+                )
+            elif source_token is not None:
+                customer = stripe.Customer.create(
+                    email=email,
+                    source=source_token
                 )
             app.logger.info(customer)
         except stripe.error.CardError as e: # Stripe returned a card error
@@ -614,13 +621,14 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         # currently it is always a hidden field; we might consider adding it as a choice for users.
         try:
             if update_default_source is not "":
-                app.logger.info(f"----Update default source for customer: ID {customer_id}. token is {source_token}")
+                app.logger.info(f"----Add new default source for customer: ID {customer_id}.")
                 customer = stripe.Customer.modify(
                     customer_id,
                     email=email,
                     source=source_token
                 )
             else:
+                app.logger.info(f"----Add new source for customer: ID {customer_id}")
                 charge_source = customer.sources.create(source=source_token)
         except stripe.error.CardError as e: # Stripe returned a card error
             body = e.json_body
