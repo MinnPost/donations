@@ -209,6 +209,7 @@ def charge(opportunity):
                     payment_method=payment_method,
                     confirmation_method='manual',
                     confirm=True,
+                    setup_future_usage='off_session',
                 )
             else:
                 charge = stripe.Charge.create(
