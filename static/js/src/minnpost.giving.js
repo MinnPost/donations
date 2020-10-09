@@ -1161,10 +1161,10 @@
           this.stripeErrorDisplay(error, stripeErrorSelector, this.element, this.options );
         }
         if (error.field == 'recaptcha') {
-          $(this.options.pay_button_selector).before('<p class="a-form-caption a-recaptcha-error">' + message + '</p>')
+          $(this.options.pay_button_selector).before('<p class="a-form-caption a-validation-error a-recaptcha-error">' + message + '</p>')
         }
         if (error.type == 'invalid_request_error') {
-          $(this.options.pay_button_selector).before('<p class="error error-invalid-request">' + error.message + '</p>')
+          $(this.options.pay_button_selector).before('<p class="a-form-caption a-validation-error">' + error.message + '</p>')
         }
       }
     }, // displayErrorMessage
