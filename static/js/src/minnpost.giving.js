@@ -925,9 +925,8 @@
             // finally, get a payment method from stripe, and try to charge it if it is not ach
             that.createPaymentMethod(that.cardNumberElement, billingDetails);
           } else {
-            console.log('we have a bank token. the value is ' + $('#bankToken').val() );
             // if it is ach, we already have a token so submit the form
-            // todo: see if we can delete the token from this call
+            // todo: upgrade the plaid integration
             that.bankTokenHandler( $('input[name="bankToken"]').val(), 'bank_account' );
           }
         } else {
