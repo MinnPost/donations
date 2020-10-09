@@ -8,6 +8,7 @@ from util import send_slack_message
 import stripe
 
 stripe.api_key = STRIPE_KEYS["secret_key"]
+stripe.api_version = "2020-08-27"
 
 TWOPLACES = Decimal(10) ** -2  # same as Decimal('0.01')
 
@@ -171,9 +172,14 @@ def charge(opportunity):
         opportunity.stage_name = "In Process"
         opportunity.stripe_error_message = ""
         opportunity.save()
+        
+        payment_method = None
+        payment_intent = None
+        charge_source = None
+        charge = None
 
         if opportunity.stripe_card is not None:
-            charge_source = opportunity.stripe_card
+            payment_method = opportunity.stripe_card
         elif opportunity.stripe_bank_account is not None:
             charge_source = opportunity.stripe_bank_account
         else:
@@ -189,19 +195,36 @@ def charge(opportunity):
             shipping_details = None
 
         try:
-            charge = stripe.Charge.create(
-                customer=opportunity.stripe_customer_id,
-                amount=int(amount * 100),
-                currency="usd",
-                description=generate_stripe_description(opportunity),
-                metadata={
-                    "opportunity_id": opportunity.id,
-                    "account_id": opportunity.account_id,
-                    "source": opportunity.referring_page,
-                },
-                shipping=shipping_details,
-                source=charge_source,
-            )
+            if payment_method is not None:
+                payment_intent = stripe.PaymentIntent.create(
+                    customer=opportunity.stripe_customer_id,
+                    amount=int(amount * 100),
+                    currency="usd",
+                    description=generate_stripe_description(opportunity),
+                    metadata={
+                        "opportunity_id": opportunity.id,
+                        "account_id": opportunity.account_id,
+                        "source": opportunity.referring_page,
+                    },
+                    payment_method=payment_method,
+                    confirmation_method='manual',
+                    confirm=True,
+                    setup_future_usage='off_session',
+                )
+            else:
+                charge = stripe.Charge.create(
+                    customer=opportunity.stripe_customer_id,
+                    amount=int(amount * 100),
+                    currency="usd",
+                    description=generate_stripe_description(opportunity),
+                    metadata={
+                        "opportunity_id": opportunity.id,
+                        "account_id": opportunity.account_id,
+                        "source": opportunity.referring_page,
+                    },
+                    shipping=shipping_details,
+                    source=charge_source,
+                )
         except Exception as e:
             logging.info(f"Error charging card: {type(e)}")
             if isinstance(e, stripe.error.StripeError):
@@ -224,10 +247,7 @@ def charge(opportunity):
                 reason = "unknown failure"
 
             opportunity.stripe_error_message = reason
-
-        if charge.status != "succeeded" and charge.status != "pending":
             opportunity.stage_name = "Failed"
-            opportunity.stripe_error_message = "Error: Unknown. Check logs"
             opportunity.save()
             logging.debug(
                 f"Opportunity set to '{opportunity.stage_name}' with reason: {opportunity.stripe_error_message}"
@@ -238,22 +258,37 @@ def charge(opportunity):
         logging.debug(
             f"---- Checking transaction {opportunity.stripe_transaction_id}"
         )
-        charge = stripe.Charge.retrieve(opportunity.stripe_transaction_id)
+        if payment_method is not None:
+            payment_intent = stripe.PaymentIntent.retrieve(
+                opportunity.stripe_transaction_id,
+            )
+        elif charge_source is not None:
+            charge = stripe.Charge.retrieve(opportunity.stripe_transaction_id)
 
+    if (payment_intent and payment_intent.status != 'succeeded') or (charge and charge.status != "succeeded" and charge.status != "pending"):
+        logging.error("Charge failed. Check Stripe logs.")
+        raise ChargeException(opportunity, "charge failed")
+    
     # this is either pending or finished
-    if charge.status == "pending":
+    if charge and charge.status == "pending":
         logging.info(f"ACH charge pending. Check at intervals to see if it processes.")
         opportunity.stage_name = "ACH Pending"
         opportunity.stripe_transaction_id = charge.id
         opportunity.save()
 
-    # charge was successful
-    if charge.source.object != "bank_account":
+    # payment was successful
+    if payment_intent:
+        opportunity.stripe_card = payment_intent.payment_method
+        opportunity.stripe_transaction_id = payment_intent.id
+        opportunity.stage_name = "Closed Won"
+        opportunity.save()
+    elif charge and charge.source.object == "bank_account":
+        opportunity.stripe_bank_account = charge.source.id
+        opportunity.stage_name = "Closed Won"
+        opportunity.save()
+    elif charge:
         opportunity.stripe_card = charge.source.id
         opportunity.stripe_transaction_id = charge.id
         opportunity.stage_name = "Closed Won"
         opportunity.save()
-    else:
-        opportunity.stripe_bank_account = charge.source.id
-        opportunity.stage_name = "Closed Won"
-        opportunity.save()
+    

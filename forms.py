@@ -94,6 +94,7 @@ class BaseForm(FlaskForm):
     stripe_payment_type = HiddenField(u"Stripe Payment Type", [validators.Optional()])
     stripeToken = HiddenField(u"Stripe token", [validators.Optional()])
     bankToken = HiddenField(u"Bank token", [validators.Optional()])
+    payment_method_id = HiddenField(u"Payment Method ID", [validators.Optional()])
     recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
     update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
 
@@ -120,6 +121,7 @@ class BaseForm(FlaskForm):
         u"Last name", [validators.required(message="Your last name is required.")]
     )
     
+    # billing
     billing_street = StringField(
         u"Street Address", [validators.Optional()]
     )
@@ -130,7 +132,7 @@ class BaseForm(FlaskForm):
         u"State", [validators.Optional()]
     )
     billing_zip = StringField(
-        u"ZIP Code", [validators.Length(max=5)]
+        u"ZIP Code", [validators.Optional()]
     )
     billing_country = StringField(
         u"Country", [validators.Optional()]
@@ -178,6 +180,23 @@ class DonateForm(BaseForm):
         u"New York Times subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
     )
 
+    # billing
+    billing_street = StringField(
+        u"Street Address", [validators.required(message="Your billing street address is required.")]
+    )
+    billing_city = StringField(
+        u"City", [validators.required(message="Your billing city is required.")]
+    )
+    billing_state = StringField(
+        u"State", [validators.required(message="Your billing state is required.")]
+    )
+    billing_zip = StringField(
+        u"ZIP Code", [validators.required(message="Your billing zip code is required.")]
+    )
+    billing_country = StringField(
+        u"Country", [validators.Optional()]
+    )
+
     # shipping
     shipping_name = StringField(
         u"Ship to", [validators.Optional()]
@@ -192,7 +211,7 @@ class DonateForm(BaseForm):
         u"State", [validators.Optional()]
     )
     shipping_zip = StringField(
-        u"ZIP Code", [validators.Length(max=5)]
+        u"ZIP Code", [validators.Optional()]
     )
     shipping_country = StringField(
         u"Country", [validators.Optional()]
@@ -252,18 +271,21 @@ class AdvertisingForm(MinimalForm):
 
 
 # used for minnpost-cancel
-class CancelForm(MinimalForm):
+class CancelForm(BaseForm):
+    path = HiddenField("Path", [validators.Optional()])
+    folder = HiddenField("Folder", [validators.Optional()])
+
+    stage_name = HiddenField("Stage Name", [validators.Optional()])
+    close_date = HiddenField("Close Date", [validators.Optional()])
+    opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])
+    recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()])
+
     email_user_when_canceled = HiddenField("Email user when canceled?", [validators.Optional()])
     open_ended_status = HiddenField("Open Ended Status", [validators.Optional()])
 
 
 # used for post-donate form with newsletter/testimonial options
 class FinishForm(BaseForm):
-    class Meta:
-        def bind_field(self, form, unbound_field, options):
-            filters = unbound_field.kwargs.get("filters", [])
-            filters.append(strip_whitespace)
-            return unbound_field.bind(form=form, filters=filters, **options)
 
     path = HiddenField("Path", [validators.Optional()])
     folder = HiddenField("Folder", [validators.Optional()])

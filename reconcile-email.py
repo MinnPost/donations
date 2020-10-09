@@ -9,6 +9,7 @@ from salesforce_bulk import SalesforceBulk
 from simple_salesforce import Salesforce
 
 stripe.api_key = STRIPE_KEYS["secret_key"]
+stripe.api_version = "2020-08-27"
 
 # get Stripe emails
 customers = stripe.Customer.list(limit=100)

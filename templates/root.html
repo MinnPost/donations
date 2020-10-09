@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<form action="/give/" method="get" class="m-form m-form-standalone support--donate" id="donate">
+<form action="/give/" method="get" class="m-form m-form-standalone support--donate" id="root">
 	{% if customer_id != '' %}
 	<input type="hidden" name="customer_id" id="edit-customer_id" value="{{ customer_id }}">
 	{% endif %}
