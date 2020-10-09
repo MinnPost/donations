@@ -2146,23 +2146,12 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
         raise Exception("opportunity_id must have a value")
     
     # fields that can be updated by a user should go here
-    first_name = form.get("first_name", "")
-    last_name = form.get("last_name", "")
     amount = form.get("amount", 0)
-    close_date = form.get("close_date", today)
-    stage_name = form.get("stage_name", "Pledged")
-
-    opportunity.name = (
-        f"{first_name} {last_name} {opportunity.type} {close_date}"
-    )
-    
-    # minnpost custom fields
     agreed_to_pay_fees = form.get("pay_fees", False)
     anonymous = form.get("anonymous", False)
-    client_organization = form.get("client_organization", None)
-    credited_as = form.get("display_as", None)
-    donor_first_name = first_name
-    donor_last_name = last_name
+    credited_as = form.get("display_as", "")
+    donor_first_name = form.get("first_name", "")
+    donor_last_name = form.get("last_name", "")
     donor_email = form.get("email", "")
     donor_address_one = form.get("billing_street", "")
     donor_city = form.get("billing_city", "")
@@ -2171,16 +2160,64 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     donor_country = form.get("billing_country", "")
     email_notify = form.get("email_notify", "")
     email_user_when_canceled = form.get("email_user_when_canceled", False)
-    fair_market_value = form.get("fair_market_value", 0)
-    referring_page = form.get("source", None)
-    shipping_name = form.get("shipping_name", "")
     stripe_customer_id = customer["id"]
     stripe_payment_type = form.get("stripe_payment_type", "")
-
-    if subtype == 'Sales: Advertising' and fair_market_value == "":
-        fair_market_value = amount
-
     lock_key = form.get("lock_key", "")
+
+    close_date = form.get("close_date", today)
+    stage_name = form.get("stage_name", "Pledged")
+
+    opportunity.name = (
+        f"{donor_first_name} {donor_last_name} {opportunity.type} {close_date}"
+    )
+
+    # the actual opportunity values
+    if amount != 0:
+        opportunity.amount = amount
+
+    # always change these checkbox values based on the user's input
+    opportunity.agreed_to_pay_fees = agreed_to_pay_fees
+    opportunity.anonymous = anonymous
+    opportunity.email_user_when_canceled = email_user_when_canceled
+
+    if credited_as != "":
+        opportunity.credited_as = credited_as
+
+    if donor_first_name != "":
+        opportunity.donor_first_name = donor_first_name
+
+    if donor_last_name != "":
+        opportunity.donor_last_name = donor_last_name
+
+    if donor_address_one != "":
+        opportunity.donor_address_one = donor_address_one
+
+    if donor_city != "":
+        opportunity.donor_city = donor_city
+
+    if donor_state != "":
+        opportunity.donor_state = donor_state
+
+    if donor_zip != "":
+        opportunity.donor_zip = donor_zip
+
+    if donor_country != "":
+        opportunity.donor_country = donor_country
+
+    if email_notify != "":
+        opportunity.email_notify = email_notify
+
+    if stripe_customer_id != "":
+        opportunity.stripe_customer_id = stripe_customer_id
+
+    if stripe_payment_type != "":
+        opportunity.stripe_payment_type = stripe_payment_type
+
+    if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == "":
+        opportunity.fair_market_value = opportunity.amount
+
+    if lock_key != "":
+        opportunity.lock_key = lock_key
     
     if stripe_payment_type == "card" or stripe_payment_type == "amex":
         # stripe payment method handling
