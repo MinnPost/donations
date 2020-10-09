@@ -2377,6 +2377,9 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
     if donor_last_name != "":
         rdo.donor_last_name = donor_last_name
 
+    if donor_address_one != "":
+        rdo.donor_address_one = donor_address_one
+    
     if donor_city != "":
         rdo.donor_city = donor_city
 
