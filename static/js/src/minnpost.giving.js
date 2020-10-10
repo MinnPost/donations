@@ -305,17 +305,6 @@
         var additional_amount = $(this.options.additional_amount_field).val();
         total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10);
       }
-
-      // update the payment request
-      if (this.paymentRequest && total_amount) {
-        this.paymentRequest.update({
-          total: {
-            label: "MinnPost Donation",
-            amount: total_amount
-          }
-        });
-      }
-
       return total_amount;
     }, // getTotalAmount
 
@@ -384,6 +373,17 @@
         full_amount = total_amount;
       }
       $(that.options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
+
+      // update the payment request
+      if (this.paymentRequest && full_amount) {
+        this.paymentRequest.update({
+          total: {
+            label: "MinnPost Donation",
+            amount: full_amount * 100
+          }
+        });
+      }
+
     }, // creditCardFeeCheckbox
 
     donateAnonymously: function(element, options) {
@@ -667,6 +667,9 @@
         } else {
           supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(event.paymentMethod.id));
         }
+
+        that.paymentRequestHandler();
+
       });
 
     }, // paymentRequestButton
@@ -982,8 +985,7 @@
             });
           }
 
-          if ($('input[name="payment_method_id"]').length == 0) { // there's already a payment method id
-          } else if ($('input[name="bankToken"]').length == 0) {
+          if ($('input[name="bankToken"]').length == 0) {
             // finally, get a payment method from stripe, and try to charge it if it is not ach
             that.createPaymentMethod(that.cardNumberElement, billingDetails);
           } else {
@@ -1151,6 +1153,8 @@
       var that = this;
       var supportform = $(this.options.donate_form_selector);
       var ajax_url = window.location.pathname;
+
+      // we should do some of the validation stuff here too though.
 
       // Submit the form
       // the way it works currently is the form submits an ajax request to itself
