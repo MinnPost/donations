@@ -149,8 +149,8 @@
         this.outsideUnitedStates(this.element, this.options); // outside US
         this.shippingAddress(this.element, this.options); // shipping address
         this.allowMinnpostAccount(this.element, this.options); // option for creating minnpost account
+        this.paymentRequestButton(this.element, this.options); // create paymentrequest button
         this.choosePaymentMethod(this.element, this.options); // switch between card and ach
-        this.paymentRequestElement(this.element, this.options); // add paymentRequest element
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
         this.achFields(this.element, this.options); // do stuff for ach payments, if applicable to the form
         this.validateAndSubmit(this.element, this.options); // validate and submit the form
@@ -305,6 +305,17 @@
         var additional_amount = $(this.options.additional_amount_field).val();
         total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10);
       }
+
+      // update the payment request
+      if (this.paymentRequest && total_amount) {
+        this.paymentRequest.update({
+          total: {
+            label: "MinnPost Donation",
+            amount: total_amount
+          }
+        });
+      }
+
       return total_amount;
     }, // getTotalAmount
 
@@ -612,6 +623,31 @@
       });
     }, // checkMinnpostAccount
 
+    paymentRequestButton: function(element, options) {
+      var that = this;
+      var total_amount = that.getTotalAmount();
+      that.paymentRequest = that.stripe.paymentRequest({
+        country: 'US',
+        currency: 'usd',
+        total: {
+          label: 'MinnPost Donation',
+          amount: total_amount * 100,
+        },
+      });
+      that.prButton = that.elements.create('paymentRequestButton', {
+        paymentRequest: that.paymentRequest,
+      });
+      
+      // Check the availability of the Payment Request API first.
+      that.paymentRequest.canMakePayment().then(function(result) {
+        if (result) {
+          that.prButton.mount('#payment-request-button');
+        } else {
+          document.getElementById('payment-request-button').style.display = 'none';
+        }
+      });
+    }, // paymentRequestButton
+
     choosePaymentMethod: function(element, options) {
 
       var that = this;
@@ -631,53 +667,6 @@
 
       }
     }, // choosePaymentMethod
-
-    paymentRequestElement: function(element, options) {
-      var that = this;
-      var amount = that.options.amount;
-      /**
-       * Payment Request Element
-       */
-      var paymentRequest = that.stripe.paymentRequest({
-        country: "US",
-        currency: "usd",
-        total: {
-          amount: amount,
-          label: "MinnPost"
-        },
-        requestPayerName: true,
-        requestPayerEmail: true
-        /*requestShipping: true,
-        shippingOptions: [
-          {
-            id: "free-shipping",
-            label: "Free shipping",
-            detail: "Arrives in 5 to 7 days",
-            amount: 0
-          }
-        ]*/
-      });
-
-      that.prButton = that.elements.create('paymentRequestButton', {
-        paymentRequest: paymentRequest,
-      });
-
-      // Check the availability of the Payment Request API first.
-      paymentRequest.canMakePayment().then(function(result) {
-        if (result) {
-          that.prButton.mount('#payment-request-button');
-        } else {
-          document.getElementById('payment-request-button').style.display = 'none';
-        }
-      });
-
-      paymentRequest.on('token', function(event) {
-
-        that.stripeTokenHandler(event, 'payment_request');
-        
-      });
-
-    }, // paymentRequestMethod
 
     setupPaymentMethod: function(element_id, element_value) {
       var stripe_payment_type = this.setStripePaymentType(element_value);
@@ -911,6 +900,36 @@
       this.scrollToFormError();
 
       var that = this;
+
+      that.paymentRequest.on('paymentmethod', function(event) {
+
+        // Send paymentMethod.id to server
+        var supportform = $(that.options.donate_form_selector);
+        var ajax_url = window.location.pathname;
+        var tokenFieldName = 'payment_method_id';
+        var tokenField = 'input[name="' + tokenFieldName + '"]';
+
+        // Insert the payment method ID into the form so it gets submitted to the server
+        if ($(tokenField).length > 0) {
+          $(tokenField).val(event.paymentMethod.id);
+        } else {
+          supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(event.paymentMethod.id));
+        }
+
+        fetch(ajax_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: $(supportform).serialize()
+        }).then(function(response) {
+          // Handle server response (see Step 3)
+          response.json().then(function(json) {
+            that.handleServerResponse(json);
+          })
+        });
+      });
+
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
 
@@ -1122,20 +1141,6 @@
         type: 'POST'
       })
       .done(function(response) {
-
-        if ( type === 'payment_request' ) {
-          if (response.ok) {
-            // Report to the browser that the payment was successful, prompting
-            // it to close the browser payment interface.
-            token.complete('success');
-          } else {
-            // Report to the browser that the payment failed, prompting it to
-            // re-show the payment interface, or show an error message and close
-            // the payment interface.
-            token.complete('fail');
-          }
-        }
-
         if (typeof response.errors !== 'undefined') {
           that.handleServerError(response);
         } else {
