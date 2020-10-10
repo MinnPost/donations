@@ -25,7 +25,7 @@
     'donate_form_selector': '#donate',
     'confirm_form_selector' : '#confirm',
     'finish_section_selector' : '#panel--confirmation',
-    'pay_cc_processing_selector' : 'input[id="pay-fees"]',
+    'pay_cc_processing_selector' : 'input[name="pay_fees"]',
     'fee_amount' : '.processing-amount',
     'level_amount_selector' : '#panel--pay .amount .level-amount', // we can maybe get rid of this
     'original_amount_selector' : '[name="amount"]',
@@ -641,17 +641,32 @@
       // Check the availability of the Payment Request API first.
       that.paymentRequest.canMakePayment().then(function(result) {
         if (result) {
-          $('.m-form-group-payment, .credit-card-group').hide();
+          $('.m-pay-without-payment-request').hide();
           that.prButton.mount('#payment-request-button');
         } else {
-          $('.m-show-payment-request').hide();
+          $('.o-pay-with-payment-request').hide();
         }
       });
 
       $('.decline-apple-pay a').click(function(event) {
         event.preventDefault();
         $(this).hide();
-        $('.m-form-group-payment, .credit-card-group').show();
+        $('.m-pay-without-payment-request').show();
+        $('.o-pay-with-payment-request .m-form-actions-pay-fees').hide();
+      });
+
+      that.paymentRequest.on('paymentmethod', function(event) {
+        // Send paymentMethod.id to server
+        var supportform = $(that.options.donate_form_selector);
+        var tokenFieldName = 'payment_method_id';
+        var tokenField = 'input[name="' + tokenFieldName + '"]';
+
+        // Insert the payment method ID into the form so it gets submitted to the server
+        if ($(tokenField).length > 0) {
+          $(tokenField).val(event.paymentMethod.id);
+        } else {
+          supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(event.paymentMethod.id));
+        }
       });
 
     }, // paymentRequestButton
@@ -909,35 +924,6 @@
 
       var that = this;
 
-      that.paymentRequest.on('paymentmethod', function(event) {
-
-        // Send paymentMethod.id to server
-        var supportform = $(that.options.donate_form_selector);
-        var ajax_url = window.location.pathname;
-        var tokenFieldName = 'payment_method_id';
-        var tokenField = 'input[name="' + tokenFieldName + '"]';
-
-        // Insert the payment method ID into the form so it gets submitted to the server
-        if ($(tokenField).length > 0) {
-          $(tokenField).val(event.paymentMethod.id);
-        } else {
-          supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(event.paymentMethod.id));
-        }
-
-        fetch(ajax_url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: $(supportform).serialize()
-        }).then(function(response) {
-          // Handle server response (see Step 3)
-          response.json().then(function(json) {
-            that.handleServerResponse(json);
-          })
-        });
-      });
-
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
 
@@ -996,7 +982,8 @@
             });
           }
 
-          if ($('input[name="bankToken"]').length == 0) {
+          if ($('input[name="payment_method_id"]').length == 0) { // there's already a payment method id
+          } else if ($('input[name="bankToken"]').length == 0) {
             // finally, get a payment method from stripe, and try to charge it if it is not ach
             that.createPaymentMethod(that.cardNumberElement, billingDetails);
           } else {
@@ -1158,7 +1145,33 @@
       .error(function(response) {
         that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       });
-    },
+    }, // bankTokenHandler
+
+    paymentRequestHandler: function() {
+      var that = this;
+      var supportform = $(this.options.donate_form_selector);
+      var ajax_url = window.location.pathname;
+
+      // Submit the form
+      // the way it works currently is the form submits an ajax request to itself
+      // then it submits a post request to the form's action url
+      $.ajax({
+        url: ajax_url,
+        cache: false,
+        data: $(supportform).serialize(),
+        type: 'POST'
+      })
+      .done(function(response) {
+        if (typeof response.errors !== 'undefined') {
+          that.handleServerError(response);
+        } else {
+          supportform.get(0).submit(); // continue submitting the form if the ajax was successful
+        }
+      })
+      .error(function(response) {
+        that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
+      });
+    }, // paymentRequestHandler
 
     handleServerResponse: function(response) {
       var supportform = $(this.options.donate_form_selector);
