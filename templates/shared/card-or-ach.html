@@ -1,6 +1,11 @@
-<div id="payment-request-button">
-  <!-- A Stripe Element will be inserted here. -->
+{% if show_payment_request %}
+<div class="m-form-item m-show-payment-request">
+  <div id="payment-request-button">
+    <!-- A Stripe Element will be inserted here. -->
+  </div>
+  <p class="a-form-caption decline-apple-pay"><a href="#">Or enter payment information manually</a></p>
 </div>
+{% endif %}
 {% if not show_ach or show_ach is sameas false %}
 <fieldset class="credit-card-group">
   <div class="m-form-item" id="cc-number-wrapper">
@@ -26,10 +31,10 @@
        </label>
     </div>
   </div>
-  <div class="m-form-actions">
-    <label class="a-form-caption"><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees is sameas true %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label>
-  </div>
 </fieldset>
+<div class="m-form-actions">
+  <label class="a-form-caption"><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees is sameas true %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label>
+</div>
 {% else %}
 <fieldset class="m-form-group m-form-group-payment">
   <div class="m-form-item m-form-item-payment-method m-form-item-two-radios" id="choose-payment-method">
@@ -68,8 +73,8 @@
       <p><a href="#" id="authorize-ach">Sign in to your bank account</a></p>
     </div>
   </div>
-  <div class="m-form-actions">
-    <label class="a-form-caption"><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees is sameas true %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label>
-  </div>
 </fieldset>
+<div class="m-form-actions">
+  <label class="a-form-caption"><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees is sameas true %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label>
+</div>
 {% endif %}

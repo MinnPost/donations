@@ -956,6 +956,9 @@ def give_form():
     else:
         show_ach = app.config["SHOW_ACH"]
 
+    # show apple pay
+    show_payment_request = app.config["SHOW_PAYMENT_REQUEST"]
+
     button = "Place this Donation"
 
     # make a uuid for redis and lock it
@@ -976,7 +979,7 @@ def give_form():
         atlantic_subscription=atlantic_subscription_form, atlantic_id=atlantic_id,
         nyt_subscription=nyt_subscription_form,
         decline_benefits=decline_benefits,
-        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
@@ -1228,6 +1231,9 @@ def advertising_form():
     else:
         show_ach = app.config["SHOW_ACH"]
 
+    # show apple pay
+    show_payment_request = app.config["SHOW_PAYMENT_REQUEST"]
+
     return render_template(
         template,
         title=title,
@@ -1243,7 +1249,7 @@ def advertising_form():
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
         show_invoice=show_invoice, show_organization=show_organization,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -1570,6 +1576,9 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
     else:
         show_ach = app.config["SHOW_ACH"]
 
+    # show apple pay
+    show_payment_request = app.config["SHOW_PAYMENT_REQUEST"]
+
     return render_template(
         template,
         title=title,
@@ -1584,7 +1593,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label, anonymous_label=anonymous_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -1776,6 +1785,9 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     else:
         show_ach = app.config["SHOW_ACH"]
 
+    # show apple pay
+    show_payment_request = app.config["SHOW_PAYMENT_REQUEST"]
+
     # fees
     fees = calculate_amount_fees(amount, "card")
 
@@ -1804,7 +1816,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
         description=description, opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         update_default_source=update_default_source, stage_name=stage_name, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         lock_key=lock_key, path=path,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
