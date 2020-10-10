@@ -641,11 +641,19 @@
       // Check the availability of the Payment Request API first.
       that.paymentRequest.canMakePayment().then(function(result) {
         if (result) {
+          $('.m-form-group-payment, .credit-card-group').hide();
           that.prButton.mount('#payment-request-button');
         } else {
-          document.getElementById('payment-request-button').style.display = 'none';
+          $('.m-show-payment-request').hide();
         }
       });
+
+      $('.decline-apple-pay a').click(function(event) {
+        event.preventDefault();
+        $(this).hide();
+        $('.m-form-group-payment, .credit-card-group').show();
+      });
+
     }, // paymentRequestButton
 
     choosePaymentMethod: function(element, options) {
