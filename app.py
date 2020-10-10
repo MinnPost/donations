@@ -45,7 +45,7 @@ from pprint import pformat
 
 from pytz import timezone
 
-import celery
+from celery import Celery
 import stripe
 from plaid import Client
 from plaid.errors import APIError, ItemError
@@ -187,6 +187,8 @@ csp = {
 
 
 app = Flask(__name__)
+celery = Celery()
+
 Talisman(
     app,
     content_security_policy={},
