@@ -47,8 +47,7 @@ from pytz import timezone
 
 from celery import Celery
 import stripe
-from plaid import Client
-from plaid.errors import APIError, ItemError
+import plaid
 from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
@@ -1310,6 +1309,32 @@ def pledge_payment_form():
     hide_display_name       = False
     button                  = "Finish Your Pledge"
     return minimal_form("minimal", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
+
+
+@app.route("/create_link_token/")
+def create_link_token():
+    plaid_env = app.config["PLAID_ENVIRONMENT"]
+    client = plaid.Client(
+        client_id=app.config["PLAID_CLIENT_ID"],
+        secret=app.config["PLAID_SECRET"],
+        environment=plaid_env,
+        api_version='2019-05-29'
+    )
+    client_user_id = f"MinnPost {plaid_env}"
+    # 2. Create a link_token for the given user
+    response = client.LinkToken.create({
+        'user': {
+            'client_user_id': client_user_id,
+        },
+        'products': ["transactions"],
+        'client_name': "MinnPost",
+        'country_codes': ['US'],
+        'language': 'en',
+        'webhook': 'https://sample.webhook.com',
+    })
+    link_token = response['link_token']
+    # 3. Send the data to the client
+    return jsonify(response)
 
 
 ## this is a minnpost url. use this when sending a request to plaid
