@@ -2073,7 +2073,7 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.stripe_payment_type = form.get("stripe_payment_type", "")
     opportunity.subtype = form.get("opportunity_subtype", "Donation: Individual")
 
-    if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == "":
+    if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == 0:
         opportunity.fair_market_value = opportunity.amount
 
     # if there is an honor/memory radio but no value, clear the radio out
