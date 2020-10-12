@@ -1433,7 +1433,7 @@ def thanks():
     )
 
 
-@app.route("/finish/", methods=["GET", "POST"])
+@app.route("/finish/", methods=["POST"])
 def finish():
     template    = "finish.html"
     title       = "Thank you for supporting MinnPost"
