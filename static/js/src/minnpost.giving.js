@@ -22,6 +22,7 @@
     'plaid_link' : '#authorize-ach',
     'minnpost_root' : 'https://www.minnpost.com',
     'progress_selector' : '.m-support-progress',
+    'form_selector' : '.m-form',
     'donate_form_selector': '#donate',
     'confirm_form_selector' : '#confirm',
     'finish_section_selector' : '#panel--confirmation',
@@ -153,7 +154,8 @@
         this.choosePaymentMethod(this.element, this.options); // switch between card and ach
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
         this.achFields(this.element, this.options); // do stuff for ach payments, if applicable to the form
-        this.validateAndSubmit(this.element, this.options); // validate and submit the form
+        this.validateSetup(this.element, this.options); // setup how validation errors work
+        this.formSetup(this.element, this.options); // validate and submit the form
       }
 
       if ($(this.options.confirm_form_selector).length > 0) {
@@ -378,7 +380,7 @@
       if (this.paymentRequest && full_amount) {
         this.paymentRequest.update({
           total: {
-            label: "MinnPost Donation",
+            label: "MinnPost",
             amount: full_amount * 100
           }
         });
@@ -630,12 +632,26 @@
         country: 'US',
         currency: 'usd',
         total: {
-          label: 'MinnPost Donation',
+          label: 'MinnPost',
           amount: total_amount * 100,
         },
       });
       that.prButton = that.elements.create('paymentRequestButton', {
         paymentRequest: that.paymentRequest,
+        style: {
+          paymentRequestButton: {
+            type: 'donate',
+            // One of 'default', 'book', 'buy', or 'donate'
+            // Defaults to 'default'
+      
+            theme: 'dark',
+            // One of 'dark', 'light', or 'light-outline'
+            // Defaults to 'dark'
+      
+            height: '48px'
+            // Defaults to '40px'. The width is always '100%'.
+          },
+        },
       });
       
       // Check the availability of the Payment Request API first.
@@ -655,7 +671,22 @@
         $('.o-pay-with-payment-request .m-form-actions-pay-fees').hide();
       });
 
+      that.prButton.on('click', function(event) {
+
+        // Send paymentMethod.id to server
+        var supportform = $(that.options.donate_form_selector);
+
+        console.log('this valid is ' + supportform.get(0).reportValidity() );
+
+        // check validation of form
+        if (!supportform.get(0).reportValidity()) {
+          event.preventDefault();
+          return;
+        }
+      });
+
       that.paymentRequest.on('paymentmethod', function(event) {
+
         // Send paymentMethod.id to server
         var supportform = $(that.options.donate_form_selector);
         var tokenFieldName = 'payment_method_id';
@@ -668,7 +699,7 @@
           supportform.append($('<input type=\"hidden\" name="' + tokenFieldName + '">').val(event.paymentMethod.id));
         }
 
-        that.paymentRequestHandler();
+        that.formProcessor(that, 'paymentRequest');
 
       });
 
@@ -880,8 +911,21 @@
       }
     }, // buttonStatus
 
-    scrollToFormError: function() {
-      var form = $( '.m-form' );
+    validateSetup: function(element, options) {
+      var forms = document.querySelectorAll(options.form_selector);
+      forms.forEach( function ( form ) {
+        ValidForm( form, {
+          validationErrorParentClass: 'm-has-validation-error',
+          validationErrorClass: 'a-validation-error',
+          invalidClass: 'a-error',
+          errorPlacement: 'after'
+        } )
+      } );
+      this.scrollToFormError(options);
+    }, // validateSetup
+
+    scrollToFormError: function(options) {
+      var form = $( options.form_selector );
       // listen for `invalid` events on all form inputs
       form.find( ':input' ).on( 'invalid', function () {
           var input = $( this );
@@ -911,95 +955,48 @@
       } );
     }, // scrollToFormError
 
-    validateAndSubmit: function(element, options) {
-
-      var forms = document.querySelectorAll('.m-form');
-      forms.forEach( function ( form ) {
-        ValidForm( form, {
-          validationErrorParentClass: 'm-has-validation-error',
-          validationErrorClass: 'a-validation-error',
-          invalidClass: 'a-error',
-          errorPlacement: 'after'
-        } )
-      } );
-
-      this.scrollToFormError();
-
+    formSetup: function(element, options) {
       var that = this;
 
       $(options.donate_form_selector).submit(function(event) {
         event.preventDefault();
-
-        // validate and submit the form
-        $('.a-validation-error').remove();
-        $('input, label, div', element).removeClass('a-error');
-        $('label', element).removeClass('m-has-validation-error');
-        $(that.options.payment_method_selector, that.element).removeClass('a-error invalid');
-        $('.a-validation-error').remove();
-        var valid = true;
-        var payment_type = $('input[name="stripe_payment_type"]').val();
-        $(that.options.choose_payment + ' input').change(function() {
-          $(that.options.payment_method_selector + ' .a-error').remove(); // remove method error message if it is there
-          $(that.options.payment_method_selector).parent().find('.a-validation-error').remove();
-          // if a payment field changed, reset the button
-          that.buttonStatus(options, $(that.options.donate_form_selector).find('button'), false);
-        });
-
-        if (payment_type === 'bank_account') {
-          if ($('input[name="bankToken"]').length === 0) {
-            valid = false;
-            $(that.options.payment_method_selector).prepend('<p class="error">You are required to enter credit card information, or to authorize MinnPost to charge your bank account, to make a payment.</p>');
-          }
-        }
-
-        if (valid === true) {
-          // 1. set up the button and remove the hidden fields we don't need
-          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), true);
-          var billingDetails = that.generateBillingDetails();
-
-          // 2. create minnpost account if specified
-          if (that.options.create_account === true) {
-            var user = {
-              email: $(that.options.email_field_selector, element).val(),
-              first_name: $(that.options.first_name_field_selector, element).val(),
-              last_name: $(that.options.last_name_field_selector, element).val(),
-              password: $(that.options.password_field_selector, element).val(),
-              city: $(that.options.billing_city_field_selector, element).val(),
-              state: $(that.options.billing_state_field_selector, element).val(),
-              zip: $(that.options.billing_zip_field_selector, element).val(),
-            };
-            $.ajax({
-              method: 'POST',
-              url: that.options.minnpost_root + '/wp-json/user-account-management/v1/create-user',
-              data: user
-            }).done(function( data ) {
-              if (data.status === 'success' && data.reason === 'new user') {
-                // user created - they should receive email
-                // submit the form
-                //supportform.get(0).submit();
-              } else {
-                // user not created
-                // still submit the form
-                //supportform.get(0).submit();
-              }
-            });
-          }
-
-          if ($('input[name="bankToken"]').length == 0) {
-            // finally, get a payment method from stripe, and try to charge it if it is not ach
-            that.createPaymentMethod(that.cardNumberElement, billingDetails);
-          } else {
-            // if it is ach, we already have a token so submit the form
-            // todo: upgrade the plaid integration
-            that.bankTokenHandler( $('input[name="bankToken"]').val(), 'bank_account' );
-          }
-        } else {
-          // this means valid is false
-          that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
-        }
+        that.formProcessor(that, 'submit');
 
       });
-    }, // validateAndSubmit
+    }, // formSetup
+
+    formProcessor: function(that, type) {
+
+      // 1. remove previous errors and reset the button
+      that.resetFormErrors(that.options, that.element);
+
+      // 2. set up the button if it's a form submit
+      if (type === 'submit') {
+        that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), true);
+      }
+
+      // 3. generate billing address details
+      var billingDetails = that.generateBillingDetails();
+
+      // 4. create minnpost user account
+      that.createMinnPostAccount(that.options, that.element);
+
+      // 5. do the charging of card or bank account if it's a form submit
+      // or submit the form if this is a payment request button
+      if (type === 'submit') {
+        var payment_type = $('input[name="stripe_payment_type"]').val();
+        if (payment_type !== 'bank_account') {
+          // finally, get a payment method from stripe, and try to charge it if it is not ach
+          that.createPaymentMethod(that.cardNumberElement, billingDetails);
+        } else {
+          // if it is ach, we already have a token so submit the form
+          // todo: upgrade the plaid integration
+          that.bankTokenHandler( $('input[name="bankToken"]').val(), 'bank_account' );
+        }
+      } else {
+        that.submitFormOnly();
+      }
+    }, // formProcessor
 
     stripeErrorDisplay: function(error, this_selector, element, options) {
       // listen for errors and display/hide error messages
@@ -1026,6 +1023,45 @@
       }
     }, // stripeErrorDisplay
 
+    resetFormErrors: function(options, element) {
+      $('.a-validation-error').remove();
+      $('input, label, div', element).removeClass('a-error');
+      $('label', element).removeClass('m-has-validation-error');
+      $(options.payment_method_selector, element).removeClass('a-error invalid');
+      $('.a-validation-error').remove();
+      
+      $(options.choose_payment + ' input').change(function() {
+        $(options.payment_method_selector + ' .a-error').remove(); // remove method error message if it is there
+        $(options.payment_method_selector).parent().find('.a-validation-error').remove();
+        // if a payment field changed, reset the button
+        buttonStatus(options, $(options.donate_form_selector).find('button'), false);
+      });
+    }, // resetFormErrors
+    
+    createMinnPostAccount: function(options, element) {
+      // 2. create minnpost account if specified
+      if (options.create_account === true) {
+        var user = {
+          email: $(options.email_field_selector, element).val(),
+          first_name: $(options.first_name_field_selector, element).val(),
+          last_name: $(options.last_name_field_selector, element).val(),
+          password: $(options.password_field_selector, element).val(),
+          city: $(options.billing_city_field_selector, element).val(),
+          state: $(options.billing_state_field_selector, element).val(),
+          zip: $(options.billing_zip_field_selector, element).val(),
+        };
+        $.ajax({
+          method: 'POST',
+          url: options.minnpost_root + '/wp-json/user-account-management/v1/create-user',
+          data: user
+        }).done(function( data ) {
+          if (data.status === 'success' && data.reason === 'new user') {
+            // user created - they should receive email
+          }
+        });
+      }
+    }, // createMinnPostAccount
+    
     generateBillingDetails: function() {
       var billingDetails = {};
       var addressDetails = {};
@@ -1122,39 +1158,14 @@
     }, // createPaymentMethod
 
     bankTokenHandler: function(token, type) {
-      var that = this;
-      var supportform = $(this.options.donate_form_selector);
-      var ajax_url = window.location.pathname;
-
       that.setStripePaymentType(type);
-
-      // Submit the form
-      // the way it works currently is the form submits an ajax request to itself
-      // then it submits a post request to the form's action url
-      $.ajax({
-        url: ajax_url,
-        cache: false,
-        data: $(supportform).serialize(),
-        type: 'POST'
-      })
-      .done(function(response) {
-        if (typeof response.errors !== 'undefined') {
-          that.handleServerError(response);
-        } else {
-          supportform.get(0).submit(); // continue submitting the form if the ajax was successful
-        }
-      })
-      .error(function(response) {
-        that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
-      });
+      that.submitFormOnly();
     }, // bankTokenHandler
 
-    paymentRequestHandler: function() {
+    submitFormOnly: function() {
       var that = this;
       var supportform = $(this.options.donate_form_selector);
       var ajax_url = window.location.pathname;
-
-      // we should do some of the validation stuff here too though.
 
       // Submit the form
       // the way it works currently is the form submits an ajax request to itself
@@ -1175,7 +1186,7 @@
       .error(function(response) {
         that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       });
-    }, // paymentRequestHandler
+    }, // submitFormOnly
 
     handleServerResponse: function(response) {
       var supportform = $(this.options.donate_form_selector);
