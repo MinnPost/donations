@@ -39,25 +39,28 @@
 		</div>
     {% endif %}
 
-    {% include '/shared/card-or-ach.html' %}
-
-    {% if hide_pay_comments is sameas false %}
-    <div class="m-form-item m-form-item-comments">
-      <label>Comments:
-      <textarea id="reason_for_supporting" cols="20" rows="4" name="reason_for_supporting"></textarea></label> <!-- could send to Givalike and/or ajax -->
-      <label class="additional-option" id="reason_shareable" for="reason_shareable"><input type="checkbox" checked="checked" name="reason_shareable" id="reason_shareable" value="1"> MinnPost has permission to post this comment on the website. </label>
-    </div>
-    {% endif %}
-
-    <div class="m-form-actions">
-      {% if use_recaptcha is sameas true %}
-        <div class="a-g-recaptcha g-recaptcha" data-sitekey="{{ recaptcha }}"></div>
-        <button type="submit" class="a-button a-button-pay" autocomplete="off">{{ button }}</button>
-        <p class="a-form-caption a-form-caption-recaptcha-terms">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy">Privacy Policy</a> and <a href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
-      {% else %}
-      <button type="submit" class="a-button a-button-pay" autocomplete="off">{{ button }}</button>
+    {% if not show_payment_request or show_payment_request is sameas false %}
+      {% include '/shared/card-or-ach.html' %}
+      {% if hide_pay_comments is sameas false %}
+      <div class="m-form-item m-form-item-comments">
+        <label>Comments:
+        <textarea id="reason_for_supporting" cols="20" rows="4" name="reason_for_supporting"></textarea></label> <!-- could send to Givalike and/or ajax -->
+        <label class="additional-option" id="reason_shareable" for="reason_shareable"><input type="checkbox" checked="checked" name="reason_shareable" id="reason_shareable" value="1"> MinnPost has permission to post this comment on the website. </label>
+      </div>
       {% endif %}
-    </div>
+      {% include '/shared/pay-fees.html' %}
+      {% include '/shared/button.html' %}
+    {% else %}
+      <div class="o-pay-with-payment-request">
+        {% include '/shared/pay-fees.html' %}
+        {% include '/shared/payment-request.html' %}
+      </div>
+      <div class="m-pay-without-payment-request">
+        {% include '/shared/card-or-ach.html' %}
+        {% include '/shared/pay-fees.html' %}
+        {% include '/shared/button.html' %}
+      </div>
+    {% endif %}
 
   </fieldset>
 

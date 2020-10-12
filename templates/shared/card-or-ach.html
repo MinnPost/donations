@@ -1,72 +1,66 @@
 {% if not show_ach or show_ach is sameas false %}
-<fieldset class="credit-card-group">
-  <div class="m-form-item" id="cc-number-wrapper">
-    <label>
-      <span class="label">Credit Card Number: </span> <span class="a-form-item-required" title="This field is required.">*</span>
-      <div class="stripe-field" id="card-number"></div>
-      <p class="a-card-instruction card-number"></p>
-    </label>
-  </div>
-  <div class="card-group clear-block">
-    <div class="m-form-item" id="cc-exp-wrapper">
-      <label>
-        <span class="label">Expiration Date: </span> <span class="a-form-item-required" title="This field is required.">*</span>
-        <div class="stripe-field" id="card-expiry"></div>
-        <p class="a-card-instruction card-expiry"></p>
-       </label>
-    </div>
-    <div class="m-form-item" id="cc-cvc-wrapper">
-      <label>
-        <span class="label">CVC Number: </span> <span class="a-form-item-required" title="This field is required.">*</span>
-        <div class="stripe-field" id="card-cvc"></div>
-        <p class="a-card-instruction card-cvc"></p>
-       </label>
-    </div>
-  </div>
-  <div class="m-form-actions">
-    <label class="a-form-caption"><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees is sameas true %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label>
-  </div>
-</fieldset>
-{% else %}
-<fieldset class="m-form-group m-form-group-payment">
-  <div class="m-form-item m-form-item-payment-method m-form-item-two-radios" id="choose-payment-method">
-    <label><input type="radio" name="method" id="choose-card" value="card" checked /> Pay with credit card</label>
-    <label><input type="radio" name="method" id="choose-ach" value="bank_account" /> Pay with bank account</label>
-  </div>
-  <div class="payment-method choose-card active">
+  <fieldset class="credit-card-group">
     <div class="m-form-item" id="cc-number-wrapper">
       <label>
-        <span class="label">Credit Card Number:</span> <span class="a-form-item-required" title="This field is required.">*</span>
+        <span class="label">Credit Card Number: </span> <span class="a-form-item-required" title="This field is required.">*</span>
         <div class="stripe-field" id="card-number"></div>
-        <span class="brand"><i class="pf pf-credit-card" id="brand-icon"></i></span>
         <p class="a-card-instruction card-number"></p>
       </label>
     </div>
-    <div class="m-form-group m-form-card-group">
-      <div class="m-form-item m-form-item-exp" id="cc-exp-wrapper">
+    <div class="card-group clear-block">
+      <div class="m-form-item" id="cc-exp-wrapper">
         <label>
-          <span class="label">Expiration Date:</span> <span class="a-form-item-required" title="This field is required.">*</span>
+          <span class="label">Expiration Date: </span> <span class="a-form-item-required" title="This field is required.">*</span>
           <div class="stripe-field" id="card-expiry"></div>
           <p class="a-card-instruction card-expiry"></p>
-         </label>
+        </label>
       </div>
-      <div class="m-form-item m-form-item-cvc" id="cc-cvc-wrapper">
+      <div class="m-form-item" id="cc-cvc-wrapper">
         <label>
-          <span class="label">CVC Number:</span> <span class="a-form-item-required" title="This field is required.">*</span>
+          <span class="label">CVC Number: </span> <span class="a-form-item-required" title="This field is required.">*</span>
           <div class="stripe-field" id="card-cvc"></div>
           <p class="a-card-instruction card-cvc"></p>
-         </label>
+        </label>
       </div>
     </div>
-  </div>
-  <div class="payment-method choose-ach">
-    <div class="m-form-item" id="ach-button">
-      <p>You can sign in directly to your bank's system and authorize MinnPost to make charges to your account. None of your credentials or account details are sent to us; we only receive the authorization.</p>
-      <p><a href="#" id="authorize-ach">Sign in to your bank account</a></p>
+  </fieldset>
+{% else %}
+  <fieldset class="m-form-group m-form-group-payment">
+    <div class="m-form-item m-form-item-payment-method m-form-item-two-radios" id="choose-payment-method">
+      <label><input type="radio" name="method" id="choose-card" value="card" checked /> Pay with credit card</label>
+      <label><input type="radio" name="method" id="choose-ach" value="bank_account" /> Pay with bank account</label>
     </div>
-  </div>
-  <div class="m-form-actions">
-    <label class="a-form-caption"><input type="checkbox" value="1" id="pay-fees" name="pay_fees" autocomplete="off"{% if pay_fees is sameas true %} checked{% endif %}> Add $<span class="processing-amount">{{ fees }}</span> to each transaction to cover MinnPost's credit card fees?</label>
-  </div>
-</fieldset>
+    <div class="payment-method choose-card active">
+      <div class="m-form-item" id="cc-number-wrapper">
+        <label>
+          <span class="label">Credit Card Number:</span> <span class="a-form-item-required" title="This field is required.">*</span>
+          <div class="stripe-field" id="card-number"></div>
+          <span class="brand"><i class="pf pf-credit-card" id="brand-icon"></i></span>
+          <p class="a-card-instruction card-number"></p>
+        </label>
+      </div>
+      <div class="m-form-group m-form-card-group">
+        <div class="m-form-item m-form-item-exp" id="cc-exp-wrapper">
+          <label>
+            <span class="label">Expiration Date:</span> <span class="a-form-item-required" title="This field is required.">*</span>
+            <div class="stripe-field" id="card-expiry"></div>
+            <p class="a-card-instruction card-expiry"></p>
+          </label>
+        </div>
+        <div class="m-form-item m-form-item-cvc" id="cc-cvc-wrapper">
+          <label>
+            <span class="label">CVC Number:</span> <span class="a-form-item-required" title="This field is required.">*</span>
+            <div class="stripe-field" id="card-cvc"></div>
+            <p class="a-card-instruction card-cvc"></p>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="payment-method choose-ach">
+      <div class="m-form-item" id="ach-button">
+        <p>You can sign in directly to your bank's system and authorize MinnPost to make charges to your account. None of your credentials or account details are sent to us; we only receive the authorization.</p>
+        <p><a href="#" id="authorize-ach">Sign in to your bank account</a></p>
+      </div>
+    </div>
+  </fieldset>
 {% endif %}
