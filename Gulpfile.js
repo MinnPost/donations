@@ -6,6 +6,7 @@ const concat = require('gulp-concat');
 const cssnano = require('cssnano');
 const fs = require('fs');
 const gulp = require('gulp');
+const iife = require('gulp-iife');
 const imagemin = require('gulp-imagemin');
 const packagejson = JSON.parse(fs.readFileSync('./package.json'));
 const mqpacker = require( 'css-mqpacker' );
@@ -26,10 +27,10 @@ const config = {
     dest: 'static/css'
   },
   scripts: {
-    src: [ './static/js/vendor/**/*.js', './static/js/src/**/*.js' ],
-    uglify: [ 'static/js/*.js', '!static/js/*.min.js' ],
-    dest: './static/js'
-  },
+		main: [ './static/js/vendor/**/*.js', './static/js/mp/**/*.js' ],
+		uglify: [ 'static/js/*.js', '!static/js/*.min.js' ],
+		dest: './static/js'
+	},
   images: {
   	main: './static/img/**/*',
   	dest: './static/img/'
@@ -64,25 +65,39 @@ function styles() {
 }
 
 function mainscripts() {
-  return gulp.src(config.scripts.src, { allowEmpty: true })
-    .pipe(sourcemaps.init())
-    .pipe(babel({
-      presets: ['@babel/preset-env']
-    }))
-    .pipe(concat('main.js')) // Name the JS file
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest(config.scripts.dest))
-    .pipe(browserSync.stream());
+	return gulp
+		.src(config.scripts.main)
+		.pipe(sourcemaps.init())
+		.pipe(
+			babel({
+				presets: ["@babel/preset-env"]
+			})
+		)
+		.pipe(concat('minnpost.support.js')) // Concatenate
+		.pipe(sourcemaps.write())
+		.pipe(iife({
+				useStrict: false,
+				params: ['$'],
+				args: ['jQuery']
+			}))
+		.pipe(gulp.dest(config.scripts.dest))
+		.pipe(browserSync.stream());
 }
 
 function uglifyscripts() {
-  return gulp.src(config.scripts.uglify)
-    .pipe(uglify()) // Minify + compress
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(gulp.dest(config.scripts.dest))
-    .pipe(browserSync.stream());
+	return (
+		gulp
+			.src(config.scripts.uglify)
+			.pipe(uglify()) // Minify + compress
+			.pipe(
+				rename({
+					suffix: ".min"
+				})
+			)
+			.pipe(sourcemaps.write())
+			.pipe(gulp.dest(config.scripts.dest))
+			.pipe(browserSync.stream())
+	);
 }
 
 // Optimize Images
