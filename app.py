@@ -554,7 +554,19 @@ def finish_donation(self, form=None):
             logging.info("No recurring donation id here yet. Delay and try again.")
             raise self.retry(countdown=120)
 
-        response = RDO.update(rdo, post_submit_details)
+        rdo_response = RDO.update(rdo, post_submit_details)
+
+        opps = Opportunity.load_after_submit(
+            stage_name="Closed Won",
+            lock_key=lock_key
+        )
+
+        if not opps:
+            logging.info("No closed opportunity id here yet. Delay and try again.")
+            raise self.retry(countdown=120)
+        
+        opps_response = Opportunity.update(opps, post_submit_details)
+        
 
 
 def do_charge_or_show_errors(form_data, template, function, donation_type):
