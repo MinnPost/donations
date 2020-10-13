@@ -2190,11 +2190,14 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     stripe_payment_type = form.get("stripe_payment_type", "")
     lock_key = form.get("lock_key", "")
 
-    close_date = form.get("close_date", today)
-    stage_name = form.get("stage_name", "Pledged")
+    # these need to be set in case they aren't already present
+    opportunity.close_date = form.get("close_date", today) # we may want to override the form value?
+    opportunity.stage_name = form.get("stage_name", "Pledged")
+    opportunity.stripe_description = "MinnPost Membership"
+    opportunity.payment_type = "Stripe"
 
     opportunity.name = (
-        f"{donor_first_name} {donor_last_name} {opportunity.type} {close_date}"
+        f"{donor_first_name} {donor_last_name} {opportunity.type} {opportunity.close_date}"
     )
 
     # the actual opportunity values
@@ -2432,7 +2435,11 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
     rdo.email_user_when_canceled = email_user_when_canceled
 
     # always change these text values based on user's input
-    rdo.credited_as = credited_as        
+    rdo.credited_as = credited_as
+
+    # these need to be set in case they aren't already present
+    rdo.stripe_description = "MinnPost Sustaining Membership"
+    rdo.payment_type = "Stripe"
 
     if donor_first_name != "":
         rdo.donor_first_name = donor_first_name
