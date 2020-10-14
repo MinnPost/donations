@@ -18,7 +18,6 @@
     'debug' : false, // this can be set to true on page level options
     'stripe_publishable_key' : '',
     'plaid_env' : '',
-    'plaid_public_key' : '',
     'plaid_link' : '#authorize-ach',
     'minnpost_root' : 'https://www.minnpost.com',
     'progress_selector' : '.m-support-progress',
@@ -153,7 +152,6 @@
         this.paymentRequestButton(this.element, this.options); // create paymentrequest button
         this.choosePaymentMethod(this.element, this.options); // switch between card and ach
         this.creditCardFields(this.element, this.options); // do stuff with the credit card fields
-        this.achFields(this.element, this.options); // do stuff for ach payments, if applicable to the form
         this.validateSetup(this.element, this.options); // setup how validation errors work
         this.formSetup(this.element, this.options); // validate and submit the form
       }
@@ -743,6 +741,10 @@
       $('input[name="public_token"]', $(options.donate_form_selector)).remove();
       $('input[name="account_id"]', $(options.donate_form_selector)).remove();
       $('input[name="bankToken"]', $(options.donate_form_selector)).remove();
+      $(options.plaid_link).html('<a href="#" id="authorize-ach">Sign in to your bank account</a>');
+      if (typeof this.linkHandler !== 'undefined') {
+        this.linkHandler.destroy();
+      }
     }, // removeAchFields
 
     creditCardFields: function(element, options) {
@@ -827,52 +829,33 @@
 
     }, // creditCardFields
 
+    showSpinner: function() {
+      $(this.options.plaid_link).html('<img src="https://www.minnpost.com/wp-admin/images/spinner.gif" srcset="https://www.minnpost.com/wp-admin/images/spinner.gif 1x, https://www.minnpost.com/wp-admin/images/spinner-2x.gif 2x,">');
+    },
+
     achFields: function(element, options) {
       var bankTokenFieldName = 'bankToken';
       var bankTokenField = 'input[name="' + bankTokenFieldName + '"]';
-      if (options.plaid_env != '' && options.key != '' && typeof Plaid !== 'undefined') {
-        var linkHandler = Plaid.create({
-          selectAccount: true,
-          apiVersion: 'v2',
-          env: options.plaid_env,
+      var that = this;
+      if (typeof Plaid !== 'undefined') {
+        that.linkHandler = Plaid.create({
           clientName: 'MinnPost',
-          key: options.plaid_public_key,
-          product: 'auth',
-          onLoad: function() {
-            // The Link module finished loading.
-          },
+          env: options.plaid_env,
+          product: ['auth'],
+          // 1. Pass the token generated in step 2.
+          token: document.getElementById('plaid_link_token').value,
           onSuccess: function(public_token, metadata) {
-            // The onSuccess function is called when the user has successfully
-            // authenticated and selected an account to use.
-            //
-            // When called, you will send the public_token and the selected
-            // account ID, metadata.account_id, to your backend app server.
-            //
-            // sendDataToBackendServer({
-            //   public_token: public_token,
-            //   account_id: metadata.account_id
-            // });
-
-            //this.debug('Public Token: ' + public_token);
-            //this.debug('Customer-selected account ID: ' + metadata.account_id);
-
-            var supportform = $(options.donate_form_selector);
-
-            // response contains id and card, which contains additional card details
-            // Insert the data into the form so it gets submitted to the server
-            supportform.append($('<input type=\"hidden\" name=\"public_token\" />').val(public_token));
-            supportform.append($('<input type=\"hidden\" name=\"account_id\" />').val(metadata.account_id));
-
-            // get the account validated by ajax
+            that.showSpinner();
             $.ajax({
-              url:'/plaid_token/',
-              data: $(supportform).serialize(),
-              type: 'POST'
+              url:'/get_plaid_access_token/',
+              data: JSON.stringify({ public_token: public_token, account_id: metadata.account_id }),
+              type: 'POST',
+              contentType: 'application/json; charset=utf-8'
             })
             .done(function(response) {
               if (typeof response.error !== 'undefined') {
                 // there is an error.
-                $(options.plaid_link).parent().after('<p class="error">' + response.error + '</p>')
+                $(options.plaid_link).after('<p class="error">' + response.error + '</p>')
               } else {
                 //this.debug('print response here');
                 //this.debug(response);
@@ -882,21 +865,18 @@
                 } else {
                   $(options.donate_form_selector).prepend($('<input type=\"hidden\" name="' + bankTokenFieldName + '">').val(response.stripe_bank_account_token));
                 }
-                $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
+                $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>');
               }
             })
             .error(function(response) {
-              $(options.plaid_link).parent().after('<p class="error">' + response.error + '</p>')
+              $(options.plaid_link).after('<p class="error">' + response.error + '</p>')
             });
           },
-          onExit: function(err, metadata) {
-            // The user exited the Link flow.
-          },
         });
-        $(options.plaid_link, element).click(function(event) {
+        $(options.plaid_link + ' a').click(function(event) {
           event.preventDefault();
           $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
-          linkHandler.open();
+          that.linkHandler.open();
         });
       }
     }, // achFields
@@ -1158,8 +1138,8 @@
     }, // createPaymentMethod
 
     bankTokenHandler: function(token, type) {
-      that.setStripePaymentType(type);
-      that.submitFormOnly();
+      this.setStripePaymentType(type);
+      this.submitFormOnly();
     }, // bankTokenHandler
 
     submitFormOnly: function() {

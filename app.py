@@ -24,7 +24,6 @@ from config import (
     WTF_CSRF_ENABLED,
     LOG_LEVEL,
     PLAID_SECRET,
-    PLAID_PUBLIC_KEY,
     PLAID_ENVIRONMENT,
     ENABLE_PORTAL,
     ADVERTISING_CAMPAIGN_ID,
@@ -47,8 +46,7 @@ from pytz import timezone
 
 from celery import Celery
 import stripe
-from plaid import Client
-from plaid.errors import APIError, ItemError
+import plaid
 from app_celery import make_celery
 from flask_talisman import Talisman
 from flask_limiter import Limiter
@@ -78,7 +76,7 @@ from util import (
     dir_last_updated,
 )
 from email_validator import validate_email, EmailNotValidError
-from charges import charge, calculate_amount_fees, check_level, ChargeException
+from charges import charge, create_plaid_link_token, calculate_amount_fees, check_level, ChargeException
 
 ZONE = timezone(TIMEZONE)
 
@@ -857,7 +855,7 @@ def root_form():
         amount=amount_formatted, frequency=frequency, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
-        plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -988,6 +986,9 @@ def give_form():
     # show apple pay
     show_payment_request = app.config["SHOW_PAYMENT_REQUEST"]
 
+    # plaid token
+    plaid_link_token = create_plaid_link_token()
+
     button = "Place this Donation"
 
     # make a uuid for redis and lock it
@@ -1008,10 +1009,10 @@ def give_form():
         atlantic_subscription=atlantic_subscription_form, atlantic_id=atlantic_id,
         nyt_subscription=nyt_subscription_form,
         decline_benefits=decline_benefits,
-        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
@@ -1263,6 +1264,9 @@ def advertising_form():
     # show apple pay
     show_payment_request = app.config["SHOW_PAYMENT_REQUEST"]
 
+    # plaid token
+    plaid_link_token = create_plaid_link_token()
+
     return render_template(
         template,
         title=title,
@@ -1278,9 +1282,9 @@ def advertising_form():
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
         show_invoice=show_invoice, show_organization=show_organization,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
@@ -1343,18 +1347,24 @@ def pledge_payment_form():
 
 ## this is a minnpost url. use this when sending a request to plaid
 ## if successful, this returns the access token and bank account token for stripe from plaid
-@app.route("/plaid_token/", methods=["POST"])
-def plaid_token():
+@app.route("/get_plaid_access_token/", methods=["POST"])
+def plaid_access_token():
 
     form = PlaidForm(request.form)
     # use form.data instead of request.form from here on out
     # because it includes all filters applied by WTF Forms
     form_data = form.data
 
-    public_token = form_data["public_token"]
-    account_id = form_data["account_id"]
+    #public_token = form_data["public_token"]
+    #account_id = form_data["account_id"]
+    public_token = request.json["public_token"]
+    account_id   = request.json["account_id"]
 
-    client = Client(client_id=app.config["PLAID_CLIENT_ID"], secret=app.config["PLAID_SECRET"], environment=app.config["PLAID_ENVIRONMENT"])
+    client = plaid.Client(
+        client_id=app.config["PLAID_CLIENT_ID"],
+        secret=app.config["PLAID_SECRET"],
+        environment=app.config["PLAID_ENVIRONMENT"]
+    )
     exchange_token_response = client.Item.public_token.exchange(public_token)
     access_token = exchange_token_response["access_token"]
 
@@ -1608,6 +1618,9 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
     # show apple pay
     show_payment_request = app.config["SHOW_PAYMENT_REQUEST"]
 
+    # plaid token
+    plaid_link_token = create_plaid_link_token()
+
     return render_template(
         template,
         title=title,
@@ -1622,9 +1635,9 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label, anonymous_label=anonymous_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
@@ -1817,6 +1830,9 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     # show apple pay
     show_payment_request = app.config["SHOW_PAYMENT_REQUEST"]
 
+    # plaid token
+    plaid_link_token = create_plaid_link_token()
+
     # fees
     fees = calculate_amount_fees(amount, "card")
 
@@ -1845,10 +1861,10 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
         description=description, opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         update_default_source=update_default_source, stage_name=stage_name, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, plaid_public_key=PLAID_PUBLIC_KEY, last_updated=dir_last_updated('static'),
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         lock_key=lock_key, path=path,
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"],
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
