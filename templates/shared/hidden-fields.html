@@ -18,3 +18,6 @@
 {% if path %}
     <input type="hidden" name="path" id="path" value="{{ path }}">
 {% endif %}
+{% if plaid_link_token %}
+    <input type="hidden" name="plaid_link_token" id="plaid_link_token" value="{{ plaid_link_token }}">
+{% endif %}

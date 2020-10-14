@@ -1,11 +1,12 @@
 import calendar
 import logging
 from decimal import Decimal, ROUND_HALF_UP
-from config import STRIPE_KEYS
+from config import STRIPE_KEYS, PLAID_ENVIRONMENT, PLAID_CLIENT_ID, PLAID_SECRET
 from npsp import User, Task
 from util import send_slack_message
 
 import stripe
+import plaid
 
 stripe.api_key = STRIPE_KEYS["secret_key"]
 stripe.api_version = "2020-08-27"
@@ -159,6 +160,31 @@ def generate_stripe_description(opportunity) -> str:
         return description_map[opportunity.type]
     else:
         return "MinnPost Membership"
+
+
+def create_plaid_link_token():
+    plaid_env = PLAID_ENVIRONMENT
+    client = plaid.Client(
+        client_id=PLAID_CLIENT_ID,
+        secret=PLAID_SECRET,
+        environment=plaid_env,
+        api_version='2019-05-29'
+    )
+    client_user_id = f"MinnPost {plaid_env}"
+    # 2. Create a link_token for the given user
+    response = client.LinkToken.create({
+        'user': {
+            'client_user_id': client_user_id,
+        },
+        'products': ["transactions"],
+        'client_name': "MinnPost",
+        'country_codes': ['US'],
+        'language': 'en',
+        'webhook': 'https://sample.webhook.com',
+    })
+    link_token = response['link_token']
+    # 3. Send the data to the client
+    return link_token
 
 
 def charge(opportunity):
