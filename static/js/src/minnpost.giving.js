@@ -741,6 +741,10 @@
       $('input[name="public_token"]', $(options.donate_form_selector)).remove();
       $('input[name="account_id"]', $(options.donate_form_selector)).remove();
       $('input[name="bankToken"]', $(options.donate_form_selector)).remove();
+      $(options.plaid_link).html('<a href="#" id="authorize-ach">Sign in to your bank account</a>');
+      if (typeof this.linkHandler !== 'undefined') {
+        this.linkHandler.destroy();
+      }
     }, // removeAchFields
 
     creditCardFields: function(element, options) {
@@ -826,7 +830,7 @@
     }, // creditCardFields
 
     showSpinner: function() {
-      $('#authorize-ach').html('<img src="https://www.minnpost.com/wp-admin/images/spinner.gif" srcset="https://www.minnpost.com/wp-admin/images/spinner.gif 1x, https://www.minnpost.com/wp-admin/images/spinner-2x.gif 2x,">');
+      $(this.options.plaid_link).html('<img src="https://www.minnpost.com/wp-admin/images/spinner.gif" srcset="https://www.minnpost.com/wp-admin/images/spinner.gif 1x, https://www.minnpost.com/wp-admin/images/spinner-2x.gif 2x,">');
     },
 
     achFields: function(element, options) {
@@ -834,7 +838,7 @@
       var bankTokenField = 'input[name="' + bankTokenFieldName + '"]';
       var that = this;
       if (typeof Plaid !== 'undefined') {
-        var linkHandler = Plaid.create({
+        that.linkHandler = Plaid.create({
           clientName: 'MinnPost',
           env: options.plaid_env,
           product: ['auth'],
@@ -851,7 +855,7 @@
             .done(function(response) {
               if (typeof response.error !== 'undefined') {
                 // there is an error.
-                $(options.plaid_link).parent().after('<p class="error">' + response.error + '</p>')
+                $(options.plaid_link).after('<p class="error">' + response.error + '</p>')
               } else {
                 //this.debug('print response here');
                 //this.debug(response);
@@ -861,18 +865,18 @@
                 } else {
                   $(options.donate_form_selector).prepend($('<input type=\"hidden\" name="' + bankTokenFieldName + '">').val(response.stripe_bank_account_token));
                 }
-                $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>').contents().unwrap();
+                $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>');
               }
             })
             .error(function(response) {
-              $(options.plaid_link).parent().after('<p class="error">' + response.error + '</p>')
+              $(options.plaid_link).after('<p class="error">' + response.error + '</p>')
             });
           },
         });
-        $(options.plaid_link, element).click(function(event) {
+        $(options.plaid_link + ' a').click(function(event) {
           event.preventDefault();
           $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
-          linkHandler.open();
+          that.linkHandler.open();
         });
       }
     }, // achFields
@@ -1134,8 +1138,8 @@
     }, // createPaymentMethod
 
     bankTokenHandler: function(token, type) {
-      that.setStripePaymentType(type);
-      that.submitFormOnly();
+      this.setStripePaymentType(type);
+      this.submitFormOnly();
     }, // bankTokenHandler
 
     submitFormOnly: function() {
