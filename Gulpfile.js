@@ -27,7 +27,7 @@ const config = {
     dest: 'static/css'
   },
   scripts: {
-		main: [ './static/js/vendor/**/*.js', './static/js/mp/**/*.js' ],
+		main: [ './static/js/vendor/**/*.js', './static/js/src/**/*.js' ],
 		uglify: [ 'static/js/*.js', '!static/js/*.min.js' ],
 		dest: './static/js'
 	},
@@ -73,7 +73,7 @@ function mainscripts() {
 				presets: ["@babel/preset-env"]
 			})
 		)
-		.pipe(concat('minnpost.support.js')) // Concatenate
+		.pipe(concat('main.js')) // Concatenate
 		.pipe(sourcemaps.write())
 		.pipe(iife({
 				useStrict: false,
