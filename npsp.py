@@ -511,6 +511,7 @@ class Opportunity(SalesforceObject):
         cls,
         begin=None,
         end=None,
+        stage_name=None,
         lock_key=None,
         sf_connection=None,
     ):
@@ -520,9 +521,14 @@ class Opportunity(SalesforceObject):
         if lock_key is None or lock_key == "":
             return False
 
-        where = f"""
-            WHERE Flask_Transaction_ID__c = '{lock_key}'
+        if stage_name is None:
+            where = f"""WHERE Flask_Transaction_ID__c = '{lock_key}'
         """
+        else:
+            where = f"""
+                WHERE Flask_Transaction_ID__c = '{lock_key}'
+                AND StageName = '{stage_name}'
+            """
 
         query = f"""
             SELECT

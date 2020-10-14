@@ -252,26 +252,41 @@ def minnpost_advertising_form():
     return redirect("/advertising-payment/?%s" % query_string, code=302)
 
 
-def apply_card_details(rdo=None, customer=None, payment_method=None, charge_source=None):
+def apply_card_details(data=None, customer=None, payment_method=None, charge_source=None):
 
     """
     Takes the expiration date, card brand and expiration from a Stripe object and copies
-    it to an RDO. The RDO is NOT saved and must be done after calling this function.
-    That's to save an API call since other RDO details will almost certainly need to be
-    saved as well.
+    it to an RDO or Opportunity in Salesforce. The object is NOT saved and must be done
+    after calling this function. That's to save an API call since other SF details will
+    almost certainly need to be saved as well.
 
     This method is not called if the payment type is bank account.
     """
 
+    # if the charge does not specify a payment method get it from the customer
     if payment_method is None and charge_source is None:
-        customer = stripe.Customer.retrieve(customer["id"])
-        card_id = customer.sources.data[0].id
-        card = customer.sources.retrieve(card_id)
-        year = card.exp_year
-        month = card.exp_month
-        brand = card.brand
-        last4 = card.last4
+        payment_methods = stripe.PaymentMethod.list(
+            customer=customer["id"],
+            type="card",
+            limit=1,
+        )
+        if payment_methods is not []:
+            card_id = payment_methods.data[0].id
+            card = payment_methods.data[0].card
+            year = card.exp_year
+            month = card.exp_month
+            brand = card.brand
+            last4 = card.last4
+        else:
+            customer = stripe.Customer.retrieve(customer["id"])
+            card_id = customer.sources.data[0].id
+            card = customer.sources.retrieve(card_id)
+            year = card.exp_year
+            month = card.exp_month
+            brand = card.brand
+            last4 = card.last4
     elif payment_method is not None:
+        # there is a payment method object
         card = payment_method["card"]
         card_id = payment_method["id"]
         year = card["exp_year"]
@@ -279,7 +294,7 @@ def apply_card_details(rdo=None, customer=None, payment_method=None, charge_sour
         brand = card["brand"]
         last4 = card["last4"]
     elif charge_source is not None:
-        # the charge already has a payment method id on it
+        # there is a charge object
         card = charge_source
         card_id = card["id"]
         year = card["exp_year"]
@@ -288,12 +303,14 @@ def apply_card_details(rdo=None, customer=None, payment_method=None, charge_sour
         last4 = card["last4"]
 
     day = calendar.monthrange(year, month)[1]
-    rdo.stripe_card = card_id
-    rdo.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
-    rdo.card_type = brand
-    rdo.stripe_card_last_4 = last4
 
-    return rdo
+    # card details for Salesforce
+    data.stripe_card = card_id
+    data.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
+    data.card_type = brand
+    data.stripe_card_last_4 = last4
+
+    return data
 
 
 @celery.task(name="app.add_donation")
@@ -553,7 +570,19 @@ def finish_donation(self, form=None):
             logging.info("No recurring donation id here yet. Delay and try again.")
             raise self.retry(countdown=120)
 
-        response = RDO.update(rdo, post_submit_details)
+        rdo_response = RDO.update(rdo, post_submit_details)
+
+        opps = Opportunity.load_after_submit(
+            stage_name="Closed Won",
+            lock_key=lock_key
+        )
+
+        if not opps:
+            logging.info("No closed opportunity id here yet. Delay and try again.")
+            raise self.retry(countdown=120)
+        
+        opps_response = Opportunity.update(opps, post_submit_details)
+        
 
 
 def do_charge_or_show_errors(form_data, template, function, donation_type):
@@ -2098,7 +2127,7 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.stripe_payment_type = form.get("stripe_payment_type", "")
     opportunity.subtype = form.get("opportunity_subtype", "Donation: Individual")
 
-    if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == "":
+    if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == 0:
         opportunity.fair_market_value = opportunity.amount
 
     # if there is an honor/memory radio but no value, clear the radio out
@@ -2115,50 +2144,14 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
 
     if opportunity.campaign == "":
         opportunity.campaign = app.config["DEFAULT_CAMPAIGN_ONETIME"]
-    
-    if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":
-        # stripe payment method handling
-        
-        # if the charge does not specify a payment method
-        if payment_method is None and charge_source is None:
-            payment_methods = stripe.PaymentMethod.list(
-                customer=customer["id"],
-                type="card",
-                limit=1,
-            )
-            card_id = payment_methods.data[0].id
-            card = payment_methods.data[0].card
-            year = card.exp_year
-            month = card.exp_month
-            brand = card.brand
-            last4 = card.last4
-        elif payment_method is not None:
-            # this is an object
-            card = payment_method["card"]
-            card_id = payment_method["id"]
-            year = card["exp_year"]
-            month = card["exp_month"]
-            brand = card["brand"]
-            last4 = card["last4"]
-        elif charge_source is not None:
-            # the charge already has a payment method id on it
-            card = charge_source
-            card_id = card["id"]
-            year = card["exp_year"]
-            month = card["exp_month"]
-            brand = card["brand"]
-            last4 = card["last4"]
-        
-        day = calendar.monthrange(year, month)[1]
-        opportunity.stripe_card = card_id
-        opportunity.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
-        opportunity.card_type = brand
-        opportunity.stripe_card_last_4 = last4
-    elif form["stripe_payment_type"] == "bank_account" and charge_source is not None:
-        opportunity.stripe_bank_account = charge_source["id"]
 
     opportunity.stripe_transaction_fee = calculate_amount_fees(opportunity.amount, opportunity.stripe_payment_type, opportunity.agreed_to_pay_fees)
 
+    if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":        
+        apply_card_details(data=opportunity, customer=customer, payment_method=payment_method, charge_source=charge_source)
+    elif form["stripe_payment_type"] == "bank_account" and charge_source is not None:
+        opportunity.stripe_bank_account = charge_source["id"]
+    
     opportunity.save()
     return opportunity
 
@@ -2203,8 +2196,11 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     stripe_payment_type = form.get("stripe_payment_type", "")
     lock_key = form.get("lock_key", "")
 
-    close_date = form.get("close_date", today)
-    stage_name = form.get("stage_name", "Pledged")
+    # these need to be set in case they aren't already present
+    opportunity.close_date = form.get("close_date", today) # we may want to override the form value?
+    opportunity.stage_name = form.get("stage_name", "Pledged")
+    opportunity.stripe_description = "MinnPost Membership"
+    opportunity.payment_type = "Stripe"
 
     opportunity.name = (
         f"{donor_first_name} {donor_last_name} {opportunity.type} {close_date}"
@@ -2257,50 +2253,14 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
 
     if lock_key != "":
         opportunity.lock_key = lock_key
-    
-    if stripe_payment_type == "card" or stripe_payment_type == "amex":
-        # stripe payment method handling
-
-        # if the charge does not specify a payment method
-        if payment_method is None and charge_source is None:
-            payment_methods = stripe.PaymentMethod.list(
-                customer=customer["id"],
-                type="card",
-                limit=1,
-            )
-            card_id = payment_methods.data[0].id
-            card = payment_methods.data[0].card
-            year = card.exp_year
-            month = card.exp_month
-            brand = card.brand
-            last4 = card.last4
-        elif payment_method is not None:
-            # this is an object
-            card = payment_method["card"]
-            card_id = payment_method["id"]
-            year = card["exp_year"]
-            month = card["exp_month"]
-            brand = card["brand"]
-            last4 = card["last4"]
-        elif charge_source is not None:
-            # the charge already has a payment method id on it
-            card = charge_source
-            card_id = card["id"]
-            year = card["exp_year"]
-            month = card["exp_month"]
-            brand = card["brand"]
-            last4 = card["last4"]
-        
-        day = calendar.monthrange(year, month)[1]
-        opportunity.stripe_card = card_id
-        opportunity.stripe_card_expiration = f"{year}-{month:02d}-{day:02d}"
-        opportunity.card_type = brand
-        opportunity.stripe_card_last_4 = last4
-    elif form["stripe_payment_type"] == "bank_account" and charge_source is not None:
-        opportunity.stripe_bank_account = charge_source["id"]
 
     opportunity.stripe_transaction_fee = calculate_amount_fees(opportunity.amount, opportunity.stripe_payment_type, opportunity.agreed_to_pay_fees)
 
+    if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":        
+        apply_card_details(data=opportunity, customer=customer, payment_method=payment_method, charge_source=charge_source)
+    elif form["stripe_payment_type"] == "bank_account" and charge_source is not None:
+        opportunity.stripe_bank_account = charge_source["id"]
+    
     opportunity.save()
     return opportunity
 
@@ -2380,7 +2340,7 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
         rdo.campaign = app.config["DEFAULT_CAMPAIGN_RECURRING"]
 
     if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":        
-        apply_card_details(rdo=rdo, customer=customer, payment_method=payment_method, charge_source=charge_source)
+        apply_card_details(data=rdo, customer=customer, payment_method=payment_method, charge_source=charge_source)
     elif form["stripe_payment_type"] == "bank_account" and charge_source is not None:
         rdo.stripe_bank_account = charge_source["id"]
     rdo.save()
@@ -2445,7 +2405,11 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
     rdo.email_user_when_canceled = email_user_when_canceled
 
     # always change these text values based on user's input
-    rdo.credited_as = credited_as        
+    rdo.credited_as = credited_as
+
+    # these need to be set in case they aren't already present
+    rdo.stripe_description = "MinnPost Sustaining Membership"
+    rdo.payment_type = "Stripe"
 
     if donor_first_name != "":
         rdo.donor_first_name = donor_first_name
@@ -2489,7 +2453,7 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
     rdo.stripe_transaction_fee = calculate_amount_fees(rdo.amount, rdo.stripe_payment_type, rdo.agreed_to_pay_fees)
 
     if form["stripe_payment_type"] == "card" or form["stripe_payment_type"] == "amex":        
-        apply_card_details(rdo=rdo, customer=customer, payment_method=payment_method, charge_source=charge_source)
+        apply_card_details(data=rdo, customer=customer, payment_method=payment_method, charge_source=charge_source)
     elif form["stripe_payment_type"] == "bank_account" and charge_source is not None:
         rdo.stripe_bank_account = charge_source["id"]
 
