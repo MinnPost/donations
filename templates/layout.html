@@ -110,8 +110,7 @@
     // call plugin and pass options if need be
     $('.m-payment-wrapper').minnpost_giving({
       'stripe_publishable_key' : '{{stripe}}',{% if show_ach is sameas true %}
-      'plaid_env' : '{{plaid_env}}',
-      'plaid_public_key' : '{{plaid_public_key}}',{% endif %}
+      'plaid_env' : '{{plaid_env}}',{% endif %}
       'minnpost_root' : '{{minnpost_root}}',
     });
   });

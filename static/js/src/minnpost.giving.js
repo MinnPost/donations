@@ -18,7 +18,6 @@
     'debug' : false, // this can be set to true on page level options
     'stripe_publishable_key' : '',
     'plaid_env' : '',
-    'plaid_public_key' : '',
     'plaid_link' : '#authorize-ach',
     'minnpost_root' : 'https://www.minnpost.com',
     'progress_selector' : '.m-support-progress',
@@ -834,10 +833,10 @@
       var bankTokenFieldName = 'bankToken';
       var bankTokenField = 'input[name="' + bankTokenFieldName + '"]';
       var that = this;
-      if (options.plaid_env != '' && options.key != '' && typeof Plaid !== 'undefined') {
+      if (typeof Plaid !== 'undefined') {
         var linkHandler = Plaid.create({
           clientName: 'MinnPost',
-          env: 'sandbox',
+          env: options.plaid_env,
           product: ['auth'],
           // 1. Pass the token generated in step 2.
           token: document.getElementById('plaid_link_token').value,
