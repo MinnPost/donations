@@ -1752,13 +1752,6 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
             if donation.stage_name is not None:
                 # because it could be failed or closed lost or whatever and we want it to try again
                 stage_name = "Pledged"
-            if donation.close_date is not None:
-                three_days_ago = (datetime.now(tz=ZONE) - timedelta(days=3)).strftime('%Y-%m-%d')
-                # 
-                if donation.close_date <= three_days_ago:
-                    close_date = today
-                else: 
-                    close_date = donation.close_date
 
             if donation.mrpledge_id is not None:
                 mrpledge_id = donation.mrpledge_id
