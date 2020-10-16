@@ -674,8 +674,6 @@
         // Send paymentMethod.id to server
         var supportform = $(that.options.donate_form_selector);
 
-        console.log('this valid is ' + supportform.get(0).reportValidity() );
-
         // check validation of form
         if (!supportform.get(0).reportValidity()) {
           event.preventDefault();
@@ -986,10 +984,19 @@
       $('.a-card-instruction.' + which_error).empty();
       $(this_selector).removeClass('a-error');
       if (error) {
-        $('.a-card-instruction.' + which_error).text(error.message);
+        if ($('.a-card-instruction.' + which_error).length > 0) {
+          $('.a-card-instruction.' + which_error).text(error.message);
+        } else {
+          this_selector.parent().append('<p class="a-card-instruction ' + which_error + '">' + error.message + '</p>');
+        }
         $('.a-card-instruction.' + which_error).addClass('a-validation-error');
         this_selector.parent().addClass('m-has-validation-error');
         $(this_selector).addClass('a-error');
+        if (this_selector.parent().length > 0) {
+          $('html, body').animate({
+            scrollTop: this_selector.parent().offset().top
+          }, 2000);
+        }
       } else {
         $(this_selector).removeClass('a-error');
         $('.a-card-instruction.' + which_error).removeClass('a-validation-error');
@@ -1199,6 +1206,14 @@
           }
           that.displayErrorMessage(error, this_field);
         });
+      } else if (typeof response.error !== 'undefined') {
+        var error = response.error;
+        if (typeof error.field !== 'undefined') {
+          this_field = error.field + '_field_selector';
+        } else if (typeof error.param !== 'undefined' && error.param !== '') {
+          this_field = 'cc_' + error.param + '_selector';  
+        }
+        that.displayErrorMessage(error, this_field);
       }
       if ($(that.options[this_field]).length > 0) {
         $('html, body').animate({
@@ -1239,13 +1254,17 @@
           // error handling
           stripeErrorSelector = $(this.options.cc_cvc_selector);
         }
+        if (error.code == 'email_invalid') {
+          // error handling
+          stripeErrorSelector = $(this.options.email_field_selector);
+        }
         if (stripeErrorSelector !== '') {
           this.stripeErrorDisplay(error, stripeErrorSelector, this.element, this.options );
         }
         if (error.field == 'recaptcha') {
           $(this.options.pay_button_selector).before('<p class="a-form-caption a-validation-error a-recaptcha-error">' + message + '</p>')
         }
-        if (error.type == 'invalid_request_error') {
+        if (error.type == 'invalid_request_error' && stripeErrorSelector === '') {
           $(this.options.pay_button_selector).before('<p class="a-form-caption a-validation-error">' + error.message + '</p>')
         }
       }
