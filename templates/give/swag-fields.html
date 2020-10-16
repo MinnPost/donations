@@ -1,0 +1,14 @@
+{% if decline_benefits != "true" %}
+    {% if swag != "" %}
+        <input type="hidden" name="member_benefit_request_swag" id="member_benefit_request_swag" value="{{ swag }}">
+    {% endif %}
+    {% if atlantic_subscription != "" %}
+        <input type="hidden" name="member_benefit_request_atlantic" id="member_benefit_request_atlantic" value="{{ atlantic_subscription }}">
+    {% endif %}
+    {% if atlantic_id != "" %}
+        <input type="hidden" name="member_benefit_request_atlantic_id" id="member_benefit_request_atlantic_id" value="{{ atlantic_id }}">
+    {% endif %}
+    {% if nyt_subscription != "" %}
+        <input type="hidden" name="member_benefit_request_nyt" id="member_benefit_request_nyt" value="{{ nyt_subscription }}">
+    {% endif %}
+{% endif %}

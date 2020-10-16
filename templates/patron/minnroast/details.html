@@ -1,0 +1,23 @@
+<img src="https://www.minnpost.com/wp-content/uploads/2020/01/2020MRLogo600-1.png" alt="MinnPost presents MinnRoast 2020" />
+<section class="o-panel o-panel-form" id="panel--details">
+    <div class="support m-support-summary">
+    
+        <h1>{{ heading }}</h1>
+      
+        {% if summary != '' %}
+        <p>{{ summary|safe }}</p>
+        {% endif %}
+
+        <fieldset class="m-sponsorship-levels">
+            <label><input type="radio" name="amount" value="8000" data-fair-market-value="600"{% if amount == 8000 %} checked{% endif %} required> Executive Co-Producer - $8,000 (12 tickets)</label>
+            <label><input type="radio" name="amount" value="5000" data-fair-market-value="500"{% if amount == 5000 %} checked{% endif %} required> Smokey &amp; the Miracle Workers - $5,000 (10 tickets)</label>
+            <label><input type="radio" name="amount" value="3000" data-fair-market-value="400"{% if amount == 3000 %} checked{% endif %} required> Four Seasonings - $3,000 (8 tickets)</label>
+            <label><input type="radio" name="amount" value="1500" data-fair-market-value="300"{% if amount == 1500 %} checked{% endif %} required> Hot Mamas &amp; Papas - $1,500 (6 tickets)</label>
+            <label><input type="radio" name="amount" value="500" data-fair-market-value="100"{% if amount == 500 %} checked{% endif %} required> Sgt. Peppercorns - $500 (2 tickets)</label>
+            <label><input type="radio" name="amount" value="350" data-fair-market-value="100"{% if amount == 350 %} checked{% endif %} required> Young Professional Rate (2 tickets) - $350</label>
+            <label><input type="radio" name="amount" value="175" data-fair-market-value="50"{% if amount == 175 %} checked{% endif %} required> Young Professional Rate (1 ticket) - $175</label>
+            <p><a href="https://www.minnpost.com/minnroast#tickets">Learn more about MinnRoast Patron levels and benefits</a></p>
+            {% include "/shared/additional-amount.html" %}
+        </fieldset>
+    </div>
+</section>

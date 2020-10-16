@@ -1,0 +1,67 @@
+<section class="o-panel o-panel-form" id="panel--pay">
+
+  {% if not hide_amount_heading or hide_amount_heading is sameas false %}
+    {% include '/give/amount.html' %}
+  {% endif %}
+
+  <fieldset class="payment">
+
+    {% include 'shared/name-fields.html' %}
+
+    {% if (not hide_address or hide_address is sameas false) and (not email_before_billing or email_before_billing is sameas false) %}
+      {% with shipping=with_shipping %}
+      {% include '/shared/address-fields.html' %}
+      {% endwith %}
+    {% endif %}
+
+    <div class="m-form-item m-form-item-email-address">
+      <div>
+        <label for="email"">Email Address: <span class="a-form-item-required" title="This field is required.">*</span></label>
+        <input type="email" id="email" name="email" required value="{{ email }}">
+      </div>
+      {% if not hide_minnpost_account or hide_minnpost_account is sameas false %}
+      <div>
+        <label class="a-form-caption"><input type="checkbox" name="creatempaccount" id="creatempaccount"> Create a free MinnPost.com account</label>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if (not hide_address or hide_address is sameas false) and email_before_billing is sameas true %}
+      {% with shipping=with_shipping %}
+      {% include '/shared/address-fields.html' %}
+      {% endwith %}
+    {% endif %}
+
+    {% if not hide_minnpost_account or hide_minnpost_account is sameas false %}
+    <div class="m-form-item m-form-item-password">
+			<label for="password">MinnPost.com Password: </label>
+			<input type="password" name="password" id="password" class="a-password-strength">
+		</div>
+    {% endif %}
+
+    {% if not show_payment_request or show_payment_request is sameas false %}
+      {% include '/shared/card-or-ach.html' %}
+      {% if hide_pay_comments is sameas false %}
+      <div class="m-form-item m-form-item-comments">
+        <label>Comments:
+        <textarea id="reason_for_supporting" cols="20" rows="4" name="reason_for_supporting"></textarea></label> <!-- could send to Givalike and/or ajax -->
+        <label class="additional-option" id="reason_shareable" for="reason_shareable"><input type="checkbox" checked="checked" name="reason_shareable" id="reason_shareable" value="1"> MinnPost has permission to post this comment on the website. </label>
+      </div>
+      {% endif %}
+      {% include '/shared/pay-fees.html' %}
+      {% include '/shared/button.html' %}
+    {% else %}
+      <div class="o-pay-with-payment-request">
+        {% include '/shared/pay-fees.html' %}
+        {% include '/shared/payment-request.html' %}
+      </div>
+      <div class="m-pay-without-payment-request">
+        {% include '/shared/card-or-ach.html' %}
+        {% include '/shared/pay-fees.html' %}
+        {% include '/shared/button.html' %}
+      </div>
+    {% endif %}
+
+  </fieldset>
+
+</section>

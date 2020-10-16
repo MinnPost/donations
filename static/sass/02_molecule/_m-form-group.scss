@@ -1,0 +1,117 @@
+.m-form-group {
+
+    &.m-form-location-group {
+        display: flex;
+
+        @media screen and (min-width: $breakpoint-md) { // this value is set in the wp theme
+            width: $form-item-width;
+        }
+
+        .m-form-item-city {
+            margin-right: $standard-heading-margin;
+        }
+    }
+
+    &.m-form-group-recognition {
+        margin-bottom: $standard-block-margin;
+        
+        .a-form-caption-anonymous {
+            margin-bottom: 0;
+        }
+
+        .a-honor-or-memory {
+            padding: $standard-block-padding;
+            margin-bottom: $standard-block-padding;
+            background: neutral-color(border);
+            border-radius: $border-radius;
+        }
+    }
+
+    &.m-form-group-payment {
+
+        label {
+            position: relative;
+
+            .brand {
+                width: 30px;
+                text-align: right;
+                position: absolute;
+                top: 2.25em;
+                right: 1em;
+            }
+        }
+        
+        .stripe-field {
+            background: neutral-color(white);
+            padding: $standard-block-padding / 2;
+            border: 1px solid neutral-color(border);
+            width: 100%;
+            border-radius: $border-radius;
+            box-sizing: border-box;
+
+            &.a-error {
+                border-color: brand-color(red, highlight);
+            }
+        }
+
+        #cc-number-wrapper {
+            position: relative;
+            
+            .card-image {
+                position: absolute;
+                top: 2.75em;
+                right: 1em;
+            }
+        }
+
+          // styles for new elements field from stripe
+        .credit-card-element {
+            
+            .StripeElement {
+                background: neutral-color(white);
+                padding: $standard-block-padding / 2;
+                border: 1px solid neutral-color(border);
+                margin-bottom: $standard-block-padding;
+                width: 100%;
+                border-radius: $border-radius;
+                box-sizing: border-box;
+            }
+        }
+
+        .a-error {
+
+            .stripe-field,
+            .credit-card-element .StripeElement {
+                border-color: brand-color(red, highlight);
+            }
+        }
+    }
+
+    &.m-form-card-group {
+        display: flex;
+
+        label {
+            margin-bottom: 0;
+        }
+
+        @media screen and (min-width: $breakpoint-md) { // this value is set in the wp theme
+            width: $form-item-width;
+        }
+
+        .m-form-item-exp {
+            margin-right: $standard-heading-margin;
+        }
+    }
+}
+
+.js .m-form-group.m-form-group-payment {
+
+    .payment-method {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+}
+

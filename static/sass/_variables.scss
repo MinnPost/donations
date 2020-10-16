@@ -1,0 +1,91 @@
+// brand colors
+$brand-colors: (
+	red: (
+		dark: #4c1016,
+		medium: #7f121c, // logo
+		highlight: #d7757e
+	),
+);
+
+$utility-colors: (
+	green: (
+		dark: #24613b,
+		medium: #1c8745, // donate
+		highlight: #609f78,
+		background: #ddf8e7,
+	),
+	blue: (
+		dark: #135b7e, // link
+		medium: #0c7bb0,
+		highlight: #5e99b5,
+		background: #dcf0fa
+	),
+	purple: (
+		dark: #635077, // opinion
+		medium: #8c64b4,
+		highlight: #a880d0,
+		background: #ebe7ef
+	),
+	yellow: (
+		background: #fbd341
+	),
+	orange: (
+		dark: #873a02,
+		medium: #b94f03, // advertising
+		highlight: #fc9e5b,
+		background: #fee3cf
+	),
+);
+
+// neutral colors
+$neutral-colors: (
+	black: #1a1818, // logo
+	dark: #5e6e76,
+	medium: #869298,
+	border: #d6d6da,
+	highlight: #ebebfb,
+	light: #efeff0,
+	white: #fff
+);
+
+$breakpoint-xxxs: 0;
+$breakpoint-xxs: 24em; // 384px
+$breakpoint-xs: 30em; // 480px
+$breakpoint-sm: 40em; // 640px
+$breakpoint-md: 50em; // 800px
+$breakpoint-lg: 60em; // 960px
+$breakpoint-xl: 70em; // 1120px
+$breakpoint-xxl: 80em; // 1280px
+$breakpoint-xxxl: 90em; // 1440px
+
+// margin/padding
+$standard-block-margin: 1.5em; // 36px at desktop
+$standard-heading-margin: 0.75em; // 18px at desktop
+$standard-block-padding: 0.5em; // 12px at body
+
+$border-radius: 4px;
+$border-default-style: 1px solid neutral-color(border);
+
+$home-content-sidebar-padding: 35px;
+$archive-content-sidebar-padding: 15px;
+$form-text-indent: 6px;
+
+// redesign theme variables
+$content-font-size: 1em;
+$progress-font-size-large: 3em;
+$progress-font-size-small: 0.75em;
+$large-title-font-size: 215.4%;
+
+// media query sizes. see minnpost-largo for theme queries.
+$size__xs: 30em; // 480px
+$size__sm: 40em; // 640px
+$medium-margins-too-small: 700px;
+$nav-breaks: 768px;
+$wrap-header: 830px;
+$level-widths-change: 890px;
+
+// page sizes
+$form-width: 74.68354%;
+$form-max-width: calc(94.93671% - 300px);
+$form-item-width: 70%;
+$split-panel-max-width: 45%;

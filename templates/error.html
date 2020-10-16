@@ -7,22 +7,8 @@
 {% endblock %}
 
 {% block content %}
-<section class="progress progress--donation">
-  <div class="wrapper">
-    <ol>
-      <li class="panel--choose"><span>Choose</span></li>
-      <li class="panel--pay"><span>Payment</span></li>
-      <li class="panel--confirmation"><span>Thank You</span></li>
-    </ol>
-  </div>
+<section id="panel--error" class="panel--error">
+  <h1>{% block heading %}{% if heading|length %}{{ heading }}{% else %}Sorry, there has been an issue{% endif %}{% endblock %}</h1>
+  <p>{{ message }}</p>
 </section>
-
-<main>
-  <div class="wrapper support--forms">
-    <section id="panel--error" class="panel--error">
-      <h1>Sorry, there has been an issue</h1>
-      <p>{{ message }}</p>
-    </section>
-  </div>
-</main>
 {% endblock %}

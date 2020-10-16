@@ -1,0 +1,6 @@
+{% if allow_additional_amount is sameas true %}
+    <div class="m-form-item m-form-item-additional-donation">
+        <label for="additional_donation">Additional Donation (optional): </label>
+        <input type="number" id="additional_donation" name="additional_donation" value="{% if additional_donation != 0 %}{{ additional_donation }}{% endif %}" step="any">
+    </div>
+{% endif %}

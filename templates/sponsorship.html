@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form action="{{ form_action }}" method="post" class="m-form m-form-standalone support--sponsorship" id="donate">
+  {% include 'shared/hidden-fields.html' %}
+  <input type="hidden" name="fair_market_value" id="fair_market_value" value="0">
+  <input type="hidden" name="installment_period" id="installment_period" value="{{ frequency }}">
+  {% if stage != '' %}
+    <input type="hidden" name="stage_name" id="stage_name" value="{{ stage_name }}">
+  {% endif %}
+  {% if close_date %}
+    <input type="hidden" name="close_date" id="close_date" value="{{ close_date }}">
+  {% endif %}
+  {% if opportunity_type %}
+    <input type="hidden" name="opportunity_type" id="opportunity_type" value="{{ opportunity_type }}">
+  {% endif %}
+  {% if opportunity_subtype %}
+    <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
+  {% endif %}
+  {% if folder %}
+    <input type="hidden" name="folder" id="folder" value="{{ folder }}">
+  {% endif %}
+  {% if folder != "" %}
+    {% include 'patron/%s/details.html' % folder %}
+  {% else %}
+    {% include 'minimal/details.html' %}
+  {% endif %}
+  {% include 'shared/pay.html' %}
+</form>
+{% endblock %}

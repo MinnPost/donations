@@ -1,0 +1,29 @@
+{% if not path or path == "" or path == "give" %}
+<section class="m-support-progress" aria-label="progress">
+    <ol>
+        <li>
+            {% if step_one_url %}
+                <a href="{{ step_one_url }}">Choose</a>
+            {% else %}
+                <span>Choose</span>
+            {% endif %}
+        </li>
+        <li>
+            {% if step == "pay" %}
+                <a class="active" href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}">Payment</a>
+            {% elif step == "thanks" or step == "finish" %}
+                <span>Payment</span>
+            {% else %}
+                <a href="/give/?amount={{ amount }}&amp;frequency={{ frequency }}&amp;customer_id={{ customer_id }}&amp;campaign={{ campaign }}">Payment</a>
+            {% endif %}
+        </li>
+        <li>
+            {% if step == "thanks" or step == "finish" %}
+                <span class="active">Thank You</span>
+            {% else %}
+                <span>Thank You</span>
+            {% endif %}
+        </li>
+    </ol>
+</section>
+{% endif %}

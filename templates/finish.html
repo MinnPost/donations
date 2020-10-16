@@ -1,22 +1,16 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<section class="progress progress--donation">
-  <div class="wrapper">
-    <ol>
-      <li class="panel--choose"><span>Choose</span></li>
-      <li class="panel--pay"><span>Payment</span></li>
-      <li class="panel--confirmation"><span class="active">Thank You</span></li>
-    </ol>
-  </div>
+<section id="panel--confirmation" class="o-panel o-panel-form">
+  <input type="hidden" name="amount" id="amount" value="{{ amount }}">
+  <input type="hidden" name="installment_period" id="installment_period" value="{{ frequency }}">
+  {% if path != "" and folder != "" %}
+    {% include "/" + path + "/" + folder + "/finish.html" %}
+  {% elif path != "" %}
+    {% include "/%s/finish.html" % path %}
+  {% else %}
+    <h1>{{ title }}</h1>
+    <p>You're all done. Thanks again for your support of MinnPost.</p>
+  {% endif %}
 </section>
-
-<main>
-  <div class="wrapper support--forms">
-    <section id="panel--confirmation" class="panel panel--form">
-  	 <h1>Thank you for supporting MinnPost</h1>
-  	 <p>You're all done. Thanks again for your support of MinnPost.</p>
-    </section>
-  </div>
-</main>
 {% endblock %}

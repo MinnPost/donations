@@ -1,0 +1,77 @@
+<fieldset class="m-address-information m-billing-information">
+  <h4>Billing Information</h4>
+  <div class="m-form-item m-form-item-street">
+    <label for="billing_street">Street Address: <span class="a-form-item-required" title="This field is required.">*</span></label>
+    <input type="text" name="billing_street" id="billing_street" required maxlength="255" value="{{ billing_street }}">
+  </div>
+
+  <div class="m-form-group m-form-location-group">
+    <div class="m-form-item m-form-item-city">
+      <label for="billing_city">City: <span class="a-form-item-required" title="This field is required.">*</span></label>
+      <input type="text" name="billing_city" id="billing_city" required maxlength="255" value="{{ billing_city }}">
+    </div>
+
+    <div class="m-form-item m-form-item-state">
+      <label for="billing_state">State: <span class="a-form-item-required" title="This field is required.">*</span></label>
+      <input type="text" name="billing_state" id="billing_state" maxlength="20" required value="{{ billing_state }}">
+    </div>
+  </div>
+
+  <div class="m-form-item m-form-item-zip">
+    <label for="billing_zip">Zip Code: <span class="a-form-item-required" title="This field is required.">*</span></label>
+    <input type="tel" name="billing_zip" id="billing_zip" maxlength="10" required value="{{ billing_zip }}">
+    <div class="a-form-caption show-country"><a href="#" id="billing_show_country"><small>Not in the US?</small></a></div>
+  </div>
+
+  <div class="m-form-item m-form-item-nojs m-form-item-country">
+    <label for="billing_country">Country: </label>
+    <input type="text" name="billing_country" id="billing_country" maxlength="50" value="{{ billing_country }}">
+  </div>
+
+  {% if shipping is sameas true %}
+  <div class="m-form-item" id="useforshipping-wrapper">
+    <label class="a-form-caption option" for="useforshipping">
+    <input type="checkbox" name="useforshipping" id="useforshipping" value="1"  checked="checked"  class="form-checkbox"> Use this address for shipping</label>
+  </div>
+  {% endif %}
+
+</fieldset>
+
+{% if shipping is sameas true %}
+<fieldset class="m-address-information m-shipping-information">
+
+  <div class="m-form-item m-form-item-shipping-name">
+    <label for="shipping_name">Ship To (if different): </label>
+    <input type="text" name="shipping_name" id="shipping_name" maxlength="100">
+  </div>
+
+  <div class="m-form-item m-form-item-street">
+    <label for="shipping_street">Shipping Street Address: </label>
+    <input type="text" name="shipping_street" id="shipping_street" maxlength="80">
+  </div>
+
+  <div class="m-form-group m-form-location-group">
+    <div class="m-form-item m-form-item-city">
+      <label for="shipping_city">Shipping City: </label>
+      <input type="text" name="shipping_city" id="shipping_city" maxlength="50">
+    </div>
+
+    <div class="m-form-item form-item-state">
+      <label for="shipping_state">Shipping State: </label>
+      <input type="text" name="shipping_state" id="shipping_state" maxlength="50">
+    </div>
+  </div>
+
+  <div class="m-form-item form-item-zip">
+    <label for="shipping_zip">Shipping Zip Code: </label>
+    <input type="tel" name="shipping_zip" id="shipping_zip" maxlength="10">
+    <div class="caption show-shipping-country"><a href="#" id="shipping_show_country"><small>Not in the US?</small></a></div>
+  </div>
+
+  <div class="m-form-item m-form-item-nojs m-form-item-shipping-country">
+    <label for="shipping_country">Shipping Country: </label>
+    <input type="text" name="shipping_country" id="shipping_country" maxlength="50">
+  </div>
+
+</fieldset>
+{% endif %}
