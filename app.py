@@ -292,6 +292,12 @@ def apply_card_details(data=None, customer=None, payment_method=None, charge_sou
         month = card["exp_month"]
         brand = card["brand"]
         last4 = card["last4"]
+
+        if card["wallet"] is not None:
+            wallet_type = card["wallet"]["type"]
+            logging.info(f"digital wallet type is {wallet_type} ")
+            data.digital_wallet_type = card["wallet"]["type"]
+
     elif charge_source is not None:
         # there is a charge object
         card = charge_source

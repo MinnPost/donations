@@ -299,6 +299,7 @@ class Opportunity(SalesforceObject):
         self.created = False
         self.credited_as = None
         self.client_organization = None
+        self.digital_wallet_type = None
         self.donor_first_name = None
         self.donor_last_name = None
         self.donor_email = None
@@ -399,6 +400,7 @@ class Opportunity(SalesforceObject):
                 npsp__Closed_Lost_Reason__c,
                 Credited_as__c,
                 Client_Organization__c,
+                Digital_Wallet_Type__c,
                 Donor_first_name__c,
                 Donor_last_name__c,
                 Donor_e_mail__c,
@@ -470,6 +472,7 @@ class Opportunity(SalesforceObject):
             y.anonymous = item["Anonymous__c"]
             y.in_honor_or_memory = item["In_Honor_Memory__c"]
             y.in_honor_or_memory_of = item["In_Honor_of_In_Memory__c"]
+            y.digital_wallet_type = item["Digital_Wallet_Type__c"]
             y.donor_address_one = item["Donor_address_line_1__c"]
             y.donor_city = item["Donor_city__c"]
             y.donor_state = item["Donor_state__c"]
@@ -602,6 +605,7 @@ class Opportunity(SalesforceObject):
             "npsp__Closed_Lost_Reason__c": self.closed_lost_reason,
             "Credited_as__c": self.credited_as,
             "Client_Organization__c": self.client_organization,
+            "Digital_Wallet_Type__c": self.digital_wallet_type,
             "Donor_first_name__c": self.donor_first_name,
             "Donor_last_name__c": self.donor_last_name,
             "Donor_e_mail__c": self.donor_email,
@@ -734,6 +738,7 @@ class RDO(SalesforceObject):
         self.card_type = None
         self.created = False
         self.credited_as = None
+        self.digital_wallet_type = None
         self.donor_first_name = None
         self.donor_last_name = None
         self.donor_email = None
@@ -802,6 +807,7 @@ class RDO(SalesforceObject):
                 Anonymous__c,
                 Credited_as__c,
                 Card_type__c,
+                Digital_Wallet_Type__c,
                 Donor_first_name__c,
                 Donor_last_name__c,
                 Donor_e_mail__c,
@@ -863,6 +869,7 @@ class RDO(SalesforceObject):
             y.anonymous = item["Anonymous__c"]
             y.credited_as = item["Credited_as__c"]
             y.card_type = item["Card_type__c"]
+            y.digital_wallet_type = item["Digital_Wallet_Type__c"]
             y.donor_first_name = item["Donor_first_name__c"]
             y.donor_last_name = item["Donor_last_name__c"]
             y.donor_email = item["Donor_e_mail__c"]
@@ -930,6 +937,7 @@ class RDO(SalesforceObject):
             "Anonymous__c": self.anonymous,
             "Credited_as__c": self.credited_as,
             "Card_type__c": self.card_type,
+            "Digital_Wallet_Type__c": self.digital_wallet_type,
             "Donor_first_name__c": self.donor_first_name,
             "Donor_last_name__c": self.donor_last_name,
             "Donor_e_mail__c": self.donor_email,
@@ -1001,6 +1009,7 @@ class RDO(SalesforceObject):
                 npsp__Closed_Lost_Reason__c,
                 Credited_as__c,
                 Client_Organization__c,
+                Digital_Wallet_Type__c,
                 Donor_first_name__c,
                 Donor_last_name__c,
                 Donor_e_mail__c,
@@ -1068,6 +1077,7 @@ class RDO(SalesforceObject):
             y.closed_lost_reason = item["npsp__Closed_Lost_Reason__c"]
             y.credited_as = item["Credited_as__c"]
             y.client_organization = item["Client_Organization__c"]
+            y.digital_wallet_type = item["Digital_Wallet_Type__c"]
             y.donor_first_name = item["Donor_first_name__c"]
             y.donor_last_name = item["Donor_last_name__c"]
             y.donor_email = item["Donor_e_mail__c"]
