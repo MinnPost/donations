@@ -8,7 +8,7 @@
 
 {% block content %}
 <section id="panel--error" class="panel--error">
-  <h1>Sorry, there has been an issue</h1>
+  <h1>{% block heading %}{% if heading|length %}{{ heading }}{% else %}Sorry, there has been an issue{% endif %}{% endblock %}</h1>
   <p>{{ message }}</p>
 </section>
 {% endblock %}

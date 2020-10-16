@@ -820,7 +820,7 @@ def root_form():
     form        = MinimalForm()
     form_action = "/give/"
 
-    # amount is the bare minimum to work
+    # if there is already an amount, use it
     if request.args.get("amount"):
         amount = format_amount(request.args.get("amount"))
         amount_formatted = format(amount, ",.2f")
@@ -1036,6 +1036,13 @@ def donation_update_form():
     hide_honor_or_memory    = True
     hide_display_name       = False
     button                  = "Update Your Donation"
+
+    # require an opportunity or recurring donation ID to update
+    if not request.args.get("opportunity") and not request.args.get("recurring"):
+        heading = "Update Your Donation"
+        message = "To update a donation, this page needs to have the unique identifier for that donation."
+        return render_template("error.html", heading=heading, message=message)
+
     return minimal_form("donation-update", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
 
@@ -1057,6 +1064,7 @@ def donation_cancel_form():
     # salesforce donation object loader
     opportunity = None
     recurring = None
+    donation = None
 
     # donation and user info
     amount = 0
@@ -1077,6 +1085,11 @@ def donation_cancel_form():
         heading       = "Cancel Single Donation"
     elif recurring_id:
         heading       = "Cancel Recurring Donation"
+    # require an opportunity or recurring donation ID to cancel
+    else:
+        heading = "Cancel Your Donation"
+        message = "To cancel a donation, this page needs to have the unique identifier for that donation."
+        return render_template("error.html", heading=heading, message=message)
 
     title = f"{heading} | MinnPost"
     
