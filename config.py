@@ -34,15 +34,15 @@ CELERY_ALWAYS_EAGER = bool_env("CELERY_ALWAYS_EAGER")
 CELERYBEAT_SCHEDULE = {
     "charge-cards": {
         "task": "batch.charge_cards",
-        "schedule": crontab(minute="0", hour=BATCH_HOURS),
+        "schedule": crontab(minute="*"),
     },
     "save-stripe-fee": {
         "task": "batch.save_stripe_fee",
-        "schedule": crontab(minute="0", hour=BATCH_HOURS),
+        "schedule": crontab(minute="*"),
     },
     "update-ach": {
         "task": "batch.update_ach_charges",
-        "schedule": crontab(minute="0", hour=BATCH_HOURS),
+        "schedule": crontab(minute="*"),
     }
 }
 REDIS_URL = os.getenv("REDIS_URL")
