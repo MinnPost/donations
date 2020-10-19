@@ -11,6 +11,17 @@ MinnPost's version has a few important differences:
 - We have not activated the Amazon Pay functionality
 - Our tests are very out of date
 - We have some different environment variables
+- We don't use Docker
+- Our JavaScript environment is mostly just a jQuery plugin
+- For Python, we use a Pipfile/pipenv instead of requirements.txt.
+
+To run this app locally, download it and install the environment with Pip. To start:
+
+```
+pipenv shell
+```
+
+The app can then be run locally either with `python3 app.py` or `heroku local`.
 
 
 Texas Tribune Version
