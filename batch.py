@@ -4,15 +4,13 @@ from datetime import datetime, timedelta
 
 from pytz import timezone
 
-from celery import Celery
+import celery
 import redis
 from charges import amount_to_charge, calculate_amount_fees, charge, ChargeException
 from npsp import Opportunity
 from util import send_email, update_fees
 
 zone = timezone(TIMEZONE)
-
-celery = Celery()
 
 
 log_level = logging.getLevelName(LOG_LEVEL)
