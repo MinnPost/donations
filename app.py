@@ -44,7 +44,7 @@ from pprint import pformat
 
 from pytz import timezone
 
-from celery import Celery
+import celery
 import stripe
 import plaid
 from app_celery import make_celery
@@ -185,7 +185,6 @@ csp = {
 
 
 app = Flask(__name__)
-celery = Celery()
 
 Talisman(
     app,
