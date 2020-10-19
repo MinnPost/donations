@@ -1433,6 +1433,10 @@ def calculate_member_level():
     form_data = form.data
 
     amount = form_data["amount"]
+
+    if amount is None:
+        amount = 0
+
     frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     if frequency == "monthly":
         yearly = 12
