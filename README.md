@@ -1,3 +1,21 @@
+MinnPost Version
+=========
+
+Ultimately this app is a fork of https://github.com/texastribune/donations, created by Texas Tribune for their donations app, though both these repositories were originally on Bitbucket. It powers various methods of payment at MinnPost, most commonly with users starting at https://www.minnpost.com/support/, although others start users in this app.
+
+MinnPost's version has a few important differences:
+
+- We have several different page types (the standard one time and recurring donations, plus advertising payments, event sponsorships, pledge payments, and the ability to update or cancel an existing donation)
+- We currently don't use Stripe Checkout (we use Stripe.js with Elements instead; integrating Stripe into our UI)
+- We have the option of using Plaid for ACH payments
+- We have not activated the Amazon Pay functionality
+- Our tests are very out of date
+- We have some different environment variables
+
+
+Texas Tribune Version
+=========
+
 Software to collect donations for nonprofits. It integrates with Saleforce, Stripe, Amazon Pay, Slack and Sentry.
 
 Donations
