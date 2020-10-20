@@ -274,3 +274,33 @@ def update_fees(query, log, donation_type):
             log.it('error updating salesforce with fee value')
             raise Exception('error')
         continue
+
+
+def fail_expired_charges(query):
+    sf = SalesforceConnection()
+    response = sf.query(query)
+    length = len(response)
+    logging.info(f"Found {length} opportunities to set to Closed Lost.")
+
+    for item in response:
+
+        # salesforce connect
+        path = item['attributes']['url']
+        url = '{}{}'.format(sf.instance_url, path)
+
+        opp_id = item.get('Id')
+        stage_name = item.get('StageName')
+
+        if stage_name == 'Failed':
+            stage_name = "Closed Lost"
+            logging.info(f"Updating opportunity ID {opp_id} StageName to {stage_name}")
+            update = {
+                'StageName': stage_name
+                }
+            resp = requests.patch(url, headers=sf.headers, data=json.dumps(update))
+            if resp.status_code == 204:
+                logging.info("Salesforce opportunity updated to Closed Lost")
+            else:
+                logging.info("Error updating Salesforce opportunity to Closed Lost")
+                raise Exception('error')
+        continue

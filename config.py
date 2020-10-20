@@ -40,6 +40,10 @@ CELERYBEAT_SCHEDULE = {
         "task": "batch.save_stripe_fee",
         "schedule": crontab(minute="0", hour=BATCH_HOURS),
     },
+    "update-failed-charges": {
+        "task": "batch.update_failed_charges",
+        "schedule": crontab(minute="0", hour=BATCH_HOURS),
+    },
     "update-ach": {
         "task": "batch.update_ach_charges",
         "schedule": crontab(minute="0", hour=BATCH_HOURS),
@@ -142,6 +146,7 @@ DEFAULT_CAMPAIGN_ONETIME = os.getenv('DEFAULT_CAMPAIGN_ONETIME')
 DEFAULT_CAMPAIGN_RECURRING = os.getenv('DEFAULT_CAMPAIGN_RECURRING')
 MINNROAST_CAMPAIGN_ID = os.getenv('MINNROAST_CAMPAIGN_ID')
 SALESFORCE_CONTACT_ADVERTISING_EMAIL = os.getenv('SALESFORCE_CONTACT_ADVERTISING_EMAIL')
+UPDATE_FAILED_CHARGES = os.getenv('UPDATE_FAILED_CHARGES', False)
 
 
 ########

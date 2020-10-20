@@ -1,5 +1,5 @@
 import logging
-from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_URL, TIMEZONE, UPDATE_STRIPE_FEES
+from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_URL, TIMEZONE, UPDATE_STRIPE_FEES, UPDATE_FAILED_CHARGES
 from datetime import datetime, timedelta
 
 from pytz import timezone
@@ -8,7 +8,7 @@ import celery
 import redis
 from charges import amount_to_charge, calculate_amount_fees, charge, ChargeException
 from npsp import Opportunity
-from util import send_email, update_fees
+from util import send_email, update_fees, fail_expired_charges
 
 zone = timezone(TIMEZONE)
 
@@ -147,6 +147,43 @@ def update_ach_charges():
     log.send()
 
     lock.release()
+
+
+@celery.task()
+def update_failed_charges():
+
+    log = Log()
+
+    log.it('---Starting batch update failed charges job...')
+
+    if UPDATE_FAILED_CHARGES is False:
+        log.it('---Update failed charges is false. Get out.')
+        return
+
+    lock = Lock(key='update-failed-charges-lock')
+    lock.acquire()
+
+    seven_days_ago = (datetime.now(tz=zone) - timedelta(days=7)).strftime("%Y-%m-%d")
+    
+    query = f"""
+        SELECT 
+        Amount,
+        CloseDate,
+        Id,
+        Name,
+        StageName,
+        Type
+        FROM Opportunity
+        WHERE StageName = 'Failed'
+        AND CloseDate <= {seven_days_ago}
+        ORDER BY CloseDate DESC
+        LIMIT 25
+        """
+
+    try:
+        fail_expired_charges(query)
+    finally:
+        lock.release()
 
 
 @celery.task()
