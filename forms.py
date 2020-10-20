@@ -33,11 +33,15 @@ def validate_amount(form, field):
 # if value starts with a dollar sign, remove it
 # then convert to a Decimal
 def format_amount(value):
+    stripe_maximum_value = 999999.99
     if value:
         if value.startswith("$"):
             value = value[1:]
+        value = Decimal(re.sub("[^\d\.]", "", value))
         try:
-            return Decimal(re.sub("[^\d\.]", "", value))
+            if value > stripe_maximum_value:
+                value = stripe_maximum_value
+            return value
         except ValueError:
             return None
 
