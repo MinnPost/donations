@@ -494,7 +494,7 @@
     spamEmail: function(email_field) {
       var spamErrorContainer = email_field.parent();
       if ($('.a-spam-email', spamErrorContainer).length === 0 ) {
-        spamErrorContainer.append('<p class="a-form-caption a-error a-spam-email">This email address has been detected as a spammer.</p>');
+        spamErrorContainer.append('<p class="a-form-caption a-validation-error a-spam-email">This email address has been detected as a spammer.</p>');
       }
       $('.a-spam-email', spamErrorContainer).hide();
       spamErrorContainer.removeClass('invalid a-error');
