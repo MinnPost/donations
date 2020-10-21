@@ -1037,7 +1037,7 @@ def donation_update_form():
     button                  = "Update Your Donation"
 
     # require an opportunity or recurring donation ID to update
-    if not request.args.get("opportunity") and not request.args.get("recurring"):
+    if request.method is "GET" and not request.args.get("opportunity") and not request.args.get("recurring"):
         heading = "Update Your Donation"
         message = "To update a donation, this page needs to have the unique identifier for that donation."
         return render_template("error.html", heading=heading, message=message)
@@ -1084,11 +1084,6 @@ def donation_cancel_form():
         heading       = "Cancel Single Donation"
     elif recurring_id:
         heading       = "Cancel Recurring Donation"
-    # require an opportunity or recurring donation ID to cancel
-    else:
-        heading = "Cancel Your Donation"
-        message = "To cancel a donation, this page needs to have the unique identifier for that donation."
-        return render_template("error.html", heading=heading, message=message)
 
     title = f"{heading} | MinnPost"
     
@@ -1141,6 +1136,11 @@ def donation_cancel_form():
                 summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation scheduled for {close_date_formatted}, click the button."
             else:
                 summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation, click the button."
+    # require an opportunity or recurring donation ID to cancel
+    else:
+        heading = "Cancel Your Donation"
+        message = "To cancel a donation, this page needs to have the unique identifier for that donation."
+        return render_template("error.html", heading=heading, message=message)
 
     # interface settings
     button = "Confirm your cancellation"
