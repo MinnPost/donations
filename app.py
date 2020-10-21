@@ -74,6 +74,7 @@ from util import (
     notify_slack,
     send_multiple_account_warning,
     dir_last_updated,
+    is_known_spam_email,
 )
 from email_validator import validate_email, EmailNotValidError
 from charges import charge, create_plaid_link_token, calculate_amount_fees, check_level, ChargeException
@@ -778,6 +779,13 @@ def validate_form(FormType, template, function=add_donation.delay):
         app.logger.error(f"Form validation errors: {form.errors}")
         for field in form.errors:
             body.append({"field": field, "message": form.errors[field]})
+        return jsonify(errors=body)
+
+    email_is_spam = is_known_spam_email(email)
+    if email_is_spam is True: # email was a spammer
+        body = []
+        message = f"Please ensure you have a valid email address. {email} has been flagged as a possible spam email address."
+        body.append({"field": "email", "message": message})
         return jsonify(errors=body)
 
     if app.config["USE_RECAPTCHA"] == True:

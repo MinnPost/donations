@@ -11,6 +11,7 @@ def bool_env(val):
 
 
 TIMEZONE = os.getenv("TIMEZONE", "US/Central")
+EMAIL_BAN_LIST = os.getenv('EMAIL_BAN_LIST', "")
 
 #######
 # Flask

@@ -1,17 +1,21 @@
 import os
 import json
+from datetime import datetime, timedelta
 import hashlib
 import logging
 import smtplib
+from stopforumspam_api import query
 from collections import defaultdict
 from config import (
     BUSINESS_MEMBER_RECIPIENT,
     DEFAULT_MAIL_SENDER,
+    EMAIL_BAN_LIST,
     ENABLE_SLACK,
     MAIL_PASSWORD,
     MAIL_PORT,
     MAIL_SERVER,
     MAIL_USERNAME,
+    MINNPOST_ROOT,
     MULTIPLE_ACCOUNT_WARNING_MAIL_RECIPIENT,
     SLACK_API_KEY,
     SLACK_CHANNEL,
@@ -304,3 +308,30 @@ def fail_expired_charges(query):
                 logging.info("Error updating Salesforce opportunity to Closed Lost")
                 raise Exception('error')
         continue
+
+
+def is_known_spam_email(email):
+
+    if email in EMAIL_BAN_LIST:
+        logging.info(f"Error: block from ban list. Email is {email}")
+        return True
+
+    response = query(email=email)
+    if response != None:
+        if response.email.appears:
+            difference = datetime.utcnow() - response.email.lastseen
+            if response.email.frequency > 2 and difference.days < 365:
+                logging.info(f"Error: block from stopforumspam response. Email is {email}")
+                return True
+
+    api_url = step_one_url = f'{MINNPOST_ROOT}/wp-json/user-account-management/v1/check-account/?email={email}'
+    logging.info("url is {api_url}")
+    wordpress_response = requests.get(api_url)
+    if wordpress_response != None:
+        result = json.loads(wordpress_response.text)
+        if 'status' in result:
+            if result['status'] == 'spam':
+                logging.info(f"Error: block from WordPress response. Email is {email}")
+                return True
+
+    return False
