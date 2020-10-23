@@ -1416,6 +1416,9 @@ def calculate_fees():
 
     amount = form_data["amount"]
     fees = ''
+
+    if amount is None or amount is "":
+        amount = 0
     
     # get fee amount to send to stripe
     if "stripe_payment_type" in form_data:
