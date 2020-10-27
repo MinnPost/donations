@@ -606,6 +606,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     payment_method_id = None
     payment_method = None
     bank_token = None
+    source_token = None
 
     if form_data.get("payment_method_id", ""):
         payment_method_id = form_data["payment_method_id"]
