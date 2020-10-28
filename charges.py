@@ -288,11 +288,13 @@ def charge(opportunity):
             payment_intent = stripe.PaymentIntent.retrieve(
                 opportunity.stripe_transaction_id,
             )
-            charge_id = payment_intent.charges.data[0].id
-            charge = stripe.Charge.retrieve(charge_id)
         elif charge_source is not None:
             charge = stripe.Charge.retrieve(opportunity.stripe_transaction_id)
 
+    if payment_intent is not None:
+        charge_id = payment_intent.charges.data[0].id
+        charge = stripe.Charge.retrieve(charge_id)
+    
     if charge:
 
         if charge.status != "succeeded" and charge.status != "pending":
@@ -300,19 +302,21 @@ def charge(opportunity):
             raise ChargeException(opportunity, "charge failed")
     
         # this is either pending or finished
+        opportunity.stripe_transaction_id = charge.id
+
         if charge.status == "pending":
             logging.info(f"ACH charge pending. Check at intervals to see if it processes.")
             opportunity.stage_name = "ACH Pending"
-            opportunity.stripe_transaction_id = charge.id
             opportunity.save()
 
         # payment was successful
-        if charge.source.object == "bank_account":
-            opportunity.stripe_bank_account = charge.source.id
-            opportunity.stage_name = "Closed Won"
-            opportunity.save()
-        else:
-            opportunity.stripe_card = charge.source.id
-            opportunity.stripe_transaction_id = charge.id
-            opportunity.stage_name = "Closed Won"
-            opportunity.save()
+        if charge.payment_intent:
+            opportunity.stripe_card = payment_intent.payment_method
+        elif charge.source:
+            if charge.source.object == "bank_account":
+                opportunity.stripe_bank_account = charge.source.id
+            else:
+                opportunity.stripe_card = charge.source.id
+        
+        opportunity.stage_name = "Closed Won"
+        opportunity.save()
