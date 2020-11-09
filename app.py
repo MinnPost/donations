@@ -652,6 +652,36 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
             message = err.get("message", "")
             app.logger.error(f"Stripe InvalidRequestError: {message}")
             return jsonify(errors=body)
+        except stripe.error.RateLimitError as e: # Too many requests made to the API too quickly
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe RateLimitError: {message}")
+            return jsonify(errors=body)
+        except stripe.error.AuthenticationError as e: # Authentication with Stripe's API failed
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe AuthenticationError: {message}")
+            return jsonify(errors=body)
+        except stripe.error.APIConnectionError as e: # Network communication with Stripe failed
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe APIConnectionError: {message}")
+            return jsonify(errors=body)
+        except stripe.error.StripeError as e: # Generic stripe error
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe StripeError: {message}")
+            return jsonify(errors=body)
+        except Exception as e: # Unknown Stripe error
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe Unknown Error: {message}")
+            return jsonify(errors=body)
     elif customer_id is not None and customer_id != '': # this is an existing customer
         app.logger.info(f"----Updating existing Stripe customer: ID {customer_id}")
         customer = stripe.Customer.retrieve(customer_id)
@@ -729,6 +759,36 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
             else:
                 app.logger.error(f"Stripe InvalidRequestError: {message}")
                 return jsonify(errors=body)
+        except stripe.error.RateLimitError as e: # Too many requests made to the API too quickly
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe RateLimitError: {message}")
+            return jsonify(errors=body)
+        except stripe.error.AuthenticationError as e: # Authentication with Stripe's API failed
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe AuthenticationError: {message}")
+            return jsonify(errors=body)
+        except stripe.error.APIConnectionError as e: # Network communication with Stripe failed
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe APIConnectionError: {message}")
+            return jsonify(errors=body)
+        except stripe.error.StripeError as e: # Generic stripe error
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe StripeError: {message}")
+            return jsonify(errors=body)
+        except Exception as e: # Unknown Stripe error
+            body = e.json_body
+            err = body.get("error", {})
+            message = err.get("message", "")
+            app.logger.error(f"Stripe Unknown Error: {message}")
+            return jsonify(errors=body)
 
     app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
     function(customer=customer, form=clean(form_data), donation_type=donation_type, payment_method=payment_method, charge_source=charge_source)
