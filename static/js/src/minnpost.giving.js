@@ -1066,35 +1066,33 @@
       billingDetails.name = full_name;
 
       var street = 'None';
-      if ($('input[name="full_address"]').val() != '') {
-        street = $('#full_address').val();
-        if ($(this.options.billing_street_field_selector).val() != '') {
-          street = $(this.options.billing_street_field_selector).val();
-        }
-        addressDetails.line1 = street;
+      if ($(this.options.billing_street_field_selector).val() != '') {
+        street = $(this.options.billing_street_field_selector).val();
       }
+      addressDetails.line1 = street;
 
       var city = 'None';
-      if ($(this.options.account_city_selector).val() != '') {
-        city = $(this.options.account_city_selector).val();
+      if ($(this.options.billing_city_field_selector).val() != '') {
+        city = $(this.options.billing_city_field_selector).val();
         addressDetails.city = city;
       }
 
       var state = 'None';
-      if ($(this.options.account_state_selector).val() != '') {
-        state = $(this.options.account_state_selector).val();
+      if ($(this.options.billing_state_field_selector).val() != '') {
+        state = $(this.options.billing_state_field_selector).val();
         addressDetails.state = state;
       }
 
       var zip = 'None';
-      if ($(this.options.account_zip_selector).val() != '') {
-        zip = $(this.options.account_zip_selector).val();
+      if ($(this.options.billing_zip_field_selector).val() != '') {
+        zip = $(this.options.billing_zip_field_selector).val();
         addressDetails.postal_code = zip;
       }
 
       var country = 'US';
-      if ($(this.options.billing_country_field_selector).val() != '') {
-        country = $(this.options.billing_country_field_selector).val();
+      var country_field_value = $(this.options.billing_country_field_selector).val();
+      if (country_field_value != '' && country_field_value != 'United States') {
+        country = country_field_value;
       }
       addressDetails.country = country;
 
