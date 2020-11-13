@@ -1068,8 +1068,8 @@
       var street = 'None';
       if ($(this.options.billing_street_field_selector).val() != '') {
         street = $(this.options.billing_street_field_selector).val();
+        addressDetails.line1 = street;
       }
-      addressDetails.line1 = street;
 
       var city = 'None';
       if ($(this.options.billing_city_field_selector).val() != '') {
