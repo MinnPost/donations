@@ -76,7 +76,7 @@ def is_human(captcha_response):
         else returns False.
     """
     secret = RECAPTCHA_KEYS["secret_key"]
-    if secret is not '':
+    if secret != "":
         payload = {'response':captcha_response, 'secret':secret}
         response = requests.post("https://www.google.com/recaptcha/api/siteverify", payload)
         response_text = json.loads(response.text)
