@@ -89,7 +89,7 @@ def check_level(amount, frequency, yearly, prior_year_amount=None, coming_year_a
     nextlevelmonthlystart = ''
 
     if prior_year_amount != None or coming_year_amount != None or annual_recurring_amount != None:
-        if frequency is 'one-time':
+        if frequency == 'one-time':
             prior_year_amount = thisyear
         else:
             annual_recurring_amount += thisyear

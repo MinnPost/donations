@@ -616,7 +616,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     elif form_data.get("stripeToken", ""):
         source_token = form_data["stripeToken"]
 
-    if customer_id is "": # this is a new customer
+    if customer_id == "": # this is a new customer
         app.logger.debug("----Creating new Stripe customer...")
         # if it is a new customer, assume they only have one payment method and it should be the default
         try:
@@ -710,7 +710,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
                     source=bank_token,
                 )
             elif source_token is None:
-                if update_default_source is not "":
+                if update_default_source != "":
                     app.logger.info(f"----Add new default source for customer: ID {customer_id}.")
                     customer = stripe.Customer.modify(
                         customer_id,
@@ -1107,7 +1107,7 @@ def donation_update_form():
     button                  = "Update Your Donation"
 
     # require an opportunity or recurring donation ID to update
-    if request.method is "GET" and not request.args.get("opportunity") and not request.args.get("recurring"):
+    if request.method == "GET" and not request.args.get("opportunity") and not request.args.get("recurring"):
         heading = "Update Your Donation"
         message = "To update a donation, this page needs to have the unique identifier for that donation."
         return render_template("error.html", heading=heading, message=message)
@@ -1479,7 +1479,7 @@ def calculate_fees():
     amount = form_data["amount"]
     fees = ''
 
-    if amount is None or amount is "":
+    if amount is None or amount == "":
         amount = 0
     
     # get fee amount to send to stripe
@@ -1506,7 +1506,7 @@ def calculate_member_level():
 
     amount = form_data["amount"]
 
-    if amount is None or amount is "":
+    if amount is None or amount == "":
         amount = 0
 
     frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
