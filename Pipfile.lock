@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "bad5687280bd634020dfcb0f01e7e02454315bb61e44ea51751210dee341ed71"
+            "sha256": "032015aa87381cf08be51b45811935c7d4e0489d7dbc25c52ffccc0c0a4b0cc9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -161,11 +161,11 @@
         },
         "email-validator": {
             "hashes": [
-                "sha256:5f246ae8d81ce3000eade06595b7bb55a4cf350d559e890182a1466a21f25067",
-                "sha256:63094045c3e802c3d3d575b18b004a531c36243ca8d1cec785ff6bfcb04185bb"
+                "sha256:094b1d1c60d790649989d38d34f69e1ef07792366277a2cf88684d03495d018f",
+                "sha256:1a13bd6050d1db4475f13e444e169b6fe872434922d38968c67cea9568cce2f0"
             ],
             "index": "pypi",
-            "version": "==1.1.1"
+            "version": "==1.1.2"
         },
         "flask": {
             "hashes": [
@@ -341,11 +341,11 @@
         },
         "pytz": {
             "hashes": [
-                "sha256:a494d53b6d39c3c6e44c3bec237336e14305e4f29bbf800b599253057fbb79ed",
-                "sha256:c35965d010ce31b23eeb663ed3cc8c906275d6be1a34393a1d73a41febf4a048"
+                "sha256:3e6b7dd2d1e0a59084bcee14a17af60c5c562cdc16d828e8eba2e683d3a7e268",
+                "sha256:5c55e189b682d420be27c6995ba6edce0c0a77dd67bfbe2ae6607134d5851ffd"
             ],
             "index": "pypi",
-            "version": "==2020.1"
+            "version": "==2020.4"
         },
         "redis": {
             "hashes": [
@@ -365,11 +365,11 @@
         },
         "sentry-sdk": {
             "hashes": [
-                "sha256:1d91a0059d2d8bb980bec169578035c2f2d4b93cd8a4fb5b85c81904d33e221a",
-                "sha256:6222cf623e404c3e62b8e0e81c6db866ac2d12a663b7c1f7963350e3f397522a"
+                "sha256:81d7a5d8ca0b13a16666e8280127b004565aa988bfeec6481e98a8601804b215",
+                "sha256:fd48f627945511c140546939b4d73815be4860cd1d2b9149577d7f6563e7bd60"
             ],
             "index": "pypi",
-            "version": "==0.18.0"
+            "version": "==0.19.3"
         },
         "simplejson": {
             "hashes": [
@@ -439,11 +439,11 @@
         },
         "stripe": {
             "hashes": [
-                "sha256:6daf0dcb7f9cb8d1af93e94eb7d91df4c0b112db517c8c446017ea0b7f037c83",
-                "sha256:a622bce0d6d0ac99a53b6e6a6475c39250207d644f28ad0ed276af7b96d12617"
+                "sha256:2eebf023595e8aa9d65d8b46ccc3c716185bb9625d0e39d3956282fd7525848d",
+                "sha256:833313d28dcceca71128ee915c2dacbbf235c909e0a01b0f94ee5037e1c46109"
             ],
             "index": "pypi",
-            "version": "==2.54.0"
+            "version": "==2.55.0"
         },
         "urllib3": {
             "hashes": [
