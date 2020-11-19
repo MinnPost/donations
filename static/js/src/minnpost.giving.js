@@ -739,7 +739,8 @@
       $('input[name="public_token"]', $(options.donate_form_selector)).remove();
       $('input[name="account_id"]', $(options.donate_form_selector)).remove();
       $('input[name="bankToken"]', $(options.donate_form_selector)).remove();
-      $(options.plaid_link).html('<a href="#" id="authorize-ach">Sign in to your bank account</a>');
+      $(options.plaid_link).html('<a href="#">Sign in to your bank account</a>');
+      this.buttonDisabled(options, false, '', '', true); // if the button was disabled, re-enable it
       if (typeof this.linkHandler !== 'undefined') {
         this.linkHandler.destroy();
       }
@@ -835,6 +836,9 @@
       var bankTokenFieldName = 'bankToken';
       var bankTokenField = 'input[name="' + bankTokenFieldName + '"]';
       var that = this;
+      // the button should not be clickable until the user has signed in
+      that.buttonDisabled(options, true, '', 'Sign in to your bank account (above) first');
+
       if (typeof Plaid !== 'undefined') {
         that.linkHandler = Plaid.create({
           clientName: 'MinnPost',
@@ -864,6 +868,7 @@
                   $(options.donate_form_selector).prepend($('<input type=\"hidden\" name="' + bankTokenFieldName + '">').val(response.stripe_bank_account_token));
                 }
                 $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>');
+                that.buttonDisabled(options, false);
               }
             })
             .error(function(response) {
@@ -881,13 +886,43 @@
 
     buttonStatus: function(options, button, disabled) {
       // make the button clickable or not
-      button.prop('disabled', disabled);
+      this.buttonDisabled(options, disabled, button);
       if (disabled === false) {
         button.text(options.button_text);
       } else {
         button.text('Processing');
       }
     }, // buttonStatus
+
+    buttonDisabled: function(options, disabled, button = '', message = '', ach_was_initialized = false) {
+      if (button === '') {
+        button = $(options.donate_form_selector).find('button');
+      }
+      button.prop('disabled', disabled);
+      if (message !== '') {
+        if (disabled === true) {
+          button.attr('data-tlite', message);
+        } else {
+          button.removeAttr( 'data-tlite' ); // there should be no tlite value if the button is enabled
+        }
+        button.on('mouseenter focus', function(event) {
+          tlite.show( ( this ), { grav: 'nw' } );
+        });
+        button.on('mouseleave', function(event) {
+          tlite.hide( ( this ) );
+        });
+      } else {
+        button.removeAttr( 'data-tlite' );
+        if (ach_was_initialized === true ) {
+          button.on('mouseenter focus', function(event) {
+            tlite.hide( ( this ) );
+          });
+          button.click(function(event) {
+            return true;
+          });
+        }
+      }
+    }, // buttonDisabled
 
     validateSetup: function(element, options) {
       var forms = document.querySelectorAll(options.form_selector);

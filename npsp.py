@@ -578,7 +578,10 @@ class Opportunity(SalesforceObject):
 
     @property
     def stripe_transaction_fee(self):
-        return str(Decimal(self._stripe_transaction_fee).quantize(TWOPLACES))
+        if self._stripe_transaction_fee != 0 and self._stripe_transaction_fee != None:
+            return str(Decimal(self._stripe_transaction_fee).quantize(TWOPLACES))
+        else:
+            return str(0)
 
     @amount.setter
     def amount(self, amount):
@@ -1196,7 +1199,10 @@ class RDO(SalesforceObject):
 
     @property
     def stripe_transaction_fee(self):
-        return str(Decimal(self._stripe_transaction_fee).quantize(TWOPLACES))
+        if self._stripe_transaction_fee != 0 and self._stripe_transaction_fee != None:
+            return str(Decimal(self._stripe_transaction_fee).quantize(TWOPLACES))
+        else:
+            return str(0)
 
     @amount.setter
     def amount(self, amount):
