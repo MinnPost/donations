@@ -740,7 +740,7 @@
       $('input[name="account_id"]', $(options.donate_form_selector)).remove();
       $('input[name="bankToken"]', $(options.donate_form_selector)).remove();
       $(options.plaid_link).html('<a href="#">Sign in to your bank account</a>');
-      this.buttonDisabled(options, false); // if the button was disabled, re-enable it
+      this.buttonDisabled(options, false, '', '', true); // if the button was disabled, re-enable it
       if (typeof this.linkHandler !== 'undefined') {
         this.linkHandler.destroy();
       }
@@ -894,23 +894,17 @@
       }
     }, // buttonStatus
 
-    buttonDisabled: function(options, disabled, button = '', message = '') {
+    buttonDisabled: function(options, disabled, button = '', message = '', ach_was_initialized = false) {
       if (button === '') {
         button = $(options.donate_form_selector).find('button');
       }
+      button.prop('disabled', disabled);
       if (message !== '') {
         if (disabled === true) {
-          button.addClass('a-button-disabled');
           button.attr('data-tlite', message);
         } else {
-          button.removeClass('a-button-disabled');
-          button.attr('data-tlite', null); // there should be no tlite value if the button is enabled
+          button.removeAttr( 'data-tlite' ); // there should be no tlite value if the button is enabled
         }
-        button.click(function(event) {
-          if (disabled === true ) {
-            event.preventDefault();
-          }
-        });
         button.on('mouseenter focus', function(event) {
           tlite.show( ( this ), { grav: 'nw' } );
         });
@@ -918,9 +912,15 @@
           tlite.hide( ( this ) );
         });
       } else {
-        button.removeClass('a-button-disabled');
-        button.prop('disabled', disabled);
-        button.attr('data-tlite', null);
+        button.removeAttr( 'data-tlite' );
+        if (ach_was_initialized === true ) {
+          button.on('mouseenter focus', function(event) {
+            tlite.hide( ( this ) );
+          });
+          button.click(function(event) {
+            return true;
+          });
+        }
       }
     }, // buttonDisabled
 
