@@ -601,6 +601,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     customer_id = form_data.get("customer_id", "")
     update_default_source = form_data.get("update_default_source", "")
+    stripe_payment_type = form_data.get("stripe_payment_type", "")
 
     charge_source = None
     payment_method_id = None
@@ -615,6 +616,21 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         bank_token = form_data["bankToken"]
     elif form_data.get("stripeToken", ""):
         source_token = form_data["stripeToken"]
+
+    if stripe_payment_type == "card":
+        if payment_method_id is None and source_token is None:
+            body = []
+            message = "To pay with your credit card, first be sure to add all of the required information."
+            app.logger.error(f"Missing credit card error: {message}")
+            body.append({'type': 'missing_payment', 'message': message})
+            return jsonify(errors=body)
+    elif stripe_payment_type == "bank_account":
+        if bank_token is None:
+            body = []
+            message = "To pay with your bank account, first sign in above to authorize the charge."
+            app.logger.error(f"Missing bank account error: {message}")
+            body.append({'type': 'missing_payment', 'message': message})
+            return jsonify(errors=body)
 
     if customer_id == "": # this is a new customer
         app.logger.debug("----Creating new Stripe customer...")

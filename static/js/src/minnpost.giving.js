@@ -878,6 +878,7 @@
         });
         $(options.plaid_link + ' a').click(function(event) {
           event.preventDefault();
+          that.resetFormErrors(that.options, that.element);
           $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
           that.linkHandler.open();
         });
@@ -1046,6 +1047,7 @@
     }, // stripeErrorDisplay
 
     resetFormErrors: function(options, element) {
+      var that = this;
       $('.a-validation-error').remove();
       $('input, label, div', element).removeClass('a-error');
       $('label', element).removeClass('m-has-validation-error');
@@ -1056,7 +1058,7 @@
         $(options.payment_method_selector + ' .a-error').remove(); // remove method error message if it is there
         $(options.payment_method_selector).parent().find('.a-validation-error').remove();
         // if a payment field changed, reset the button
-        buttonStatus(options, $(options.donate_form_selector).find('button'), false);
+        that.buttonStatus(options, $(options.donate_form_selector).find('button'), false);
       });
     }, // resetFormErrors
     
@@ -1294,11 +1296,14 @@
         if (stripeErrorSelector !== '') {
           this.stripeErrorDisplay(error, stripeErrorSelector, this.element, this.options );
         }
+        if (error.type == 'missing_payment' && stripeErrorSelector === '') {
+          $(this.options.payment_method_selector + '.active').append('<p class="a-form-caption a-validation-error a-missing-payment-error">' + error.message + '</p>')
+        }
         if (error.field == 'recaptcha') {
           $(this.options.pay_button_selector).before('<p class="a-form-caption a-validation-error a-recaptcha-error">' + message + '</p>')
         }
         if (error.type == 'invalid_request_error' && stripeErrorSelector === '') {
-          $(this.options.pay_button_selector).before('<p class="a-form-caption a-validation-error">' + error.message + '</p>')
+          $(this.options.pay_button_selector).before('<p class="a-form-caption a-validation-error a-invalid-request-error">' + error.message + '</p>')
         }
       }
     }, // displayErrorMessage

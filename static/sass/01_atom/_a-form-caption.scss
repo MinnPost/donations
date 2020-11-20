@@ -4,6 +4,10 @@
         margin-top: 1.25em;
     }
 
+    &.a-missing-payment-error {
+        margin-bottom: $standard-heading-margin;
+    }
+
     input[type="checkbox"],
     input[type="radio"] {
         display: inline;
