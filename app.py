@@ -2181,7 +2181,7 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.stage_name = form.get("stage_name", "Pledged")
 
     opportunity.name = (
-        f"{first_name} {last_name} {opportunity.type} {today}"
+        f"{first_name} {last_name} {opportunity.type} {opportunity.close_date}"
     )
     
     # minnpost custom fields
@@ -2298,7 +2298,7 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     opportunity.payment_type = "Stripe"
 
     opportunity.name = (
-        f"{donor_first_name} {donor_last_name} {opportunity.type} {close_date}"
+        f"{donor_first_name} {donor_last_name} {opportunity.type} {opportunity.close_date}"
     )
 
     # the actual opportunity values
