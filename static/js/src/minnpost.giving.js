@@ -829,7 +829,13 @@
     }, // creditCardFields
 
     showSpinner: function() {
-      $(this.options.plaid_link).html('<img src="https://www.minnpost.com/wp-admin/images/spinner.gif" srcset="https://www.minnpost.com/wp-admin/images/spinner.gif 1x, https://www.minnpost.com/wp-admin/images/spinner-2x.gif 2x,">');
+      $(this.options.plaid_link).hide();
+      $(this.options.plaid_link).after('<div class="a-spinner"><img src="https://www.minnpost.com/wp-admin/images/spinner.gif" srcset="https://www.minnpost.com/wp-admin/images/spinner.gif 1x, https://www.minnpost.com/wp-admin/images/spinner-2x.gif 2x,"></div>');
+    },
+
+    hideSpinner: function() {
+      $(this.options.plaid_link).show();
+      $('.a-spinner').hide();
     },
 
     achFields: function(element, options) {
@@ -857,7 +863,8 @@
             .done(function(response) {
               if (typeof response.error !== 'undefined') {
                 // there is an error.
-                $(options.plaid_link).after('<p class="error">' + response.error + '</p>')
+                that.hideSpinner();
+                $(options.plaid_link).before('<p class="a-error a-validation-error">' + response.error + '</p>');
               } else {
                 //this.debug('print response here');
                 //this.debug(response);
@@ -868,18 +875,21 @@
                   $(options.donate_form_selector).prepend($('<input type=\"hidden\" name="' + bankTokenFieldName + '">').val(response.stripe_bank_account_token));
                 }
                 $(options.plaid_link, element).html('<strong>Your account was successfully authorized</strong>');
+                that.hideSpinner();
                 that.buttonDisabled(options, false);
               }
             })
             .error(function(response) {
-              $(options.plaid_link).after('<p class="error">' + response.error + '</p>')
+              that.debug(response);
+              that.hideSpinner();
+              $(options.plaid_link).before('<p class="a-error a-validation-error">' + response.error + '</p>');
             });
           },
         });
         $(options.plaid_link + ' a').click(function(event) {
           event.preventDefault();
           that.resetFormErrors(that.options, that.element);
-          $(options.payment_method_selector + ' .error').remove(); // remove method error message if it is there
+          //$(options.payment_method_selector + ' .a-error').remove(); // remove method error message if it is there
           that.linkHandler.open();
         });
       }

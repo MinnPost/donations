@@ -1472,12 +1472,25 @@ def plaid_access_token():
     exchange_token_response = client.Item.public_token.exchange(public_token)
     access_token = exchange_token_response["access_token"]
 
-    stripe_response = client.Processor.stripeBankAccountTokenCreate(access_token, account_id)
-
-    if "stripe_bank_account_token" in stripe_response:
+    try:
+        stripe_response = client.Processor.stripeBankAccountTokenCreate(access_token, account_id)
         response = stripe_response
-    else:
-        response = {"error" : "We were unable to connect to your account. Please try again."}
+    except plaid.errors.PlaidError as e:
+        # return jsonify({'error': {'display_message': e.display_message, 'error_code': e.code, 'error_type': e.type } })
+
+        error_message = getattr(e, "error_message", None)
+        display_message = getattr(e, "display_message", None)
+
+        if error_message != None:
+            message = error_message
+        if display_message != None:
+            message = display_message
+
+        if error_message == None and display_message == None:
+            message = "We were unable to connect to your account. Please try again."
+            if e.code and e.code == "PRODUCTS_NOT_SUPPORTED":
+                message = "The given account is not currently supported for use by Plaid. We apologize for the inconvenience."
+        response = {"error" : message}
     
     return jsonify(response)
 
