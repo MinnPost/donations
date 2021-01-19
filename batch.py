@@ -98,7 +98,8 @@ def charge_cards():
     log.it(f"Found {len(opportunities)} opportunities available to process.")
 
     for opportunity in opportunities:
-        if not opportunity.stripe_customer_id:
+        # texas does not check the payment type here, but we want to
+        if not opportunity.stripe_customer_id or opportunity.payment_type != "Stripe":
             continue
         amount = amount_to_charge(opportunity)
         log.it(
