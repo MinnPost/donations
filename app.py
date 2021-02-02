@@ -31,6 +31,7 @@ from config import (
     COMBINED_EMAIL_FIELD,
     DEFAULT_CAMPAIGN_ONETIME,
     DEFAULT_CAMPAIGN_RECURRING,
+    FESTIVAL_CAMPAIGN_ID,
     MINNROAST_CAMPAIGN_ID,
     SALESFORCE_CONTACT_ADVERTISING_EMAIL,
     ENABLE_SENTRY,
@@ -1391,6 +1392,26 @@ def advertising_form():
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
+
+
+@app.route("/festival-vip/" , methods=["GET", "POST"])
+def anniversary_patron_form():
+    title       = "MinnPost Festival VIP Packages"
+    heading     = ""
+    description = title
+    summary     = "With your VIP support for the MinnPost Festival, you're providing a crucial investment in MinnPost's public-service journalism year-round. Thank you for going deeper with us into these conversations and for standing behind with our nonprofit newsroom with your generous support."
+    folder      = "festival"
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", FESTIVAL_CAMPAIGN_ID)
+
+    # interface settings
+    allow_additional_amount = True
+    hide_honor_or_memory    = True
+    hide_display_name       = False
+    button                  = "Purchase your Patron package"
+    
+    return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
 
 
 @app.route("/anniversary-patron/" , methods=["GET", "POST"])
