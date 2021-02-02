@@ -1409,7 +1409,7 @@ def festival_vip_form():
     allow_additional_amount = True
     hide_honor_or_memory    = True
     hide_display_name       = False
-    button                  = "Purchase your Patron package"
+    button                  = "Purchase your VIP package"
     
     return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
 
