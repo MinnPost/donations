@@ -1395,7 +1395,7 @@ def advertising_form():
 
 
 @app.route("/festival-vip/" , methods=["GET", "POST"])
-def anniversary_patron_form():
+def festival_vip_form():
     title       = "MinnPost Festival VIP Packages"
     heading     = ""
     description = title
