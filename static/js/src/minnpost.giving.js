@@ -444,6 +444,8 @@
         var state_parent = $(options.billing_state_field_selector, element).parent();
         $(options.billing_country_selector).show();
         $(options.billing_zip_field_selector, element).attr('type', 'text');
+        $(options.billing_zip_field_selector, element).prop('required', false);
+        $(options.billing_state_field_selector, element).prop('required', false);
         $('label', zip_parent).text('Postal Code:');
         $('label', state_parent).text('Region:');
       } else if ( billing_or_shipping === 'shipping' ) {
@@ -451,6 +453,8 @@
         var state_parent = $(options.shipping_state_field_selector, element).parent();
         $(options.shipping_country_selector).show();
         $(options.shipping_zip_field_selector, element).attr('type', 'text');
+        $(options.shipping_zip_field_selector, element).prop('required', false);
+        $(options.shipping_state_field_selector, element).prop('required', false);
         $('label', zip_parent).text('Shipping Postal Code:');
         $('label', state_parent).text('Shipping Region:');
       }
@@ -462,6 +466,8 @@
         var state_parent = $(options.billing_state_field_selector, element).parent();
         $(options.billing_country_selector).show();
         $(options.billing_zip_field_selector, element).attr('type', 'tel');
+        $(options.billing_zip_field_selector, element).prop('required', true);
+        $(options.billing_state_field_selector, element).prop('required', true);
         $('label', zip_parent).html('Zip Code: <span class="a-form-item-required" title="This field is required.">*</span>');
         $('label', state_parent).html('State: <span class="a-form-item-required" title="This field is required.">*</span>');
       } else if ( billing_or_shipping === 'shipping' ) {
@@ -469,6 +475,8 @@
         var state_parent = $(options.shipping_state_field_selector, element).parent();
         $(options.shipping_country_selector).show();
         $(options.shipping_zip_field_selector, element).attr('type', 'tel');
+        $(options.shipping_zip_field_selector, element).prop('required', true);
+        $(options.shipping_state_field_selector, element).prop('required', true);
         $('label', zip_parent).html('Shipping Zip Code: <span class="a-form-item-required" title="This field is required.">*</span>');
         $('label', state_parent).html('Shipping State: <span class="a-form-item-required" title="This field is required.">*</span>');
       }
