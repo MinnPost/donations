@@ -53,6 +53,9 @@
     'billing_state_field_selector' : '#billing_state',
     'billing_zip_field_selector': '#billing_zip',
     'billing_country_field_selector' : '#billing_country',
+    'shipping_state_field_selector' : '#shipping_state',
+    'shipping_zip_field_selector': '#shipping_zip',
+    'shipping_country_field_selector' : '#shipping_country',
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.m-form-item-password',
     'additional_amount_field' : '#additional_donation',
@@ -421,17 +424,47 @@
     }, // honorOrMemoryToggle
 
     outsideUnitedStates: function(element, options) {
+      var that = this;
       $(options.show_billing_country_selector).click(function() {
-        $(options.billing_country_selector).show();
+        that.changeFieldsOutsideUS('billing', element, options);
         $(this).parent().hide();
         return false;
       });
       $(options.show_shipping_country_selector).click(function() {
         $(options.shipping_country_selector).show();
+        that.changeFieldsOutsideUS('shipping', element, options);
         $(this).parent().hide();
         return false;
       });
     }, // outsideUnitedStates
+
+    changeFieldsOutsideUS: function(billing_or_shipping, element, options) {
+      if ( billing_or_shipping === 'billing' ) {
+        var zip_parent = $(options.billing_zip_field_selector, element).parent();
+        $(options.billing_country_selector).show();
+        $(options.billing_zip_field_selector, element).attr('type', 'text');
+        $('label', zip_parent).text('Postal Code:');
+      } else if ( billing_or_shipping === 'shipping' ) {
+        var zip_parent = $(options.shipping_zip_field_selector, element).parent();
+        $(options.shipping_country_selector).show();
+        $(options.shipping_zip_field_selector, element).attr('type', 'text');
+        $('label', zip_parent).text('Shipping Postal Code:');
+      }
+    }, // changeFieldsOutsideUS
+
+    changeFieldsInsideUS: function(billing_or_shipping, element, options) {
+      if ( billing_or_shipping === 'billing' ) {
+        var zip_parent = $(options.billing_zip_field_selector, element).parent();
+        $(options.billing_country_selector).show();
+        $(options.billing_zip_field_selector, element).attr('type', 'tel');
+        $('label', zip_parent).text('Zip Code:');
+      } else if ( billing_or_shipping === 'shipping' ) {
+        var zip_parent = $(options.shipping_zip_field_selector, element).parent();
+        $(options.shipping_country_selector).show();
+        $(options.shipping_zip_field_selector, element).attr('type', 'tel');
+        $('label', zip_parent).text('Shipping Zip Code:');
+      }
+    }, // changeFieldsOutsideUS
 
     shippingAddress: function(element, options) {
       var that = this;
