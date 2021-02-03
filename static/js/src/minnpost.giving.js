@@ -441,28 +441,36 @@
     changeFieldsOutsideUS: function(billing_or_shipping, element, options) {
       if ( billing_or_shipping === 'billing' ) {
         var zip_parent = $(options.billing_zip_field_selector, element).parent();
+        var state_parent = $(options.billing_state_field_selector, element).parent();
         $(options.billing_country_selector).show();
         $(options.billing_zip_field_selector, element).attr('type', 'text');
         $('label', zip_parent).text('Postal Code:');
+        $('label', state_parent).text('Region:');
       } else if ( billing_or_shipping === 'shipping' ) {
         var zip_parent = $(options.shipping_zip_field_selector, element).parent();
+        var state_parent = $(options.shipping_state_field_selector, element).parent();
         $(options.shipping_country_selector).show();
         $(options.shipping_zip_field_selector, element).attr('type', 'text');
         $('label', zip_parent).text('Shipping Postal Code:');
+        $('label', state_parent).text('Shipping Region:');
       }
     }, // changeFieldsOutsideUS
 
     changeFieldsInsideUS: function(billing_or_shipping, element, options) {
       if ( billing_or_shipping === 'billing' ) {
         var zip_parent = $(options.billing_zip_field_selector, element).parent();
+        var state_parent = $(options.billing_state_field_selector, element).parent();
         $(options.billing_country_selector).show();
         $(options.billing_zip_field_selector, element).attr('type', 'tel');
-        $('label', zip_parent).text('Zip Code:');
+        $('label', zip_parent).html('Zip Code: <span class="a-form-item-required" title="This field is required.">*</span>');
+        $('label', state_parent).html('State: <span class="a-form-item-required" title="This field is required.">*</span>');
       } else if ( billing_or_shipping === 'shipping' ) {
         var zip_parent = $(options.shipping_zip_field_selector, element).parent();
+        var state_parent = $(options.shipping_state_field_selector, element).parent();
         $(options.shipping_country_selector).show();
         $(options.shipping_zip_field_selector, element).attr('type', 'tel');
-        $('label', zip_parent).text('Shipping Zip Code:');
+        $('label', zip_parent).html('Shipping Zip Code: <span class="a-form-item-required" title="This field is required.">*</span>');
+        $('label', state_parent).html('Shipping State: <span class="a-form-item-required" title="This field is required.">*</span>');
       }
     }, // changeFieldsOutsideUS
 
