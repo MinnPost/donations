@@ -269,12 +269,23 @@
 
     amountAsRadio: function(element, options) {
       // when amount field is a radio button, we need to check it whenever it changes
+      var that = this;
+      that.setRadioAmount($(options.original_amount_selector, element), element, options);
       $(options.original_amount_selector, element).change(function() {
-        if ($(this).is(':radio')) {
-            options.original_amount = parseInt($(options.original_amount_selector + ':checked', element).val(), 10);
-          }
+        that.setRadioAmount($(this), element, options);
       });
     }, // amountAsRadio
+
+    setRadioAmount: function(field, element, options) {
+      var that = this;
+      var stripe_payment_type = that.getStripePaymentType();
+      var amount = $(options.original_amount_selector + ':checked', element).val();
+      if (field.is(':radio') && typeof amount !== 'undefined') {
+        options.original_amount = parseInt(amount, 10);
+        that.calculateFees(that.options.original_amount, stripe_payment_type);
+        that.setFairMarketValue(field);
+      }
+    }, // setRadioAmount
 
     amountUpdated: function(element, options) {
       // when new amount text field can change, we need to change the hidden field
