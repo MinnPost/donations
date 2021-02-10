@@ -16,6 +16,7 @@ from wtforms.fields import (
     SelectMultipleField,
 )
 from wtforms.fields.html5 import EmailField
+from wtf_required_if import RequiredIf
 from config import (
     RECAPTCHA_KEYS,
 )
@@ -191,11 +192,17 @@ class DonateForm(BaseForm):
     billing_city = StringField(
         u"City", [validators.required(message="Your billing city is required.")]
     )
+    #billing_state = StringField(
+    #    u"State", [validators.required(message="Your billing state is required.")]
+    #)
     billing_state = StringField(
-        u"State", [validators.required(message="Your billing state is required.")]
+        u"State", [RequiredIf(message="Your billing state is required.", billing_country="")]
     )
+    #billing_zip = StringField(
+    #    u"ZIP Code", [validators.required(message="Your billing zip code is required.")]
+    #)
     billing_zip = StringField(
-        u"ZIP Code", [validators.required(message="Your billing zip code is required.")]
+        u"ZIP Code", [RequiredIf(message="Your billing zip code is required if you are in the United States.", billing_country="")]
     )
     billing_country = StringField(
         u"Country", [validators.Optional()]
