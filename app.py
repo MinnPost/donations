@@ -360,12 +360,15 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
             logging.info(f"Updating contact {first_name} {last_name}")
             contact.first_name          = first_name
             contact.last_name           = last_name
-            contact.stripe_customer_id  = stripe_customer_id
             contact.mailing_street      = street
             contact.mailing_city        = city
             contact.mailing_state       = state
             contact.mailing_postal_code = zipcode
             contact.mailing_country     = country
+
+            if stripe_customer_id != "":
+                contact.stripe_customer_id  = stripe_customer_id
+
             contact.save()
 
     if contact.duplicate_found:
