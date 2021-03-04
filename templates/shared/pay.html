@@ -49,17 +49,23 @@
       </div>
       {% endif %}
       {% include '/shared/pay-fees.html' %}
+      {% include '/shared/recaptcha.html' %}
       {% include '/shared/button.html' %}
     {% else %}
       <div class="o-pay-with-payment-request">
         {% include '/shared/pay-fees.html' %}
+        {% include '/shared/recaptcha.html' %}
         {% include '/shared/payment-request.html' %}
       </div>
       <div class="m-pay-without-payment-request">
         {% include '/shared/card-or-ach.html' %}
         {% include '/shared/pay-fees.html' %}
+        {% include '/shared/recaptcha.html' %}
         {% include '/shared/button.html' %}
       </div>
+    {% endif %}
+    {% if use_recaptcha is sameas true %}
+      <p class="a-form-caption a-form-caption-recaptcha-terms">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy">Privacy Policy</a> and <a href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
     {% endif %}
 
   </fieldset>
