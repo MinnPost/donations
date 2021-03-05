@@ -727,7 +727,7 @@
         $(this).hide();
         $('.m-pay-without-payment-request').show();
         $('.o-pay-with-payment-request .m-form-actions-pay-fees').hide();
-        $('.a-g-recaptcha').insertAfter('.m-pay-without-payment-request .credit-card-group');
+        $('.a-g-recaptcha').insertAfter('.m-pay-without-payment-request .m-form-actions-pay-fees');
       });
 
       that.prButton.on('click', function(event) {
