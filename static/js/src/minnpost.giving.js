@@ -718,16 +718,13 @@
           $('.m-pay-without-payment-request').hide();
           that.prButton.mount('#payment-request-button');
         } else {
-          $('.o-pay-with-payment-request').hide();
+          that.hidePaymentRequest( $('.o-pay-with-payment-request') );
         }
       });
 
       $('.decline-apple-pay a').click(function(event) {
         event.preventDefault();
-        $(this).hide();
-        $('.m-pay-without-payment-request').show();
-        $('.o-pay-with-payment-request .m-form-actions-pay-fees').hide();
-        $('.a-g-recaptcha').insertAfter('.m-pay-without-payment-request .m-form-actions-pay-fees');
+        that.hidePaymentRequest( $('.o-pay-with-payment-request .m-form-actions-pay-fees') );
       });
 
       that.prButton.on('click', function(event) {
@@ -761,6 +758,13 @@
       });
 
     }, // paymentRequestButton
+
+    hidePaymentRequest: function( hideElement ) {
+      hideElement.hide();
+      $('.decline-apple-pay a').hide();
+      $('.m-pay-without-payment-request').show();
+      $('.a-g-recaptcha').insertAfter('.m-pay-without-payment-request .m-form-actions-pay-fees');
+    }, // hidePaymentRequest
 
     choosePaymentMethod: function(element, options) {
 
