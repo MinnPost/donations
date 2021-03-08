@@ -101,6 +101,9 @@
   <script src="https://js.stripe.com/v3/"></script>
   {% if use_recaptcha is sameas true %}<script src='https://www.google.com/recaptcha/api.js'></script>{% endif %}
   {% if show_ach is sameas true %}<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>{% endif %}
+  <script>
+    var analytics_tracking_settings = {};
+  </script>
   <script src='https://www.minnpost.com/_static/??-eJy1kk1OxDAMhS9EGo2Gvy4QR0Fp6rYuiR0lzqByelxpCkViGDasosT2++zn2LdkPJMAiY3VpFBHpGJnkOT8q2mbO/uC5G1XMfQ2TSxM56OJSM1cbuxOYqvXJ0cuLIK+GMkqhTSaEQiyE87WlQKimKuZZsgqbYD6K7gIpbgRjF4hC+TzKN9JF5L+BtEQJS5iBs7RpMxe1bTD6DD4CWPasX4VlAm0kS+94PLIu+It8FPthR2dFLXaWoWjE/XyMxrc+2Iw6tTFluxXfVSpXMALMnGnTpxWJzgsA4bwX9Dd0x6hfyvUHrYFQexg8+w5Ph3uD7ftw+OxPc4fbA4AKQ=='></script>
   <script src="{{ url_for('static', filename='js/main.min.js') }}?m={{ last_updated }}"></script>
 
