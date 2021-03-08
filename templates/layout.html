@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% if title|length %}{{ title }}{% else %}MinnPost | Make Your Payment{% endif %}{% endblock %}</title>
     
-    <link rel='stylesheet' id='all-css-0' href='https://www.minnpost.com/_static/??-eJyNkEFuAjEMRS/U4HYB7SyqniXjeMBqnER2BsTt6xYJDSqD2Oa///QdOLXABfOcyADNILF1GHPF75B51KhnsH7OtBEuGwdewBtYS6fSoeV5z8XAs9Kq9SAkI6kduEE0o35x3onDpO4IVNJD8WykISLW2WGJJe5JfvOFfAVZVfqTkJljfrh3u9cv2dK6Tj25/HrzVFVC04quq+oLOeOB5eaDnlNGxZgspKn5vX/OIyfSpWgF+b/5Sz7ftsOwG95fP7Y/mH3D1Q==' type='text/css' media='all'>
+    <link rel='stylesheet' id='all-css-0' href='https://www.minnpost.com/_static/??-eJyNUEluwzAM/FAZwUVS9FL0LVoYW6goqaSUwL8vg9RAnA05ajaOxhwrxOxTDyjGi5hgZYq+ZNlQzBtF3sy1xAalwFleSdTTMDdDHWrqY8yaha6PJ+E5eXk9s/x25Bmo5NgKGyuC7Qq8cS/WNiHgQREBbxPmoHeFvWGU0tmvyhPm/viDIUozLhX/Ayk6tjwbaXPCu/9dziuXa5Gm2eSQdcW69D9l3qFhz5oB2vRpsEKEInZEbSnIDfl/rsv8x6oXzxwiHuG8jpXL5BXx2gT7wgSVi44uhYFsTH6KtBrkptU3fQ0fw+592H1ut39UvvpG' type='text/css' media='all'>
     <link rel='stylesheet' id='minnpost-fonts-css'  href='https://use.typekit.net/cxj7fzg.css?ver=1.0.0' media='all'>
-    <link rel='stylesheet' id='all-css-2' href='https://www.minnpost.com/wp-content/themes/minnpost-largo/style.css?m=1600717687g' type='text/css' media='all'>
+    <link rel='stylesheet' id='all-css-2' href='https://www.minnpost.com/_static/??-eJx9jlsOgkAMRTdkaVAw+mFcS5kpiDKPtEXD7iUmqNHoX3Nz7rnFWwaXonE0tBMHVgx9jDmpwUDSJVSbBi6c6grf2DBCHsauj4pntkzuAvuixo14yCQ2oedm7KAheV3/JE8InKSIM/kRFfNbX4KlTeLIK/g2A7kAWdK19yxIqmz6sP1AoJ3dBhz9MnAMh3Jb1uuy3lXVHeZ8aMc=' type='text/css' media='all'>
 
     <meta name="theme-color" content="#801018">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -101,7 +101,7 @@
   <script src="https://js.stripe.com/v3/"></script>
   {% if use_recaptcha is sameas true %}<script src='https://www.google.com/recaptcha/api.js'></script>{% endif %}
   {% if show_ach is sameas true %}<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>{% endif %}
-  <script src='https://www.minnpost.com/_static/??-eJzTLy/QTc7PK0nNK9EvyClNz8wr1s8qLE0tqtQtLUhJLEkt0s+CixjrmeoZ6uVm5ullFevok6IzNzO9CCgENMFYzwBqgn2uraGppamRkYmhuWUWAKFEMFQ='></script>
+  <script src='https://www.minnpost.com/_static/??-eJy1kk1OxDAMhS9EGo2Gvy4QR0Fp6rYuiR0lzqByelxpCkViGDasosT2++zn2LdkPJMAiY3VpFBHpGJnkOT8q2mbO/uC5G1XMfQ2TSxM56OJSM1cbuxOYqvXJ0cuLIK+GMkqhTSaEQiyE87WlQKimKuZZsgqbYD6K7gIpbgRjF4hC+TzKN9JF5L+BtEQJS5iBs7RpMxe1bTD6DD4CWPasX4VlAm0kS+94PLIu+It8FPthR2dFLXaWoWjE/XyMxrc+2Iw6tTFluxXfVSpXMALMnGnTpxWJzgsA4bwX9Dd0x6hfyvUHrYFQexg8+w5Ph3uD7ftw+OxPc4fbA4AKQ=='></script>
   <script src="{{ url_for('static', filename='js/main.min.js') }}?m={{ last_updated }}"></script>
 
   <script>
