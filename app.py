@@ -1250,7 +1250,7 @@ def donation_cancel_form():
         last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
-        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=False,
+        recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
     )
 
 

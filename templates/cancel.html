@@ -25,6 +25,7 @@
     <input type="hidden" name="email_user_when_canceled" id="email_user_when_canceled" value="1">
   {% endif %}
   {% include 'minimal/details.html' %}
+  {% include '/shared/recaptcha.html' %}
   {% include 'shared/button.html' %}
 </form>
 {% endblock %}
