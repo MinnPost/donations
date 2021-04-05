@@ -15,6 +15,8 @@ export default async function buildTaxReceipt({
     format: 'letter',
     lineHeight: 1.5,
   });
+  doc.setFont('helvetica');
+
   const leftEdge = 40;
   const topEdge = 30;
   const response = await axios.get('/static/img/receipt-logo.png', {
@@ -55,17 +57,17 @@ export default async function buildTaxReceipt({
     { maxWidth: '385' }
   );
 
-  doc.setFontStyle('bold');
+  doc.setFont('helvetica', 'bold');
   doc.text(`${lastYear} GIVING SUMMARY`, leftEdge, 265);
 
   if (greeting) {
     doc.text('Donor', leftEdge, 290);
-    doc.setFontStyle('normal');
+    doc.setFont('helvetica', 'normal');
     doc.text(greeting, leftEdge, 302);
 
-    doc.setFontStyle('bold');
+    doc.setFont('helvetica', 'bold');
     doc.text('Total donation amount', leftEdge, 327);
-    doc.setFontStyle('normal');
+    doc.setFont('helvetica', 'normal');
     doc.text(formatCurrency(lastYearAmount), leftEdge, 340);
 
     doc.text(
@@ -82,7 +84,7 @@ export default async function buildTaxReceipt({
     );
 
     doc.text(
-      'No goods or services were provided in exchange for this contribution. This letter may be used as a receipt for tax purposes. The Texas Tribune is a 501(c)3 nonprofit organization with Federal Tax ID #26-452709.',
+      'No goods or services were provided in exchange for this contribution. This letter may be used as a receipt for tax purposes. The Texas Tribune is a 501(c)3 nonprofit organization with Federal Tax ID #26-4527097.',
       leftEdge,
       427,
       { maxWidth: '385' }
@@ -91,9 +93,9 @@ export default async function buildTaxReceipt({
     // have to repeat some logic because different spacing
     // is required if greeting is missing
 
-    doc.setFontStyle('bold');
+    doc.setFont('helvetica', 'bold');
     doc.text('Total donation amount', leftEdge, 290);
-    doc.setFontStyle('normal');
+    doc.setFont('helvetica', 'normal');
     doc.text(formatCurrency(lastYearAmount), leftEdge, 302);
 
     doc.text(
@@ -110,7 +112,7 @@ export default async function buildTaxReceipt({
     );
 
     doc.text(
-      'No goods or services were provided in exchange for this contribution. This letter may be used as a receipt for tax purposes. The Texas Tribune is a 501(c)3 nonprofit organization with Federal Tax ID #26-452709.',
+      'No goods or services were provided in exchange for this contribution. This letter may be used as a receipt for tax purposes. The Texas Tribune is a 501(c)3 nonprofit organization with Federal Tax ID #26-4527097.',
       leftEdge,
       389,
       { maxWidth: '385' }

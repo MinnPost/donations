@@ -11,11 +11,12 @@
     "url": "https://github.com/texastribune/donations/issues"
   },
   "browserslist": [
-    "> 1%",
     "last 2 versions",
-    "Firefox ESR",
-    "iOS >= 11",
-    "Safari >= 12",
+    "firefox ESR",
+    "iOS >= 12",
+    "safari >= 12",
+    "samsung >= 12",
+    "not ie 11",
     "not dead"
   ],
   "engines": {
@@ -31,7 +32,7 @@
     "lint": "eslint --ext .js,.vue static/js/src config"
   },
   "dependencies": {
-    "@babel/cli": "^7.0.0",
+    "@babel/cli": "^7.12.10",
     "@babel/core": "^7.0.0",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.4.3",
@@ -43,19 +44,19 @@
     "@texastribune/queso-tools": "^2.1.0",
     "@texastribune/queso-ui": "^9.4.2",
     "auth0-js": "^9.13.2",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "babel-loader": "^8.0.0",
     "camelcase": "^5.3.1",
     "clean-webpack-plugin": "^2.0.2",
     "css-loader": "^1.0.0",
     "date-fns": "^1.30.1",
-    "dompurify": "^2.0.8",
+    "dompurify": "^2.0.17",
     "es6-promise": "^4.2.4",
     "fast-async": "7",
     "file-loader": "^1.1.11",
     "glob-watcher": "^5.0.3",
     "jsonwebtoken": "^8.5.1",
-    "jspdf": "^1.5.3",
+    "jspdf": "^2.3.1",
     "nodent-runtime": "^3.2.1",
     "npm-run-all": "^4.1.5",
     "validate.js": "^0.12.0",
@@ -75,6 +76,7 @@
     "webpack-sources": "^1.0"
   },
   "devDependencies": {
+    "acorn": "^7.4.1",
     "babel-eslint": "^10.0.3",
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
