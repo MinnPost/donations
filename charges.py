@@ -30,6 +30,10 @@ class ChargeException(Exception):
         )
 
 
+class QuarantinedException(Exception):
+    pass
+
+
 def amount_to_charge(opportunity):
     """
     Determine the amount to charge. This depends on whether the payer agreed
@@ -135,12 +139,12 @@ def quantize(amount):
 
 def generate_stripe_description(opportunity) -> str:
     """
-    Our current code populates the Description field of recurring donations 
-    and opportunities when those are created. Those descriptions get passed 
-    on to Stripe when the card is charged. But we have at least two cases 
-    where the Description field could be blank: when someone manually enters 
-    a donation or when it's a donation that's been migrated from our legacy 
-    (Tinypass) system. But in those cases we know the opportunity type and 
+    Our current code populates the Description field of recurring donations
+    and opportunities when those are created. Those descriptions get passed
+    on to Stripe when the card is charged. But we have at least two cases
+    where the Description field could be blank: when someone manually enters
+    a donation or when it's a donation that's been migrated from our legacy
+    (Tinypass) system. But in those cases we know the opportunity type and
     it's a direct relationship to the description so we can populate it anyway.
     """
     # remove leading "The " from descriptions for better Stripe
@@ -194,7 +198,7 @@ def charge(opportunity):
         f"---- Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
     )
 
-    if opportunity.stage_name == 'Pledged':
+    if opportunity.stage_name == "Pledged":
         opportunity.stage_name = "In Process"
         opportunity.stripe_error_message = ""
         opportunity.save()
@@ -284,6 +288,11 @@ def charge(opportunity):
         logging.debug(
             f"---- Checking transaction {opportunity.stripe_transaction_id}"
         )
+
+        if opportunity.quarantined:
+            logging.info("---- Skipping because it's quarantined")
+            raise QuarantinedException(f"Opportunity {opportunity.id} is quarantined")
+
         if payment_method is not None:
             payment_intent = stripe.PaymentIntent.retrieve(
                 opportunity.stripe_transaction_id,
