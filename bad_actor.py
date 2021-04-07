@@ -174,7 +174,7 @@ class BadActor:
         first_name,
         last_name,
         remote_addr,
-        reason,
+        reason=None,
     ) -> dict:
 
         referer = headers.get("Referer", None)
