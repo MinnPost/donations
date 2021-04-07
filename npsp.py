@@ -30,7 +30,7 @@ TWOPLACES = Decimal(10) ** -2  # same as Decimal('0.01')
 # configured to use for opportunities on an RDO
 DEFAULT_RDO_TYPE = os.environ.get("DEFAULT_RDO_TYPE", "Membership")
 
-logging.getLogger("urllib3").setLevel(logging.DEBUG)
+# logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
 
 class SalesforceException(Exception):
@@ -347,6 +347,8 @@ class Opportunity(SalesforceObject):
         self.stripe_transaction_id = None
         self.ticket_count = 0
         self.lock_key = None
+        self.amazon_order_id = None
+        self.quarantined = False
 
     @classmethod
     def list(
@@ -445,6 +447,8 @@ class Opportunity(SalesforceObject):
                 Stripe_Transaction_Fee__c,
                 Stripe_Transaction_ID__c,
                 Flask_Transaction_ID__c
+                Amazon_Order_Id__c,
+                Quarantined__c
             FROM Opportunity
             {where}
         """
@@ -466,6 +470,7 @@ class Opportunity(SalesforceObject):
             #y.record_type_name = item["RecordType"]["Name"]
             y.stage_name = "Pledged"
             y.type = item["Type"]
+            y.amazon_order_id = item["Amazon_Order_Id__c"]
             y.mrpledge_id = item["MRpledge_com_ID__c"]
             y.subtype = item["Opportunity_Subtype__c"]
             y.credited_as = item["Credited_as__c"]
@@ -502,6 +507,7 @@ class Opportunity(SalesforceObject):
             y.stripe_transaction_fee = item["Stripe_Transaction_Fee__c"]
             y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
             y.stripe_payment_type = item["Stripe_Payment_Type__c"]
+            y.quarantined = item["Quarantined__c"]
             y.lock_key = item["Flask_Transaction_ID__c"]
             y.created = False
             results.append(y)
@@ -603,6 +609,7 @@ class Opportunity(SalesforceObject):
             #"RecordType": {"Name": self.record_type_name},
             "StageName": self.stage_name,
             "Type": self.type,
+            "Amazon_Order_Id__c": self.amazon_order_id,
             "Anonymous__c": self.anonymous,
             "Card_type__c": self.card_type,
             "npsp__Closed_Lost_Reason__c": self.closed_lost_reason,
@@ -652,7 +659,8 @@ class Opportunity(SalesforceObject):
             "Stripe_Transaction_Fee__c": self.stripe_transaction_fee,
             "Stripe_Transaction_ID__c": self.stripe_transaction_id,
             "Stripe_Payment_Type__c": self.stripe_payment_type,
-            "Flask_Transaction_ID__c": self.lock_key,
+            "Quarantined__c": self.quarantined,
+            "Flask_Transaction_ID__c": self.lock_key,            
         }
 
     @classmethod
@@ -778,6 +786,7 @@ class RDO(SalesforceObject):
         self.stripe_description = None
         self.stripe_payment_type = None
         self._stripe_transaction_fee = 0
+        self.quarantined = False
 
         self.lock_key = None
 
@@ -983,6 +992,7 @@ class RDO(SalesforceObject):
             "Stripe_Payment_Type__c": self.stripe_payment_type,
             "Stripe_Transaction_Fee__c": self.stripe_transaction_fee,
             #"Type__c": self.type, Texas uses this field on their recurring donation object but we don't currently have it
+            "Quarantined__c": self.quarantined,
             "Flask_Transaction_ID__c": self.lock_key,
         }
         return recurring_donation
@@ -1056,6 +1066,7 @@ class RDO(SalesforceObject):
                 Stripe_Payment_Type__c,
                 Stripe_Transaction_Fee__c,
                 Stripe_Transaction_ID__c,
+                Quarantined__c,
                 Flask_Transaction_ID__c
             FROM Opportunity
             WHERE npe03__Recurring_Donation__c = '{self.id}'
@@ -1124,7 +1135,8 @@ class RDO(SalesforceObject):
             y.stripe_payment_type = item["Stripe_Payment_Type__c"]
             y.stripe_transaction_fee = item["Stripe_Transaction_Fee__c"]
             y.stripe_transaction_id = item["Stripe_Transaction_ID__c"]
-            y.lock_key = item["Flask_Transaction_ID__c"]            
+            y.quarantined = item["Quarantined__c"]
+            y.lock_key = item["Flask_Transaction_ID__c"]
             y.created = False
             results.append(y)
         return results
