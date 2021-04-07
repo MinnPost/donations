@@ -317,7 +317,7 @@
       var total_amount = amount;
       if ($(this.options.additional_amount_field).length > 0 && $(this.options.additional_amount_field).val() > 0) {
         var additional_amount = $(this.options.additional_amount_field).val();
-        total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10);
+        total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10); 
       }
       return total_amount;
     }, // getTotalAmount
@@ -386,7 +386,8 @@
       } else {
         full_amount = total_amount;
       }
-      $(that.options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
+      full_amount = parseFloat(full_amount).toFixed(2);
+      $(that.options.full_amount_selector).text(full_amount);
 
       // update the payment request
       if (this.paymentRequest && full_amount) {
