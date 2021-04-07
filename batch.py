@@ -1,12 +1,12 @@
 import logging
-from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_URL, TIMEZONE, UPDATE_STRIPE_FEES, UPDATE_FAILED_CHARGES
 from datetime import datetime, timedelta
-
-from pytz import timezone
 
 import celery
 import redis
-from charges import amount_to_charge, calculate_amount_fees, charge, ChargeException
+from pytz import timezone
+
+from charges import ChargeException, QuarantinedException, amount_to_charge, calculate_amount_fees, charge
+from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_URL, TIMEZONE, UPDATE_STRIPE_FEES, UPDATE_FAILED_CHARGES
 from npsp import Opportunity
 from util import send_email, update_fees, fail_expired_charges
 
@@ -110,6 +110,10 @@ def charge_cards():
         except ChargeException as e:
             logging.info("Batch charge error")
             e.send_slack_notification()
+        except QuarantinedException:
+            logging.info(
+                "Failed to charge because Opportunity %s is quarantined", opportunity
+            )
 
     log.send()
 
@@ -144,6 +148,10 @@ def update_ach_charges():
         except ChargeException as e:
             logging.info("ACH batch charge error")
             e.send_slack_notification()
+        except QuarantinedException:
+            logging.info(
+                "Failed to charge because Opportunity %s is quarantined", opportunity
+            )
 
     log.send()
 
