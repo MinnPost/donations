@@ -321,12 +321,14 @@ def apply_card_details(data=None, customer=None, payment_method=None, charge_sou
 
 
 @celery.task(name="app.add_donation")
-def add_donation(form=None, customer=None, donation_type=None, payment_method=None, charge_source=None):
+def add_donation(form=None, customer=None, donation_type=None, payment_method=None, charge_source=None, bad_actor_request=None):
     """
     Add a contact and their donation into SF. This is done in the background
     because there are a lot of API calls and there's no point in making the
     payer wait for them. It sends a notification about the donation to Slack (if configured).
     """
+    bad_actor_response = BadActor(bad_actor_request=bad_actor_request)
+    quarantine = bad_actor_response.quarantine
 
     form               = clean(form)
     first_name         = form.get("first_name", "")
@@ -381,7 +383,9 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
 
     if frequency == "one-time":
         logging.info("----Creating one time payment...")
-        opportunity = add_opportunity(contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source)
+        opportunity = add_opportunity(
+            contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source, quarantine=quarantine
+        )
         try:
             charge(opportunity)
             lock = Lock(key=opportunity.lock_key)
@@ -390,10 +394,16 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
             notify_slack(contact=contact, opportunity=opportunity)
         except ChargeException as e:
             e.send_slack_notification()
+        except QuarantinedException:
+            bad_actor_response.notify_bad_actor(
+                transaction_type="Opportunity", transaction=opportunity
+            )
         return True
     else:
         logging.info("----Creating recurring payment...")
-        rdo = add_recurring_donation(contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source)
+        rdo = add_recurring_donation(
+            contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source, quarantine=quarantine
+        )
 
         # get opportunities
         opportunities = rdo.opportunities()
@@ -413,17 +423,22 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
                 notify_slack(contact=contact, rdo=rdo)
             except ChargeException as e:
                 e.send_slack_notification()
+            except QuarantinedException:
+                bad_actor_response.notify_bad_actor(transaction_type="RDO", transaction=rdo)
             return True
 
 
 # this is used to update or cancel donations
 @celery.task(name="app.update_donation")
-def update_donation(form=None, customer=None, donation_type=None, payment_method=None, charge_source=None):
+def update_donation(form=None, customer=None, donation_type=None, payment_method=None, charge_source=None, bad_actor_request=None):
     """
     Update a contact and their donation in SF. This is done in the background
     because there are a lot of API calls and there's no point in making the
     payer wait for them. It sends a notification about the donation to Slack (if configured).
     """
+
+    bad_actor_response = BadActor(bad_actor_request=bad_actor_request)
+    quarantine = bad_actor_response.quarantine
 
     form               = clean(form)
     first_name         = form.get("first_name", "")
@@ -475,11 +490,15 @@ def update_donation(form=None, customer=None, donation_type=None, payment_method
 
     if frequency == "one-time":
         logging.info("----Updating one time payment...")
-        opportunity = update_opportunity(contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source)
+        opportunity = update_opportunity(
+            contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source, quarantine=quarantine
+        )
         return True
     else:
         logging.info("----Updating recurring payment...")
-        rdo = update_recurring_donation(contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source)
+        rdo = update_recurring_donation(
+            contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source, quarantine=quarantine
+        )
 
         # get opportunities
         opportunities = rdo.opportunities()
@@ -812,7 +831,34 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
             return jsonify(errors=body)
 
     app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
-    function(customer=customer, form=clean(form_data), donation_type=donation_type, payment_method=payment_method, charge_source=charge_source)
+    bad_actor_request = None
+    try:
+        if "zipcode" in form_data:
+            zipcode = form_data["zipcode"]
+        else:
+            zipcode = form_data["shipping_zip"]
+        bad_actor_request = BadActor.create_bad_actor_request(
+            headers=request.headers,
+            captcha_token=form_data["recaptchaToken"],
+            email=email,
+            amount=amount,
+            zipcode=zipcode,
+            first_name=form_data["first_name"],
+            last_name=form_data["last_name"],
+            remote_addr=request.remote_addr,
+        )
+        app.logger.info(bad_actor_request)
+    except Exception as error:
+        app.logger.warning("Unable to check for bad actor: %s", error)
+
+    function(
+        customer=customer,
+        form=clean(form_data),
+        donation_type=donation_type,
+        payment_method=payment_method,
+        charge_source=charge_source,
+        bad_actor_request=bad_actor_request,
+    )
 
     # get the json response from the server and put it into the specified template
     return jsonify(success=True)
@@ -2194,7 +2240,7 @@ def stripehook():
     return "", 200
 
 
-def add_opportunity(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None):
+def add_opportunity(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None, quarantine=False):
     """
     This will add a single donation in Salesforce.
     """
@@ -2214,6 +2260,7 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.stripe_description = "MinnPost Membership"
     opportunity.campaign = form.get("campaign", "")
     opportunity.lead_source = "Stripe"
+    opportunity.quarantined = quarantine
     opportunity.type = form.get("opportunity_type", "Donation")
     opportunity.close_date = form.get("close_date", today)
     opportunity.stage_name = form.get("stage_name", "Pledged")
@@ -2289,7 +2336,7 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     return opportunity
 
 
-def update_opportunity(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None):
+def update_opportunity(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None, quarantine=False):
     """
     This will update a single donation in Salesforce.
     """
@@ -2334,6 +2381,7 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     opportunity.stage_name = form.get("stage_name", "Pledged")
     opportunity.stripe_description = "MinnPost Membership"
     opportunity.payment_type = "Stripe"
+    opportunity.quarantined = quarantine
 
     opportunity.name = (
         f"{donor_first_name} {donor_last_name} {opportunity.type} {opportunity.close_date}"
@@ -2398,7 +2446,7 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     return opportunity
 
 
-def add_recurring_donation(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None):
+def add_recurring_donation(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None, quarantine=False):
     """
     This will add a recurring donation in Salesforce.
     """
@@ -2415,6 +2463,8 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     rdo.campaign = form.get("campaign", "")
     rdo.stripe_description = "MinnPost Sustaining Membership"
     rdo.lead_source = "Stripe"
+    rdo.quarantined = quarantine
+    
     
     # minnpost custom fields
     rdo.agreed_to_pay_fees = form.get("pay_fees", False)
@@ -2481,7 +2531,7 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     return rdo
 
 
-def update_recurring_donation(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None):
+def update_recurring_donation(contact=None, form=None, customer=None, payment_method=None, bank_account=None, charge_source=None, quarantine=False):
     """
     This will update a recurring donation in Salesforce.
     """
@@ -2543,6 +2593,7 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
     # these need to be set in case they aren't already present
     rdo.stripe_description = "MinnPost Sustaining Membership"
     rdo.payment_type = "Stripe"
+    rdo.quarantined = quarantine
 
     if donor_first_name != "":
         rdo.donor_first_name = donor_first_name
