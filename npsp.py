@@ -397,6 +397,7 @@ class Opportunity(SalesforceObject):
                 Name,
                 StageName,
                 Type,
+                Amazon_Order_Id__c,
                 Anonymous__c,
                 Card_type__c,
                 npsp__Closed_Lost_Reason__c,
@@ -446,9 +447,8 @@ class Opportunity(SalesforceObject):
                 Stripe_Payment_Type__c,
                 Stripe_Transaction_Fee__c,
                 Stripe_Transaction_ID__c,
+                Quarantined__c,
                 Flask_Transaction_ID__c
-                Amazon_Order_Id__c,
-                Quarantined__c
             FROM Opportunity
             {where}
         """
