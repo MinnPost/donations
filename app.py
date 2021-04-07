@@ -10,6 +10,25 @@ import logging
 import os
 import re
 import uuid
+from datetime import datetime, timedelta
+from pprint import pformat
+
+import celery
+import stripe
+import plaid
+from amazon_pay.client import AmazonPayClient
+from amazon_pay.ipn_handler import IpnHandler
+from flask import Flask, jsonify, redirect, render_template, request, send_from_directory
+from flask_limiter import Limiter
+from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
+from flask_talisman import Talisman
+from nameparser import HumanName
+from pytz import timezone
+from email_validator import validate_email, EmailNotValidError
+
+from app_celery import make_celery
+from bad_actor import BadActor
+from charges import ChargeException, QuarantinedException, charge, create_plaid_link_token, calculate_amount_fees, check_level
 from batch import Lock
 from config import (
     TIMEZONE,
@@ -40,19 +59,6 @@ from config import (
     REPORT_URI,
     STRIPE_WEBHOOK_SECRET,
 )
-from datetime import datetime, timedelta
-from pprint import pformat
-
-from pytz import timezone
-
-import celery
-import stripe
-import plaid
-from app_celery import make_celery
-from flask_talisman import Talisman
-from flask_limiter import Limiter
-from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
-from flask import Flask, jsonify, redirect, render_template, request, send_from_directory
 from forms import (
     format_amount,
     format_swag,
@@ -66,10 +72,7 @@ from forms import (
     CancelForm,
     FinishForm,
 )
-from npsp import RDO, Contact, Opportunity, Affiliation, Account
-from amazon_pay.ipn_handler import IpnHandler
-from amazon_pay.client import AmazonPayClient
-from nameparser import HumanName
+from npsp import RDO, Account, Affiliation, Contact, Opportunity
 from util import (
     clean,
     notify_slack,
@@ -77,15 +80,13 @@ from util import (
     dir_last_updated,
     is_known_spam_email,
 )
-from email_validator import validate_email, EmailNotValidError
-from charges import charge, create_plaid_link_token, calculate_amount_fees, check_level, ChargeException
 
 ZONE = timezone(TIMEZONE)
 
 if ENABLE_SENTRY:
     import sentry_sdk
-    from sentry_sdk.integrations.flask import FlaskIntegration
     from sentry_sdk.integrations.celery import CeleryIntegration
+    from sentry_sdk.integrations.flask import FlaskIntegration
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,
