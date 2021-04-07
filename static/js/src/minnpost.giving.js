@@ -944,7 +944,7 @@
                 that.buttonDisabled(options, false);
               }
             })
-            .error(function(response) {
+            .fail(function(response) {
               that.debug(response);
               that.hideSpinner();
               $(options.plaid_link).before('<p class="a-error a-validation-error">' + response.error + '</p>');
@@ -1280,7 +1280,7 @@
           supportform.get(0).submit(); // continue submitting the form if the ajax was successful
         }
       })
-      .error(function(response) {
+      .fail(function() {
         that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       });
     }, // submitFormOnly
