@@ -88,10 +88,10 @@ def charge_cards():
 
     log.it("---Starting batch card job...")
 
-    three_days_ago = (datetime.now(tz=zone) - timedelta(days=14)).strftime("%Y-%m-%d")
+    begin_closedate_range = (datetime.now(tz=zone) - timedelta(days=14)).strftime("%Y-%m-%d")
     today = datetime.now(tz=zone).strftime("%Y-%m-%d")
-
-    opportunities = Opportunity.list(begin=three_days_ago, end=today)
+    at_least_this_age = (datetime.now(tz=zone) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%S%z")
+    opportunities = Opportunity.list(begin=begin_closedate_range, end=today, at_least_this_age=at_least_this_age)
 
     log.it("---Processing charges...")
 
@@ -131,10 +131,10 @@ def update_ach_charges():
     log.it('---Starting batch ach job...')
     log.it('---Checking for status changes on ACH charges...')
 
-    three_days_ago = (datetime.now(tz=zone) - timedelta(days=3)).strftime("%Y-%m-%d")
+    begin_closedate_range = (datetime.now(tz=zone) - timedelta(days=3)).strftime("%Y-%m-%d")
     today = datetime.now(tz=zone).strftime("%Y-%m-%d")
 
-    opportunities = Opportunity.list(begin=three_days_ago, end=today, stage_name="ACH Pending")
+    opportunities = Opportunity.list(begin=begin_closedate_range, end=today, stage_name="ACH Pending")
 
     for opportunity in opportunities:
         if not opportunity.stripe_customer_id:

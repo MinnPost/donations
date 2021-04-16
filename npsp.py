@@ -355,6 +355,7 @@ class Opportunity(SalesforceObject):
         cls,
         begin=None,
         end=None,
+        at_least_this_age=None,
         stage_name="Pledged",
         stripe_customer_id=None,
         opportunity_id=None,
@@ -379,6 +380,9 @@ class Opportunity(SalesforceObject):
                 AND CloseDate >= {begin}
                 AND StageName = '{stage_name}'
             """
+
+        if at_least_this_age != None:
+            AND CreatedDate < {at_least_this_age}
 
         if opportunity_id is not None:
             where = f"""
