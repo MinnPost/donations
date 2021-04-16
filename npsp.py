@@ -381,12 +381,15 @@ class Opportunity(SalesforceObject):
                 AND StageName = '{stage_name}'
             """
 
-        if at_least_this_age != None:
-            AND CreatedDate < {at_least_this_age}
-
         if opportunity_id is not None:
             where = f"""
                 WHERE Id = '{opportunity_id}'
+            """
+
+        if at_least_this_age != None:
+            where = f"""
+                {where}
+                AND CreatedDate < {at_least_this_age}
             """
 
         query = f"""
