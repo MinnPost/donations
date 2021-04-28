@@ -274,7 +274,7 @@ class SponsorshipForm(MinimalForm):
 # used for minnpost-advertising
 class AdvertisingForm(MinimalForm):
     invoice = StringField(
-        u"Invoice #", [validators.required(message="Your invoice number is required.")]
+        u"Invoice #", [validators.required(message="Your invoice number is required."), validators.Length(max=18)]
     )
     client_organization = StringField(
         u"Organization", [validators.required(message="Your organization name is required.")]

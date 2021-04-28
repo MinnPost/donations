@@ -44,7 +44,7 @@
       {% if show_invoice is sameas true %}
         <div class="m-form-item m-form-item-invoice">
           <label for="invoice">Invoice Number: <span class="a-form-item-required" title="This field is required.">*</span></label>
-          <input type="text" id="invoice" name="invoice" value="{{ invoice }}" required>
+          <input type="text" id="invoice" name="invoice" value="{{ invoice }}" required maxlength="18">
         </div>
       {% endif %}
 
