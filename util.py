@@ -6,6 +6,7 @@ import logging
 import smtplib
 from stopforumspam_api import query
 from collections import defaultdict
+from charges import calculate_amount_fees
 from config import (
     BUSINESS_MEMBER_RECIPIENT,
     DEFAULT_MAIL_SENDER,
