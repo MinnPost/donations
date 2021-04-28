@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import hashlib
 import logging
 import smtplib
+import charges
 from stopforumspam_api import query
 from collections import defaultdict
 from config import (
