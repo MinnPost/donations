@@ -266,7 +266,7 @@ def update_fees(query, log, donation_type):
         elif item.get('payment_type') == 'ach' or item.get('Stripe_Payment_Type__c') == 'bank_account' or item.get('Stripe_Bank_Account__c') is not None:
             payment_type = 'bank_account'
         fees = charges.calculate_amount_fees(amount, payment_type, item.get('Stripe_Agreed_to_pay_fees__c', False))
-        fees = charges.quantize(fees)
+        fees = str(charges.quantize(fees))
 
         log.it('---- Updating fee value for {} to ${}'.format(opp_id, fees))
 
