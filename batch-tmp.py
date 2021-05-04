@@ -1,5 +1,5 @@
 import logging
-from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_URL, TIMEZONE
+from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_TLS_URL, TIMEZONE
 from datetime import datetime, timedelta
 
 from pytz import timezone
@@ -60,7 +60,7 @@ class Lock(object):
 
     def __init__(self, key):
         self.key = key
-        self.connection = redis.from_url(REDIS_URL)
+        self.connection = redis.from_url(REDIS_TLS_URL)
 
     def acquire(self):
         if self.connection.get(self.key):

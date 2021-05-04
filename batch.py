@@ -6,7 +6,7 @@ import redis
 from pytz import timezone
 
 from charges import ChargeException, QuarantinedException, amount_to_charge, calculate_amount_fees, charge
-from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_URL, TIMEZONE, UPDATE_STRIPE_FEES, UPDATE_FAILED_CHARGES
+from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_TLS_URL, TIMEZONE, UPDATE_STRIPE_FEES, UPDATE_FAILED_CHARGES
 from npsp import Opportunity
 from util import send_email, update_fees, fail_expired_charges
 
@@ -60,7 +60,7 @@ class Lock(object):
 
     def __init__(self, key):
         self.key = key
-        self.connection = redis.from_url(REDIS_URL)
+        self.connection = redis.from_url(REDIS_TLS_URL)
 
     def acquire(self):
         if self.connection.get(self.key):

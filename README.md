@@ -90,6 +90,7 @@ Environment
 | `ACCOUNTING_MAIL_RECIPIENT` |                                    foo@bar.org |
 | `BUSINESS_MEMBER_RECIPIENT` |                                    foo@bar.org |
 | `REDIS_URL`                 |                             redis://redis:6379 |
+| `REDIS_TLS_URL`             |                             redis://redis:6379 |
 | `REPORT_URI`                |                                https://foo.bar |
 | `ENABLE_PORTAL`             |                                           True |
 | `PORTAL_API_DOMAIN`         |                            https://foo.bar/api |

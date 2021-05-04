@@ -132,6 +132,9 @@
     "REDIS_URL": {
       "required": true
     },
+    "REDIS_TLS_URL": {
+      "required": true
+    },
     "REPORT_URI": {
       "required": true
     },

@@ -51,6 +51,7 @@ CELERYBEAT_SCHEDULE = {
     }
 }
 REDIS_URL = os.getenv("REDIS_URL")
+REDIS_TLS_URL = os.getenv("REDIS_TLS_URL")
 
 ######
 # SMTP
