@@ -327,8 +327,9 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
     because there are a lot of API calls and there's no point in making the
     payer wait for them. It sends a notification about the donation to Slack (if configured).
     """
-    bad_actor_response = BadActor(bad_actor_request=bad_actor_request)
-    quarantine = bad_actor_response.quarantine
+    #bad_actor_response = BadActor(bad_actor_request=bad_actor_request)
+    #quarantine = bad_actor_response.quarantine
+    quarantine = False
 
     form               = clean(form)
     first_name         = form.get("first_name", "")
@@ -437,8 +438,9 @@ def update_donation(form=None, customer=None, donation_type=None, payment_method
     payer wait for them. It sends a notification about the donation to Slack (if configured).
     """
 
-    bad_actor_response = BadActor(bad_actor_request=bad_actor_request)
-    quarantine = bad_actor_response.quarantine
+    #bad_actor_response = BadActor(bad_actor_request=bad_actor_request)
+    #quarantine = bad_actor_response.quarantine
+    quarantine = False
 
     form               = clean(form)
     first_name         = form.get("first_name", "")
@@ -832,24 +834,24 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
 
     app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
     bad_actor_request = None
-    try:
-        if "zipcode" in form_data:
-            zipcode = form_data["zipcode"]
-        else:
-            zipcode = form_data["billing_zip"]
-        bad_actor_request = BadActor.create_bad_actor_request(
-            headers=request.headers,
-            captcha_token=form_data["recaptchaToken"],
-            email=email,
-            amount=amount,
-            zipcode=zipcode,
-            first_name=form_data["first_name"],
-            last_name=form_data["last_name"],
-            remote_addr=request.remote_addr,
-        )
-        app.logger.info(bad_actor_request)
-    except Exception as error:
-        app.logger.warning("Unable to check for bad actor: %s", error)
+    #try:
+    #    if "zipcode" in form_data:
+    #        zipcode = form_data["zipcode"]
+    #    else:
+    #        zipcode = form_data["billing_zip"]
+    #    bad_actor_request = BadActor.create_bad_actor_request(
+    #        headers=request.headers,
+    #        captcha_token=form_data["recaptchaToken"],
+    #        email=email,
+    #        amount=amount,
+    #        zipcode=zipcode,
+    #        first_name=form_data["first_name"],
+    #        last_name=form_data["last_name"],
+    #        remote_addr=request.remote_addr,
+    #    )
+    #    app.logger.info(bad_actor_request)
+    #except Exception as error:
+    #    app.logger.warning("Unable to check for bad actor: %s", error)
 
     function(
         customer=customer,
