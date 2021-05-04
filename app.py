@@ -836,7 +836,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
         if "zipcode" in form_data:
             zipcode = form_data["zipcode"]
         else:
-            zipcode = form_data["shipping_zip"]
+            zipcode = form_data["billing_zip"]
         bad_actor_request = BadActor.create_bad_actor_request(
             headers=request.headers,
             captcha_token=form_data["recaptchaToken"],
