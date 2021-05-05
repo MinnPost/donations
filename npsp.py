@@ -310,6 +310,7 @@ class Opportunity(SalesforceObject):
         self.donor_country = None
         self.email_notify = None
         self.email_user_when_canceled = False
+        self.encouraged_by = None
         self.event_attendees = None
         self.event_ticket_quantity = None
         self.fair_market_value = None
@@ -421,6 +422,7 @@ class Opportunity(SalesforceObject):
                 Donor_country__c,
                 Email_to_notify__c,
                 Email_User_When_Canceled__c,
+                Encouraged_to_contribute_by__c,
                 Fair_market_value__c,
                 Include_amount_in_notification__c,
                 In_Honor_Memory__c,
@@ -473,6 +475,7 @@ class Opportunity(SalesforceObject):
             y.description = item["Description"]
             y.id = item["Id"]
             y.lead_source = item["LeadSource"]
+            y.encouraged_by = item["Encouraged_to_contribute_by__c"]
             y.name = item["Name"]
             #y.record_type_name = item["RecordType"]["Name"]
             y.stage_name = "Pledged"
@@ -633,6 +636,7 @@ class Opportunity(SalesforceObject):
             "Donor_country__c": self.donor_country,
             "Email_to_notify__c": self.email_notify,
             "Email_User_When_Canceled__c": self.email_user_when_canceled,
+            "Encouraged_to_contribute_by__c": self.encouraged_by,
             "Fair_market_value__c": self.fair_market_value,
             "Include_amount_in_notification__c": self.include_amount_in_notification,
             "In_Honor_Memory__c": self.in_honor_or_memory,
@@ -767,6 +771,7 @@ class RDO(SalesforceObject):
         self.donor_country = None
         self.email_notify = None
         self.email_user_when_canceled = False
+        self.encouraged_by = None
         self.include_amount_in_notification = False
         self.in_honor_or_memory = None
         self.in_honor_memory_of = None
@@ -837,6 +842,7 @@ class RDO(SalesforceObject):
                 Donor_country__c,
                 Email_to_notify__c,
                 Email_User_When_Canceled__c,
+                Encouraged_to_contribute_by__c,
                 Include_amount_in_notification__c,
                 In_Honor_Memory__c,
                 In_honor_memory_of__c,
@@ -899,6 +905,7 @@ class RDO(SalesforceObject):
             y.donor_country = item["Donor_country__c"]
             y.email_notify = item["Email_to_notify__c"]
             y.email_user_when_canceled = item["Email_User_When_Canceled__c"]
+            y.encouraged_by = item["Encouraged_to_contribute_by__c"]
             y.include_amount_in_notification = item["Include_amount_in_notification__c"]
             y.in_honor_or_memory = item["In_Honor_Memory__c"]
             y.in_honor_memory_of = item["In_honor_memory_of__c"]
@@ -967,6 +974,7 @@ class RDO(SalesforceObject):
             "Donor_country__c": self.donor_country,
             "Email_to_notify__c": self.email_notify,
             "Email_User_When_Canceled__c": self.email_user_when_canceled,
+            "Encouraged_to_contribute_by__c": self.encouraged_by,
             "Include_amount_in_notification__c": self.include_amount_in_notification,
             "In_Honor_Memory__c": self.in_honor_or_memory,
             "In_honor_memory_of__c": self.in_honor_memory_of,
@@ -1040,6 +1048,7 @@ class RDO(SalesforceObject):
                 Donor_country__c,
                 Email_to_notify__c,
                 Email_User_When_Canceled__c,
+                Encouraged_to_contribute_by__c,
                 Fair_market_value__c,
                 Include_amount_in_notification__c,
                 In_Honor_Memory__c,
@@ -1109,6 +1118,7 @@ class RDO(SalesforceObject):
             y.donor_country = item["Donor_country__c"]
             y.email_notify = item["Email_to_notify__c"]
             y.email_user_when_canceled = item["Email_User_When_Canceled__c"]
+            y.encouraged_by = item["Encouraged_to_contribute_by__c"]
             y.fair_market_value = item["Fair_market_value__c"]
             y.include_amount_in_notification = item["Include_amount_in_notification__c"]
             y.in_honor_or_memory = item["In_Honor_Memory__c"]
