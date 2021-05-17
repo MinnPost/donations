@@ -1685,6 +1685,7 @@ def finish():
     additional_donation = form_data.get("additional_donation", 0)
     if additional_donation and additional_donation != 0:
         additional_donation = format(additional_donation, ",.2f")
+    installment_period = form_data.get("installment_period", "")
 
     finish_donation.delay(form_data)
     lock_key = form_data["lock_key"]
@@ -1694,7 +1695,7 @@ def finish():
         template,
         title=title,
         step=step,
-        path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation,
+        path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation, installment_period=installment_period,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
