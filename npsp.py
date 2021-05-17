@@ -980,7 +980,7 @@ class RDO(SalesforceObject):
             "In_honor_memory_of__c": self.in_honor_memory_of,
             "Notify_someone__c": self.notify_someone,
             #'npe03__Installments__c': self.installments,
-            "npe03__Installment_Period__c": self.installment_period, # this has to be there even if it is open ended
+            "npe03__Installment_Period__c": self.installment_period, # this is the frequency
             "Lead_Source__c": self.lead_source,
             "Member_benefit_request_Swag__c": self.member_benefit_request_swag,
             "Member_benefit_request_New_York_Times__c": self.member_benefit_request_nyt,

@@ -15,7 +15,7 @@
   {% if opportunity_id %}
     <input type="hidden" name="opportunity_id" id="opportunity_id" value="{{ opportunity_id }}">
   {% endif %}
-  {% if installment_period %}
+  {% if installment_period != '' and show_installment_period is sameas false %}
     <input type="hidden" name="installment_period" id="installment_period" value="{{ installment_period }}">
   {% endif %}
   {% if recurring_id %}
