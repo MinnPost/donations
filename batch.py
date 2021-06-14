@@ -90,8 +90,7 @@ def charge_cards():
 
     begin_closedate_range = (datetime.now(tz=zone) - timedelta(days=14)).strftime("%Y-%m-%d")
     today = datetime.now(tz=zone).strftime("%Y-%m-%d")
-    at_least_this_age = (datetime.now(tz=zone) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%S%z")
-    opportunities = Opportunity.list(begin=begin_closedate_range, end=today, at_least_this_age=at_least_this_age)
+    opportunities = Opportunity.list(begin=begin_closedate_range, end=today)
 
     log.it("---Processing charges...")
 

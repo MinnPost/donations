@@ -603,16 +603,18 @@ def finish_donation(self, form=None):
 
         rdo_response = RDO.update(rdo, post_submit_details)
 
-        opps = Opportunity.load_after_submit(
-            stage_name="Closed Won",
-            lock_key=lock_key
-        )
+        # maybe this is causing duplicate charges?
 
-        if not opps:
-            logging.info("No closed opportunity id here yet. Delay and try again.")
-            raise self.retry(countdown=120)
+        #opps = Opportunity.load_after_submit(
+        #    stage_name="Closed Won",
+        #    lock_key=lock_key
+        #)
+
+        #if not opps:
+        #    logging.info("No closed opportunity id here yet. Delay and try again.")
+        #    raise self.retry(countdown=120)
         
-        opps_response = Opportunity.update(opps, post_submit_details)
+        #opps_response = Opportunity.update(opps, post_submit_details)
         
 
 
@@ -2344,7 +2346,6 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     This will update a single donation in Salesforce.
     """
 
-    today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
     opportunity = Opportunity(contact=contact)
 
     opportunity_id = form.get("opportunity_id", "")
@@ -2380,11 +2381,14 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     lock_key = form.get("lock_key", "")
 
     # these need to be set in case they aren't already present
-    opportunity.close_date = form.get("close_date", today) # we may want to override the form value?
+    close_date = form.get("close_date", "") # we may want to override the form value?
     opportunity.stage_name = form.get("stage_name", "Pledged")
     opportunity.stripe_description = "MinnPost Membership"
     opportunity.payment_type = "Stripe"
     opportunity.quarantined = quarantine
+
+    if close_date != "":
+        opportunity.close_date = close_date
 
     opportunity.name = (
         f"{donor_first_name} {donor_last_name} {opportunity.type} {opportunity.close_date}"
@@ -2402,6 +2406,9 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     # always change these text values based on user's input
     opportunity.credited_as = credited_as
 
+    if donor_email != "":
+        opportunity.donor_email = donor_email
+    
     if donor_first_name != "":
         opportunity.donor_first_name = donor_first_name
 
@@ -2597,6 +2604,9 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
     rdo.stripe_description = "MinnPost Sustaining Membership"
     rdo.payment_type = "Stripe"
     rdo.quarantined = quarantine
+
+    if donor_email != "":
+        rdo.donor_email = donor_email
 
     if donor_first_name != "":
         rdo.donor_first_name = donor_first_name
