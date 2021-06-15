@@ -2043,7 +2043,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         title=title,
         form=form,
         form_action=form_action,
-        amount=amount_formatted, additional_donation=additional_donation, show_installment_period=show_installment_period, yearly=yearly, installment_period=installment_period,
+        amount=amount, amount_formatted=amount_formatted, additional_donation=additional_donation, show_installment_period=show_installment_period, yearly=yearly, installment_period=installment_period,
         first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, mrpledge_id=mrpledge_id, customer_id=customer_id, referring_page=referring_page,

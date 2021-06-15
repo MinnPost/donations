@@ -30,8 +30,8 @@
   {% if opportunity_subtype %}
     <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
   {% endif %}
-  {% if amount != '' and show_amount_field is sameas false %}
-    <div id="a-amount-js-only" class="amount"><span class="level-amount">{{ amount }}</span></div>
+  {% if amount_formatted != '' and show_amount_field is sameas false %}
+    <div id="a-amount-js-only" class="amount"><span class="level-amount">{{ amount_formatted }}</span></div>
   {% endif %}
   {% include 'minimal/details.html' %}
   {% include 'shared/pay.html' %}
