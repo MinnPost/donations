@@ -9,7 +9,7 @@
 
   </div>
 
-  {% if amount == '' or show_amount_field or show_frequency is sameas true or allow_additional_amount is sameas true or show_invoice is sameas true or show_organization is sameas true %}
+  {% if amount == '' or show_amount_field or show_installment_period is sameas true or allow_additional_amount is sameas true or show_invoice is sameas true or show_organization is sameas true %}
     <fieldset class="minimal-details">
       {% if amount == '' or show_amount_field %}
       <div class="m-form-item m-form-item-amount">

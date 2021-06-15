@@ -23,13 +23,13 @@
 			<label for="amount">Amount: <span class="a-form-item-required" title="This field is required.">*</span></label>
 			<input type="tel" id="amount" name="amount" maxlength="40" required value="{{ amount }}">
 		</div>
-		<div class="m-form-item m-form-item-frequency">
-			<label for="frequency">Frequency: <span class="a-form-item-required" title="This field is required.">*</span></label>
-			<select id="frequency" name="frequency" required>
+		<div class="m-form-item m-form-item-installment_period">
+			<label for="installment_period">Frequency: <span class="a-form-item-required" title="This field is required.">*</span></label>
+			<select id="installment_period" name="installment_period" required>
 				<option value="">Select a frequency</option>
-				<option value="monthly"{% if frequency == 'monthly' %} selected{% endif %}>monthly</option>
-				<option value="yearly"{% if frequency == 'yearly' %} selected{% endif %}>yearly</option>
-				<option value="one-time"{% if frequency == 'one-time' %} selected{% endif %}>one time</option>
+				<option value="monthly"{% if installment_period == 'monthly' %} selected{% endif %}>monthly</option>
+				<option value="yearly"{% if installment_period == 'yearly' %} selected{% endif %}>yearly</option>
+				<option value="one-time"{% if installment_period == 'one-time' %} selected{% endif %}>one time</option>
 			</select>
 		</div>
 	</fieldset>

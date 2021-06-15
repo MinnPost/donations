@@ -334,7 +334,7 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
     form               = clean(form)
     first_name         = form.get("first_name", "")
     last_name          = form.get("last_name", "")
-    frequency          = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    installment_period = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     email              = form.get("email", "")
     street             = form.get("billing_street", "")
     city               = form.get("billing_city", "")
@@ -382,7 +382,7 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
         honor_or_memory = form["in_honor_or_memory"]
         form["in_honor_or_memory"] = 'In ' + str(honor_or_memory) + ' of...'
 
-    if frequency == "one-time":
+    if installment_period == "one-time":
         logging.info("----Creating one time payment...")
         opportunity = add_opportunity(
             contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source, quarantine=quarantine
@@ -445,7 +445,7 @@ def update_donation(form=None, customer=None, donation_type=None, payment_method
     form               = clean(form)
     first_name         = form.get("first_name", "")
     last_name          = form.get("last_name", "")
-    frequency          = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    installment_period = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     email              = form.get("email", "")
     street             = form.get("billing_street", "")
     city               = form.get("billing_city", "")
@@ -490,7 +490,7 @@ def update_donation(form=None, customer=None, donation_type=None, payment_method
         honor_or_memory = form["in_honor_or_memory"]
         form["in_honor_or_memory"] = 'In ' + str(honor_or_memory) + ' of...'
 
-    if frequency == "one-time":
+    if installment_period == "one-time":
         logging.info("----Updating one time payment...")
         opportunity = update_opportunity(
             contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source, quarantine=quarantine
@@ -524,7 +524,7 @@ def finish_donation(self, form=None):
 
     # we don't run clean() on this form because the messages field is a list
 
-    frequency = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    installment_period = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     lock_key = form.get("lock_key", "")
     post_submit_details = dict()
 
@@ -582,7 +582,7 @@ def finish_donation(self, form=None):
     post_submit_details["Event_member_benefit_messages__c"] = event_messages
     post_submit_details["Input_feedback_messages__c"] = feedback_messages
 
-    if frequency == "one-time":
+    if installment_period == "one-time":
         opps = Opportunity.load_after_submit(
             lock_key=lock_key
         )
@@ -624,7 +624,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     email = form_data["email"]
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
-    frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    installment_period = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     customer_id = form_data.get("customer_id", "")
     update_default_source = form_data.get("update_default_source", "")
     stripe_payment_type = form_data.get("stripe_payment_type", "")
@@ -832,7 +832,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
             app.logger.error(f"Stripe Unknown Error: {message}")
             return jsonify(errors=body)
 
-    app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
+    app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge installment period: {installment_period}")
     bad_actor_request = None
     #try:
     #    if "zipcode" in form_data:
@@ -966,9 +966,9 @@ def root_form():
         amount = ""
         amount_formatted = ""
 
-    # frequency
-    frequency = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
-    if frequency == "monthly":
+    # installment period
+    installment_period = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
+    if installment_period == "monthly":
         yearly = 12
     else:
         yearly = 1
@@ -996,7 +996,7 @@ def root_form():
         form=form,
         title=title,
         form_action=form_action,
-        amount=amount_formatted, frequency=frequency, yearly=yearly,
+        amount=amount_formatted, installment_period=installment_period, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
         plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'),
@@ -1028,9 +1028,9 @@ def give_form():
         message = "The page you requested can't be found."
         return render_template("error.html", message=message)
 
-    # frequency
-    frequency = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
-    if frequency == "monthly":
+    # installment period
+    installment_period = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
+    if installment_period == "monthly":
         yearly = 12
     else:
         yearly = 1
@@ -1110,7 +1110,7 @@ def give_form():
     # fees
     fees = calculate_amount_fees(amount, "card")
 
-    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}{decline_benefits}'
+    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={installment_period}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}{decline_benefits}'
 
     # interface settings
     with_shipping = True
@@ -1145,7 +1145,7 @@ def give_form():
         title=title,
         form=form, step=step,
         form_action=form_action,
-        amount=amount_formatted, frequency=frequency, yearly=yearly, description=description,
+        amount=amount_formatted, installment_period=installment_period, yearly=yearly, description=description,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
@@ -1247,7 +1247,7 @@ def donation_cancel_form():
             donation = opportunity[0]
         except:
             donation = None
-        frequency = "one-time"
+        installment_period = "one-time"
         close_date = donation.close_date
         close_date_formatted = datetime.strptime(close_date, '%Y-%m-%d').strftime('%B %-d, %Y')
     elif recurring_id:
@@ -1256,7 +1256,7 @@ def donation_cancel_form():
                 recurring_id=recurring_id
             )
             donation = rdo[0]
-            frequency = donation.installment_period.lower()
+            installment_period = donation.installment_period.lower()
         except:
             donation = None
 
@@ -1269,7 +1269,7 @@ def donation_cancel_form():
         email = donation.donor_email
         customer_id = donation.stripe_customer_id
         if recurring_id:
-            summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} {frequency.lower()} donation, click the button."
+            summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} {installment_period.lower()} donation, click the button."
         else:
             if close_date is not None:
                 summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation scheduled for {close_date_formatted}, click the button."
@@ -1293,7 +1293,7 @@ def donation_cancel_form():
         form=form,
         form_action=form_action,
         first_name=first_name, last_name=last_name, email=email, customer_id=customer_id,
-        path=path, amount=amount_formatted, frequency=frequency,
+        path=path, amount=amount_formatted, installment_period=installment_period,
         stage_name=stage_name, open_ended_status=open_ended_status, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
         last_updated=dir_last_updated('static'),
@@ -1344,8 +1344,8 @@ def advertising_form():
         amount = 0
         amount_formatted = amount
 
-    # frequency
-    frequency = "one-time"
+    # installment period
+    installment_period = "one-time"
 
     # salesforce campaign
     campaign = request.args.get("campaign", ADVERTISING_CAMPAIGN_ID)
@@ -1429,7 +1429,7 @@ def advertising_form():
         title=title,
         form=form,
         form_action=form_action,
-        path=path, amount=amount_formatted, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
+        path=path, amount=amount_formatted, installment_period=installment_period, description=description, close_date=close_date, stage_name=stage_name,
         opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         invoice=invoice, client_organization=client_organization,
         first_name=first_name, last_name=last_name, email=email,
@@ -1611,12 +1611,12 @@ def calculate_member_level():
     if amount is None or amount == "":
         amount = 0
 
-    frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
-    if frequency == "monthly":
+    installment_period = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    if installment_period == "monthly":
         yearly = 12
     else:
         yearly = 1
-    level = check_level(amount, frequency, yearly)
+    level = check_level(amount, installment_period, yearly)
 
     ret_data = {"level": level}
     return jsonify(ret_data)
@@ -1641,12 +1641,12 @@ def thanks():
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
 
-    frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
-    if frequency == "monthly":
+    installment_period = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    if installment_period == "monthly":
         yearly = 12
     else:
         yearly = 1
-    level = check_level(amount, frequency, yearly)
+    level = check_level(amount, installment_period, yearly)
 
     lock_key = form_data["lock_key"]
 
@@ -1655,7 +1655,7 @@ def thanks():
         title=title,
         step=step, form_action=form_action,
         amount=amount_formatted,
-        frequency=frequency,
+        installment_period=installment_period,
         yearly=yearly,
         level=level,
         email=email,
@@ -1743,8 +1743,8 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         amount = 0
         amount_formatted = amount
 
-    # frequency
-    frequency = "one-time"
+    # installment period
+    installment_period = "one-time"
 
     # stripe customer id
     customer_id = request.args.get("customer_id", "")
@@ -1825,7 +1825,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         form=form,
         form_action=form_action,
         path=path, folder=folder,
-        amount=amount, additional_donation=additional_donation, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
+        amount=amount, additional_donation=additional_donation, installment_period=installment_period, description=description, close_date=close_date, stage_name=stage_name,
         opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
@@ -1960,10 +1960,10 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         amount = format_amount(request.args.get("amount"))
         amount_formatted = format(amount, ",.2f")
 
-    # frequency
+    # installment period
     if request.args.get("frequency"):
-        frequency = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
-        if frequency == "monthly":
+        installment_period = request.args.get("frequency", installment_period)
+        if installment_period == "monthly":
             yearly = 12
 
     # salesforce campaign

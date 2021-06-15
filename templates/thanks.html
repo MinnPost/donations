@@ -3,14 +3,14 @@
 {% block content %}
 <form class="m-form m-form-standalone support--confirm" method="post" id="confirm" action="{{ form_action }}">
   <input type="hidden" name="amount" id="amount" value="{{ amount }}">
-  <input type="hidden" name="installment_period" id="installment_period" value="{{ frequency }}">
+  <input type="hidden" name="installment_period" id="installment_period" value="{{ installment_period }}">
   <input type="hidden" name="email" id="email" value="{{ email }}">
   <input type="hidden" name="first_name" id="first_name" value="{{ first_name }}">
   <input type="hidden" name="last_name" id="last_name" value="{{ last_name }}">
   <input type="hidden" name="lock_key" id="lock_key" value="{{ lock_key }}">
   <section class="o-panel o-panel-form" id="panel--confirmation">
     <h1>Thank you for supporting MinnPost</h1>
-    <p>Thank you for your $<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ frequency }}</span> donation. This contribution gives you MinnPost <span class="level-name">{{ level.level.title() }}</span> benefits. You will receive an email that includes a receipt of your contribution, an overview of your member benefits and if you selected a thank you gift, information regarding how you will receive your selection.</p>
+    <p>Thank you for your $<span class="level-amount">{{ amount }}</span> <span class="frequency" data-year-freq="{{ yearly }}">{{ installment_period }}</span> donation. This contribution gives you MinnPost <span class="level-name">{{ level.level.title() }}</span> benefits. You will receive an email that includes a receipt of your contribution, an overview of your member benefits and if you selected a thank you gift, information regarding how you will receive your selection.</p>
     <h2>What next?</h2>
     <p class="a-confirm-instructions" data-known-user="Please take a quick moment to share why you chose to support MinnPost. You can also review your current settings for MinnPost email communications.">Please take a quick moment to share why you chose to support MinnPost, and consider signing up for our email newsletters.</p>
     <fieldset class="support-reasons">

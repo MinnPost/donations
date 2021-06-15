@@ -82,7 +82,7 @@ def calculate_amount_fees(amount, payment_type, paying_fees=True):
     return fees
 
 
-def check_level(amount, frequency, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
+def check_level(amount, installment_period, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
     thisyear = amount * yearly
     level = ''
     levelnum = ''
@@ -93,7 +93,7 @@ def check_level(amount, frequency, yearly, prior_year_amount=None, coming_year_a
     nextlevelmonthlystart = ''
 
     if prior_year_amount != None or coming_year_amount != None or annual_recurring_amount != None:
-        if frequency == 'one-time':
+        if installment_period == 'one-time':
             prior_year_amount = thisyear
         else:
             annual_recurring_amount += thisyear
