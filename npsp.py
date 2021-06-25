@@ -553,6 +553,7 @@ class Opportunity(SalesforceObject):
             SELECT
                 Id,
                 Flask_Transaction_ID__c,
+                CloseDate,
                 Reason_for_Gift__c,
                 Reason_for_gift_shareable__c,
                 Daily_newsletter_sign_up__c,
@@ -573,6 +574,7 @@ class Opportunity(SalesforceObject):
             y = cls()
             y.id = item["Id"]
             y.lock_key = item["Flask_Transaction_ID__c"]
+            y.close_date = item["CloseDate"]
             y.reason_for_supporting = "Reason_for_Gift__c"
             y.reason_for_supporting_shareable = "Reason_for_gift_shareable__c"
             y.daily_newsletter = "Daily_newsletter_sign_up__c"
