@@ -1,0 +1,14 @@
+<section class="o-panel o-panel-form" id="panel--details">
+    <div class="support m-support-summary">
+      <p>{{ summary }}</p>
+      <fieldset class="m-sponsorship-levels">
+        <label><input type="radio" name="amount" value="5000" data-fair-market-value="500"{% if amount == 5000 %} checked{% endif %} required> $5,000 - <strong>Executive Presenter</strong></label>
+        <label><input type="radio" name="amount" value="2400" data-fair-market-value="400"{% if amount == 2400 %} checked{% endif %} required> $2,400 - <strong>Tier I</strong></label>
+        <label><input type="radio" name="amount" value="1200" data-fair-market-value="300"{% if amount == 1200 %} checked{% endif %} required> $1,200 - <strong>Tier II</strong></label>
+        <label><input type="radio" name="amount" value="600" data-fair-market-value="200"{% if amount == 600 %} checked{% endif %} required> $600 - <strong>Tier III</strong></label>
+        <label><input type="radio" name="amount" value="300" data-fair-market-value="100"{% if amount == 300 %} checked{% endif %} required> $300 - <strong>Tier IV</strong></label>
+        <!--<p><a href="https://www.minnpost.com/tonight/vip-packages/" target="_blank">Learn more about VIP package levels and benefits</a></p>-->
+        {% include "/shared/additional-amount.html" %}
+      </fieldset>
+    </div>
+  </section>

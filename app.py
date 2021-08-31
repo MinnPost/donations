@@ -51,6 +51,7 @@ from config import (
     DEFAULT_CAMPAIGN_ONETIME,
     DEFAULT_CAMPAIGN_RECURRING,
     FESTIVAL_CAMPAIGN_ID,
+    TONIGHT_CAMPAIGN_ID,
     MINNROAST_CAMPAIGN_ID,
     SALESFORCE_CONTACT_ADVERTISING_EMAIL,
     ENABLE_SENTRY,
@@ -1456,6 +1457,26 @@ def festival_vip_form():
 
     # salesforce campaign
     campaign = request.args.get("campaign", FESTIVAL_CAMPAIGN_ID)
+
+    # interface settings
+    allow_additional_amount = True
+    hide_honor_or_memory    = True
+    hide_display_name       = False
+    button                  = "Purchase your VIP package"
+    
+    return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
+
+
+@app.route("/tonight-vip/" , methods=["GET", "POST"])
+def tonight_vip_form():
+    title       = "MinnPost Tonight VIP Packages"
+    heading     = ""
+    description = title
+    summary     = "With your VIP support as part of MinnPost Tonight, you’re providing a crucial investment in MinnPost’s public-service journalism year-round. Thank you for going deeper with us into these conversations and for standing behind with our nonprofit newsroom with your generous support."
+    folder      = "tonight"
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", TONIGHT_CAMPAIGN_ID)
 
     # interface settings
     allow_additional_amount = True
