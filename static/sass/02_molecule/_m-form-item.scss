@@ -1,3 +1,4 @@
+@use "sass:math";
 .m-form-item {
 
     span.label {
@@ -50,7 +51,7 @@
         input[type="checkbox"],
         input[type="radio"] {
             display: inline;
-            margin-right: $standard-block-padding / 2;
+            margin-right: math.div($standard-block-padding, 2);
         }
     }
 }

@@ -1,3 +1,4 @@
+@use "sass:math";
 .a-form-caption {
 
     &.a-form-caption-recaptcha-terms {
@@ -11,7 +12,7 @@
     input[type="checkbox"],
     input[type="radio"] {
         display: inline;
-        margin-right: $standard-block-padding / 2;
+        margin-right: math.div($standard-block-padding, 2);
     }
 
 }
