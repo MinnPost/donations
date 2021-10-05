@@ -126,11 +126,6 @@
         ]
       });
 
-      // use a referrer for edit link if we have one
-      if (document.referrer !== '') {
-        $('#edit_url').prop('href', document.referrer);
-      }
-
       if (this.options.debug === true) {
         this.debug(this.options);
         // return;
