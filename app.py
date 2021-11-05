@@ -1093,6 +1093,10 @@ def give_form():
     nyt_subscription = request.args.get("nyt_subscription", "")
     nyt_subscription_form = format_swag_subscription(nyt_subscription)
 
+    # fair market value
+    fair_market_value = format_amount(request.args.get("fair_market_value", ""))
+    fair_market_value_formatted = format(fair_market_value, ",.2f")
+
     # decline all benefits
     if request.args.get("decline_benefits"):
         decline_benefits = request.args.get("decline_benefits")
@@ -1111,7 +1115,7 @@ def give_form():
     # fees
     fees = calculate_amount_fees(amount, "card")
 
-    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={installment_period}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}{decline_benefits}'
+    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;fair_market_value={fair_market_value_formatted}&amp;frequency={installment_period}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}{decline_benefits}'
 
     # interface settings
     with_shipping = True
@@ -1146,7 +1150,7 @@ def give_form():
         title=title,
         form=form, step=step,
         form_action=form_action,
-        amount=amount_formatted, installment_period=installment_period, yearly=yearly, description=description,
+        amount=amount_formatted, fair_market_value=fair_market_value_formatted, installment_period=installment_period, yearly=yearly, description=description,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
@@ -1658,6 +1662,9 @@ def thanks():
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
 
+    fair_market_value = form_data["fair_market_value"]
+    fair_market_value_formatted = format(fair_market_value, ",.2f")
+
     email = form_data["email"]
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
@@ -1675,7 +1682,7 @@ def thanks():
         template,
         title=title,
         step=step, form_action=form_action,
-        amount=amount_formatted,
+        amount=amount_formatted, fair_market_value=fair_market_value_formatted,
         installment_period=installment_period,
         yearly=yearly,
         level=level,
@@ -1703,6 +1710,8 @@ def finish():
     folder = form_data.get("folder", "")
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
+    fair_market_value = form_data["fair_market_value"]
+    fair_market_value_formatted = format(fair_market_value, ",.2f")
     additional_donation = form_data.get("additional_donation", 0)
     if additional_donation and additional_donation != 0:
         additional_donation = format(additional_donation, ",.2f")
@@ -1716,7 +1725,7 @@ def finish():
         template,
         title=title,
         step=step,
-        path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation, installment_period=installment_period,
+        path=path, folder=folder, amount=amount_formatted, fair_market_value=fair_market_value_formatted, additional_donation=additional_donation, installment_period=installment_period,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
@@ -1887,6 +1896,8 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     # donation and user info
     amount = 0
     amount_formatted = amount
+    fair_market_value = 0
+    fair_market_value_formatted = fair_market_value
     yearly = 1
     campaign = ""
     customer_id = ""
@@ -1936,6 +1947,8 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         # set default values
         amount = donation.amount
         amount_formatted = amount
+        fair_market_value = donation.fair_market_value
+        fair_market_value_formatted = fair_market_value
         if installment_period is not None and installment_period == "monthly":
             yearly = 12
         else:
@@ -1980,6 +1993,10 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     if request.args.get("amount"):
         amount = format_amount(request.args.get("amount"))
         amount_formatted = format(amount, ",.2f")
+
+    if request.args.get("fair_market_value"):
+        fair_market_value = format_amount(request.args.get("fair_market_value"))
+        fair_market_value_formatted = format(fair_market_value, ",.2f")
 
     # installment period
     if request.args.get("frequency"):
@@ -2064,7 +2081,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         title=title,
         form=form,
         form_action=form_action,
-        amount=amount, amount_formatted=amount_formatted, additional_donation=additional_donation, show_installment_period=show_installment_period, yearly=yearly, installment_period=installment_period,
+        amount=amount, amount_formatted=amount_formatted, fair_market_value_formatted=fair_market_value_formatted, additional_donation=additional_donation, show_installment_period=show_installment_period, yearly=yearly, installment_period=installment_period,
         first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, mrpledge_id=mrpledge_id, customer_id=customer_id, referring_page=referring_page,
@@ -2382,6 +2399,7 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     
     # fields that can be updated by a user should go here
     amount = form.get("amount", 0)
+    fair_market_value = form.get("fair_market_value", 0)
     agreed_to_pay_fees = form.get("pay_fees", False)
     anonymous = form.get("anonymous", False)
     credited_as = form.get("display_as", "")
@@ -2416,6 +2434,9 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     # the actual opportunity values
     if amount != 0:
         opportunity.amount = amount
+
+    if fair_market_value != 0:
+        opportunity.fair_market_value = fair_market_value
 
     # always change these checkbox values based on the user's input
     opportunity.agreed_to_pay_fees = agreed_to_pay_fees

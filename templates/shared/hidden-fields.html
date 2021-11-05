@@ -15,6 +15,9 @@
 {% if amount != '' and show_amount_field is sameas false %}
     <input type="hidden" name="amount" id="amount" value="{{ amount }}">
 {% endif %}
+{% if fair_market_value != '' %}
+    <input type="hidden" name="fair_market_value" id="fair_market_value" value="{{ fair_market_value }}">
+{% endif %}
 {% if path %}
     <input type="hidden" name="path" id="path" value="{{ path }}">
 {% endif %}

@@ -115,6 +115,14 @@ class BaseForm(FlaskForm):
         ],
         filters=[format_amount],
     )
+    fair_market_value = StringField(
+        u"Fair Market Value",
+        validators=[
+            validators.Optional(),
+            validate_amount,
+        ],
+        filters=[format_amount],
+    )
     installment_period = StringField(
         u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
     )
@@ -257,14 +265,6 @@ class MinimalForm(BaseForm):
 # used for anniversary-patron, minnroast-patron, other sponsorship things
 class SponsorshipForm(MinimalForm):
     folder = HiddenField("Folder", [validators.Optional()])
-    fair_market_value = StringField(
-        u"Fair Market Value",
-        validators=[
-            validators.Optional(),
-            validate_amount,
-        ],
-        filters=[format_amount],
-    )
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(
         u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
