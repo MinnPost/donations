@@ -1665,7 +1665,7 @@ def thanks():
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
 
-    fair_market_value = form_data["fair_market_value"]
+    fair_market_value = form_data.get("fair_market_value", 0)
     fair_market_value_formatted = format(fair_market_value, ",.2f")
 
     email = form_data["email"]
@@ -1713,7 +1713,7 @@ def finish():
     folder = form_data.get("folder", "")
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
-    fair_market_value = form_data["fair_market_value"]
+    fair_market_value = form_data.get("fair_market_value", 0)
     fair_market_value_formatted = format(fair_market_value, ",.2f")
     additional_donation = form_data.get("additional_donation", 0)
     if additional_donation and additional_donation != 0:
