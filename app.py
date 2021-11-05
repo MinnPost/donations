@@ -1665,9 +1665,6 @@ def thanks():
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
 
-    fair_market_value = form_data.get("fair_market_value", 0)
-    fair_market_value_formatted = format(fair_market_value, ",.2f")
-
     email = form_data["email"]
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
@@ -1685,7 +1682,7 @@ def thanks():
         template,
         title=title,
         step=step, form_action=form_action,
-        amount=amount_formatted, fair_market_value=fair_market_value_formatted,
+        amount=amount_formatted,
         installment_period=installment_period,
         yearly=yearly,
         level=level,
