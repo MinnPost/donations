@@ -1710,8 +1710,6 @@ def finish():
     folder = form_data.get("folder", "")
     amount = form_data["amount"]
     amount_formatted = format(amount, ",.2f")
-    fair_market_value = form_data.get("fair_market_value", 0)
-    fair_market_value_formatted = format(fair_market_value, ",.2f")
     additional_donation = form_data.get("additional_donation", 0)
     if additional_donation and additional_donation != 0:
         additional_donation = format(additional_donation, ",.2f")
@@ -1725,7 +1723,7 @@ def finish():
         template,
         title=title,
         step=step,
-        path=path, folder=folder, amount=amount_formatted, fair_market_value=fair_market_value_formatted, additional_donation=additional_donation, installment_period=installment_period,
+        path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation, installment_period=installment_period,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
