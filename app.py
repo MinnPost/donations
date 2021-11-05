@@ -1094,8 +1094,9 @@ def give_form():
     nyt_subscription_form = format_swag_subscription(nyt_subscription)
 
     # fair market value
-    fair_market_value = format_amount(request.args.get("fair_market_value", ""))
-    fair_market_value_formatted = format(fair_market_value, ",.2f")
+    if request.args.get("fair_market_value"):
+        fair_market_value = format_amount(request.args.get("fair_market_value", 0))
+        fair_market_value_formatted = format(fair_market_value, ",.2f")
 
     # decline all benefits
     if request.args.get("decline_benefits"):
