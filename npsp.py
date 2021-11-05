@@ -313,7 +313,7 @@ class Opportunity(SalesforceObject):
         self.encouraged_by = None
         self.event_attendees = None
         self.event_ticket_quantity = None
-        self.fair_market_value = None
+        self.fair_market_value = 0
         self.include_amount_in_notification = False
         self.in_honor_or_memory = None
         self.in_honor_memory_of = None
@@ -476,6 +476,7 @@ class Opportunity(SalesforceObject):
             y.id = item["Id"]
             y.lead_source = item["LeadSource"]
             y.encouraged_by = item["Encouraged_to_contribute_by__c"]
+            y.fair_market_value = item["Fair_market_value__c"]
             y.name = item["Name"]
             #y.record_type_name = item["RecordType"]["Name"]
             y.stage_name = "Pledged"
