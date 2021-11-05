@@ -117,10 +117,7 @@ class BaseForm(FlaskForm):
     )
     fair_market_value = StringField(
         u"Fair Market Value",
-        validators=[
-            validators.Optional(),
-            validate_amount,
-        ],
+        validators=[validators.Optional()],
         filters=[format_amount],
     )
     installment_period = StringField(
