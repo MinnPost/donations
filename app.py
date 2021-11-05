@@ -1094,6 +1094,8 @@ def give_form():
     nyt_subscription_form = format_swag_subscription(nyt_subscription)
 
     # fair market value
+    fair_market_value = 0
+    fair_market_value_formatted = 0
     if request.args.get("fair_market_value"):
         fair_market_value = format_amount(request.args.get("fair_market_value", 0))
         fair_market_value_formatted = format(fair_market_value, ",.2f")
@@ -1116,7 +1118,7 @@ def give_form():
     # fees
     fees = calculate_amount_fees(amount, "card")
 
-    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;fair_market_value={fair_market_value_formatted}&amp;frequency={installment_period}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}{decline_benefits}'
+    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={installment_period}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}{decline_benefits}'
 
     # interface settings
     with_shipping = True
