@@ -102,6 +102,11 @@ class BaseForm(FlaskForm):
     payment_method_id = HiddenField(u"Payment Method ID", [validators.Optional()])
     recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
     update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
+    fair_market_value = HiddenField(
+        u"Fair Market Value",
+        validators=[validators.Optional()],
+        filters=[format_amount],
+    )
 
     pay_fees = BooleanField(
         u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
@@ -113,11 +118,6 @@ class BaseForm(FlaskForm):
             validators.required(message="Please choose a donation amount."),
             validate_amount,
         ],
-        filters=[format_amount],
-    )
-    fair_market_value = StringField(
-        u"Fair Market Value",
-        validators=[validators.Optional()],
         filters=[format_amount],
     )
     installment_period = StringField(
