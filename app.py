@@ -1947,8 +1947,6 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         # set default values
         amount = donation.amount
         amount_formatted = amount
-        fair_market_value = donation.fair_market_value
-        fair_market_value_formatted = fair_market_value
         if installment_period is not None and installment_period == "monthly":
             yearly = 12
         else:
@@ -1981,6 +1979,9 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         pay_fees = donation.agreed_to_pay_fees
 
         if opportunity:
+            if donation.fair_market_value is not None:
+                fair_market_value = donation.fair_market_value
+                fair_market_value_formatted = fair_market_value
             if donation.stage_name is not None:
                 # because it could be failed or closed lost or whatever and we want it to try again
                 stage_name = "Pledged"
