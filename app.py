@@ -343,6 +343,7 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
     country            = form.get("billing_country", "")
     zipcode            = form.get("billing_zip", "")
     stripe_customer_id = form.get("stripe_customer_id", "")
+    fair_market_value  = form.get("fair_market_value", 0)
 
     opportunity_subtype = form.get('opportunity_subtype', None)
     if opportunity_subtype is not None and opportunity_subtype == 'Sales: Advertising':
@@ -417,6 +418,7 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
         ]
         if len(closing_today):
             opp = closing_today[0]
+            opp.fair_market_value = fair_market_value # set the first opportunity's fair market value
             try:
                 charge(opp)
                 lock = Lock(key=rdo.lock_key)
