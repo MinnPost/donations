@@ -318,8 +318,9 @@
     }, // getTotalAmount
 
     setFairMarketValue: function(amount_selector) {
-      // if there is a fair market value field, check and see if we can populate it
-      if ($(this.options.fair_market_value_selector).length > 0) {
+      // if there is a fair market value field and there is a fair-market-value data attribute
+      // check and see if we can populate the field with the data attribute
+      if ($(this.options.fair_market_value_selector).length > 0 && typeof amount_selector.data('fair-market-value') !== 'undefined') {
         var fairMarketValue = amount_selector.data('fair-market-value');
         $(this.options.fair_market_value_selector).val(fairMarketValue);
       }
