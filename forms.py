@@ -45,6 +45,8 @@ def format_amount(value):
             return value
         except ValueError:
             return None
+    else:
+        return 0
 
 
 # format the value of a swag item for inserting into Salesforce
