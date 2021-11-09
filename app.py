@@ -1855,7 +1855,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         form=form,
         form_action=form_action,
         path=path, folder=folder,
-        amount=amount, fair_market_value=fair_market_value, additional_donation=additional_donation, installment_period=installment_period, description=description, close_date=close_date, stage_name=stage_name,
+        amount=amount, additional_donation=additional_donation, installment_period=installment_period, description=description, close_date=close_date, stage_name=stage_name,
         opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
