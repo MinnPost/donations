@@ -447,6 +447,7 @@ class Opportunity(SalesforceObject):
                 Stripe_Transaction_Fee__c,
                 Stripe_Transaction_ID__c,
                 Flask_Transaction_ID__c
+                Expected_Giving_Date__c,
                 Amazon_Order_Id__c,
                 Quarantined__c
             FROM Opportunity
@@ -660,7 +661,8 @@ class Opportunity(SalesforceObject):
             "Stripe_Transaction_ID__c": self.stripe_transaction_id,
             "Stripe_Payment_Type__c": self.stripe_payment_type,
             "Quarantined__c": self.quarantined,
-            "Flask_Transaction_ID__c": self.lock_key,            
+            "Flask_Transaction_ID__c": self.lock_key,
+            "Amazon_Order_Id__c": self.amazon_order_id,
         }
 
     @classmethod
@@ -1033,6 +1035,7 @@ class RDO(SalesforceObject):
                 Donor_country__c,
                 Email_to_notify__c,
                 Email_User_When_Canceled__c,
+                Expected_Giving_Date__c,
                 Fair_market_value__c,
                 Include_amount_in_notification__c,
                 In_Honor_Memory__c,

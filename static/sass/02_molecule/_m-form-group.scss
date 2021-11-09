@@ -1,3 +1,4 @@
+@use "sass:math";
 .m-form-group {
 
     &.m-form-location-group {
@@ -43,7 +44,7 @@
         
         .stripe-field {
             background: neutral-color(white);
-            padding: $standard-block-padding / 2;
+            padding: math.div($standard-block-padding, 2);
             border: 1px solid neutral-color(border);
             width: 100%;
             border-radius: $border-radius;
@@ -69,7 +70,7 @@
             
             .StripeElement {
                 background: neutral-color(white);
-                padding: $standard-block-padding / 2;
+                padding: math.div($standard-block-padding, 2);
                 border: 1px solid neutral-color(border);
                 margin-bottom: $standard-block-padding;
                 width: 100%;

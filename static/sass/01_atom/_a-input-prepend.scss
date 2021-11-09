@@ -1,3 +1,4 @@
+@use "sass:math";
 .a-input-prepend {
     position: relative;
     display: flex;
@@ -7,14 +8,14 @@
     .a-prefix {
         display: inline-block;
         position: absolute;
-        left: $standard-block-padding / 2;
+        left: math.div($standard-block-padding, 2);
         color: neutral-color(dark);
         margin-bottom: 0;
     }
     
     input {
         display: inline-block;
-        text-indent: $standard-block-padding + ($standard-block-padding / 2);
+        text-indent: $standard-block-padding + (math.div($standard-block-padding, 2));
         margin-bottom: 0;
     }
 }
