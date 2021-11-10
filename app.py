@@ -1095,6 +1095,10 @@ def give_form():
     nyt_subscription = request.args.get("nyt_subscription", "")
     nyt_subscription_form = format_swag_subscription(nyt_subscription)
 
+    # new york times games subscription
+    nyt_games_subscription = request.args.get("nyt_games_subscription", "")
+    nyt_games_subscription_form = format_swag_subscription(nyt_games_subscription)
+
     # fair market value
     fair_market_value = 0
     fair_market_value_formatted = 0
@@ -1110,6 +1114,7 @@ def give_form():
             atlantic_subscription = ""
             atlantic_id = ""
             nyt_subscription = ""
+            nyt_games_subscription = ""
     else:
         decline_benefits = ""
     
@@ -1120,7 +1125,7 @@ def give_form():
     # fees
     fees = calculate_amount_fees(amount, "card")
 
-    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={installment_period}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}{decline_benefits}'
+    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={installment_period}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;nyt_games_subscription={nyt_games_subscription}{decline_benefits}'
 
     # interface settings
     with_shipping = True
@@ -1161,7 +1166,7 @@ def give_form():
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
         swag=swag_form,
         atlantic_subscription=atlantic_subscription_form, atlantic_id=atlantic_id,
-        nyt_subscription=nyt_subscription_form,
+        nyt_subscription=nyt_subscription_form, nyt_games_subscription=nyt_games_subscription_form,
         decline_benefits=decline_benefits,
         with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
@@ -2337,6 +2342,7 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.notify_someone = form.get("notify_someone", False)
     opportunity.member_benefit_request_swag = form.get("member_benefit_request_swag", "")
     opportunity.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
+    opportunity.member_benefit_request_nyt_games = form.get("member_benefit_request_nyt_games", "No")
     opportunity.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     opportunity.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
     opportunity.invoice = form.get("invoice", "")
@@ -2543,6 +2549,7 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     rdo.installment_period = form.get("installment_period", "")
     rdo.member_benefit_request_swag = form.get("member_benefit_request_swag", "")
     rdo.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
+    rdo.member_benefit_request_nyt_games = form.get("member_benefit_request_nyt_games", "No")
     rdo.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     rdo.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
     rdo.open_ended_status = form.get("open_ended_status", "")

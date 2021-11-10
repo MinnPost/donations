@@ -320,6 +320,7 @@ class Opportunity(SalesforceObject):
         self.notify_someone = False
         self.member_benefit_request_swag = None
         self.member_benefit_request_nyt = None
+        self.member_benefit_request_nyt_games = None
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
         self.invoice = None
@@ -647,6 +648,7 @@ class Opportunity(SalesforceObject):
             "Notify_someone__c": self.notify_someone,
             "Member_benefit_request_Swag__c": self.member_benefit_request_swag,
             "Member_benefit_request_New_York_Times__c": self.member_benefit_request_nyt,
+            "Member_benefit_request_NYT_Games__c": self.member_benefit_request_nyt_games,
             "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
             "MinnPost_Invoice__c": self.invoice,
@@ -781,6 +783,7 @@ class RDO(SalesforceObject):
         self.notify_someone = False
         self.member_benefit_request_swag = None
         self.member_benefit_request_nyt = None
+        self.member_benefit_request_nyt_games = None
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
         self.payment_type = None
@@ -915,6 +918,7 @@ class RDO(SalesforceObject):
             y.notify_someone = item["Notify_someone__c"]
             y.member_benefit_request_swag = item["Member_benefit_request_Swag__c"]
             y.member_benefit_request_nyt = item["Member_benefit_request_New_York_Times__c"]
+            y.member_benefit_request_nyt_games = item["Member_benefit_request_NYT_Games__c"]
             y.member_benefit_request_atlantic = item["Member_benefit_request_Other_benefits__c"]
             y.member_benefit_request_atlantic_id = item["Member_benefit_request_Atlantic_sub_ID__c"]
             y.installments = item["npe03__Installments__c"]
@@ -987,6 +991,7 @@ class RDO(SalesforceObject):
             "Lead_Source__c": self.lead_source,
             "Member_benefit_request_Swag__c": self.member_benefit_request_swag,
             "Member_benefit_request_New_York_Times__c": self.member_benefit_request_nyt,
+            "Member_benefit_request_NYT_Games__c": self.member_benefit_request_nyt_games,
             "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
             "npe03__Open_Ended_Status__c": self.open_ended_status,
@@ -1129,6 +1134,7 @@ class RDO(SalesforceObject):
             y.notify_someone = item["Notify_someone__c"]
             y.member_benefit_request_swag = item["Member_benefit_request_Swag__c"]
             y.member_benefit_request_nyt = item["Member_benefit_request_New_York_Times__c"]
+            y.member_benefit_request_nyt_games = item["Member_benefit_request_NYT_Games__c"]
             y.member_benefit_request_atlantic = item["Member_benefit_request_Other_benefits__c"]
             y.member_benefit_request_atlantic_id = item["Member_benefit_request_Atlantic_sub_ID__c"]
             y.invoice = item["MinnPost_Invoice__c"]

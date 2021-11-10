@@ -191,6 +191,9 @@ class DonateForm(BaseForm):
     member_benefit_request_nyt = HiddenField(
         u"New York Times subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
     )
+    member_benefit_request_nyt_games = HiddenField(
+        u"New York Times Games subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
+    )
 
     # billing
     billing_street = StringField(

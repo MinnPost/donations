@@ -11,4 +11,7 @@
     {% if nyt_subscription != "" %}
         <input type="hidden" name="member_benefit_request_nyt" id="member_benefit_request_nyt" value="{{ nyt_subscription }}">
     {% endif %}
+    {% if nyt_games_subscription != "" %}
+        <input type="hidden" name="member_benefit_request_nyt_games" id="member_benefit_request_nyt_games" value="{{ nyt_games_subscription }}">
+    {% endif %}
 {% endif %}
