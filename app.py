@@ -1586,6 +1586,7 @@ def plaid_access_token():
     except plaid.errors.PlaidError as e:
         # return jsonify({'error': {'display_message': e.display_message, 'error_code': e.code, 'error_type': e.type } })
 
+        logging.error(e)
         error_message = getattr(e, "error_message", None)
         display_message = getattr(e, "display_message", None)
 
