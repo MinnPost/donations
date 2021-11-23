@@ -16,6 +16,10 @@ from pprint import pformat
 import celery
 import stripe
 import plaid
+from plaid.api import plaid_api
+from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
+from plaid.model.processor_stripe_bank_account_token_create_request import ProcessorStripeBankAccountTokenCreateRequest
+
 from amazon_pay.client import AmazonPayClient
 from amazon_pay.ipn_handler import IpnHandler
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory
@@ -44,6 +48,7 @@ from config import (
     LOG_LEVEL,
     PLAID_SECRET,
     PLAID_ENVIRONMENT,
+    PLAID_API_VERSION,
     ENABLE_PORTAL,
     ADVERTISING_CAMPAIGN_ID,
     ANNIVERSARY_PARTY_CAMPAIGN_ID,
@@ -1572,23 +1577,51 @@ def plaid_access_token():
     public_token = request.json["public_token"]
     account_id   = request.json["account_id"]
 
-    client = plaid.Client(
-        client_id=app.config["PLAID_CLIENT_ID"],
-        secret=app.config["PLAID_SECRET"],
-        environment=app.config["PLAID_ENVIRONMENT"]
+    plaid_host = plaid.Environment.Sandbox
+
+    if app.config["PLAID_ENVIRONMENT"] == 'sandbox':
+        plaid_host = plaid.Environment.Sandbox
+
+    if app.config["PLAID_ENVIRONMENT"] == 'development':
+        plaid_host = plaid.Environment.Development
+
+    if app.config["PLAID_ENVIRONMENT"] == 'production':
+        plaid_host = plaid.Environment.Production
+
+    configuration = plaid.Configuration(
+        host=plaid_host,
+        api_key={
+            'clientId': app.config["PLAID_CLIENT_ID"],
+            'secret': app.config["PLAID_SECRET"],
+            'plaidVersion': app.config["PLAID_API_VERSION"]
+        }
     )
-    exchange_token_response = client.Item.public_token.exchange(public_token)
-    access_token = exchange_token_response["access_token"]
+    api_client = plaid.ApiClient(configuration)
+    client = plaid_api.PlaidApi(api_client)
+
+    exchange_request = ItemPublicTokenExchangeRequest(
+        public_token=public_token
+    )
+    exchange_response = client.item_public_token_exchange(exchange_request)
+    access_token = exchange_response["access_token"]
 
     try:
-        stripe_response = client.Processor.stripeBankAccountTokenCreate(access_token, account_id)
-        response = stripe_response
+        stripe_request = ProcessorStripeBankAccountTokenCreateRequest(
+            access_token=access_token,
+            account_id=account_id,
+        )
+        stripe_response = client.processor_stripe_bank_account_token_create(stripe_request)
+        
+        print(stripe_response)
+
+
     except plaid.errors.PlaidError as e:
         # return jsonify({'error': {'display_message': e.display_message, 'error_code': e.code, 'error_type': e.type } })
-
-        logging.error(e)
+        # we need better logging here.
         error_message = getattr(e, "error_message", None)
         display_message = getattr(e, "display_message", None)
+        app.logger.error(f"Plaid access token error: {error_message}")
+        logging.error(e)
 
         if error_message != None:
             message = error_message
@@ -1601,7 +1634,7 @@ def plaid_access_token():
                 message = "The given account is not currently supported for use by Plaid. We apologize for the inconvenience."
         response = {"error" : message}
     
-    return jsonify(response)
+    return jsonify(stripe_response)
 
 
 # used to calculate the fees Stripe will charge based on the payment type/amount
