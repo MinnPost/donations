@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<form action="{{ form_action }}" method="post" class="m-form m-form-standalone{% if amount == '' or show_amount_field or show_frequency is sameas true or allow_additional_amount is sameas true or show_invoice is sameas true or show_organization is sameas true %} m-form-split{% endif %}" id="donate">
+<form action="{{ form_action }}" method="post" class="m-form m-form-standalone{% if amount == '' or show_amount_field or show_installment_period is sameas true or allow_additional_amount is sameas true or show_invoice is sameas true or show_organization is sameas true %} m-form-split{% endif %}" id="donate">
   {% include 'shared/hidden-fields.html' %}
   {% if stage != '' %}
     <input type="hidden" name="stage_name" id="stage_name" value="{{ stage_name }}">
@@ -15,7 +15,7 @@
   {% if opportunity_id %}
     <input type="hidden" name="opportunity_id" id="opportunity_id" value="{{ opportunity_id }}">
   {% endif %}
-  {% if installment_period %}
+  {% if installment_period != '' and show_installment_period is sameas false %}
     <input type="hidden" name="installment_period" id="installment_period" value="{{ installment_period }}">
   {% endif %}
   {% if recurring_id %}
@@ -30,8 +30,8 @@
   {% if opportunity_subtype %}
     <input type="hidden" name="opportunity_subtype" id="opportunity_subtype" value="{{ opportunity_subtype }}">
   {% endif %}
-  {% if amount != '' and show_amount_field is sameas false %}
-    <div id="a-amount-js-only" class="amount"><span class="level-amount">{{ amount }}</span></div>
+  {% if amount_formatted != '' and show_amount_field is sameas false %}
+    <div id="a-amount-js-only" class="amount"><span class="level-amount">{{ amount_formatted }}</span></div>
   {% endif %}
   {% include 'minimal/details.html' %}
   {% include 'shared/pay.html' %}

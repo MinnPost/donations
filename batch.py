@@ -6,7 +6,7 @@ import redis
 from pytz import timezone
 
 from charges import ChargeException, QuarantinedException, amount_to_charge, calculate_amount_fees, charge
-from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_URL, TIMEZONE, UPDATE_STRIPE_FEES, UPDATE_FAILED_CHARGES
+from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_TLS_URL, TIMEZONE, UPDATE_STRIPE_FEES, UPDATE_FAILED_CHARGES
 from npsp import Opportunity
 from util import send_email, update_fees, fail_expired_charges
 
@@ -60,7 +60,7 @@ class Lock(object):
 
     def __init__(self, key):
         self.key = key
-        self.connection = redis.from_url(REDIS_URL)
+        self.connection = redis.from_url(REDIS_TLS_URL)
 
     def acquire(self):
         if self.connection.get(self.key):
@@ -88,10 +88,9 @@ def charge_cards():
 
     log.it("---Starting batch card job...")
 
-    three_days_ago = (datetime.now(tz=zone) - timedelta(days=14)).strftime("%Y-%m-%d")
+    begin_closedate_range = (datetime.now(tz=zone) - timedelta(days=14)).strftime("%Y-%m-%d")
     today = datetime.now(tz=zone).strftime("%Y-%m-%d")
-
-    opportunities = Opportunity.list(begin=three_days_ago, end=today)
+    opportunities = Opportunity.list(begin=begin_closedate_range, end=today)
 
     log.it("---Processing charges...")
 
@@ -131,10 +130,10 @@ def update_ach_charges():
     log.it('---Starting batch ach job...')
     log.it('---Checking for status changes on ACH charges...')
 
-    three_days_ago = (datetime.now(tz=zone) - timedelta(days=3)).strftime("%Y-%m-%d")
+    begin_closedate_range = (datetime.now(tz=zone) - timedelta(days=3)).strftime("%Y-%m-%d")
     today = datetime.now(tz=zone).strftime("%Y-%m-%d")
 
-    opportunities = Opportunity.list(begin=three_days_ago, end=today, stage_name="ACH Pending")
+    opportunities = Opportunity.list(begin=begin_closedate_range, end=today, stage_name="ACH Pending")
 
     for opportunity in opportunities:
         if not opportunity.stripe_customer_id:

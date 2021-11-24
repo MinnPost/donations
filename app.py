@@ -16,6 +16,10 @@ from pprint import pformat
 import celery
 import stripe
 import plaid
+from plaid.api import plaid_api
+from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
+from plaid.model.processor_stripe_bank_account_token_create_request import ProcessorStripeBankAccountTokenCreateRequest
+
 from amazon_pay.client import AmazonPayClient
 from amazon_pay.ipn_handler import IpnHandler
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory
@@ -44,6 +48,7 @@ from config import (
     LOG_LEVEL,
     PLAID_SECRET,
     PLAID_ENVIRONMENT,
+    PLAID_API_VERSION,
     ENABLE_PORTAL,
     ADVERTISING_CAMPAIGN_ID,
     ANNIVERSARY_PARTY_CAMPAIGN_ID,
@@ -51,6 +56,7 @@ from config import (
     DEFAULT_CAMPAIGN_ONETIME,
     DEFAULT_CAMPAIGN_RECURRING,
     FESTIVAL_CAMPAIGN_ID,
+    TONIGHT_CAMPAIGN_ID,
     MINNROAST_CAMPAIGN_ID,
     SALESFORCE_CONTACT_ADVERTISING_EMAIL,
     ENABLE_SENTRY,
@@ -327,13 +333,14 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
     because there are a lot of API calls and there's no point in making the
     payer wait for them. It sends a notification about the donation to Slack (if configured).
     """
-    bad_actor_response = BadActor(bad_actor_request=bad_actor_request)
-    quarantine = bad_actor_response.quarantine
+    #bad_actor_response = BadActor(bad_actor_request=bad_actor_request)
+    #quarantine = bad_actor_response.quarantine
+    quarantine = False
 
     form               = clean(form)
     first_name         = form.get("first_name", "")
     last_name          = form.get("last_name", "")
-    frequency          = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    installment_period = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     email              = form.get("email", "")
     street             = form.get("billing_street", "")
     city               = form.get("billing_city", "")
@@ -341,6 +348,7 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
     country            = form.get("billing_country", "")
     zipcode            = form.get("billing_zip", "")
     stripe_customer_id = form.get("stripe_customer_id", "")
+    fair_market_value  = form.get("fair_market_value", 0)
 
     opportunity_subtype = form.get('opportunity_subtype', None)
     if opportunity_subtype is not None and opportunity_subtype == 'Sales: Advertising':
@@ -381,7 +389,7 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
         honor_or_memory = form["in_honor_or_memory"]
         form["in_honor_or_memory"] = 'In ' + str(honor_or_memory) + ' of...'
 
-    if frequency == "one-time":
+    if installment_period == "one-time":
         logging.info("----Creating one time payment...")
         opportunity = add_opportunity(
             contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source, quarantine=quarantine
@@ -415,6 +423,7 @@ def add_donation(form=None, customer=None, donation_type=None, payment_method=No
         ]
         if len(closing_today):
             opp = closing_today[0]
+            opp.fair_market_value = fair_market_value # set the first opportunity's fair market value
             try:
                 charge(opp)
                 lock = Lock(key=rdo.lock_key)
@@ -437,13 +446,14 @@ def update_donation(form=None, customer=None, donation_type=None, payment_method
     payer wait for them. It sends a notification about the donation to Slack (if configured).
     """
 
-    bad_actor_response = BadActor(bad_actor_request=bad_actor_request)
-    quarantine = bad_actor_response.quarantine
+    #bad_actor_response = BadActor(bad_actor_request=bad_actor_request)
+    #quarantine = bad_actor_response.quarantine
+    quarantine = False
 
     form               = clean(form)
     first_name         = form.get("first_name", "")
     last_name          = form.get("last_name", "")
-    frequency          = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    installment_period = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     email              = form.get("email", "")
     street             = form.get("billing_street", "")
     city               = form.get("billing_city", "")
@@ -488,7 +498,7 @@ def update_donation(form=None, customer=None, donation_type=None, payment_method
         honor_or_memory = form["in_honor_or_memory"]
         form["in_honor_or_memory"] = 'In ' + str(honor_or_memory) + ' of...'
 
-    if frequency == "one-time":
+    if installment_period == "one-time":
         logging.info("----Updating one time payment...")
         opportunity = update_opportunity(
             contact=contact, form=form, customer=customer, payment_method=payment_method, charge_source=charge_source, quarantine=quarantine
@@ -522,7 +532,7 @@ def finish_donation(self, form=None):
 
     # we don't run clean() on this form because the messages field is a list
 
-    frequency = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    installment_period = form.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     lock_key = form.get("lock_key", "")
     post_submit_details = dict()
 
@@ -580,7 +590,7 @@ def finish_donation(self, form=None):
     post_submit_details["Event_member_benefit_messages__c"] = event_messages
     post_submit_details["Input_feedback_messages__c"] = feedback_messages
 
-    if frequency == "one-time":
+    if installment_period == "one-time":
         opps = Opportunity.load_after_submit(
             lock_key=lock_key
         )
@@ -622,7 +632,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     email = form_data["email"]
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
-    frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    installment_period = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
     customer_id = form_data.get("customer_id", "")
     update_default_source = form_data.get("update_default_source", "")
     stripe_payment_type = form_data.get("stripe_payment_type", "")
@@ -830,26 +840,26 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
             app.logger.error(f"Stripe Unknown Error: {message}")
             return jsonify(errors=body)
 
-    app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge frequency: {frequency}")
+    app.logger.info(f"Customer id: {customer.id} Customer email: {email} Customer name: {first_name} {last_name} Charge amount: {amount_formatted} Charge installment period: {installment_period}")
     bad_actor_request = None
-    try:
-        if "zipcode" in form_data:
-            zipcode = form_data["zipcode"]
-        else:
-            zipcode = form_data["shipping_zip"]
-        bad_actor_request = BadActor.create_bad_actor_request(
-            headers=request.headers,
-            captcha_token=form_data["recaptchaToken"],
-            email=email,
-            amount=amount,
-            zipcode=zipcode,
-            first_name=form_data["first_name"],
-            last_name=form_data["last_name"],
-            remote_addr=request.remote_addr,
-        )
-        app.logger.info(bad_actor_request)
-    except Exception as error:
-        app.logger.warning("Unable to check for bad actor: %s", error)
+    #try:
+    #    if "zipcode" in form_data:
+    #        zipcode = form_data["zipcode"]
+    #    else:
+    #        zipcode = form_data["billing_zip"]
+    #    bad_actor_request = BadActor.create_bad_actor_request(
+    #        headers=request.headers,
+    #        captcha_token=form_data["recaptchaToken"],
+    #        email=email,
+    #        amount=amount,
+    #        zipcode=zipcode,
+    #        first_name=form_data["first_name"],
+    #        last_name=form_data["last_name"],
+    #        remote_addr=request.remote_addr,
+    #    )
+    #    app.logger.info(bad_actor_request)
+    #except Exception as error:
+    #    app.logger.warning("Unable to check for bad actor: %s", error)
 
     function(
         customer=customer,
@@ -964,9 +974,9 @@ def root_form():
         amount = ""
         amount_formatted = ""
 
-    # frequency
-    frequency = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
-    if frequency == "monthly":
+    # installment period
+    installment_period = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
+    if installment_period == "monthly":
         yearly = 12
     else:
         yearly = 1
@@ -994,7 +1004,7 @@ def root_form():
         form=form,
         title=title,
         form_action=form_action,
-        amount=amount_formatted, frequency=frequency, yearly=yearly,
+        amount=amount_formatted, installment_period=installment_period, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
         plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'),
@@ -1026,9 +1036,9 @@ def give_form():
         message = "The page you requested can't be found."
         return render_template("error.html", message=message)
 
-    # frequency
-    frequency = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
-    if frequency == "monthly":
+    # installment period
+    installment_period = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
+    if installment_period == "monthly":
         yearly = 12
     else:
         yearly = 1
@@ -1090,6 +1100,17 @@ def give_form():
     nyt_subscription = request.args.get("nyt_subscription", "")
     nyt_subscription_form = format_swag_subscription(nyt_subscription)
 
+    # new york times games subscription
+    nyt_games_subscription = request.args.get("nyt_games_subscription", "")
+    nyt_games_subscription_form = format_swag_subscription(nyt_games_subscription)
+
+    # fair market value
+    fair_market_value = 0
+    fair_market_value_formatted = 0
+    if request.args.get("fair_market_value"):
+        fair_market_value = format_amount(request.args.get("fair_market_value", 0))
+        fair_market_value_formatted = format(fair_market_value, ",.2f")
+
     # decline all benefits
     if request.args.get("decline_benefits"):
         decline_benefits = request.args.get("decline_benefits")
@@ -1098,6 +1119,7 @@ def give_form():
             atlantic_subscription = ""
             atlantic_id = ""
             nyt_subscription = ""
+            nyt_games_subscription = ""
     else:
         decline_benefits = ""
     
@@ -1108,7 +1130,7 @@ def give_form():
     # fees
     fees = calculate_amount_fees(amount, "card")
 
-    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={frequency}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}{decline_benefits}'
+    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={installment_period}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;nyt_games_subscription={nyt_games_subscription}{decline_benefits}'
 
     # interface settings
     with_shipping = True
@@ -1143,13 +1165,13 @@ def give_form():
         title=title,
         form=form, step=step,
         form_action=form_action,
-        amount=amount_formatted, frequency=frequency, yearly=yearly, description=description,
+        amount=amount_formatted, fair_market_value=fair_market_value_formatted, installment_period=installment_period, yearly=yearly, description=description,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
         swag=swag_form,
         atlantic_subscription=atlantic_subscription_form, atlantic_id=atlantic_id,
-        nyt_subscription=nyt_subscription_form,
+        nyt_subscription=nyt_subscription_form, nyt_games_subscription=nyt_games_subscription_form,
         decline_benefits=decline_benefits,
         with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'),
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
@@ -1245,7 +1267,7 @@ def donation_cancel_form():
             donation = opportunity[0]
         except:
             donation = None
-        frequency = "one-time"
+        installment_period = "one-time"
         close_date = donation.close_date
         close_date_formatted = datetime.strptime(close_date, '%Y-%m-%d').strftime('%B %-d, %Y')
     elif recurring_id:
@@ -1254,7 +1276,7 @@ def donation_cancel_form():
                 recurring_id=recurring_id
             )
             donation = rdo[0]
-            frequency = donation.installment_period.lower()
+            installment_period = donation.installment_period.lower()
         except:
             donation = None
 
@@ -1267,7 +1289,7 @@ def donation_cancel_form():
         email = donation.donor_email
         customer_id = donation.stripe_customer_id
         if recurring_id:
-            summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} {frequency.lower()} donation, click the button."
+            summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} {installment_period.lower()} donation, click the button."
         else:
             if close_date is not None:
                 summary = f"Thanks for your support of MinnPost. To confirm cancellation of your ${amount} donation scheduled for {close_date_formatted}, click the button."
@@ -1291,7 +1313,7 @@ def donation_cancel_form():
         form=form,
         form_action=form_action,
         first_name=first_name, last_name=last_name, email=email, customer_id=customer_id,
-        path=path, amount=amount_formatted, frequency=frequency,
+        path=path, amount=amount_formatted, installment_period=installment_period,
         stage_name=stage_name, open_ended_status=open_ended_status, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
         last_updated=dir_last_updated('static'),
@@ -1342,8 +1364,8 @@ def advertising_form():
         amount = 0
         amount_formatted = amount
 
-    # frequency
-    frequency = "one-time"
+    # installment period
+    installment_period = "one-time"
 
     # salesforce campaign
     campaign = request.args.get("campaign", ADVERTISING_CAMPAIGN_ID)
@@ -1427,7 +1449,7 @@ def advertising_form():
         title=title,
         form=form,
         form_action=form_action,
-        path=path, amount=amount_formatted, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
+        path=path, amount=amount_formatted, installment_period=installment_period, description=description, close_date=close_date, stage_name=stage_name,
         opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         invoice=invoice, client_organization=client_organization,
         first_name=first_name, last_name=last_name, email=email,
@@ -1454,6 +1476,26 @@ def festival_vip_form():
 
     # salesforce campaign
     campaign = request.args.get("campaign", FESTIVAL_CAMPAIGN_ID)
+
+    # interface settings
+    allow_additional_amount = True
+    hide_honor_or_memory    = True
+    hide_display_name       = False
+    button                  = "Purchase your VIP package"
+    
+    return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
+
+
+@app.route("/tonight-vip/" , methods=["GET", "POST"])
+def tonight_vip_form():
+    title       = "MinnPost Tonight VIP Packages"
+    heading     = ""
+    description = title
+    summary     = "With your VIP support as part of MinnPost Tonight, you’re providing a crucial investment in MinnPost’s public-service journalism year-round. Thank you for going deeper with us into these conversations and for standing behind with our nonprofit newsroom with your generous support."
+    folder      = "tonight"
+
+    # salesforce campaign
+    campaign = request.args.get("campaign", TONIGHT_CAMPAIGN_ID)
 
     # interface settings
     allow_additional_amount = True
@@ -1535,22 +1577,49 @@ def plaid_access_token():
     public_token = request.json["public_token"]
     account_id   = request.json["account_id"]
 
-    client = plaid.Client(
-        client_id=app.config["PLAID_CLIENT_ID"],
-        secret=app.config["PLAID_SECRET"],
-        environment=app.config["PLAID_ENVIRONMENT"]
+    plaid_host = plaid.Environment.Sandbox
+
+    if app.config["PLAID_ENVIRONMENT"] == 'sandbox':
+        plaid_host = plaid.Environment.Sandbox
+
+    if app.config["PLAID_ENVIRONMENT"] == 'development':
+        plaid_host = plaid.Environment.Development
+
+    if app.config["PLAID_ENVIRONMENT"] == 'production':
+        plaid_host = plaid.Environment.Production
+
+    configuration = plaid.Configuration(
+        host=plaid_host,
+        api_key={
+            'clientId': app.config["PLAID_CLIENT_ID"],
+            'secret': app.config["PLAID_SECRET"],
+            'plaidVersion': app.config["PLAID_API_VERSION"]
+        }
     )
-    exchange_token_response = client.Item.public_token.exchange(public_token)
-    access_token = exchange_token_response["access_token"]
+    api_client = plaid.ApiClient(configuration)
+    client = plaid_api.PlaidApi(api_client)
+
+    exchange_request = ItemPublicTokenExchangeRequest(
+        public_token=public_token
+    )
+    exchange_response = client.item_public_token_exchange(exchange_request)
+    access_token = exchange_response["access_token"]
 
     try:
-        stripe_response = client.Processor.stripeBankAccountTokenCreate(access_token, account_id)
-        response = stripe_response
+        stripe_request = ProcessorStripeBankAccountTokenCreateRequest(
+            access_token=access_token,
+            account_id=account_id,
+        )
+        response = client.processor_stripe_bank_account_token_create(stripe_request)
+        stripe_token_response = response.to_dict()
+
     except plaid.errors.PlaidError as e:
         # return jsonify({'error': {'display_message': e.display_message, 'error_code': e.code, 'error_type': e.type } })
-
+        # we need better logging here.
         error_message = getattr(e, "error_message", None)
         display_message = getattr(e, "display_message", None)
+        app.logger.error(f"Plaid access token error: {error_message}")
+        logging.error(e)
 
         if error_message != None:
             message = error_message
@@ -1561,9 +1630,9 @@ def plaid_access_token():
             message = "We were unable to connect to your account. Please try again."
             if e.code and e.code == "PRODUCTS_NOT_SUPPORTED":
                 message = "The given account is not currently supported for use by Plaid. We apologize for the inconvenience."
-        response = {"error" : message}
+        stripe_token_response = {"error" : message}
     
-    return jsonify(response)
+    return jsonify(stripe_token_response)
 
 
 # used to calculate the fees Stripe will charge based on the payment type/amount
@@ -1590,7 +1659,7 @@ def calculate_fees():
     
     fees = calculate_amount_fees(amount, payment_type)
 
-    ret_data = {"fees": fees}
+    ret_data = {"fees": float(fees)}
     return jsonify(ret_data)
 
 
@@ -1609,12 +1678,12 @@ def calculate_member_level():
     if amount is None or amount == "":
         amount = 0
 
-    frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
-    if frequency == "monthly":
+    installment_period = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    if installment_period == "monthly":
         yearly = 12
     else:
         yearly = 1
-    level = check_level(amount, frequency, yearly)
+    level = check_level(amount, installment_period, yearly)
 
     ret_data = {"level": level}
     return jsonify(ret_data)
@@ -1639,12 +1708,12 @@ def thanks():
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
 
-    frequency = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
-    if frequency == "monthly":
+    installment_period = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
+    if installment_period == "monthly":
         yearly = 12
     else:
         yearly = 1
-    level = check_level(amount, frequency, yearly)
+    level = check_level(amount, installment_period, yearly)
 
     lock_key = form_data["lock_key"]
 
@@ -1653,7 +1722,7 @@ def thanks():
         title=title,
         step=step, form_action=form_action,
         amount=amount_formatted,
-        frequency=frequency,
+        installment_period=installment_period,
         yearly=yearly,
         level=level,
         email=email,
@@ -1683,6 +1752,7 @@ def finish():
     additional_donation = form_data.get("additional_donation", 0)
     if additional_donation and additional_donation != 0:
         additional_donation = format(additional_donation, ",.2f")
+    installment_period = form_data.get("installment_period", "")
 
     finish_donation.delay(form_data)
     lock_key = form_data["lock_key"]
@@ -1692,7 +1762,7 @@ def finish():
         template,
         title=title,
         step=step,
-        path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation,
+        path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation, installment_period=installment_period,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
     )
@@ -1740,8 +1810,8 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         amount = 0
         amount_formatted = amount
 
-    # frequency
-    frequency = "one-time"
+    # installment period
+    installment_period = "one-time"
 
     # stripe customer id
     customer_id = request.args.get("customer_id", "")
@@ -1822,7 +1892,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         form=form,
         form_action=form_action,
         path=path, folder=folder,
-        amount=amount, additional_donation=additional_donation, frequency=frequency, description=description, close_date=close_date, stage_name=stage_name,
+        amount=amount, additional_donation=additional_donation, installment_period=installment_period, description=description, close_date=close_date, stage_name=stage_name,
         opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
@@ -1863,6 +1933,8 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     # donation and user info
     amount = 0
     amount_formatted = amount
+    fair_market_value = 0
+    fair_market_value_formatted = fair_market_value
     yearly = 1
     campaign = ""
     customer_id = ""
@@ -1944,6 +2016,9 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         pay_fees = donation.agreed_to_pay_fees
 
         if opportunity:
+            if donation.fair_market_value is not None:
+                fair_market_value = donation.fair_market_value
+                fair_market_value_formatted = fair_market_value
             if donation.stage_name is not None:
                 # because it could be failed or closed lost or whatever and we want it to try again
                 stage_name = "Pledged"
@@ -1957,10 +2032,18 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         amount = format_amount(request.args.get("amount"))
         amount_formatted = format(amount, ",.2f")
 
-    # frequency
+    if request.args.get("fair_market_value"):
+        fair_market_value = format_amount(request.args.get("fair_market_value"))
+
+    if not fair_market_value:
+        fair_market_value = 0
+    
+    fair_market_value_formatted = format(fair_market_value, ",.2f")
+
+    # installment period
     if request.args.get("frequency"):
-        frequency = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
-        if frequency == "monthly":
+        installment_period = request.args.get("frequency", installment_period)
+        if installment_period == "monthly":
             yearly = 12
 
     # salesforce campaign
@@ -2040,7 +2123,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         title=title,
         form=form,
         form_action=form_action,
-        amount=amount_formatted, additional_donation=additional_donation, show_installment_period=show_installment_period, yearly=yearly, installment_period=installment_period,
+        amount=amount, amount_formatted=amount_formatted, fair_market_value=fair_market_value_formatted, additional_donation=additional_donation, show_installment_period=show_installment_period, yearly=yearly, installment_period=installment_period,
         first_name=first_name, last_name=last_name, email=email, credited_as=credited_as,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
         campaign=campaign, mrpledge_id=mrpledge_id, customer_id=customer_id, referring_page=referring_page,
@@ -2291,6 +2374,7 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.notify_someone = form.get("notify_someone", False)
     opportunity.member_benefit_request_swag = form.get("member_benefit_request_swag", "")
     opportunity.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
+    opportunity.member_benefit_request_nyt_games = form.get("member_benefit_request_nyt_games", "No")
     opportunity.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     opportunity.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
     opportunity.invoice = form.get("invoice", "")
@@ -2341,7 +2425,6 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     This will update a single donation in Salesforce.
     """
 
-    today = datetime.now(tz=ZONE).strftime("%Y-%m-%d")
     opportunity = Opportunity(contact=contact)
 
     opportunity_id = form.get("opportunity_id", "")
@@ -2359,6 +2442,7 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     
     # fields that can be updated by a user should go here
     amount = form.get("amount", 0)
+    fair_market_value = form.get("fair_market_value", 0)
     agreed_to_pay_fees = form.get("pay_fees", False)
     anonymous = form.get("anonymous", False)
     credited_as = form.get("display_as", "")
@@ -2377,11 +2461,14 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     lock_key = form.get("lock_key", "")
 
     # these need to be set in case they aren't already present
-    opportunity.close_date = form.get("close_date", today) # we may want to override the form value?
+    close_date = form.get("close_date", "") # we may want to override the form value?
     opportunity.stage_name = form.get("stage_name", "Pledged")
     opportunity.stripe_description = "MinnPost Membership"
     opportunity.payment_type = "Stripe"
     opportunity.quarantined = quarantine
+
+    if close_date != "":
+        opportunity.close_date = close_date
 
     opportunity.name = (
         f"{donor_first_name} {donor_last_name} {opportunity.type} {opportunity.close_date}"
@@ -2391,6 +2478,9 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     if amount != 0:
         opportunity.amount = amount
 
+    if fair_market_value != 0:
+        opportunity.fair_market_value = fair_market_value
+
     # always change these checkbox values based on the user's input
     opportunity.agreed_to_pay_fees = agreed_to_pay_fees
     opportunity.anonymous = anonymous
@@ -2399,6 +2489,9 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     # always change these text values based on user's input
     opportunity.credited_as = credited_as
 
+    if donor_email != "":
+        opportunity.donor_email = donor_email
+    
     if donor_first_name != "":
         opportunity.donor_first_name = donor_first_name
 
@@ -2488,6 +2581,7 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     rdo.installment_period = form.get("installment_period", "")
     rdo.member_benefit_request_swag = form.get("member_benefit_request_swag", "")
     rdo.member_benefit_request_nyt = form.get("member_benefit_request_nyt", "No")
+    rdo.member_benefit_request_nyt_games = form.get("member_benefit_request_nyt_games", "No")
     rdo.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     rdo.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
     rdo.open_ended_status = form.get("open_ended_status", "")
@@ -2594,6 +2688,9 @@ def update_recurring_donation(contact=None, form=None, customer=None, payment_me
     rdo.stripe_description = "MinnPost Sustaining Membership"
     rdo.payment_type = "Stripe"
     rdo.quarantined = quarantine
+
+    if donor_email != "":
+        rdo.donor_email = donor_email
 
     if donor_first_name != "":
         rdo.donor_first_name = donor_first_name

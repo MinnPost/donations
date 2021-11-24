@@ -1,15 +1,26 @@
 import calendar
 import logging
 from decimal import Decimal, ROUND_HALF_UP
-from config import STRIPE_KEYS, PLAID_ENVIRONMENT, PLAID_CLIENT_ID, PLAID_SECRET
+from config import STRIPE_KEYS, STRIPE_API_VERSION, PLAID_ENVIRONMENT, PLAID_CLIENT_ID, PLAID_SECRET, PLAID_API_VERSION
 from npsp import User, Task
 from util import send_slack_message
 
 import stripe
 import plaid
+from plaid.api import plaid_api
+from plaid.model.account_subtype import AccountSubtype
+from plaid.model.account_subtypes import AccountSubtypes
+from plaid.model.country_code import CountryCode
+from plaid.model.depository_filter import DepositoryFilter
+from plaid.model.link_token_account_filters import LinkTokenAccountFilters
+from plaid.model.link_token_create_request import LinkTokenCreateRequest
+from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
+from plaid.model.link_token_get_request import LinkTokenGetRequest
+from plaid.model.products import Products
+
 
 stripe.api_key = STRIPE_KEYS["secret_key"]
-stripe.api_version = "2020-08-27"
+stripe.api_version = STRIPE_API_VERSION
 
 TWOPLACES = Decimal(10) ** -2  # same as Decimal('0.01')
 
@@ -82,7 +93,7 @@ def calculate_amount_fees(amount, payment_type, paying_fees=True):
     return fees
 
 
-def check_level(amount, frequency, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
+def check_level(amount, installment_period, yearly, prior_year_amount=None, coming_year_amount=None, annual_recurring_amount=None):
     thisyear = amount * yearly
     level = ''
     levelnum = ''
@@ -93,7 +104,7 @@ def check_level(amount, frequency, yearly, prior_year_amount=None, coming_year_a
     nextlevelmonthlystart = ''
 
     if prior_year_amount != None or coming_year_amount != None or annual_recurring_amount != None:
-        if frequency == 'one-time':
+        if installment_period == 'one-time':
             prior_year_amount = thisyear
         else:
             annual_recurring_amount += thisyear
@@ -167,27 +178,52 @@ def generate_stripe_description(opportunity) -> str:
 
 
 def create_plaid_link_token():
-    plaid_env = PLAID_ENVIRONMENT
-    client = plaid.Client(
-        client_id=PLAID_CLIENT_ID,
-        secret=PLAID_SECRET,
-        environment=plaid_env,
-        api_version='2019-05-29'
+    plaid_host = plaid.Environment.Sandbox
+
+    if PLAID_ENVIRONMENT == 'sandbox':
+        plaid_host = plaid.Environment.Sandbox
+
+    if PLAID_ENVIRONMENT == 'development':
+        plaid_host = plaid.Environment.Development
+
+    if PLAID_ENVIRONMENT == 'production':
+        plaid_host = plaid.Environment.Production
+
+    configuration = plaid.Configuration(
+        host=plaid_host,
+        api_key={
+            'clientId': PLAID_CLIENT_ID,
+            'secret': PLAID_SECRET,
+            'plaidVersion': PLAID_API_VERSION
+        }
     )
-    client_user_id = f"MinnPost {plaid_env}"
-    # 2. Create a link_token for the given user
-    response = client.LinkToken.create({
-        'user': {
-            'client_user_id': client_user_id,
-        },
-        'products': ["transactions"],
-        'client_name': "MinnPost",
-        'country_codes': ['US'],
-        'language': 'en',
-        'webhook': 'https://sample.webhook.com',
-    })
+    api_client = plaid.ApiClient(configuration)
+    client = plaid_api.PlaidApi(api_client)
+
+    client_user_id = f"MinnPost {PLAID_ENVIRONMENT}"
+    
+    request = LinkTokenCreateRequest(
+        products=[Products('auth'), Products('transactions')],
+        client_name="MinnPost",
+        country_codes=[CountryCode('US')],
+        language='en',
+        webhook='https://sample-webhook-uri.com',
+        link_customization_name='default',
+        account_filters=LinkTokenAccountFilters(
+            depository=DepositoryFilter(
+                account_subtypes=AccountSubtypes(
+                    [AccountSubtype('checking'), AccountSubtype('savings')]
+                )
+            )
+        ),
+        user=LinkTokenCreateRequestUser(
+            client_user_id=client_user_id
+        )
+    )
+    # create link token
+    response = client.link_token_create(request).to_dict()
     link_token = response['link_token']
-    # 3. Send the data to the client
+
     return link_token
 
 

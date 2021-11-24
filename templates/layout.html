@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% if title|length %}{{ title }}{% else %}MinnPost | Make Your Payment{% endif %}{% endblock %}</title>
     
-    <link rel='stylesheet' id='all-css-0' href='https://www.minnpost.com/_static/??-eJyNUEluwzAM/FAZwUVS9FL0LVoYW6goqaSUwL8vg9RAnA05ajaOxhwrxOxTDyjGi5hgZYq+ZNlQzBtF3sy1xAalwFleSdTTMDdDHWrqY8yaha6PJ+E5eXk9s/x25Bmo5NgKGyuC7Qq8cS/WNiHgQREBbxPmoHeFvWGU0tmvyhPm/viDIUozLhX/Ayk6tjwbaXPCu/9dziuXa5Gm2eSQdcW69D9l3qFhz5oB2vRpsEKEInZEbSnIDfl/rsv8x6oXzxwiHuG8jpXL5BXx2gT7wgSVi44uhYFsTH6KtBrkptU3fQ0fw+592H1ut39UvvpG' type='text/css' media='all'>
+    <link rel='stylesheet' id='all-css-0' href="{{ url_for('static', filename='css/minnpost-css-0.css') }}?m={{ last_updated }}" media="all">
     <link rel='stylesheet' id='minnpost-fonts-css'  href='https://use.typekit.net/cxj7fzg.css?ver=1.0.0' media='all'>
-    <link rel='stylesheet' id='all-css-2' href='https://www.minnpost.com/_static/??-eJx9jlsOgkAMRTdkaVAw+mFcS5kpiDKPtEXD7iUmqNHoX3Nz7rnFWwaXonE0tBMHVgx9jDmpwUDSJVSbBi6c6grf2DBCHsauj4pntkzuAvuixo14yCQ2oedm7KAheV3/JE8InKSIM/kRFfNbX4KlTeLIK/g2A7kAWdK19yxIqmz6sP1AoJ3dBhz9MnAMh3Jb1uuy3lXVHeZ8aMc=' type='text/css' media='all'>
+    <link rel='stylesheet' id='all-css-0' href="{{ url_for('static', filename='css/minnpost-css-2.css') }}?m={{ last_updated }}" media="all">
 
     <meta name="theme-color" content="#801018">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -38,7 +38,7 @@
   
     <meta property="og:image" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/MinnPostLogoNewSquare.png">
 
-    <script src='https://www.minnpost.com/wp-content/plugins/jquery-updater/js/jquery-3.6.0.min.js?m=1615220641g'></script>
+    <script src="{{ url_for('static', filename='js/minnpost-js-0.js') }}?m={{ last_updated }}"></script>
     <link href="{{ url_for('static', filename='css/main.min.css') }}?m={{ last_updated }}" rel="stylesheet">
 
     <!-- Google Analytics -->
@@ -104,7 +104,7 @@
   <script>
     var analytics_tracking_settings = {};
   </script>
-  <script src='https://www.minnpost.com/_static/??-eJy1kk1OxDAMhS9EGo2Gvy4QR0Fp6rYuiR0lzqByelxpCkViGDasosT2++zn2LdkPJMAiY3VpFBHpGJnkOT8q2mbO/uC5G1XMfQ2TSxM56OJSM1cbuxOYqvXJ0cuLIK+GMkqhTSaEQiyE87WlQKimKuZZsgqbYD6K7gIpbgRjF4hC+TzKN9JF5L+BtEQJS5iBs7RpMxe1bTD6DD4CWPasX4VlAm0kS+94PLIu+It8FPthR2dFLXaWoWjE/XyMxrc+2Iw6tTFluxXfVSpXMALMnGnTpxWJzgsA4bwX9Dd0x6hfyvUHrYFQexg8+w5Ph3uD7ftw+OxPc4fbA4AKQ=='></script>
+  <script src="{{ url_for('static', filename='js/minnpost-js-1.js') }}?m={{ last_updated }}"></script>
   <script src="{{ url_for('static', filename='js/main.min.js') }}?m={{ last_updated }}"></script>
 
   <script>

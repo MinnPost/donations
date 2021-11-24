@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import hashlib
 import logging
 import smtplib
+import charges
 from stopforumspam_api import query
 from collections import defaultdict
 from config import (
@@ -264,7 +265,8 @@ def update_fees(query, log, donation_type):
             payment_type = 'amex'
         elif item.get('payment_type') == 'ach' or item.get('Stripe_Payment_Type__c') == 'bank_account' or item.get('Stripe_Bank_Account__c') is not None:
             payment_type = 'bank_account'
-        fees = calculate_amount_fees(amount, payment_type, item.get('Stripe_Agreed_to_pay_fees__c', False))
+        fees = charges.calculate_amount_fees(amount, payment_type, item.get('Stripe_Agreed_to_pay_fees__c', False))
+        fees = str(charges.quantize(fees))
 
         log.it('---- Updating fee value for {} to ${}'.format(opp_id, fees))
 

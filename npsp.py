@@ -310,15 +310,17 @@ class Opportunity(SalesforceObject):
         self.donor_country = None
         self.email_notify = None
         self.email_user_when_canceled = False
+        self.encouraged_by = None
         self.event_attendees = None
         self.event_ticket_quantity = None
-        self.fair_market_value = None
+        self.fair_market_value = 0
         self.include_amount_in_notification = False
         self.in_honor_or_memory = None
         self.in_honor_memory_of = None
         self.notify_someone = False
         self.member_benefit_request_swag = None
         self.member_benefit_request_nyt = None
+        self.member_benefit_request_nyt_games = None
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
         self.invoice = None
@@ -355,6 +357,7 @@ class Opportunity(SalesforceObject):
         cls,
         begin=None,
         end=None,
+        at_least_this_age=None,
         stage_name="Pledged",
         stripe_customer_id=None,
         opportunity_id=None,
@@ -385,6 +388,12 @@ class Opportunity(SalesforceObject):
                 WHERE Id = '{opportunity_id}'
             """
 
+        if at_least_this_age != None:
+            where = f"""
+                {where}
+                AND CreatedDate < {at_least_this_age}
+            """
+
         query = f"""
             SELECT
                 AccountId,
@@ -397,6 +406,7 @@ class Opportunity(SalesforceObject):
                 Name,
                 StageName,
                 Type,
+                Amazon_Order_Id__c,
                 Anonymous__c,
                 Card_type__c,
                 npsp__Closed_Lost_Reason__c,
@@ -413,6 +423,8 @@ class Opportunity(SalesforceObject):
                 Donor_country__c,
                 Email_to_notify__c,
                 Email_User_When_Canceled__c,
+                Encouraged_to_contribute_by__c,
+                Expected_Giving_Date__c,
                 Fair_market_value__c,
                 Include_amount_in_notification__c,
                 In_Honor_Memory__c,
@@ -420,6 +432,7 @@ class Opportunity(SalesforceObject):
                 Notify_someone__c,
                 Member_benefit_request_Swag__c,
                 Member_benefit_request_New_York_Times__c,
+                Member_benefit_request_NYT_Games__c,
                 Member_benefit_request_Other_benefits__c,
                 Member_benefit_request_Atlantic_sub_ID__c,
                 MinnPost_Invoice__c,
@@ -446,10 +459,8 @@ class Opportunity(SalesforceObject):
                 Stripe_Payment_Type__c,
                 Stripe_Transaction_Fee__c,
                 Stripe_Transaction_ID__c,
+                Quarantined__c,
                 Flask_Transaction_ID__c
-                Expected_Giving_Date__c,
-                Amazon_Order_Id__c,
-                Quarantined__c
             FROM Opportunity
             {where}
         """
@@ -467,6 +478,8 @@ class Opportunity(SalesforceObject):
             y.description = item["Description"]
             y.id = item["Id"]
             y.lead_source = item["LeadSource"]
+            y.encouraged_by = item["Encouraged_to_contribute_by__c"]
+            y.fair_market_value = item["Fair_market_value__c"]
             y.name = item["Name"]
             #y.record_type_name = item["RecordType"]["Name"]
             y.stage_name = "Pledged"
@@ -544,6 +557,7 @@ class Opportunity(SalesforceObject):
             SELECT
                 Id,
                 Flask_Transaction_ID__c,
+                CloseDate,
                 Reason_for_Gift__c,
                 Reason_for_gift_shareable__c,
                 Daily_newsletter_sign_up__c,
@@ -564,6 +578,7 @@ class Opportunity(SalesforceObject):
             y = cls()
             y.id = item["Id"]
             y.lock_key = item["Flask_Transaction_ID__c"]
+            y.close_date = item["CloseDate"]
             y.reason_for_supporting = "Reason_for_Gift__c"
             y.reason_for_supporting_shareable = "Reason_for_gift_shareable__c"
             y.daily_newsletter = "Daily_newsletter_sign_up__c"
@@ -627,6 +642,7 @@ class Opportunity(SalesforceObject):
             "Donor_country__c": self.donor_country,
             "Email_to_notify__c": self.email_notify,
             "Email_User_When_Canceled__c": self.email_user_when_canceled,
+            "Encouraged_to_contribute_by__c": self.encouraged_by,
             "Fair_market_value__c": self.fair_market_value,
             "Include_amount_in_notification__c": self.include_amount_in_notification,
             "In_Honor_Memory__c": self.in_honor_or_memory,
@@ -634,6 +650,7 @@ class Opportunity(SalesforceObject):
             "Notify_someone__c": self.notify_someone,
             "Member_benefit_request_Swag__c": self.member_benefit_request_swag,
             "Member_benefit_request_New_York_Times__c": self.member_benefit_request_nyt,
+            "Member_benefit_request_NYT_Games__c": self.member_benefit_request_nyt_games,
             "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
             "MinnPost_Invoice__c": self.invoice,
@@ -762,12 +779,14 @@ class RDO(SalesforceObject):
         self.donor_country = None
         self.email_notify = None
         self.email_user_when_canceled = False
+        self.encouraged_by = None
         self.include_amount_in_notification = False
         self.in_honor_or_memory = None
         self.in_honor_memory_of = None
         self.notify_someone = False
         self.member_benefit_request_swag = None
         self.member_benefit_request_nyt = None
+        self.member_benefit_request_nyt_games = None
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
         self.payment_type = None
@@ -832,12 +851,14 @@ class RDO(SalesforceObject):
                 Donor_country__c,
                 Email_to_notify__c,
                 Email_User_When_Canceled__c,
+                Encouraged_to_contribute_by__c,
                 Include_amount_in_notification__c,
                 In_Honor_Memory__c,
                 In_honor_memory_of__c,
                 Notify_someone__c,
                 Member_benefit_request_Swag__c,
                 Member_benefit_request_New_York_Times__c,
+                Member_benefit_request_NYT_Games__c,
                 Member_benefit_request_Other_benefits__c,
                 Member_benefit_request_Atlantic_sub_ID__c,
                 npe03__Installments__c,
@@ -894,12 +915,14 @@ class RDO(SalesforceObject):
             y.donor_country = item["Donor_country__c"]
             y.email_notify = item["Email_to_notify__c"]
             y.email_user_when_canceled = item["Email_User_When_Canceled__c"]
+            y.encouraged_by = item["Encouraged_to_contribute_by__c"]
             y.include_amount_in_notification = item["Include_amount_in_notification__c"]
             y.in_honor_or_memory = item["In_Honor_Memory__c"]
             y.in_honor_memory_of = item["In_honor_memory_of__c"]
             y.notify_someone = item["Notify_someone__c"]
             y.member_benefit_request_swag = item["Member_benefit_request_Swag__c"]
             y.member_benefit_request_nyt = item["Member_benefit_request_New_York_Times__c"]
+            y.member_benefit_request_nyt_games = item["Member_benefit_request_NYT_Games__c"]
             y.member_benefit_request_atlantic = item["Member_benefit_request_Other_benefits__c"]
             y.member_benefit_request_atlantic_id = item["Member_benefit_request_Atlantic_sub_ID__c"]
             y.installments = item["npe03__Installments__c"]
@@ -962,15 +985,17 @@ class RDO(SalesforceObject):
             "Donor_country__c": self.donor_country,
             "Email_to_notify__c": self.email_notify,
             "Email_User_When_Canceled__c": self.email_user_when_canceled,
+            "Encouraged_to_contribute_by__c": self.encouraged_by,
             "Include_amount_in_notification__c": self.include_amount_in_notification,
             "In_Honor_Memory__c": self.in_honor_or_memory,
             "In_honor_memory_of__c": self.in_honor_memory_of,
             "Notify_someone__c": self.notify_someone,
             #'npe03__Installments__c': self.installments,
-            "npe03__Installment_Period__c": self.installment_period, # this has to be there even if it is open ended
+            "npe03__Installment_Period__c": self.installment_period, # this is the frequency
             "Lead_Source__c": self.lead_source,
             "Member_benefit_request_Swag__c": self.member_benefit_request_swag,
             "Member_benefit_request_New_York_Times__c": self.member_benefit_request_nyt,
+            "Member_benefit_request_NYT_Games__c": self.member_benefit_request_nyt_games,
             "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
             "npe03__Open_Ended_Status__c": self.open_ended_status,
@@ -1043,6 +1068,7 @@ class RDO(SalesforceObject):
                 Notify_someone__c,
                 Member_benefit_request_Swag__c,
                 Member_benefit_request_New_York_Times__c,
+                Member_benefit_request_NYT_Games__c,
                 Member_benefit_request_Other_benefits__c,
                 Member_benefit_request_Atlantic_sub_ID__c,
                 MinnPost_Invoice__c,
@@ -1105,6 +1131,7 @@ class RDO(SalesforceObject):
             y.donor_country = item["Donor_country__c"]
             y.email_notify = item["Email_to_notify__c"]
             y.email_user_when_canceled = item["Email_User_When_Canceled__c"]
+            y.encouraged_by = item["Encouraged_to_contribute_by__c"]
             y.fair_market_value = item["Fair_market_value__c"]
             y.include_amount_in_notification = item["Include_amount_in_notification__c"]
             y.in_honor_or_memory = item["In_Honor_Memory__c"]
@@ -1112,6 +1139,7 @@ class RDO(SalesforceObject):
             y.notify_someone = item["Notify_someone__c"]
             y.member_benefit_request_swag = item["Member_benefit_request_Swag__c"]
             y.member_benefit_request_nyt = item["Member_benefit_request_New_York_Times__c"]
+            y.member_benefit_request_nyt_games = item["Member_benefit_request_NYT_Games__c"]
             y.member_benefit_request_atlantic = item["Member_benefit_request_Other_benefits__c"]
             y.member_benefit_request_atlantic_id = item["Member_benefit_request_Atlantic_sub_ID__c"]
             y.invoice = item["MinnPost_Invoice__c"]

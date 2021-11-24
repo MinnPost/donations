@@ -15,7 +15,7 @@
     
     input {
         display: inline-block;
-        text-indent: $standard-block-padding + (math.div($standard-block-padding, 2));
+        text-indent: $standard-block-padding + math.div($standard-block-padding, 2);
         margin-bottom: 0;
     }
 }

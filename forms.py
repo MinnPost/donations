@@ -45,6 +45,8 @@ def format_amount(value):
             return value
         except ValueError:
             return None
+    else:
+        return 0
 
 
 # format the value of a swag item for inserting into Salesforce
@@ -102,6 +104,11 @@ class BaseForm(FlaskForm):
     payment_method_id = HiddenField(u"Payment Method ID", [validators.Optional()])
     recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
     update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
+    fair_market_value = HiddenField(
+        u"Fair Market Value",
+        validators=[validators.Optional()],
+        filters=[format_amount],
+    )
 
     pay_fees = BooleanField(
         u"Pay Fees?", false_values=(False, 'false', 0, '0', None, "None")
@@ -184,6 +191,9 @@ class DonateForm(BaseForm):
     member_benefit_request_nyt = HiddenField(
         u"New York Times subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
     )
+    member_benefit_request_nyt_games = HiddenField(
+        u"New York Times Games subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
+    )
 
     # billing
     billing_street = StringField(
@@ -257,14 +267,6 @@ class MinimalForm(BaseForm):
 # used for anniversary-patron, minnroast-patron, other sponsorship things
 class SponsorshipForm(MinimalForm):
     folder = HiddenField("Folder", [validators.Optional()])
-    fair_market_value = StringField(
-        u"Fair Market Value",
-        validators=[
-            validators.Optional(),
-            validate_amount,
-        ],
-        filters=[format_amount],
-    )
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(
         u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
@@ -274,7 +276,7 @@ class SponsorshipForm(MinimalForm):
 # used for minnpost-advertising
 class AdvertisingForm(MinimalForm):
     invoice = StringField(
-        u"Invoice #", [validators.required(message="Your invoice number is required.")]
+        u"Invoice #", [validators.required(message="Your invoice number is required."), validators.Length(max=18)]
     )
     client_organization = StringField(
         u"Organization", [validators.required(message="Your organization name is required.")]

@@ -126,11 +126,6 @@
         ]
       });
 
-      // use a referrer for edit link if we have one
-      if (document.referrer !== '') {
-        $('#edit_url').prop('href', document.referrer);
-      }
-
       if (this.options.debug === true) {
         this.debug(this.options);
         // return;
@@ -317,14 +312,15 @@
       var total_amount = amount;
       if ($(this.options.additional_amount_field).length > 0 && $(this.options.additional_amount_field).val() > 0) {
         var additional_amount = $(this.options.additional_amount_field).val();
-        total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10);
+        total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10); 
       }
       return total_amount;
     }, // getTotalAmount
 
     setFairMarketValue: function(amount_selector) {
-      // if there is a fair market value field, check and see if we can populate it
-      if ($(this.options.fair_market_value_selector).length > 0) {
+      // if there is a fair market value field and there is a fair-market-value data attribute
+      // check and see if we can populate the field with the data attribute
+      if ($(this.options.fair_market_value_selector).length > 0 && typeof amount_selector.data('fair-market-value') !== 'undefined') {
         var fairMarketValue = amount_selector.data('fair-market-value');
         $(this.options.fair_market_value_selector).val(fairMarketValue);
       }
@@ -386,7 +382,8 @@
       } else {
         full_amount = total_amount;
       }
-      $(that.options.full_amount_selector).text(parseFloat(full_amount).toFixed(2));
+      full_amount = parseFloat(full_amount).toFixed(2);
+      $(that.options.full_amount_selector).text(full_amount);
 
       // update the payment request
       if (this.paymentRequest && full_amount) {
@@ -944,7 +941,7 @@
                 that.buttonDisabled(options, false);
               }
             })
-            .error(function(response) {
+            .fail(function(response) {
               that.debug(response);
               that.hideSpinner();
               $(options.plaid_link).before('<p class="a-error a-validation-error">' + response.error + '</p>');
@@ -1280,7 +1277,7 @@
           supportform.get(0).submit(); // continue submitting the form if the ajax was successful
         }
       })
-      .error(function(response) {
+      .fail(function() {
         that.buttonStatus(that.options, $(that.options.donate_form_selector).find('button'), false);
       });
     }, // submitFormOnly

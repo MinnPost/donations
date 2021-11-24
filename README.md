@@ -99,6 +99,7 @@ Environment
 | `BUSINESS_MEMBER_RECIPIENT` |                                    foo@bar.org |
 | `CIRCLE_FAILURE_RECIPIENT`  |                                    foo@bar.org |
 | `REDIS_URL`                 |                             redis://redis:6379 |
+| `REDIS_TLS_URL`             |                             redis://redis:6379 |
 | `REPORT_URI`                |                                https://foo.bar |
 | `RECAPTCHA_SECRET_KEY`      |                             stringstringstring |
 | `RECAPTCHA_SITE_KEY`        |                             stringstringstring |
