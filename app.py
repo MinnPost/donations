@@ -1610,10 +1610,8 @@ def plaid_access_token():
             access_token=access_token,
             account_id=account_id,
         )
-        stripe_response = client.processor_stripe_bank_account_token_create(stripe_request)
-        
-        print(stripe_response)
-
+        response = client.processor_stripe_bank_account_token_create(stripe_request)
+        stripe_token_response = response.to_dict()
 
     except plaid.errors.PlaidError as e:
         # return jsonify({'error': {'display_message': e.display_message, 'error_code': e.code, 'error_type': e.type } })
@@ -1632,9 +1630,9 @@ def plaid_access_token():
             message = "We were unable to connect to your account. Please try again."
             if e.code and e.code == "PRODUCTS_NOT_SUPPORTED":
                 message = "The given account is not currently supported for use by Plaid. We apologize for the inconvenience."
-        response = {"error" : message}
+        stripe_token_response = {"error" : message}
     
-    return jsonify(stripe_response)
+    return jsonify(stripe_token_response)
 
 
 # used to calculate the fees Stripe will charge based on the payment type/amount
@@ -1661,7 +1659,7 @@ def calculate_fees():
     
     fees = calculate_amount_fees(amount, payment_type)
 
-    ret_data = {"fees": fees}
+    ret_data = {"fees": float(fees)}
     return jsonify(ret_data)
 
 

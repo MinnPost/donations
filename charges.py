@@ -221,7 +221,7 @@ def create_plaid_link_token():
         )
     )
     # create link token
-    response = client.link_token_create(request)
+    response = client.link_token_create(request).to_dict()
     link_token = response['link_token']
 
     return link_token
