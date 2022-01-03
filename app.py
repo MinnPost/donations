@@ -1018,7 +1018,7 @@ def root_form():
 def give_form():
     template    = "give.html"
     title       = "Payment information | MinnPost"
-    description = "MinnPost Membership"
+    description = "MinnPost Donation"
     form        = DonateForm()
     form_action = "/thanks/"
     step        = "pay"
@@ -2340,7 +2340,7 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     # default
     opportunity.amount = form.get("amount", 0)
     opportunity.additional_donation = form.get("additional_donation", 0)
-    opportunity.stripe_description = "MinnPost Membership"
+    opportunity.stripe_description = "MinnPost Donation"
     opportunity.campaign = form.get("campaign", "")
     opportunity.lead_source = "Stripe"
     opportunity.quarantined = quarantine
@@ -2463,7 +2463,7 @@ def update_opportunity(contact=None, form=None, customer=None, payment_method=No
     # these need to be set in case they aren't already present
     close_date = form.get("close_date", "") # we may want to override the form value?
     opportunity.stage_name = form.get("stage_name", "Pledged")
-    opportunity.stripe_description = "MinnPost Membership"
+    opportunity.stripe_description = "MinnPost Donation"
     opportunity.payment_type = "Stripe"
     opportunity.quarantined = quarantine
 

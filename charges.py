@@ -166,15 +166,15 @@ def generate_stripe_description(opportunity) -> str:
             return opportunity.description
 
     description_map = {
-        "Donation": "MinnPost Membership",
-        "Recurring Donation": "MinnPost Sustaining Membership",
+        "Donation": "MinnPost Donation",
+        "Recurring Donation": "MinnPost Sustaining Donation",
         "Sales": "MinnPost Purchase",
         "Sponsorship": "MinnPost Sponsorship",
     }
     if opportunity.type in description_map.keys():
         return description_map[opportunity.type]
     else:
-        return "MinnPost Membership"
+        return "MinnPost Donation"
 
 
 def create_plaid_link_token():
