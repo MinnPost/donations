@@ -1255,7 +1255,7 @@ def donation_cancel_form():
                 title=title,
                 path=path, folder=folder,
                 minnpost_root=app.config["MINNPOST_ROOT"],
-                stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
+                stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
             )
         else:
             return valid_form
@@ -1317,7 +1317,7 @@ def donation_cancel_form():
         path=path, amount=amount_formatted, installment_period=installment_period,
         stage_name=stage_name, open_ended_status=open_ended_status, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
-        last_updated=dir_last_updated('static'),
+        last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -1733,7 +1733,7 @@ def thanks():
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
-        last_updated=dir_last_updated('static'),
+        last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID
     )
 
 
@@ -1765,7 +1765,7 @@ def finish():
         step=step,
         path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation, installment_period=installment_period,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'),
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
     )
 
 
