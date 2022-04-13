@@ -1,14 +1,18 @@
 import logging
 from datetime import datetime, timedelta
 
-import celery
 import redis
+from celery import shared_task
 from pytz import timezone
 
 from charges import ChargeException, QuarantinedException, amount_to_charge, calculate_amount_fees, charge
 from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_TLS_URL, TIMEZONE, UPDATE_STRIPE_FEES, UPDATE_FAILED_CHARGES
 from npsp import Opportunity
+<<<<<<< HEAD
 from util import send_email, update_fees, fail_expired_charges
+=======
+from util import send_email, send_slack_message
+>>>>>>> texas
 
 zone = timezone(TIMEZONE)
 
@@ -78,7 +82,7 @@ class Lock(object):
 # TODO stop sending this email and just rely on Sentry and logs?
 
 
-@celery.task()
+@shared_task()
 def charge_cards():
 
     lock = Lock(key="charge-cards-lock")
@@ -94,16 +98,40 @@ def charge_cards():
 
     log.it("---Processing charges...")
 
-    log.it(f"Found {len(opportunities)} opportunities available to process.")
+    processing_msg = f"Found {len(opportunities)} opportunities available to process."
+    log.it(processing_msg)
+    send_slack_message(
+        {
+            "channel": "#stripe",
+            "text": processing_msg,
+            "icon_emoji": ":moneybag:",
+        }
+    )
 
     for opportunity in opportunities:
         # texas does not check the payment type here, but we want to
         if not opportunity.stripe_customer_id or opportunity.payment_type != "Stripe":
             continue
         amount = amount_to_charge(opportunity)
+<<<<<<< HEAD
         log.it(
             f"---- Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
         )
+=======
+        try:
+            entry_name = opportunity.name
+            # replaces non-ascii characters with "?" - See PR #851
+            encoded_name = entry_name.encode("ascii", "replace")
+            decoded_name = encoded_name.decode("ascii")
+            log.it(
+                f"---- Charging ${amount} to {opportunity.stripe_customer} ({decoded_name})"
+            )
+        except:
+            log.it(
+                f"---- Charging ${amount} to {opportunity.stripe_customer} ({opportunity.name})"
+            )
+            logging.warn(f"Could not encode {opportunity.name}")
+>>>>>>> texas
         try:
             charge(opportunity)
         except ChargeException as e:
