@@ -51,7 +51,7 @@ CELERYBEAT_SCHEDULE = {
     }
 }
 REDIS_URL = os.getenv("REDIS_URL")
-REDIS_TLS_URL = os.getenv("REDIS_URL") # this doesn't work with our Celery yet
+REDIS_BACKEND_HEALTH_CHECK_INTERVAL = 5
 
 ######
 # SMTP
