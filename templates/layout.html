@@ -38,10 +38,10 @@
   
     <meta property="og:image" content="https://www.minnpost.com/wp-content/themes/minnpost-largo/assets/img/MinnPostLogoNewSquare.png">
 
-    <script src="{{ url_for('static', filename='js/minnpost-js-0.js') }}?m={{ last_updated }}"></script>
+    <script src="{{ url_for('static', filename='js/minnpost-js-0.min.js') }}?m={{ last_updated }}"></script>
     <link href="{{ url_for('static', filename='css/main.min.css') }}?m={{ last_updated }}" rel="stylesheet">
 
-    {% if google_analytics_tracking_code_type != "" %}
+    {% if google_analytics_tracking_code_type %}
       {% include 'shared/analytics/' + google_analytics_tracking_code_type + '.html' %}
     {% endif %}
 
@@ -94,8 +94,8 @@
   <script>
     var analytics_tracking_settings = {};
   </script>
-  <script src="{{ url_for('static', filename='js/minnpost-js-1.js') }}?m={{ last_updated }}"></script>
-  <script src="{{ url_for('static', filename='js/main.min.js') }}?m={{ last_updated }}"></script>
+  <script src="{{ url_for('static', filename='js/minnpost-js-1.min.js') }}?m={{ last_updated }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}?m={{ last_updated }}"></script>
 
   <script>
   // main.js

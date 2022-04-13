@@ -1036,7 +1036,7 @@ def give_form():
         amount_formatted = format(amount, ",.2f")
     else:
         message = "The page you requested can't be found."
-        return render_template("error.html", message=message)
+        return render_template("error.html", message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE)
 
     # installment period
     installment_period = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
@@ -1201,7 +1201,7 @@ def donation_update_form():
     if request.method == "GET" and not request.args.get("opportunity") and not request.args.get("recurring"):
         heading = "Update Your Donation"
         message = "To update a donation, this page needs to have the unique identifier for that donation."
-        return render_template("error.html", heading=heading, message=message)
+        return render_template("error.html", heading=heading, message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE)
 
     return minimal_form("donation-update", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
@@ -1301,7 +1301,7 @@ def donation_cancel_form():
     else:
         heading = "Cancel Your Donation"
         message = "To cancel a donation, this page needs to have the unique identifier for that donation."
-        return render_template("error.html", heading=heading, message=message)
+        return render_template("error.html", heading=heading, message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE)
 
     # interface settings
     button = "Confirm your cancellation"
@@ -1773,13 +1773,13 @@ def finish():
 @app.route("/error")
 def error():
     message = "Something went wrong!"
-    return render_template("error.html", message=message)
+    return render_template("error.html", message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE)
 
 
 @app.errorhandler(404)
 def page_not_found(error):
     message = "The page you requested can't be found."
-    return render_template("error.html", message=message), 404
+    return render_template("error.html", message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE), 404
 
 
 @app.route("/.well-known/apple-developer-merchantid-domain-association")
