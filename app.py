@@ -64,7 +64,8 @@ from config import (
     SENTRY_ENVIRONMENT,
     REPORT_URI,
     STRIPE_WEBHOOK_SECRET,
-    GOOGLE_ANALYTICS_ID
+    GOOGLE_ANALYTICS_ID,
+    GOOGLE_ANALYTICS_TRACKING_CODE_TYPE
 )
 from forms import (
     format_amount,
@@ -1008,7 +1009,7 @@ def root_form():
         amount=amount_formatted, installment_period=installment_period, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
-        plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
+        plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -1174,7 +1175,7 @@ def give_form():
         atlantic_subscription=atlantic_subscription_form, atlantic_id=atlantic_id,
         nyt_subscription=nyt_subscription_form, nyt_games_subscription=nyt_games_subscription_form,
         decline_benefits=decline_benefits,
-        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
+        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
@@ -1255,7 +1256,7 @@ def donation_cancel_form():
                 title=title,
                 path=path, folder=folder,
                 minnpost_root=app.config["MINNPOST_ROOT"],
-                stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
+                stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
             )
         else:
             return valid_form
@@ -1317,7 +1318,7 @@ def donation_cancel_form():
         path=path, amount=amount_formatted, installment_period=installment_period,
         stage_name=stage_name, open_ended_status=open_ended_status, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
         heading=heading, summary=summary, button=button,
-        last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
+        last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -1460,7 +1461,7 @@ def advertising_form():
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
         show_invoice=show_invoice, show_organization=show_organization,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -1733,7 +1734,7 @@ def thanks():
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
-        last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID
+        last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
     )
 
 
@@ -1765,7 +1766,7 @@ def finish():
         step=step,
         path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation, installment_period=installment_period,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
     )
 
 
@@ -1901,7 +1902,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label, anonymous_label=anonymous_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -2133,7 +2134,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
         description=description, opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         update_default_source=update_default_source, stage_name=stage_name, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
         minnpost_root=app.config["MINNPOST_ROOT"],
         lock_key=lock_key, path=path,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,

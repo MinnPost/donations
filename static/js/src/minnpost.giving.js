@@ -20,6 +20,7 @@
     'plaid_env' : '',
     'plaid_link' : '#authorize-ach',
     'minnpost_root' : 'https://www.minnpost.com',
+    'analytics_type' : '',
     'progress_selector' : '.m-support-progress',
     'form_selector' : '.m-form',
     'donate_form_selector': '#donate',
@@ -173,6 +174,7 @@
     }, // debug
 
     analyticsTracking: function(options) {
+      this.debug('analytics type is ' + options.analytics_type);
       var progress = $(options.progress_selector);
       var step;
       var nav_item_count = 0;
