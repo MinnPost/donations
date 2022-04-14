@@ -180,6 +180,9 @@
       var nav_item_count = 0;
       var opp_id = $(options.opp_id_selector).val();
       var post_purchase = false;
+      if (options.analytics_type == 'analyticsjs') {
+        ga( 'require', 'ec' );
+      }
       if (progress.length > 0) {
         nav_item_count = $('li', progress).length; // length is not zero based
         step = $('li .active', progress).parent().index() + 1; // index is zero based
@@ -216,7 +219,8 @@
         installment_period = $(this.options.installment_period_selector).val();
       }
       // if we're not after the purchase, use addProduct
-      if (progress.length > 0 && post_purchase !== true) {
+      //if (progress.length > 0 && post_purchase !== true) {
+      if (progress.length > 0) {
         var data = {
           amount: amount,
           installment_period: installment_period
@@ -228,8 +232,8 @@
         }).done(function( data ) {
           if ($(data.level).length > 0) {
             level = data.level.level;
-            that.debug('add product: id is ' + 'minnpost_' + level.toLowerCase() + '_membership' + ' and name is ' + 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership' + ' and variant is ' + installment_period.charAt(0).toUpperCase() + installment_period.slice(1));
-            ga('ec:addProduct', {
+            that.debug('create product object: id is ' + 'minnpost_' + level.toLowerCase() + '_membership' + ' and name is ' + 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership' + ' and variant is ' + installment_period.charAt(0).toUpperCase() + installment_period.slice(1));
+            var product = {
               'id': 'minnpost_' + level.toLowerCase() + '_membership',
               'name': 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership',
               'category': 'Donation',
@@ -237,30 +241,60 @@
               'variant': installment_period.charAt(0).toUpperCase() + installment_period.slice(1),
               'price': amount,
               'quantity': 1
-            });
+            };
+            if (that.options.analytics_type == 'analyticsjs') {
+              ga('ec:addProduct', product);
+            }
+
+            if (step === 'purchase') {
+              that.debug('add a purchase action. step is ' + step);
+              if (that.options.analytics_type == 'gtagjs') {
+                gtag('event', step, {
+                  "transaction_id": opp_id, // Transaction id - Type: string
+                  "affiliation": 'MinnPost', // Store name - Type: string
+                  "value": amount, // Total Revenue - Type: numeric
+                  "currency": "USD",
+                  "items": [ product
+                  ]
+                });
+              } else if (that.options.analytics_type == 'analyticsjs') {
+                ga('ec:setAction', step, {
+                  'id': opp_id, // Transaction id - Type: string
+                  'affiliation': 'MinnPost', // Store name - Type: string
+                  'revenue': amount, // Total Revenue - Type: numeric
+                });
+              }
+            } else {
+              that.debug('add a checkout action. step is ' + step);
+              if (that.options.analytics_type == 'gtagjs') {
+                gtag('event', 'set_checkout_option', {
+                  "checkout_step": step, // A value of 1 indicates first checkout step. Value of 2 indicates second checkout step
+                });                
+              } else if (that.options.analytics_type == 'analyticsjs') {
+                ga('ec:setAction', 'checkout', {
+                  'step': step, // A value of 1 indicates first checkout step. Value of 2 indicates second checkout step
+                });
+              }
+            }
+      
+            if (that.options.analytics_type == 'gtagjs') {
+              gtag('event', 'page_view', {
+                page_title: document.title,
+                page_path: window.location.pathname
+              })              
+            } else if (that.options.analytics_type == 'analyticsjs') {
+              ga('set', {
+                page: window.location.pathname,
+                title: document.title
+              });
+              ga('send', 'pageview', window.location.pathname);
+            }
+
           }
         });
       }
 
-      if (step === 'purchase') {
-        this.debug('add a purchase action. step is ' + step);
-        ga('ec:setAction', step,{
-          'id': opp_id, // Transaction id - Type: string
-          'affiliation': 'MinnPost', // Store name - Type: string
-          'revenue': amount, // Total Revenue - Type: numeric
-        });
-      } else {
-        this.debug('add a checkout action. step is ' + step);
-        ga('ec:setAction','checkout', {
-          'step': step, // A value of 1 indicates first checkout step. Value of 2 indicates second checkout step
-        });
-      }
-
-      ga('set', {
-        page: window.location.pathname,
-        title: document.title
-      });
-      ga('send', 'pageview', window.location.pathname);
+      
 
     }, // analyticsTrackingStep
 
