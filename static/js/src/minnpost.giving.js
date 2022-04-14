@@ -239,7 +239,7 @@
               'category': 'Donation',
               'brand': 'MinnPost',
               'variant': installment_period.charAt(0).toUpperCase() + installment_period.slice(1),
-              'price': amount,
+              'price': that.getTotalAmount(amount),
               'quantity': 1
             };
             if (that.options.analytics_type == 'analyticsjs') {
@@ -252,10 +252,9 @@
                 gtag('event', step, {
                   "transaction_id": opp_id, // Transaction id - Type: string
                   "affiliation": 'MinnPost', // Store name - Type: string
-                  "value": amount, // Total Revenue - Type: numeric
+                  "value": that.getTotalAmount(amount), // Total Revenue - Type: numeric
                   "currency": "USD",
-                  "items": [ product
-                  ]
+                  "items": [product]
                 });
               } else if (that.options.analytics_type == 'analyticsjs') {
                 ga('ec:setAction', step, {
