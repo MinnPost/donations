@@ -177,6 +177,7 @@
       this.debug('analytics type is ' + options.analytics_type);
       var progress = $(options.progress_selector);
       var step;
+      var action = 'checkout';
       var nav_item_count = 0;
       var opp_id = $(options.opp_id_selector).val();
       var post_purchase = false;
@@ -200,15 +201,15 @@
         // we are on the confirm form selector and there is a progress measure
         // OR, we are on the finish selector and there is NOT a progress measure
         // these mean the user just purchased.
-        step = 'purchase';
+        action = 'purchase';
       } else if (progress.length === 0) {
         return;
       }
       this.debug( 'step is ' + step + ' and nav item count is ' + nav_item_count + ' and opp id is ' + opp_id + ' and post purchase is ' + post_purchase );
-      this.analyticsTrackingStep(step, post_purchase);
+      this.analyticsTrackingStep(step, action, post_purchase);
     }, // analyticsTracking
 
-    analyticsTrackingStep: function(step, post_purchase) {
+    analyticsTrackingStep: function(step, action, post_purchase) {
       var progress = $(this.options.progress_selector);
       var amount = $(this.options.original_amount_selector).val();
       var opp_id = $(this.options.opp_id_selector).val();
@@ -242,39 +243,54 @@
               'price': that.getTotalAmount(amount),
               'quantity': 1
             };
-            if (that.options.analytics_type == 'analyticsjs') {
+            if (that.options.analytics_type == 'gtagjs') {
+              gtag('event', 'checkout_progress', {
+                "value": that.getTotalAmount(amount),
+                "items": [product],
+                "checkout_step": step,
+                "checkout_option": action,
+              });
+            } else if (that.options.analytics_type == 'analyticsjs') {
               ga('ec:addProduct', product);
             }
 
-            if (step === 'purchase') {
-              that.debug('add a purchase action. step is ' + step);
+            if (action === 'purchase') {
+              that.debug('add a purchase action. step is ' + step + ' and action is ' + action);
               if (that.options.analytics_type == 'gtagjs') {
-                gtag('event', step, {
+                gtag('event', action, {
                   "transaction_id": opp_id, // Transaction id - Type: string
                   "affiliation": 'MinnPost', // Store name - Type: string
                   "value": that.getTotalAmount(amount), // Total Revenue - Type: numeric
                   "currency": "USD",
-                  "items": [product]
+                  "items": [product],
+                  "checkout_step": step
                 });
               } else if (that.options.analytics_type == 'analyticsjs') {
-                ga('ec:setAction', step, {
+                ga('ec:setAction', action, {
                   'id': opp_id, // Transaction id - Type: string
                   'affiliation': 'MinnPost', // Store name - Type: string
                   'revenue': amount, // Total Revenue - Type: numeric
+                  'step': step
                 });
               }
-            } else {
+            }/* else {
               that.debug('add a checkout action. step is ' + step);
+              // // set_checkout_option doesn't work multiple times on the same page, but checkout_progress does. see https://stackoverflow.com/questions/69766923/why-checkout-step-not-recorded-in-the-google-analytics-report
               if (that.options.analytics_type == 'gtagjs') {
-                gtag('event', 'set_checkout_option', {
+                gtag('event', 'checkout_progress', {
+                  "value": that.getTotalAmount(amount),
+                  "items": [product],
                   "checkout_step": step, // A value of 1 indicates first checkout step. Value of 2 indicates second checkout step
-                });                
+                  //"checkout_option": action, maybe we don't need this?
+                });          
               } else if (that.options.analytics_type == 'analyticsjs') {
                 ga('ec:setAction', 'checkout', {
                   'step': step, // A value of 1 indicates first checkout step. Value of 2 indicates second checkout step
                 });
               }
-            }
+            }*/
+
+            
       
             if (that.options.analytics_type == 'gtagjs') {
               gtag('event', 'page_view', {
