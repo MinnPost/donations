@@ -273,25 +273,8 @@
                   'step': step
                 });
               }
-            }/* else {
-              that.debug('add a checkout action. step is ' + step);
-              // // set_checkout_option doesn't work multiple times on the same page, but checkout_progress does. see https://stackoverflow.com/questions/69766923/why-checkout-step-not-recorded-in-the-google-analytics-report
-              if (that.options.analytics_type == 'gtagjs') {
-                gtag('event', 'checkout_progress', {
-                  "value": that.getTotalAmount(amount),
-                  "items": [product],
-                  "checkout_step": step, // A value of 1 indicates first checkout step. Value of 2 indicates second checkout step
-                  //"checkout_option": action, maybe we don't need this?
-                });          
-              } else if (that.options.analytics_type == 'analyticsjs') {
-                ga('ec:setAction', 'checkout', {
-                  'step': step, // A value of 1 indicates first checkout step. Value of 2 indicates second checkout step
-                });
-              }
-            }*/
-
-            
-      
+            }
+     
             if (that.options.analytics_type == 'gtagjs') {
               gtag('event', 'page_view', {
                 page_title: document.title,
