@@ -252,6 +252,10 @@
               });
             } else if (that.options.analytics_type == 'analyticsjs') {
               ga('ec:addProduct', product);
+              ga('ec:setAction', 'checkout', {
+                'step': step,
+                'option': action
+              });
             }
 
             if (action === 'purchase') {
