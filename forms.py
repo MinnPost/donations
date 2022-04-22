@@ -1,7 +1,7 @@
 import os
 import re
 import requests
-import simplejson as json
+import json as json
 from decimal import Decimal, ROUND_HALF_UP
 
 from flask_wtf import FlaskForm
@@ -9,13 +9,13 @@ from wtforms import validators
 from wtforms.fields import (
     BooleanField,
     DecimalField,
+    EmailField,
     HiddenField,
     RadioField,
     StringField,
     TextAreaField,
     SelectMultipleField,
 )
-from wtforms.fields.html5 import EmailField
 from wtf_required_if import RequiredIf
 from config import (
     RECAPTCHA_KEYS,
@@ -94,16 +94,16 @@ class BaseForm(FlaskForm):
             filters.append(strip_whitespace)
             return unbound_field.bind(form=form, filters=filters, **options)
 
-    referring_page = HiddenField("Referring Page", [validators.Optional()])
-    customer_id = HiddenField("Customer ID", [validators.Optional()])
-    campaign = HiddenField("Campaign ID", [validators.Length(max=18)])
-    description = HiddenField(u"Description", [validators.Optional()])
-    stripe_payment_type = HiddenField(u"Stripe Payment Type", [validators.Optional()])
-    stripeToken = HiddenField(u"Stripe token", [validators.Optional()])
-    bankToken = HiddenField(u"Bank token", [validators.Optional()])
-    payment_method_id = HiddenField(u"Payment Method ID", [validators.Optional()])
-    recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()])
-    update_default_source = HiddenField(u"Update default source?", [validators.Optional()])
+    referring_page = HiddenField("Referring Page", [validators.Optional()], default="")
+    customer_id = HiddenField("Customer ID", [validators.Optional()], default="")
+    campaign = HiddenField("Campaign ID", [validators.Length(max=18)], default="")
+    description = HiddenField(u"Description", [validators.Optional()], default="")
+    stripe_payment_type = HiddenField(u"Stripe Payment Type", [validators.Optional()], default="")
+    stripeToken = HiddenField(u"Stripe token", [validators.Optional()], default="")
+    bankToken = HiddenField(u"Bank token", [validators.Optional()], default="")
+    payment_method_id = HiddenField(u"Payment Method ID", [validators.Optional()], default="")
+    recaptchaToken = HiddenField(u"Recaptcha token", [validators.Optional()], default="")
+    update_default_source = HiddenField(u"Update default source?", [validators.Optional()], default="")
     fair_market_value = HiddenField(
         u"Fair Market Value",
         validators=[validators.Optional()],
@@ -117,37 +117,37 @@ class BaseForm(FlaskForm):
     amount = StringField(
         u"Amount",
         validators=[
-            validators.required(message="Please choose a donation amount."),
+            validators.InputRequired(message="Please choose a donation amount."),
             validate_amount,
         ],
         filters=[format_amount],
     )
     installment_period = StringField(
-        u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])]
+        u"Frequency", [validators.AnyOf(["yearly", "monthly", "one-time", "None"])], default=""
     )
 
     first_name = StringField(
-        u"First name", [validators.required(message="Your first name is required.")]
+        u"First name", [validators.InputRequired(message="Your first name is required.")]
     )
     last_name = StringField(
-        u"Last name", [validators.required(message="Your last name is required.")]
+        u"Last name", [validators.InputRequired(message="Your last name is required.")]
     )
     
     # billing
     billing_street = StringField(
-        u"Street Address", [validators.Optional()]
+        u"Street Address", [validators.Optional()], default=""
     )
     billing_city = StringField(
-        u"City", [validators.Optional()]
+        u"City", [validators.Optional()], default=""
     )
     billing_state = StringField(
-        u"State", [validators.Optional()]
+        u"State", [validators.Optional()], default=""
     )
     billing_zip = StringField(
-        u"ZIP Code", [validators.Optional()]
+        u"ZIP Code", [validators.Optional()], default=""
     )
     billing_country = StringField(
-        u"Country", [validators.Optional()]
+        u"Country", [validators.Optional()], default=""
     )
     email = EmailField(
         "Email address", [validators.DataRequired(), validators.Email()]
@@ -157,99 +157,99 @@ class BaseForm(FlaskForm):
 # used for getting a plaid token
 class PlaidForm(BaseForm):
     public_token = StringField(
-        u"Public token", [validators.required(message="Plaid requires a public token.")]
+        u"Public token", [validators.InputRequired(message="Plaid requires a public token.")]
     )
     account_id = StringField(
-        u"Account ID", [validators.required(message="Plaid requires an account ID.")]
+        u"Account ID", [validators.InputRequired(message="Plaid requires an account ID.")]
     )
 
 
 # used for the main donate flow from the website
 class DonateForm(BaseForm):
-    lock_key = HiddenField("Lock Key", [validators.Optional()])
+    lock_key = HiddenField("Lock Key", [validators.Optional()], default="")
     display_as = StringField(
-        u"Preferred name", [validators.Optional()]
+        u"Preferred name", [validators.Optional()], default=""
     )
     anonymous = BooleanField(
         u"Anonymous?", false_values=(False, 'false', 0, '0', None, "None")
     )
     in_honor_or_memory = RadioField(
-        u"Honor or memory?", [validators.Optional()], choices=[('honor', 'In honor of'), ('memory', 'In memory of'), ('0', 'False')])
+        u"Honor or memory?", [validators.Optional()], choices=[('honor', 'In honor of'), ('memory', 'In memory of'), ('0', 'False')], default=None)
     in_honor_memory_of = StringField(
-        u"Honor or memory of", [validators.Optional()]
+        u"Honor or memory of", [validators.Optional()], default=""
     )
     # swag
     # this needs to be updated if the swag options change
     member_benefit_request_swag = HiddenField(
-        u"Swag choice", [validators.Optional(), validators.AnyOf(["mug", "water bottle"])]
+        u"Swag choice", [validators.Optional(), validators.AnyOf(["mug", "water bottle"])], default=""
     )
     
     member_benefit_request_atlantic = HiddenField(
-        u"The Atlantic subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
+        u"The Atlantic subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])], default=""
     )
-    member_benefit_request_atlantic_id = HiddenField("The Atlantic Subscriber ID", [validators.Optional()])
+    member_benefit_request_atlantic_id = HiddenField("The Atlantic Subscriber ID", [validators.Optional()], default="")
     member_benefit_request_nyt = HiddenField(
-        u"New York Times subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
+        u"New York Times subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])], default=""
     )
     member_benefit_request_nyt_games = HiddenField(
-        u"New York Times Games subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])]
+        u"New York Times Games subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])], default=""
     )
 
     # billing
     billing_street = StringField(
-        u"Street Address", [validators.required(message="Your billing street address is required.")]
+        u"Street Address", [validators.InputRequired(message="Your billing street address is required.")]
     )
     billing_city = StringField(
-        u"City", [validators.required(message="Your billing city is required.")]
+        u"City", [validators.InputRequired(message="Your billing city is required.")]
     )
     #billing_state = StringField(
-    #    u"State", [validators.required(message="Your billing state is required.")]
+    #    u"State", [validators.InputRequired(message="Your billing state is required.")]
     #)
     billing_state = StringField(
         u"State", [RequiredIf(message="Your billing state is required.", billing_country="")]
     )
     #billing_zip = StringField(
-    #    u"ZIP Code", [validators.required(message="Your billing zip code is required.")]
+    #    u"ZIP Code", [validators.InputRequired(message="Your billing zip code is required.")]
     #)
     billing_zip = StringField(
         u"ZIP Code", [RequiredIf(message="Your billing zip code is required if you are in the United States.", billing_country="")]
     )
     billing_country = StringField(
-        u"Country", [validators.Optional()]
+        u"Country", [validators.Optional()], default=""
     )
 
     # shipping
     shipping_name = StringField(
-        u"Ship to", [validators.Optional()]
+        u"Ship to", [validators.Optional()], default=""
     )
     shipping_street = StringField(
-        u"Street Address", [validators.Optional()]
+        u"Street Address", [validators.Optional()], default=""
     )
     shipping_city = StringField(
-        u"City", [validators.Optional()]
+        u"City", [validators.Optional()], default=""
     )
     shipping_state = StringField(
-        u"State", [validators.Optional()]
+        u"State", [validators.Optional()], default=""
     )
     shipping_zip = StringField(
-        u"ZIP Code", [validators.Optional()]
+        u"ZIP Code", [validators.Optional()], default=""
     )
     shipping_country = StringField(
-        u"Country", [validators.Optional()]
+        u"Country", [validators.Optional()], default=""
     )
 
 # used for anniversary-patron, minnpost-default, minnroast-patron, other minimal donate forms
 class MinimalForm(BaseForm):
-    mrpledge_id = HiddenField("MrPledge ID", [validators.Optional()])
-    stage_name = HiddenField("Stage Name", [validators.Optional()])
-    close_date = HiddenField("Close Date", [validators.Optional()])
-    opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])
-    recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()])
-    opportunity_type = HiddenField("Opportunity Type", [validators.Optional()])
-    opportunity_subtype = HiddenField("Opportunity Sub-Type", [validators.Optional()])
-    redirect_url = HiddenField("Opportunity Type", [validators.Optional()])
+    mrpledge_id = HiddenField("MrPledge ID", [validators.Optional()], default="")
+    stage_name = HiddenField("Stage Name", [validators.Optional()], default="")
+    close_date = HiddenField("Close Date", [validators.Optional()], default="")
+    opportunity_id = HiddenField("Opportunity ID", [validators.Optional()], default="")
+    recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()], default="")
+    opportunity_type = HiddenField("Opportunity Type", [validators.Optional()], default="")
+    opportunity_subtype = HiddenField("Opportunity Sub-Type", [validators.Optional()], default="")
+    redirect_url = HiddenField("Opportunity Type", [validators.Optional()], default="")
     display_as = StringField(
-        u"Preferred name", [validators.Optional()]
+        u"Preferred name", [validators.Optional()], default=""
     )
     anonymous = BooleanField(
         u"Anonymous?", false_values=(False, 'false', 0, '0', None, "None")
@@ -266,7 +266,7 @@ class MinimalForm(BaseForm):
 
 # used for anniversary-patron, minnroast-patron, other sponsorship things
 class SponsorshipForm(MinimalForm):
-    folder = HiddenField("Folder", [validators.Optional()])
+    folder = HiddenField("Folder", [validators.Optional()], default="")
     reason_for_supporting = TextAreaField(u'Reason For Supporting MinnPost')
     reason_shareable = BooleanField(
         u"Reason Shareable?", false_values=(False, 'false', 0, '0', None, "None")
@@ -276,32 +276,32 @@ class SponsorshipForm(MinimalForm):
 # used for minnpost-advertising
 class AdvertisingForm(MinimalForm):
     invoice = StringField(
-        u"Invoice #", [validators.required(message="Your invoice number is required."), validators.Length(max=18)]
+        u"Invoice #", [validators.InputRequired(message="Your invoice number is required."), validators.Length(max=18)]
     )
     client_organization = StringField(
-        u"Organization", [validators.required(message="Your organization name is required.")]
+        u"Organization", [validators.InputRequired(message="Your organization name is required.")]
     )
 
 
 # used for minnpost-cancel
 class CancelForm(BaseForm):
-    path = HiddenField("Path", [validators.Optional()])
-    folder = HiddenField("Folder", [validators.Optional()])
+    path = HiddenField("Path", [validators.Optional()], default="")
+    folder = HiddenField("Folder", [validators.Optional()], default="")
 
-    stage_name = HiddenField("Stage Name", [validators.Optional()])
-    close_date = HiddenField("Close Date", [validators.Optional()])
-    opportunity_id = HiddenField("Opportunity ID", [validators.Optional()])
-    recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()])
+    stage_name = HiddenField("Stage Name", [validators.Optional()], default="")
+    close_date = HiddenField("Close Date", [validators.Optional()], default="")
+    opportunity_id = HiddenField("Opportunity ID", [validators.Optional()], default="")
+    recurring_id = HiddenField("Recurring Donation ID", [validators.Optional()], default="")
 
-    email_user_when_canceled = HiddenField("Email user when canceled?", [validators.Optional()])
-    open_ended_status = HiddenField("Open Ended Status", [validators.Optional()])
+    email_user_when_canceled = HiddenField("Email user when canceled?", [validators.Optional()], default="")
+    open_ended_status = HiddenField("Open Ended Status", [validators.Optional()], default="")
 
 
 # used for post-donate form with newsletter/testimonial options
 class FinishForm(BaseForm):
 
-    path = HiddenField("Path", [validators.Optional()])
-    folder = HiddenField("Folder", [validators.Optional()])
+    path = HiddenField("Path", [validators.Optional()], default="")
+    folder = HiddenField("Folder", [validators.Optional()], default="")
     additional_donation = StringField(
         u"Additional Donation Amount",
         validators=[

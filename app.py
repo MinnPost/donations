@@ -4,7 +4,7 @@ run', 'python app.py' or via a WSGI server like gunicorn or uwsgi.
 
 """
 import calendar
-import simplejson as json
+#import json
 import locale
 import logging
 import os
@@ -24,7 +24,6 @@ from amazon_pay.client import AmazonPayClient
 from amazon_pay.ipn_handler import IpnHandler
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory
 from flask_limiter import Limiter
-from flask_limiter.util import get_ipaddr # https://help.heroku.com/784545
 from flask_talisman import Talisman
 from nameparser import HumanName
 from pytz import timezone
@@ -204,8 +203,18 @@ Talisman(
     content_security_policy_report_uri=REPORT_URI,
 )
 
+
+def get_real_user_ip():
+    """ratelimit the users original ip instead of (optional) reverse proxy"""
+    if not request.headers.getlist("X-Forwarded-For"):
+        ip = request.remote_addr
+    else:
+        ip = request.headers.getlist("X-Forwarded-For")[0]
+    return ip
+
+
 limiter = Limiter(
-    app, key_func=get_ipaddr, default_limits=["200 per day", "250 per hour"]
+    app, key_func=get_real_user_ip, default_limits=["200 per day", "250 per hour"]
 )
 
 log_level = logging.getLevelName(LOG_LEVEL)
@@ -648,7 +657,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
 
     if form_data.get("payment_method_id", ""):
         payment_method_id = form_data["payment_method_id"]
-    elif form_data.get("bankToken",""):
+    elif form_data.get("bankToken", ""):
         bank_token = form_data["bankToken"]
     elif form_data.get("stripeToken", ""):
         source_token = form_data["stripeToken"]
