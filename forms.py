@@ -1,7 +1,7 @@
 import os
 import re
 import requests
-import simplejson as json
+import json as json
 from decimal import Decimal, ROUND_HALF_UP
 
 from flask_wtf import FlaskForm

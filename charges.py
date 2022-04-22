@@ -8,8 +8,8 @@ from util import send_slack_message
 import stripe
 import plaid
 from plaid.api import plaid_api
-from plaid.model.account_subtype import AccountSubtype
-from plaid.model.account_subtypes import AccountSubtypes
+from plaid.model.depository_account_subtype import DepositoryAccountSubtype
+from plaid.model.depository_account_subtypes import DepositoryAccountSubtypes
 from plaid.model.country_code import CountryCode
 from plaid.model.depository_filter import DepositoryFilter
 from plaid.model.link_token_account_filters import LinkTokenAccountFilters
@@ -211,8 +211,8 @@ def create_plaid_link_token():
         link_customization_name='default',
         account_filters=LinkTokenAccountFilters(
             depository=DepositoryFilter(
-                account_subtypes=AccountSubtypes(
-                    [AccountSubtype('checking'), AccountSubtype('savings')]
+                account_subtypes=DepositoryAccountSubtypes(
+                    [DepositoryAccountSubtype('checking'), DepositoryAccountSubtype('savings')]
                 )
             )
         ),
