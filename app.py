@@ -635,7 +635,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     first_name = form_data["first_name"]
     last_name = form_data["last_name"]
     installment_period = form_data.get("installment_period", app.config["DEFAULT_FREQUENCY"])
-    customer_id = form_data.get("customer_id", None)
+    customer_id = form_data.get("customer_id", "")
     update_default_source = form_data.get("update_default_source", "")
     stripe_payment_type = form_data.get("stripe_payment_type", "")
 
@@ -668,7 +668,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
             body.append({'type': 'missing_payment', 'message': message})
             return jsonify(errors=body)
 
-    if customer_id == None: # this is a new customer
+    if customer_id == "": # this is a new customer
         app.logger.debug("----Creating new Stripe customer...")
         # if it is a new customer, assume they only have one payment method and it should be the default
         try:
