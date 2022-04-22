@@ -9,13 +9,13 @@ from wtforms import validators
 from wtforms.fields import (
     BooleanField,
     DecimalField,
+    EmailField,
     HiddenField,
     RadioField,
     StringField,
     TextAreaField,
     SelectMultipleField,
 )
-from wtforms.fields.html5 import EmailField
 from wtf_required_if import RequiredIf
 from config import (
     RECAPTCHA_KEYS,
@@ -117,7 +117,7 @@ class BaseForm(FlaskForm):
     amount = StringField(
         u"Amount",
         validators=[
-            validators.required(message="Please choose a donation amount."),
+            validators.InputRequired(message="Please choose a donation amount."),
             validate_amount,
         ],
         filters=[format_amount],
@@ -127,10 +127,10 @@ class BaseForm(FlaskForm):
     )
 
     first_name = StringField(
-        u"First name", [validators.required(message="Your first name is required.")]
+        u"First name", [validators.InputRequired(message="Your first name is required.")]
     )
     last_name = StringField(
-        u"Last name", [validators.required(message="Your last name is required.")]
+        u"Last name", [validators.InputRequired(message="Your last name is required.")]
     )
     
     # billing
@@ -157,10 +157,10 @@ class BaseForm(FlaskForm):
 # used for getting a plaid token
 class PlaidForm(BaseForm):
     public_token = StringField(
-        u"Public token", [validators.required(message="Plaid requires a public token.")]
+        u"Public token", [validators.InputRequired(message="Plaid requires a public token.")]
     )
     account_id = StringField(
-        u"Account ID", [validators.required(message="Plaid requires an account ID.")]
+        u"Account ID", [validators.InputRequired(message="Plaid requires an account ID.")]
     )
 
 
@@ -197,19 +197,19 @@ class DonateForm(BaseForm):
 
     # billing
     billing_street = StringField(
-        u"Street Address", [validators.required(message="Your billing street address is required.")]
+        u"Street Address", [validators.InputRequired(message="Your billing street address is required.")]
     )
     billing_city = StringField(
-        u"City", [validators.required(message="Your billing city is required.")]
+        u"City", [validators.InputRequired(message="Your billing city is required.")]
     )
     #billing_state = StringField(
-    #    u"State", [validators.required(message="Your billing state is required.")]
+    #    u"State", [validators.InputRequired(message="Your billing state is required.")]
     #)
     billing_state = StringField(
         u"State", [RequiredIf(message="Your billing state is required.", billing_country="")]
     )
     #billing_zip = StringField(
-    #    u"ZIP Code", [validators.required(message="Your billing zip code is required.")]
+    #    u"ZIP Code", [validators.InputRequired(message="Your billing zip code is required.")]
     #)
     billing_zip = StringField(
         u"ZIP Code", [RequiredIf(message="Your billing zip code is required if you are in the United States.", billing_country="")]
@@ -276,10 +276,10 @@ class SponsorshipForm(MinimalForm):
 # used for minnpost-advertising
 class AdvertisingForm(MinimalForm):
     invoice = StringField(
-        u"Invoice #", [validators.required(message="Your invoice number is required."), validators.Length(max=18)]
+        u"Invoice #", [validators.InputRequired(message="Your invoice number is required."), validators.Length(max=18)]
     )
     client_organization = StringField(
-        u"Organization", [validators.required(message="Your organization name is required.")]
+        u"Organization", [validators.InputRequired(message="Your organization name is required.")]
     )
 
 

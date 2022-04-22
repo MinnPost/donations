@@ -18,5 +18,5 @@ class RequiredIf(object):
             else:
                 condition_field = form._fields.get(name)
                 if condition_field.data == data and not field.data:
-                    validators.required(message=self.message)(form, field)
+                    validators.InputRequired(message=self.message)(form, field)
         validators.optional()(form, field)
