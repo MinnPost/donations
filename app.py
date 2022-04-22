@@ -648,7 +648,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
 
     if form_data.get("payment_method_id", ""):
         payment_method_id = form_data["payment_method_id"]
-    elif form_data.get("bankToken",""):
+    elif form_data.get("bankToken", ""):
         bank_token = form_data["bankToken"]
     elif form_data.get("stripeToken", ""):
         source_token = form_data["stripeToken"]
