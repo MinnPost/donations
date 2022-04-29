@@ -269,40 +269,7 @@ def minnpost_advertising_form():
     return redirect("/advertising-payment/?%s" % query_string, code=302)
 
 
-<<<<<<< HEAD
 def apply_card_details(data=None, customer=None, payment_method=None, charge_source=None):
-=======
-"""
-Read the Webpack assets manifest and then provide the
-scripts, including cache-busting hache, as template context.
-
-For Heroku to compile assets on deploy, the directory it
-builds to needs to already exist. Hence /static/js/prod/.gitkeep.
-We don't want to version control development builds, which is
-why they're compiled to /static/js/build/ instead.
-"""
-
-
-def get_bundles(entry):
-    root_dir = os.path.dirname(os.getcwd())
-    build_dir = os.path.join("static", "build")
-    asset_path = "/static/build/"
-    bundles = {"css": "", "js": []}
-    manifest_path = os.path.join(build_dir, "assets.json")
-    css_manifest_path = os.path.join(build_dir, "styles.json")
-    with open(manifest_path) as manifest:
-        assets = json.load(manifest)
-    entrypoint = assets["entrypoints"][entry]
-    for bundle in entrypoint["assets"]["js"]:
-        bundles["js"].append(asset_path + bundle)
-    with open(css_manifest_path) as manifest:
-        css_assets = json.load(manifest)
-    bundles["css"] = asset_path + css_assets[entry]
-    return bundles
-
-
-def apply_card_details(rdo=None, customer=None):
->>>>>>> texas
 
     """
     Takes the expiration date, card brand and expiration from a Stripe object and copies
