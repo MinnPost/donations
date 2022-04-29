@@ -147,7 +147,7 @@ def charge_cards():
     lock.release()
 
 
-@celery.task()
+@shared_task()
 def update_ach_charges():
 
     lock = Lock(key='update-ach-charges-lock')
@@ -185,7 +185,7 @@ def update_ach_charges():
     lock.release()
 
 
-@celery.task()
+@shared_task()
 def update_failed_charges():
 
     log = Log()
@@ -222,7 +222,7 @@ def update_failed_charges():
         lock.release()
 
 
-@celery.task()
+@shared_task()
 def save_stripe_fee():
 
     log = Log()
