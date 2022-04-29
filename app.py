@@ -13,7 +13,6 @@ import uuid
 from datetime import datetime, timedelta
 from pprint import pformat
 
-import celery
 import stripe
 import plaid
 from plaid.api import plaid_api
@@ -232,7 +231,7 @@ app.config.update(
 )
 stripe.api_key = app.config["STRIPE_KEYS"]["secret_key"]
 
-make_celery(app)
+celery = make_celery(app)
 
 
 """
