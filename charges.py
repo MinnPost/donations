@@ -233,6 +233,14 @@ def charge(opportunity):
     logging.info(
         f"---- Charging ${amount} to {opportunity.stripe_customer_id} ({opportunity.name})"
     )
+    if opportunity.stage_name != "Pledged": # this is probably an insufficient check for quarantining
+        raise Exception(f"Opportunity {opportunity.id} is not Pledged")
+    if opportunity.quarantined:
+        logging.info("---- Skipping because it's quarantined")
+        raise QuarantinedException(f"Opportunity {opportunity.id} is quarantined")
+
+    opportunity.stage_name = "In Process"
+    opportunity.save()
 
     if opportunity.stage_name == "Pledged":
         opportunity.stage_name = "In Process"
@@ -299,9 +307,9 @@ def charge(opportunity):
 
                 reason = e.user_message
 
-                if isinstance(e, stripe.error.CardError):
+            if isinstance(e, stripe.error.CardError):
                     logging.info(f"The card has been declined")
-                    logging.info(f"Decline code: {e.json_body.get('decline_code', '')}")
+                logging.info(f"Decline code: {e.json_body.get('decline_code', '')}")
 
                     if reason is None:
                         reason = "card declined for unknown reason"
@@ -365,3 +373,33 @@ def charge(opportunity):
         
         opportunity.stage_name = "Closed Won"
         opportunity.save()
+        raise ChargeException(opportunity, reason)
+
+    if card_charge.status != "succeeded":
+        logging.error("Charge failed. Check Stripe logs.")
+        raise ChargeException(opportunity, "charge failed")
+
+    # There's a lot going on here. Up to this point the donor selected an
+    # amount (say $100) and decided if they wanted to pay our processing
+    # fees. We recorded those two bits of information in the opportunity or the
+    # RDO. Now we're actually charging the card so we have new information:
+    # what the actual processing fees. So we we move stuff around. The
+    # original amount the donor selected was stored in the "amount" field of
+    # the opportunity or the RDO. That amount gets moved to "donor selected
+    # amount" on the opportunity. Now the amount field on the opportunity will
+    # represeent the gross amount (the point of this whole thing) and the
+    # amount minus processing fees gets stored on the opportunity field in "net
+    # amount". We didn't know that amount up until the charge took place
+    # because Amex.
+    balance_transaction = stripe.BalanceTransaction.retrieve(
+        card_charge.balance_transaction
+    )
+    opportunity.donor_selected_amount = opportunity.amount
+    opportunity.net_amount = balance_transaction.net / 100
+    opportunity.amount = amount  # gross
+    gross = card_charge.amount / 100
+
+    opportunity.stripe_card = card_charge.source.id
+    opportunity.stripe_transaction_id = card_charge.id
+    opportunity.stage_name = "Closed Won"
+    opportunity.save()

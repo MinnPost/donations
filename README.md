@@ -32,6 +32,8 @@ Software to collect donations for nonprofits. It integrates with Saleforce, Stri
 Donations
 =========
 
+Software to collect donations for nonprofits. It integrates with Saleforce, Stripe, Amazon Pay, Slack and Sentry.
+
 - Python running Flask
 - supports single and recurring donations
 - easily deployed on Heroku
@@ -49,18 +51,27 @@ You should also install [`pre-commit`](https://pre-commit.com/#install), which w
 
 Requirements
 ------------
+
 Python 3.6+
 See requirements.txt and dev-requirements.txt for specific Python packages and versions.
 
 Environment
 -----------
+
 | Variable                    |                                        Example |
 |-----------------------------|-----------------------------------------------:|
+| `FLASK_SECRET_KEY`          |  b'f;\xeb\x9bT2\xcd\xdb\xe1#z\xfb\xab\xf8(\x03'|
+| `PUBLISHABLE_KEY`           |                                  pk_test_12345 |
+| `SECRET_KEY`                |                                  sk_test_12335 |
+| `LOG_LEVEL`                 |                                          DEBUG |
+| `AUTH0_PORTAL_M2M_CLIENT_ID`|                                         string |
+| `AUTH0_PORTAL_M2M_CLIENT_SECRET`|                                     string |
 | `AUTH0_DOMAIN`              |                                     domain.com |
 | `AUTH0_PORTAL_AUDIENCE`     |                                      foobarbaz |
 | `AUTH0_PORTAL_CLIENT_ID`    |                             stringstringstring |
-| `PUBLISHABLE_KEY`           |                                  pk_test_12345 |
-| `SECRET_KEY`                |                                  sk_test_12335 |
+| `ENABLE_PORTAL`             |                                           True |
+| `PORTAL_API_DOMAIN`         |                          <https://foo.bar/api> |
+| `PORTAL_CAMPAIGN_ID`        |                             stringstringstring |
 | `SALESFORCE_HOST`           |                            test.salesforce.com |
 | `SALESFORCE_CLIENT_ID`      |                                                |
 | `SALESFORCE_CLIENT_SECRET`  |                                                |
@@ -70,37 +81,36 @@ Environment
 | `SALESFORCE_API_VERSION`    |                                          v43.0 |
 | `CELERY_BROKER_URL`         |              amqp://guest:guest@rabbitmq:5672/ |
 | `CELERY_RESULT_BACKEND`     |                           redis://redis:6379/0 |
-| `FLASK_SECRET_KEY`          | b'f;\xeb\x9bT2\xcd\xdb\xe1#z\xfb\xab\xf8(\x03' |
+| `CELERY_ALWAYS_EAGER`       |                                          False |
+| `CELERY_TASK_SERIALIZER`    |                                           json |
 | `ENABLE_SENTRY`             |                                           True |
+| `ENABLE_SENTRY_RELEASE`     |                                           True |
 | `SENTRY_ENVIRONMENT`        |                                           test |
-| `SENTRY_DSN`                |          https://user:pass@sentry/7?timeout=10 |
+| `SENTRY_DSN`                |        <https://user:pass@sentry/7?timeout=10> |
 | `SENTRY_AUTH_TOKEN`         |                                                |
 | `SENTRY_ORG`                |                                       your-org |
 | `SENTRY_PROJECT`            |                                      donations |
-| `ENABLE_SENTRY_RELEASE`     |                                           True |
 | `ENABLE_SLACK`              |                                          False |
 | `SLACK_API_KEY`             |                                                |
 | `SLACK_CHANNEL`             |                                     #donations |
+| `DEFAULT_MAIL_SENDER`       |                                    foo@bar.org |
 | `MAIL_SERVER`               |                                mail.server.com |
 | `MAIL_USERNAME`             |                                                |
 | `MAIL_PASSWORD`             |                                                |
 | `MAIL_PORT`                 |                                             25 |
 | `MAIL_USE_TLS`              |                                           True |
-| `DEFAULT_MAIL_SENDER`       |                                    foo@bar.org |
 | `ACCOUNTING_MAIL_RECIPIENT` |                                    foo@bar.org |
 | `BUSINESS_MEMBER_RECIPIENT` |                                    foo@bar.org |
+| `CIRCLE_FAILURE_RECIPIENT`  |                                    foo@bar.org |
 | `REDIS_URL`                 |                             redis://redis:6379 |
-| `REDIS_TLS_URL`             |                             redis://redis:6379 |
-| `REPORT_URI`                |                                https://foo.bar |
-| `ENABLE_PORTAL`             |                                           True |
-| `PORTAL_API_DOMAIN`         |                            https://foo.bar/api |
-| `PORTAL_CAMPAIGN_ID`        |                             stringstringstring |
+| `REPORT_URI`                |                              <https://foo.bar> |
 | `RECAPTCHA_SECRET_KEY`      |                             stringstringstring |
 | `RECAPTCHA_SITE_KEY`        |                             stringstringstring |
-| `BAD_ACTOR_API_URL`         |                            https://foo.bar.api |
-| `BAD_ACTOR_NOTIFICATION_URL`|                            https://foo.bar.api |
-| `AUTH0_PORTAL_M2M_CLIENT_ID`|                                         string |
-| `AUTH0_PORTAL_M2M_CLIENT_SECRET`|                                     string |
+| `BAD_ACTOR_API_URL`         |                          <https://foo.bar.api> |
+| `BAD_ACTOR_NOTIFICATION_URL`|                          <https://foo.bar.api> |
+| `NEW_RELIC_APP_NAME`|                                         donations-prod |
+| `NEW_RELIC_LICENSE_KEY`|          [auto-generated by Heroku newrelic add-on] |
+| `NEW_RELIC_LOG`|                  [auto-generated by Heroku newrelic add-on] |
 
 Running the Project
 -------------------
@@ -109,20 +119,13 @@ Run `make backing`. This will start RabbitMQ and Redis.
 Run `make`. This will drop you into the Flask app.
 Run `make restart`. You can interact with the app at `localhost:80`. This command will also build CSS and JS in watch mode and allow you to make test transactions.
 
-```
+```sh
 C_FORCE_ROOT=True celery -A app.celery worker --loglevel=INFO &
 celery beat --app app.celery &
 # gunicorn app:app --log-file=- --bind=0.0.0.0:5000 --access-logfile=-
 ```
 
-Front end
--------------------
-The easiest way to develop is by running `make restart`. Other more granular commands:
-
-+ `npm run js:dev`: Build JS and put Webpack in watch mode
-+ `npm run ds-tasks-watch`: Build CSS and icons in watch mode
-+ `npm run dev`: Run above two commands together
-+ `npm run lint`: Run ESLint
+NOTE: If you are a Tribune engineer, you may need to use `local.texastribune.org/donate` in order to sign in to your account or otherwise interact with the account page.
 
 Running tests
 -------------

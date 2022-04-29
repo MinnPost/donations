@@ -78,7 +78,7 @@ from forms import (
     CancelForm,
     FinishForm,
 )
-from npsp import RDO, Account, Affiliation, Contact, Opportunity
+from npsp import RDO, Account, Affiliation, Contact, Opportunity, SalesforceConnection
 from util import (
     clean,
     notify_slack,
@@ -269,7 +269,40 @@ def minnpost_advertising_form():
     return redirect("/advertising-payment/?%s" % query_string, code=302)
 
 
+<<<<<<< HEAD
 def apply_card_details(data=None, customer=None, payment_method=None, charge_source=None):
+=======
+"""
+Read the Webpack assets manifest and then provide the
+scripts, including cache-busting hache, as template context.
+
+For Heroku to compile assets on deploy, the directory it
+builds to needs to already exist. Hence /static/js/prod/.gitkeep.
+We don't want to version control development builds, which is
+why they're compiled to /static/js/build/ instead.
+"""
+
+
+def get_bundles(entry):
+    root_dir = os.path.dirname(os.getcwd())
+    build_dir = os.path.join("static", "build")
+    asset_path = "/static/build/"
+    bundles = {"css": "", "js": []}
+    manifest_path = os.path.join(build_dir, "assets.json")
+    css_manifest_path = os.path.join(build_dir, "styles.json")
+    with open(manifest_path) as manifest:
+        assets = json.load(manifest)
+    entrypoint = assets["entrypoints"][entry]
+    for bundle in entrypoint["assets"]["js"]:
+        bundles["js"].append(asset_path + bundle)
+    with open(css_manifest_path) as manifest:
+        css_assets = json.load(manifest)
+    bundles["css"] = asset_path + css_assets[entry]
+    return bundles
+
+
+def apply_card_details(rdo=None, customer=None):
+>>>>>>> texas
 
     """
     Takes the expiration date, card brand and expiration from a Stripe object and copies
@@ -2192,6 +2225,39 @@ def customer_source_updated(event):
     logging.info("card details updated")
 
 
+@celery.task(name="app.payout_paid")
+def payout_paid(event):
+
+    payout_id = event["data"]["object"]["id"]
+    # get the date of the payout
+    payout_date = event["data"]["object"]["arrival_date"]
+    # payout_date = stripe.Payout.retrieve(payout_id).arrival_date
+    payout_date = datetime.utcfromtimestamp(payout_date).strftime("%Y-%m-%d")
+
+    # get all of the charges in the payout
+    txn_list = []
+    txns = stripe.BalanceTransaction.list(payout=payout_id, type="charge", limit=100)
+    for txn in txns.auto_paging_iter():
+        txn_list.append(txn)
+
+    # format those ids for query
+    charge_ids = [t.source for t in txn_list]
+    charge_ids = ", ".join(["'{}'".format(value) for value in charge_ids])
+    query = (
+        f"SELECT Id FROM Opportunity WHERE Stripe_Transaction_ID__c IN ({charge_ids})"
+    )
+    logging.info(query)
+
+    # get the Opportunity Ids that go with those charges
+    sfc = SalesforceConnection()
+    opps_to_update = sfc.query(query)
+    opps_to_update = [o["Id"] for o in opps_to_update]
+
+    # set the payout date on those opportunities
+    response = sfc.update_payout_dates(opps_to_update, payout_date)
+    logging.debug(response)
+
+
 @celery.task(name="app.authorization_notification")
 def authorization_notification(payload):
 
@@ -2326,6 +2392,8 @@ def stripehook():
 
     if event.type == "customer.source.updated":
         customer_source_updated.delay(event)
+    if event.type == "payout.paid":
+        payout_paid.delay(event)
 
     # TODO change this to debug later
     app.logger.info(event)

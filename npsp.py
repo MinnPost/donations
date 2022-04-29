@@ -207,6 +207,47 @@ class SalesforceConnection(object):
 
         return response
 
+    @staticmethod
+    def chunks(lst, n):
+        """Yield successive n-sized chunks from lst."""
+        for i in range(0, len(lst), n):
+            yield lst[i : i + n]
+
+    """
+    Update the given opportunities with the payout date.
+    Do this with the composite API so it's many fewer API calls.
+    """
+
+    def update_payout_dates(self, opportunity_ids: list, payout_date: str):
+
+        responses = []
+
+        # the max number of records that can be updated in one composite API call is 200
+        for chunk in self.chunks(opportunity_ids, 200):
+            # contruct record entries
+            records = []
+            for id_ in chunk:
+                record = {
+                    "attributes": {"type": "Opportunity"},
+                    "id": id_,
+                    "Cash_Receipt_Date__c": payout_date,
+                }
+                records.append(record)
+
+            data = {"allOrNone": False, "records": records}
+            path = f"/services/data/{SALESFORCE_API_VERSION}/composite/sobjects/"
+            response = self.patch(path, data, expected_response=200)
+            response = json.loads(response.text)
+            error = False
+            for item in response:
+                if item["success"] is not True:
+                    error = item["errors"]
+            if error:
+                raise SalesforceException(f"Failure on update: {error}")
+            responses.append(response)
+
+        return responses
+
     def save(self, sf_object):
 
         if sf_object.id:
@@ -360,7 +401,11 @@ class Opportunity(SalesforceObject):
         at_least_this_age=None,
         stage_name="Pledged",
         stripe_customer_id=None,
+<<<<<<< HEAD
         opportunity_id=None,
+=======
+        stripe_transaction_id=None,
+>>>>>>> texas
         sf_connection=None,
     ):
 
@@ -424,6 +469,7 @@ class Opportunity(SalesforceObject):
                 Email_to_notify__c,
                 Email_User_When_Canceled__c,
                 Encouraged_to_contribute_by__c,
+                Expected_Giving_Date__c,
                 Fair_market_value__c,
                 Include_amount_in_notification__c,
                 In_Honor_Memory__c,
@@ -677,7 +723,8 @@ class Opportunity(SalesforceObject):
             "Stripe_Transaction_ID__c": self.stripe_transaction_id,
             "Stripe_Payment_Type__c": self.stripe_payment_type,
             "Quarantined__c": self.quarantined,
-            "Flask_Transaction_ID__c": self.lock_key,            
+            "Flask_Transaction_ID__c": self.lock_key,
+            "Amazon_Order_Id__c": self.amazon_order_id,
         }
 
     @classmethod
@@ -1058,7 +1105,7 @@ class RDO(SalesforceObject):
                 Donor_country__c,
                 Email_to_notify__c,
                 Email_User_When_Canceled__c,
-                Encouraged_to_contribute_by__c,
+                Expected_Giving_Date__c,
                 Fair_market_value__c,
                 Include_amount_in_notification__c,
                 In_Honor_Memory__c,
