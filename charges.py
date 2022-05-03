@@ -309,7 +309,7 @@ def charge(opportunity):
 
             if isinstance(e, stripe.error.CardError):
                     logging.info(f"The card has been declined")
-                logging.info(f"Decline code: {e.json_body.get('decline_code', '')}")
+                    logging.info(f"Decline code: {e.json_body.get('decline_code', '')}")
 
                     if reason is None:
                         reason = "card declined for unknown reason"

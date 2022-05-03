@@ -8,11 +8,7 @@ from pytz import timezone
 from charges import ChargeException, QuarantinedException, amount_to_charge, calculate_amount_fees, charge
 from config import ACCOUNTING_MAIL_RECIPIENT, LOG_LEVEL, REDIS_TLS_URL, TIMEZONE, UPDATE_STRIPE_FEES, UPDATE_FAILED_CHARGES
 from npsp import Opportunity
-<<<<<<< HEAD
 from util import send_email, update_fees, fail_expired_charges
-=======
-from util import send_email, send_slack_message
->>>>>>> texas
 
 zone = timezone(TIMEZONE)
 
