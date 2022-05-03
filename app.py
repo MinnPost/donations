@@ -1764,7 +1764,8 @@ def finish():
         additional_donation = format(additional_donation, ",.2f")
     installment_period = form_data.get("installment_period", "")
 
-    finish_donation.delay(form_data)
+    if path == "":
+        finish_donation.delay(form_data)
     lock_key = form_data["lock_key"]
     lock = Lock(key=lock_key)
     lock.release()
