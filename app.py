@@ -1162,6 +1162,8 @@ def give_form():
 
     # plaid token
     plaid_link_token = create_plaid_link_token()
+    if plaid_link_token == {}:
+        show_ach = False
 
     button = "Place this Donation"
 
@@ -1453,6 +1455,8 @@ def advertising_form():
 
     # plaid token
     plaid_link_token = create_plaid_link_token()
+    if plaid_link_token == {}:
+        show_ach = False
 
     return render_template(
         template,
@@ -1896,6 +1900,8 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
 
     # plaid token
     plaid_link_token = create_plaid_link_token()
+    if plaid_link_token == {}:
+        show_ach = False
 
     return render_template(
         template,
@@ -2114,6 +2120,8 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
 
     # plaid token
     plaid_link_token = create_plaid_link_token()
+    if plaid_link_token == {}:
+        show_ach = False
 
     # fees
     fees = calculate_amount_fees(amount, "card")

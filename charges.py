@@ -202,27 +202,30 @@ def create_plaid_link_token():
 
     client_user_id = f"MinnPost {PLAID_ENVIRONMENT}"
     
-    request = LinkTokenCreateRequest(
-        products=[Products('auth'), Products('transactions')],
-        client_name="MinnPost",
-        country_codes=[CountryCode('US')],
-        language='en',
-        webhook='https://sample-webhook-uri.com',
-        link_customization_name='default',
-        account_filters=LinkTokenAccountFilters(
-            depository=DepositoryFilter(
-                account_subtypes=DepositoryAccountSubtypes(
-                    [DepositoryAccountSubtype('checking'), DepositoryAccountSubtype('savings')]
+    try:
+        request = LinkTokenCreateRequest(
+            products=[Products('auth'), Products('transactions')],
+            client_name="MinnPost",
+            country_codes=[CountryCode('US')],
+            language='en',
+            webhook='https://sample-webhook-uri.com',
+            link_customization_name='default',
+            account_filters=LinkTokenAccountFilters(
+                depository=DepositoryFilter(
+                    account_subtypes=DepositoryAccountSubtypes(
+                        [DepositoryAccountSubtype('checking'), DepositoryAccountSubtype('savings')]
+                    )
                 )
+            ),
+            user=LinkTokenCreateRequestUser(
+                client_user_id=client_user_id
             )
-        ),
-        user=LinkTokenCreateRequestUser(
-            client_user_id=client_user_id
         )
-    )
-    # create link token
-    response = client.link_token_create(request).to_dict()
-    link_token = response['link_token']
+        # create link token
+        response = client.link_token_create(request).to_dict()
+        link_token = response['link_token']
+    except Exception as e:
+        link_token = {}
 
     return link_token
 
