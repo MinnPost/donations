@@ -260,7 +260,13 @@ def minnpost_recurring_donation_update_form():
 @app.route("/anniversary-sponsorship/")
 def anniversary_sponsorship_form():
     query_string = request.query_string.decode("utf-8")
-    return redirect("/anniversary-patron/?%s" % query_string, code=302)
+    return redirect("/anniversary/?%s" % query_string, code=302)
+
+# support.minnpost.com/anniversary-patron
+@app.route("/anniversary-patron/")
+def anniversary_patron_form():
+    query_string = request.query_string.decode("utf-8")
+    return redirect("/anniversary/?%s" % query_string, code=302)
 
 # support.minnpost.com/minnpost-advertising
 @app.route("/minnpost-advertising/")
@@ -661,6 +667,8 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
     elif form_data.get("stripeToken", ""):
         source_token = form_data["stripeToken"]
 
+    app.logger.info(f"payment id is {payment_method_id} and bank token is {bank_token} and source token is {source_token}")
+
     if stripe_payment_type == "card":
         if payment_method_id is None and source_token is None:
             body = []
@@ -757,7 +765,7 @@ def do_charge_or_show_errors(form_data, template, function, donation_type):
                 # retrieve the payment method object
                 payment_method = stripe.PaymentMethod.retrieve(
                     payment_method_id
-                ) 
+                )
             elif bank_token is not None:
                 app.logger.info(f"----Update customer: ID {customer_id}. Retrieve bank account.")
                 customer = stripe.Customer.modify(
@@ -1520,12 +1528,12 @@ def tonight_vip_form():
     return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
 
 
-@app.route("/anniversary-patron/" , methods=["GET", "POST"])
-def anniversary_patron_form():
-    title       = "MinnPost Anniversary Patron"
+@app.route("/anniversary/" , methods=["GET", "POST"])
+def anniversary_form():
+    title       = "MinnPost Anniversary"
     heading     = ""
     description = title
-    summary     = "Support MinnPost as a Patron at our 13th Anniversary Celebration: Justice, Democracy & the Supreme Court — a conversation with Linda Greenhouse, Pulitzer Prize-winning journalist from the New York Times — on Wednesday, October 14."
+    summary     = "Thank you for joining us to celebrate and support MinnPost as a kick-off to our 15th Anniversary year on Tuesday, Sept. 13, 5:30-7:30 p.m. at the Expo in Minneapolis."
     folder      = "anniversary"
 
     # salesforce campaign
@@ -1535,7 +1543,7 @@ def anniversary_patron_form():
     allow_additional_amount = True
     hide_honor_or_memory    = True
     hide_display_name       = False
-    button                  = "Purchase your Patron package"
+    button                  = "Purchase"
     
     return sponsorship_form(folder, title, heading, description, summary, campaign, button, allow_additional_amount, hide_honor_or_memory, hide_display_name)
 
