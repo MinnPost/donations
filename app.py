@@ -1533,7 +1533,7 @@ def anniversary_form():
     title       = "MinnPost Anniversary"
     heading     = ""
     description = title
-    summary     = "Thank you for joining us to celebrate and support MinnPost as a kick-off to our 15th Anniversary year on Tuesday, Sept. 13, 5:30-7:30 p.m. at the Expo in Minneapolis."
+    summary     = "Thank you for joining us to celebrate and support MinnPost as we kick off our 15th Anniversary year on Tuesday, Sept. 13, 5:30-7:30 p.m. on the 25th floor of Expo Mpls."
     folder      = "anniversary"
 
     # salesforce campaign
