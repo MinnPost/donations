@@ -2429,7 +2429,7 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.subtype = form.get("opportunity_subtype", "Donation: Individual")
 
     # tshirt size, if tshirt was selected
-    member_benefit_request_minnpost_tshirt = form.get("member_benefit_minnpost_tshirt_size", "")
+    member_benefit_request_minnpost_tshirt = form.get("member_benefit_request_minnpost_tshirt", "")
     if member_benefit_request_minnpost_tshirt == "yes":
         opportunity.member_benefit_minnpost_tshirt_size = form.get("member_benefit_minnpost_tshirt_size", "")
 
@@ -2639,7 +2639,7 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     rdo.stripe_payment_type = form.get("stripe_payment_type", "")
 
     # tshirt size, if tshirt was selected
-    member_benefit_request_minnpost_tshirt = form.get("member_benefit_minnpost_tshirt_size", "")
+    member_benefit_request_minnpost_tshirt = form.get("member_benefit_request_minnpost_tshirt", "")
     if member_benefit_request_minnpost_tshirt == "yes":
         rdo.member_benefit_minnpost_tshirt_size = form.get("member_benefit_minnpost_tshirt_size", "")
 
