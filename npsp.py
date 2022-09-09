@@ -435,6 +435,7 @@ class Opportunity(SalesforceObject):
                 Member_benefit_request_NYT_Games__c,
                 Member_benefit_request_Other_benefits__c,
                 Member_benefit_request_Atlantic_sub_ID__c,
+                Member_benefit_MinnPost_T_Shirt__c,
                 MinnPost_Invoice__c,
                 MRpledge_com_ID__c,
                 Opportunity_Subtype__c,
@@ -698,10 +699,10 @@ class Opportunity(SalesforceObject):
         # truncate to 120 chars:
         self.name = self.name[:120]
 
-        if self.account_id is None:
-            raise SalesforceException("Account ID must be specified")
-        if not self.name:
-            raise SalesforceException("Opportunity name must be specified")
+        #if self.account_id is None:
+        #    raise SalesforceException("Account ID must be specified")
+        #if not self.name:
+        #    raise SalesforceException("Opportunity name must be specified")
 
         try:
             self.sf.save(self)
@@ -862,6 +863,7 @@ class RDO(SalesforceObject):
                 Member_benefit_request_NYT_Games__c,
                 Member_benefit_request_Other_benefits__c,
                 Member_benefit_request_Atlantic_sub_ID__c,
+                Member_benefit_MinnPost_T_Shirt__c,
                 npe03__Installments__c,
                 npe03__Installment_Period__c,
                 Lead_Source__c,
@@ -1074,6 +1076,7 @@ class RDO(SalesforceObject):
                 Member_benefit_request_NYT_Games__c,
                 Member_benefit_request_Other_benefits__c,
                 Member_benefit_request_Atlantic_sub_ID__c,
+                Member_benefit_MinnPost_T_Shirt__c,
                 MinnPost_Invoice__c,
                 MRpledge_com_ID__c,
                 Opportunity_Subtype__c,
