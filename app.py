@@ -1122,6 +1122,12 @@ def give_form():
     nyt_games_subscription = request.args.get("nyt_games_subscription", "")
     nyt_games_subscription_form = format_swag_subscription(nyt_games_subscription)
 
+    # minnpost t-shirt
+    minnpost_tshirt = request.args.get("minnpost-t-shirt", "")
+    minnpost_tshirt_form = format_swag_subscription(minnpost_tshirt)
+    minnpost_tshirt_size_name = request.args.get("gift_option_name", "")
+    minnpost_tshirt_size_value = request.args.get(minnpost_tshirt_size_name, "")
+
     # fair market value
     fair_market_value = 0
     fair_market_value_formatted = 0
@@ -1138,6 +1144,9 @@ def give_form():
             atlantic_id = ""
             nyt_subscription = ""
             nyt_games_subscription = ""
+            minnpost_tshirt = ""
+            minnpost_tshirt_size_name = ""
+            minnpost_tshirt_size_value = ""
     else:
         decline_benefits = ""
     
@@ -1148,7 +1157,7 @@ def give_form():
     # fees
     fees = calculate_amount_fees(amount, "card")
 
-    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={installment_period}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;nyt_games_subscription={nyt_games_subscription}{decline_benefits}'
+    step_one_url = f'{app.config["MINNPOST_ROOT"]}/support/?amount={amount_formatted}&amp;frequency={installment_period}&amp;campaign={campaign}&amp;customer_id={customer_id}&amp;swag={swag}&amp;atlantic_subscription={atlantic_subscription}{atlantic_id_url}&amp;nyt_subscription={nyt_subscription}&amp;nyt_games_subscription={nyt_games_subscription}&amp;minnpost-t-shirt={minnpost_tshirt}&amp;{minnpost_tshirt_size_name}={minnpost_tshirt_size_value}&amp;gift_option_name={minnpost_tshirt_size_name}{decline_benefits}'
 
     # interface settings
     with_shipping = True
@@ -1192,6 +1201,7 @@ def give_form():
         swag=swag_form,
         atlantic_subscription=atlantic_subscription_form, atlantic_id=atlantic_id,
         nyt_subscription=nyt_subscription_form, nyt_games_subscription=nyt_games_subscription_form,
+        minnpost_tshirt=minnpost_tshirt_form, minnpost_tshirt_size_name=minnpost_tshirt_size_name, minnpost_tshirt_size_value=minnpost_tshirt_size_value,
         decline_benefits=decline_benefits,
         with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
@@ -2404,6 +2414,7 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.member_benefit_request_nyt_games = form.get("member_benefit_request_nyt_games", "No")
     opportunity.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     opportunity.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
+    opportunity.member_benefit_minnpost_tshirt_size = form.get("member_benefit_minnpost_tshirt_size", "")
     opportunity.invoice = form.get("invoice", "")
     opportunity.mrpledge_id = form.get("mrpledge_id", "")
     opportunity.payment_type = "Stripe"
@@ -2611,6 +2622,7 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     rdo.member_benefit_request_nyt_games = form.get("member_benefit_request_nyt_games", "No")
     rdo.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     rdo.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
+    rdo.member_benefit_minnpost_tshirt_size = form.get("member_benefit_minnpost_tshirt_size", "")
     rdo.open_ended_status = form.get("open_ended_status", "")
     rdo.payment_type = "Stripe"
     rdo.referring_page = form.get("source", None)
