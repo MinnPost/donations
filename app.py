@@ -2414,7 +2414,6 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.member_benefit_request_nyt_games = form.get("member_benefit_request_nyt_games", "No")
     opportunity.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     opportunity.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
-    opportunity.member_benefit_minnpost_tshirt_size = form.get("member_benefit_minnpost_tshirt_size", "")
     opportunity.invoice = form.get("invoice", "")
     opportunity.mrpledge_id = form.get("mrpledge_id", "")
     opportunity.payment_type = "Stripe"
@@ -2428,6 +2427,11 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.stripe_customer_id = customer["id"]
     opportunity.stripe_payment_type = form.get("stripe_payment_type", "")
     opportunity.subtype = form.get("opportunity_subtype", "Donation: Individual")
+
+    # tshirt size, if tshirt was selected
+    member_benefit_request_minnpost_tshirt = form.get("member_benefit_request_minnpost_tshirt", "")
+    if member_benefit_request_minnpost_tshirt == "yes":
+        opportunity.member_benefit_minnpost_tshirt_size = form.get("member_benefit_minnpost_tshirt_size", "")
 
     if opportunity.subtype == 'Sales: Advertising' and opportunity.fair_market_value == 0:
         opportunity.fair_market_value = opportunity.amount
@@ -2622,7 +2626,6 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     rdo.member_benefit_request_nyt_games = form.get("member_benefit_request_nyt_games", "No")
     rdo.member_benefit_request_atlantic = form.get("member_benefit_request_atlantic", "No")
     rdo.member_benefit_request_atlantic_id = form.get("member_benefit_request_atlantic_id", "")
-    rdo.member_benefit_minnpost_tshirt_size = form.get("member_benefit_minnpost_tshirt_size", "")
     rdo.open_ended_status = form.get("open_ended_status", "")
     rdo.payment_type = "Stripe"
     rdo.referring_page = form.get("source", None)
@@ -2634,6 +2637,11 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
     rdo.stripe_payment_type = form.get("stripe_payment_type", "")
+
+    # tshirt size, if tshirt was selected
+    member_benefit_request_minnpost_tshirt = form.get("member_benefit_request_minnpost_tshirt", "")
+    if member_benefit_request_minnpost_tshirt == "yes":
+        rdo.member_benefit_minnpost_tshirt_size = form.get("member_benefit_minnpost_tshirt_size", "")
 
     # if there is an honor/memory radio but no value, clear the radio out
     if rdo.in_honor_memory_of == "":
