@@ -699,10 +699,10 @@ class Opportunity(SalesforceObject):
         # truncate to 120 chars:
         self.name = self.name[:120]
 
-        #if self.account_id is None:
-        #    raise SalesforceException("Account ID must be specified")
-        #if not self.name:
-        #    raise SalesforceException("Opportunity name must be specified")
+        if self.account_id is None:
+            raise SalesforceException("Account ID must be specified")
+        if not self.name:
+            raise SalesforceException("Opportunity name must be specified")
 
         try:
             self.sf.save(self)
