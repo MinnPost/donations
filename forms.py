@@ -194,6 +194,10 @@ class DonateForm(BaseForm):
     member_benefit_request_nyt_games = HiddenField(
         u"New York Times Games subscription?", [validators.Optional(), validators.AnyOf(["yes", "no"])], default=""
     )
+    member_benefit_request_minnpost_tshirt = HiddenField(
+        u"MinnPost T-Shirt?", [validators.Optional(), validators.AnyOf(["yes", "no"])], default=""
+    )
+    member_benefit_minnpost_tshirt_size = HiddenField("MinnPost T-Shirt Size", [validators.Optional()], default="")
 
     # billing
     billing_street = StringField(
