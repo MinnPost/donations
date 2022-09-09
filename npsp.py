@@ -323,6 +323,7 @@ class Opportunity(SalesforceObject):
         self.member_benefit_request_nyt_games = None
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
+        self.member_benefit_minnpost_tshirt_size = None
         self.invoice = None
         self.mrpledge_id = None
         self.subtype = None
@@ -652,6 +653,7 @@ class Opportunity(SalesforceObject):
             "Member_benefit_request_NYT_Games__c": self.member_benefit_request_nyt_games,
             "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
+            "Member_benefit_MinnPost_T_Shirt__c": self.member_benefit_minnpost_tshirt_size,
             "MinnPost_Invoice__c": self.invoice,
             "MRpledge_com_ID__c": self.mrpledge_id,
             "Opportunity_Subtype__c": self.subtype,
@@ -787,6 +789,7 @@ class RDO(SalesforceObject):
         self.member_benefit_request_nyt_games = None
         self.member_benefit_request_atlantic = None
         self.member_benefit_request_atlantic_id = None
+        self.member_benefit_minnpost_tshirt_size = None
         self.payment_type = None
         self.reason_for_supporting = ""
         self.reason_for_supporting_shareable = True
@@ -923,6 +926,7 @@ class RDO(SalesforceObject):
             y.member_benefit_request_nyt_games = item["Member_benefit_request_NYT_Games__c"]
             y.member_benefit_request_atlantic = item["Member_benefit_request_Other_benefits__c"]
             y.member_benefit_request_atlantic_id = item["Member_benefit_request_Atlantic_sub_ID__c"]
+            y.member_benefit_minnpost_tshirt_size = item["Member_benefit_MinnPost_T_Shirt__c"]
             y.installments = item["npe03__Installments__c"]
             y.installment_period = item["npe03__Installment_Period__c"]
             y.lead_source = item["Lead_Source__c"]
@@ -996,6 +1000,7 @@ class RDO(SalesforceObject):
             "Member_benefit_request_NYT_Games__c": self.member_benefit_request_nyt_games,
             "Member_benefit_request_Other_benefits__c": self.member_benefit_request_atlantic,
             "Member_benefit_request_Atlantic_sub_ID__c": self.member_benefit_request_atlantic_id,
+            "Member_benefit_MinnPost_T_Shirt__c": self.member_benefit_minnpost_tshirt_size,
             "npe03__Open_Ended_Status__c": self.open_ended_status,
             "Payment_Type__c": self.payment_type,
             "Reason_for_Gift__c": self.reason_for_supporting,
@@ -1140,6 +1145,7 @@ class RDO(SalesforceObject):
             y.member_benefit_request_nyt_games = item["Member_benefit_request_NYT_Games__c"]
             y.member_benefit_request_atlantic = item["Member_benefit_request_Other_benefits__c"]
             y.member_benefit_request_atlantic_id = item["Member_benefit_request_Atlantic_sub_ID__c"]
+            y.member_benefit_minnpost_tshirt_size = item["Member_benefit_MinnPost_T_Shirt__c"]
             y.invoice = item["MinnPost_Invoice__c"]
             y.mrpledge_id = item["MRpledge_com_ID__c"]
             y.subtype = item["Opportunity_Subtype__c"]
