@@ -16,8 +16,8 @@
     {% endif %}
     {% if minnpost_tshirt != "" %}
         <input type="hidden" name="member_benefit_request_minnpost_tshirt" id="member_benefit_request_minnpost_tshirt" value="{{ minnpost_tshirt }}">
-    {% endif %}
-    {% if minnpost_tshirt_size_value != "" %}
-        <input type="hidden" name="member_benefit_minnpost_tshirt_size" id="member_benefit_minnpost_tshirt_size" value="{{ minnpost_tshirt_size_value }}">
+        {% if minnpost_tshirt_size_value != "" %}
+            <input type="hidden" name="member_benefit_minnpost_tshirt_size" id="member_benefit_minnpost_tshirt_size" value="{{ minnpost_tshirt_size_value }}">
+        {% endif %}
     {% endif %}
 {% endif %}
