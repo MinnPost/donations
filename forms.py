@@ -268,6 +268,11 @@ class MinimalForm(BaseForm):
     )
 
 
+# used for board tshirt
+class SalesForm(MinimalForm):
+    folder = HiddenField("Folder", [validators.Optional()], default="")
+
+
 # used for anniversary-patron, minnroast-patron, other sponsorship things
 class SponsorshipForm(MinimalForm):
     folder = HiddenField("Folder", [validators.Optional()], default="")
