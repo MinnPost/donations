@@ -909,7 +909,7 @@ def validate_form(FormType, template, function=add_donation.delay):
     # currently donation_type is not used for anything. maybe it should be used for the opportunity type
     if FormType is DonateForm or FormType is MinimalForm or FormType is CancelForm or FormType is FinishForm:
         donation_type = "Donation"
-    elif FormType is AdvertisingForm:
+    elif FormType is AdvertisingForm or FormType is SalesForm:
         donation_type = "Sales"
     elif FormType is SponsorshipForm:
         donation_type = "Sponsorship"
@@ -1603,13 +1603,14 @@ def board_tshirt():
     description       = title
     summary           = "Purchase your MinnPost T-Shirt for <strong>$11</strong>. If you have any questions, please email us at members@minnpost.com."
     folder            = "tshirt"
-    amount            = 21
-    fair_market_value = 21
+    amount            = 11
+    fair_market_value = 11
+    shipping_cost     = 10
 
     # salesforce campaign
     campaign = request.args.get("campaign", FESTIVAL_CAMPAIGN_ID)
 
-    member_benefit_minnpost_tshirt = True
+    member_benefit_minnpost_tshirt = "yes"
 
     # interface settings
     allow_additional_amount = False
@@ -1618,7 +1619,7 @@ def board_tshirt():
     hide_display_name       = True
     with_shipping           = True
     button                  = "Purchase"
-    return sales_form(folder, title, heading, description, summary, campaign, member_benefit_minnpost_tshirt, button, amount, fair_market_value, allow_additional_amount, hide_honor_or_memory, hide_display_name, with_shipping)
+    return sales_form(folder, title, heading, description, summary, campaign, member_benefit_minnpost_tshirt, button, amount, fair_market_value, shipping_cost, allow_additional_amount, hide_honor_or_memory, hide_display_name, with_shipping)
 
 
 ## this is a minnpost url. use this when sending a request to plaid
@@ -1850,7 +1851,7 @@ def merchantid():
     )
 
 
-def sales_form(folder, title, heading, description, summary, campaign, member_benefit_minnpost_tshirt = False, button = "Purchase", amount=0, fair_market_value=0, allow_additional_amount = False, hide_honor_or_memory = True, hide_display_name = True, with_shipping = False):
+def sales_form(folder, title, heading, description, summary, campaign, member_benefit_minnpost_tshirt = "", button = "Purchase", amount=0, fair_market_value=0, shipping_cost = 0, allow_additional_amount = False, hide_honor_or_memory = True, hide_display_name = True, with_shipping = False, opportunity_subtype = "Sales: Merchandise"):
     
     template    = "sales.html"
     form        = SalesForm()
@@ -1911,7 +1912,6 @@ def sales_form(folder, title, heading, description, summary, campaign, member_be
     today = datetime.now(tz=ZONE).strftime('%Y-%m-%d')
     close_date = today
     opportunity_type = "Sales"
-    opportunity_subtype = "Sales: Event (patron package)"
 
     # interface settings
     show_amount_field       = True
@@ -1947,7 +1947,7 @@ def sales_form(folder, title, heading, description, summary, campaign, member_be
         form=form,
         form_action=form_action,
         path=path, folder=folder,
-        amount=amount, fair_market_value=fair_market_value, additional_donation=additional_donation, installment_period=installment_period, description=description, close_date=close_date, stage_name=stage_name,
+        amount=amount, fair_market_value=fair_market_value, shipping_cost=shipping_cost, additional_donation=additional_donation, installment_period=installment_period, description=description, close_date=close_date, stage_name=stage_name,
         opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         first_name=first_name, last_name=last_name, email=email,
         billing_street=billing_street, billing_city=billing_city, billing_state=billing_state, billing_zip=billing_zip,
@@ -2566,6 +2566,14 @@ def add_opportunity(contact=None, form=None, customer=None, payment_method=None,
     opportunity.stripe_payment_type = form.get("stripe_payment_type", "")
     opportunity.subtype = form.get("opportunity_subtype", "Donation: Individual")
 
+    # if there is a shipping cost, add it to the amount and the fair market value
+    gift_delivery_method = form.get("gift_delivery_method", "")
+    shipping_cost = form.get("shipping_cost", 0)
+    if gift_delivery_method == "shipping":
+        opportunity.shipping_cost = shipping_cost
+    else:
+        opportunity.shipping_cost = 0
+
     # tshirt size, if tshirt was selected
     member_benefit_request_minnpost_tshirt = form.get("member_benefit_request_minnpost_tshirt", "")
     if member_benefit_request_minnpost_tshirt == "yes":
@@ -2775,6 +2783,11 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     rdo.shipping_country = form.get("shipping_country", "")
     rdo.stripe_customer_id = customer["id"]
     rdo.stripe_payment_type = form.get("stripe_payment_type", "")
+
+    # if there is a shipping cost, add it to the amount and the fair market value (in npsp.py)
+    shipping_cost = form.get("shipping_cost", 0)
+    if shipping_cost != 0:
+        rdo.shipping_cost = shipping_cost
 
     # tshirt size, if tshirt was selected
     member_benefit_request_minnpost_tshirt = form.get("member_benefit_request_minnpost_tshirt", "")
