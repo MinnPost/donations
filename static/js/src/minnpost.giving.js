@@ -30,6 +30,7 @@
     'fee_amount' : '.processing-amount',
     'level_amount_selector' : '#panel--pay .amount .level-amount', // we can maybe get rid of this
     'original_amount_selector' : '[name="amount"]',
+    'gift_delivery_method_selector' : '[name="gift_delivery_method"]',
     'fair_market_value_selector' : '#fair_market_value',
     'full_amount_selector' : '.full-amount',
     'installment_period_selector' : '[name="installment_period"]',
@@ -60,6 +61,7 @@
     'create_mp_selector' : '#creatempaccount',
     'password_selector' : '.m-form-item-password',
     'additional_amount_field' : '#additional_donation',
+    'shipping_amount_field': '[name="shipping_cost"]',
     'shipping_selector' : 'fieldset.m-shipping-information',
     'choose_payment' : '#choose-payment-method',
     'payment_method_selector' : '.payment-method',
@@ -342,6 +344,10 @@
         that.options.original_amount = parseInt($(options.original_amount_selector, element).val(), 10);
         that.calculateFees(that.options.original_amount, stripe_payment_type);
       });
+      $(options.gift_delivery_method_selector, element).change(function() {
+        that.options.original_amount = parseInt($(options.original_amount_selector, element).val(), 10);
+        that.calculateFees(that.options.original_amount, stripe_payment_type);
+      });
 
     }, // amountUpdated
 
@@ -351,6 +357,14 @@
       if ($(this.options.additional_amount_field).length > 0 && $(this.options.additional_amount_field).val() > 0) {
         var additional_amount = $(this.options.additional_amount_field).val();
         total_amount = parseInt(additional_amount, 10) + parseInt(amount, 10); 
+      }
+      if ($(this.options.shipping_amount_field).length > 0 && $(this.options.shipping_amount_field).val() > 0) {
+        var shipping_amount = $(this.options.shipping_amount_field).val();
+        if ($(this.options.gift_delivery_method_selector + ':checked').val() === 'shipping') {
+          total_amount = parseInt(shipping_amount, 10) + parseInt(total_amount, 10);
+        } else {
+          total_amount = parseInt(total_amount, 10);
+        }
       }
       return total_amount;
     }, // getTotalAmount
@@ -1010,27 +1024,29 @@
         button = $(options.donate_form_selector).find('button');
       }
       button.prop('disabled', disabled);
-      if (message !== '') {
-        if (disabled === true) {
-          button.attr('data-tlite', message);
-        } else {
-          button.removeAttr( 'data-tlite' ); // there should be no tlite value if the button is enabled
-        }
-        button.on('mouseenter focus', function(event) {
-          tlite.show( ( this ), { grav: 'nw' } );
-        });
-        button.on('mouseleave', function(event) {
-          tlite.hide( ( this ) );
-        });
-      } else {
-        button.removeAttr( 'data-tlite' );
-        if (ach_was_initialized === true ) {
+      if (typeof tlite !== 'undefined') {
+        if (message !== '') {
+          if (disabled === true) {
+            button.attr('data-tlite', message);
+          } else {
+            button.removeAttr( 'data-tlite' ); // there should be no tlite value if the button is enabled
+          }
           button.on('mouseenter focus', function(event) {
+            tlite.show( ( this ), { grav: 'nw' } );
+          });
+          button.on('mouseleave', function(event) {
             tlite.hide( ( this ) );
           });
-          button.click(function(event) {
-            return true;
-          });
+        } else {
+          button.removeAttr( 'data-tlite' );
+          if (ach_was_initialized === true ) {
+            button.on('mouseenter focus', function(event) {
+              tlite.hide( ( this ) );
+            });
+            button.click(function(event) {
+              return true;
+            });
+          }
         }
       }
     }, // buttonDisabled
