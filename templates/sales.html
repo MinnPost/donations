@@ -25,6 +25,9 @@
   {% if fair_market_value %}
     <input type="hidden" name="fair_market_value" id="fair_market_value" value="{{ fair_market_value }}">
   {% endif %}
+  {% if shipping_cost %}
+    <input type="hidden" name="shipping_cost" id="shipping_cost" value="{{ shipping_cost }}">
+  {% endif %}
   {% if member_benefit_minnpost_tshirt %}
     <input type="hidden" name="member_benefit_minnpost_tshirt" id="member_benefit_minnpost_tshirt" value="{{ member_benefit_minnpost_tshirt }}">
   {% endif %}
