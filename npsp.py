@@ -775,6 +775,7 @@ class RDO(SalesforceObject):
         self._amount = 0
         self._fair_market_value = 0
         self.additional_donation = 0
+        self.shipping_cost = 0
         self.type = "Recurring Donation"
         self.date_established = today
         self.lead_source = None
