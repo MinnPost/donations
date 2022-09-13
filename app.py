@@ -2132,6 +2132,8 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
     # default donation fields
     stage_name = "Pledged"
     close_date = today
+    opportunity_type = "Donation"
+    opportunity_subtype = "Donation: Individual"
 
     if opportunity_id:
         try:
