@@ -19,6 +19,7 @@ from wtforms.fields import (
 from wtf_required_if import RequiredIf
 from config import (
     RECAPTCHA_KEYS,
+    SALESFORCE_ID_MAX_LENGTH,
 )
 
 
@@ -56,6 +57,12 @@ def format_swag(value):
             value = "water bottle"
     return value
 
+
+# format the value of a Salesforce ID parameter
+def format_salesforce_id(value):
+    if value is not None:
+        value = value[:SALESFORCE_ID_MAX_LENGTH]
+    return value
 
 
 # format the value of a swag subscription for inserting into Salesforce
@@ -96,7 +103,12 @@ class BaseForm(FlaskForm):
 
     referring_page = HiddenField("Referring Page", [validators.Optional()], default="")
     customer_id = HiddenField("Customer ID", [validators.Optional()], default="")
-    campaign = HiddenField("Campaign ID", [validators.Length(max=18)], default="")
+    campaign = HiddenField(
+        u"Campaign ID",
+        [validators.Optional()],
+        filters=[format_salesforce_id],
+        default=""
+    )
     description = HiddenField(u"Description", [validators.Optional()], default="")
     stripe_payment_type = HiddenField(u"Stripe Payment Type", [validators.Optional()], default="")
     stripeToken = HiddenField(u"Stripe token", [validators.Optional()], default="")
@@ -206,15 +218,9 @@ class DonateForm(BaseForm):
     billing_city = StringField(
         u"City", [validators.InputRequired(message="Your billing city is required.")]
     )
-    #billing_state = StringField(
-    #    u"State", [validators.InputRequired(message="Your billing state is required.")]
-    #)
     billing_state = StringField(
         u"State", [RequiredIf(message="Your billing state is required.", billing_country="")]
     )
-    #billing_zip = StringField(
-    #    u"ZIP Code", [validators.InputRequired(message="Your billing zip code is required.")]
-    #)
     billing_zip = StringField(
         u"ZIP Code", [RequiredIf(message="Your billing zip code is required if you are in the United States.", billing_country="")]
     )
@@ -265,6 +271,40 @@ class MinimalForm(BaseForm):
             validate_amount,
         ],
         filters=[format_amount],
+    )
+
+
+# used for board tshirt
+class SalesForm(MinimalForm):
+    folder = HiddenField("Folder", [validators.Optional()], default="")
+    shipping_cost = HiddenField(
+        u"Shipping Cost",
+        validators=[validators.Optional()],
+        filters=[format_amount],
+    )
+    gift_delivery_method = HiddenField("Delivery Method", [validators.Optional()], default="")
+    member_benefit_request_minnpost_tshirt = HiddenField(
+        u"MinnPost T-Shirt?", [validators.Optional(), validators.AnyOf(["yes", "no"])], default=""
+    )
+    member_benefit_minnpost_tshirt_size = HiddenField("MinnPost T-Shirt Size", [validators.Optional()], default="")
+    # shipping
+    shipping_name = StringField(
+        u"Ship to", [validators.Optional()], default=""
+    )
+    shipping_street = StringField(
+        u"Street Address", [validators.Optional()], default=""
+    )
+    shipping_city = StringField(
+        u"City", [validators.Optional()], default=""
+    )
+    shipping_state = StringField(
+        u"State", [validators.Optional()], default=""
+    )
+    shipping_zip = StringField(
+        u"ZIP Code", [validators.Optional()], default=""
+    )
+    shipping_country = StringField(
+        u"Country", [validators.Optional()], default=""
     )
 
 

@@ -282,7 +282,9 @@ class Opportunity(SalesforceObject):
         self.id = None
         self.name = None
         self._amount = 0
+        self._fair_market_value = 0
         self.additional_donation = 0
+        self.shipping_cost = 0
         self.close_date = today
         self.description = None
         self.lead_source = None
@@ -313,7 +315,7 @@ class Opportunity(SalesforceObject):
         self.encouraged_by = None
         self.event_attendees = None
         self.event_ticket_quantity = None
-        self.fair_market_value = 0
+        #self.fair_market_value = 0
         self.include_amount_in_notification = False
         self.in_honor_or_memory = None
         self.in_honor_memory_of = None
@@ -596,8 +598,17 @@ class Opportunity(SalesforceObject):
     def amount(self):
         if self.additional_donation != 0 and self.additional_donation != None:
             return str(Decimal(self._amount).quantize(TWOPLACES) + Decimal(self.additional_donation).quantize(TWOPLACES))
+        elif self.shipping_cost != 0 and self.shipping_cost != None:
+            return str(Decimal(self._amount).quantize(TWOPLACES) + Decimal(self.shipping_cost).quantize(TWOPLACES))
         else:
             return str(Decimal(self._amount).quantize(TWOPLACES))
+
+    @property
+    def fair_market_value(self):
+        if self.shipping_cost != 0 and self.shipping_cost != None:
+            return str(Decimal(self._fair_market_value).quantize(TWOPLACES) + Decimal(self.shipping_cost).quantize(TWOPLACES))
+        else:
+            return str(Decimal(self._fair_market_value).quantize(TWOPLACES))
 
     @property
     def stripe_transaction_fee(self):
@@ -609,6 +620,10 @@ class Opportunity(SalesforceObject):
     @amount.setter
     def amount(self, amount):
         self._amount = amount
+
+    @fair_market_value.setter
+    def fair_market_value(self, fair_market_value):
+        self._fair_market_value = fair_market_value
 
     @stripe_transaction_fee.setter
     def stripe_transaction_fee(self, stripe_transaction_fee):
@@ -758,7 +773,9 @@ class RDO(SalesforceObject):
         self.campaign = None
         #self.referral_id = None
         self._amount = 0
+        self._fair_market_value = 0
         self.additional_donation = 0
+        self.shipping_cost = 0
         self.type = "Recurring Donation"
         self.date_established = today
         self.lead_source = None
@@ -1244,8 +1261,17 @@ class RDO(SalesforceObject):
     def amount(self):
         if self.additional_donation != 0 and self.additional_donation != None:
             return str(Decimal(self._amount).quantize(TWOPLACES) + Decimal(self.additional_donation).quantize(TWOPLACES))
+        elif self.shipping_cost != 0 and self.shipping_cost != None:
+            return str(Decimal(self._amount).quantize(TWOPLACES) + Decimal(self.shipping_cost).quantize(TWOPLACES))
         else:
             return str(Decimal(self._amount).quantize(TWOPLACES))
+
+    @property
+    def fair_market_value(self):
+        if self.shipping_cost != 0 and self.shipping_cost != None:
+            return str(Decimal(self._fair_market_value).quantize(TWOPLACES) + Decimal(self.shipping_cost).quantize(TWOPLACES))
+        else:
+            return str(Decimal(self._fair_market_value).quantize(TWOPLACES))
 
     @property
     def stripe_transaction_fee(self):
@@ -1257,6 +1283,10 @@ class RDO(SalesforceObject):
     @amount.setter
     def amount(self, amount):
         self._amount = amount
+
+    @fair_market_value.setter
+    def fair_market_value(self, fair_market_value):
+        self._fair_market_value = fair_market_value
 
     @stripe_transaction_fee.setter
     def stripe_transaction_fee(self, stripe_transaction_fee):

@@ -1,0 +1,29 @@
+<section class="o-panel o-panel-form" id="panel--details">
+    <div class="support m-support-summary">
+        <p>{{ summary|safe }}</p>
+        {% if member_benefit_minnpost_tshirt == "yes" %}
+            <div class="m-form-item">
+                <select id="member_benefit_minnpost_tshirt_size" name="member_benefit_minnpost_tshirt_size" required>
+                    <option value="">Select t-shirt size</option>
+                    <option value="XS" {% if member_benefit_minnpost_tshirt_size == "XS" %} checked{% endif %}>XS</option>
+                    <option value="S" {% if member_benefit_minnpost_tshirt_size == "S" %} checked{% endif %}>S</option>
+                    <option value="M" {% if member_benefit_minnpost_tshirt_size == "M" %} checked{% endif %}>M</option>
+                    <option value="L" {% if member_benefit_minnpost_tshirt_size == "L" %} checked{% endif %}>L</option>
+                    <option value="XL" {% if member_benefit_minnpost_tshirt_size == "XL" %} checked{% endif %}>XL</option>
+                    <option value="2XL" {% if member_benefit_minnpost_tshirt_size == "2XL" %} checked{% endif %}>2XL</option>
+                    <option value="3XL" {% if member_benefit_minnpost_tshirt_size == "3XL" %} checked{% endif %}>3XL</option>
+                    <option value="4XL" {% if member_benefit_minnpost_tshirt_size == "4XL" %} checked{% endif %}>4XL</option>
+                </select>
+            </div>
+            <p><strong>Note:</strong> t-shirts are made to order and are not exchangeable. Please see <a href="https://www.minnpost.com/wp-content/uploads/2022/09/MinnPost-t-shirt-size-chart-vert.pdf" target="_blank">the size chart</a>.</p>
+            <div class="m-form-item">
+                <label><strong>Delivery method:</strong></label>
+                <fieldset class="m-delivery-method">
+                    <label><input type="radio" name="gift_delivery_method" value="shipping" required> Ship it to you for an additional <strong>$10</strong></label>
+                    <label><input type="radio" name="gift_delivery_method" value="pickup" required> Pick it up for <strong>free</strong> at MinnPost's office</label>
+                  </fieldset>
+            </div>
+        {% endif %}
+        {% include "/shared/additional-amount.html" %}
+    </div>
+</section>
