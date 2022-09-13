@@ -2787,9 +2787,10 @@ def add_recurring_donation(contact=None, form=None, customer=None, payment_metho
     rdo.stripe_customer_id = customer["id"]
     rdo.stripe_payment_type = form.get("stripe_payment_type", "")
 
-    # if there is a shipping cost, add it to the amount and the fair market value (in npsp.py)
+    # if there is a shipping cost, add it to the amount and the fair market value
+    gift_delivery_method = form.get("gift_delivery_method", "")
     shipping_cost = form.get("shipping_cost", 0)
-    if shipping_cost != 0:
+    if gift_delivery_method == "shipping":
         rdo.shipping_cost = shipping_cost
 
     # tshirt size, if tshirt was selected
