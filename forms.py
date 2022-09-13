@@ -19,6 +19,7 @@ from wtforms.fields import (
 from wtf_required_if import RequiredIf
 from config import (
     RECAPTCHA_KEYS,
+    SALESFORCE_ID_MAX_LENGTH,
 )
 
 
@@ -56,6 +57,12 @@ def format_swag(value):
             value = "water bottle"
     return value
 
+
+# format the value of a Salesforce ID parameter
+def format_salesforce_id(value):
+    if value is not None:
+        value = value[:SALESFORCE_ID_MAX_LENGTH]
+    return value
 
 
 # format the value of a swag subscription for inserting into Salesforce
@@ -96,7 +103,12 @@ class BaseForm(FlaskForm):
 
     referring_page = HiddenField("Referring Page", [validators.Optional()], default="")
     customer_id = HiddenField("Customer ID", [validators.Optional()], default="")
-    campaign = HiddenField("Campaign ID", [validators.Length(max=18)], default="")
+    campaign = HiddenField(
+        u"Campaign ID",
+        [validators.Optional()],
+        filters=[format_salesforce_id],
+        default=""
+    )
     description = HiddenField(u"Description", [validators.Optional()], default="")
     stripe_payment_type = HiddenField(u"Stripe Payment Type", [validators.Optional()], default="")
     stripeToken = HiddenField(u"Stripe token", [validators.Optional()], default="")

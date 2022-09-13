@@ -56,6 +56,7 @@ from config import (
     FESTIVAL_CAMPAIGN_ID,
     TONIGHT_CAMPAIGN_ID,
     MINNROAST_CAMPAIGN_ID,
+    MERCHANDISE_SALES_CAMPAIGN_ID,
     SALESFORCE_CONTACT_ADVERTISING_EMAIL,
     ENABLE_SENTRY,
     SENTRY_DSN,
@@ -1608,7 +1609,7 @@ def board_tshirt():
     shipping_cost     = 10
 
     # salesforce campaign
-    campaign = request.args.get("campaign", FESTIVAL_CAMPAIGN_ID)
+    campaign = request.args.get("campaign", MERCHANDISE_SALES_CAMPAIGN_ID)
 
     member_benefit_minnpost_tshirt = "yes"
 
