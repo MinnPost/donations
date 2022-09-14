@@ -607,8 +607,10 @@ class Opportunity(SalesforceObject):
     def fair_market_value(self):
         if self.shipping_cost != 0 and self.shipping_cost != None:
             return str(Decimal(self._fair_market_value).quantize(TWOPLACES) + Decimal(self.shipping_cost).quantize(TWOPLACES))
-        else:
+        elif self._fair_market_value != None:
             return str(Decimal(self._fair_market_value).quantize(TWOPLACES))
+        else:
+            return "0"
 
     @property
     def stripe_transaction_fee(self):
