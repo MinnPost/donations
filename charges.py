@@ -315,7 +315,7 @@ def charge(opportunity):
             else:
                 reason = "unknown failure"
 
-            opportunity.stripe_error_message = reason
+            opportunity.stripe_error_message = reason[:255]
             opportunity.stage_name = "Failed"
             opportunity.save()
             logging.debug(
