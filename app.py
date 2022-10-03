@@ -1596,33 +1596,6 @@ def pledge_payment_form():
     return minimal_form("minimal", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
 
-@app.route("/board-tshirt", methods=["GET", "POST"])
-def board_tshirt():
-    title             = "MinnPost T-Shirt"
-    path              = "sales"
-    heading           = title
-    description       = title
-    summary           = "Purchase your MinnPost T-Shirt for <strong>$11</strong>. If you have any questions, please email us at members@minnpost.com."
-    folder            = "tshirt"
-    amount            = 11
-    fair_market_value = 11
-    shipping_cost     = 10
-
-    # salesforce campaign
-    campaign = request.args.get("campaign", MERCHANDISE_SALES_CAMPAIGN_ID)
-
-    member_benefit_minnpost_tshirt = "yes"
-
-    # interface settings
-    allow_additional_amount = False
-    hide_amount_heading     = True
-    hide_honor_or_memory    = True
-    hide_display_name       = True
-    with_shipping           = True
-    button                  = "Purchase"
-    return sales_form(folder, title, heading, description, summary, campaign, member_benefit_minnpost_tshirt, button, amount, fair_market_value, shipping_cost, allow_additional_amount, hide_honor_or_memory, hide_display_name, with_shipping)
-
-
 ## this is a minnpost url. use this when sending a request to plaid
 ## if successful, this returns the access token and bank account token for stripe from plaid
 @app.route("/get_plaid_access_token/", methods=["POST"])
