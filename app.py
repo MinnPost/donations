@@ -2181,13 +2181,13 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         amount = format_amount(request.args.get("amount"))
         amount_formatted = format(amount, ",.2f")
 
-    if request.args.get("fair_market_value"):
-        fair_market_value = format_amount(request.args.get("fair_market_value"))
-
-    if not fair_market_value:
-        fair_market_value = 0
     
-    fair_market_value_formatted = format(fair_market_value, ",.2f")
+    # fair market value
+    fair_market_value = 0
+    fair_market_value_formatted = 0
+    if request.args.get("fair_market_value"):
+        fair_market_value = format_amount(request.args.get("fair_market_value", 0))
+        fair_market_value_formatted = format(fair_market_value, ",.2f")
 
     # installment period
     if request.args.get("frequency"):
