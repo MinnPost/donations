@@ -179,7 +179,7 @@
       this.debug('analytics type is ' + options.analytics_type);
       var progress = $(options.progress_selector);
       var step;
-      var action = 'checkout';
+      var action = 'begin_checkout';
       var nav_item_count = 0;
       var opp_id = $(options.opp_id_selector).val();
       var post_purchase = false;
@@ -292,6 +292,17 @@
                 title: document.title
               });
               ga('send', 'pageview', window.location.pathname);
+            }
+
+            // dataLayer
+            if ( 'undefined' !== typeof dataLayer ) {
+              dataLayer.push({ ecommerce: null }); // first, make sure there aren't multiple things happening.
+              dataLayer.push({
+                event: action,
+                ecommerce: {
+                  items: product
+                }
+              });
             }
 
           }
