@@ -179,7 +179,7 @@
       this.debug('analytics type is ' + options.analytics_type);
       var progress = $(options.progress_selector);
       var step;
-      var action = 'checkout';
+      var action = 'begin_checkout';
       var nav_item_count = 0;
       var opp_id = $(options.opp_id_selector).val();
       var post_purchase = false;
