@@ -64,7 +64,10 @@ from config import (
     REPORT_URI,
     STRIPE_WEBHOOK_SECRET,
     GOOGLE_ANALYTICS_ID,
-    GOOGLE_ANALYTICS_TRACKING_CODE_TYPE
+    GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
+    GOOGLE_TAG_MANAGER_ID,
+    GOOGLE_TAG_MANAGER_AUTH,
+    GOOGLE_TAG_MANAGER_PREVIEW
 )
 from forms import (
     format_amount,
@@ -1027,7 +1030,7 @@ def root_form():
         amount=amount_formatted, installment_period=installment_period, yearly=yearly,
         first_name=first_name, last_name=last_name, email=email,
         campaign=campaign, customer_id=customer_id, referring_page=referring_page,
-        plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
+        plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -1054,7 +1057,7 @@ def give_form():
         amount_formatted = format(amount, ",.2f")
     else:
         message = "The page you requested can't be found."
-        return render_template("error.html", message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE)
+        return render_template("error.html", message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW)
 
     # installment period
     installment_period = request.args.get("frequency", app.config["DEFAULT_FREQUENCY"])
@@ -1205,7 +1208,7 @@ def give_form():
         nyt_subscription=nyt_subscription_form, nyt_games_subscription=nyt_games_subscription_form,
         minnpost_tshirt=minnpost_tshirt_form, minnpost_tshirt_size_name=minnpost_tshirt_size_name, minnpost_tshirt_size_value=minnpost_tshirt_size_value,
         decline_benefits=decline_benefits,
-        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
+        with_shipping=with_shipping, hide_pay_comments=hide_pay_comments, show_amount_field=show_amount_field, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW,
         minnpost_root=app.config["MINNPOST_ROOT"], step_one_url=step_one_url,
         lock_key=lock_key,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
@@ -1231,7 +1234,7 @@ def donation_update_form():
     if request.method == "GET" and not request.args.get("opportunity") and not request.args.get("recurring"):
         heading = "Update Your Donation"
         message = "To update a donation, this page needs to have the unique identifier for that donation."
-        return render_template("error.html", heading=heading, message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE)
+        return render_template("error.html", heading=heading, message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW)
 
     return minimal_form("donation-update", title, heading, description, summary, button, show_amount_field, allow_additional_amount, hide_amount_heading, hide_honor_or_memory, hide_display_name)
 
@@ -1286,7 +1289,7 @@ def donation_cancel_form():
                 title=title,
                 path=path, folder=folder,
                 minnpost_root=app.config["MINNPOST_ROOT"],
-                stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
+                stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW,
             )
         else:
             return valid_form
@@ -1331,7 +1334,7 @@ def donation_cancel_form():
     else:
         heading = "Cancel Your Donation"
         message = "To cancel a donation, this page needs to have the unique identifier for that donation."
-        return render_template("error.html", heading=heading, message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE)
+        return render_template("error.html", heading=heading, message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW)
 
     # interface settings
     button = "Confirm your cancellation"
@@ -1493,7 +1496,7 @@ def advertising_form():
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
         show_invoice=show_invoice, show_organization=show_organization,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -1766,7 +1769,7 @@ def thanks():
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"],
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
-        last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
+        last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW,
     )
 
 
@@ -1799,20 +1802,20 @@ def finish():
         step=step,
         path=path, folder=folder, amount=amount_formatted, additional_donation=additional_donation, installment_period=installment_period,
         minnpost_root=app.config["MINNPOST_ROOT"],
-        stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
+        stripe=app.config["STRIPE_KEYS"]["publishable_key"], last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW,
     )
 
 
 @app.route("/error")
 def error():
     message = "Something went wrong!"
-    return render_template("error.html", message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE)
+    return render_template("error.html", message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW)
 
 
 @app.errorhandler(404)
 def page_not_found(error):
     message = "The page you requested can't be found."
-    return render_template("error.html", message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE), 404
+    return render_template("error.html", message=message, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW), 404
 
 
 @app.route("/.well-known/apple-developer-merchantid-domain-association")
@@ -1930,7 +1933,7 @@ def sales_form(folder, title, heading, description, summary, campaign, member_be
         hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
         hide_display_name=hide_display_name, with_shipping=with_shipping, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label, anonymous_label=anonymous_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -2049,7 +2052,7 @@ def sponsorship_form(folder, title, heading, description, summary, campaign, but
         hide_amount_heading=hide_amount_heading, heading=heading, summary=summary, allow_additional_amount=allow_additional_amount, show_amount_field=show_amount_field,
         hide_display_name=hide_display_name, hide_honor_or_memory=hide_honor_or_memory, recognition_label=recognition_label, anonymous_label=anonymous_label,
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW,
         minnpost_root=app.config["MINNPOST_ROOT"],
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,
         recaptcha=app.config["RECAPTCHA_KEYS"]["site_key"], use_recaptcha=app.config["USE_RECAPTCHA"],
@@ -2283,7 +2286,7 @@ def minimal_form(path, title, heading, description, summary, button, show_amount
         email_before_billing=email_before_billing, hide_minnpost_account=hide_minnpost_account, pay_fees=pay_fees,
         description=description, opportunity_type=opportunity_type, opportunity_subtype=opportunity_subtype,
         update_default_source=update_default_source, stage_name=stage_name, close_date=close_date, opportunity_id=opportunity_id, recurring_id=recurring_id,
-        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE,
+        hide_pay_comments=hide_pay_comments, show_ach=show_ach, show_payment_request=show_payment_request, button=button, plaid_env=PLAID_ENVIRONMENT, last_updated=dir_last_updated('static'), google_analytics_id=GOOGLE_ANALYTICS_ID, google_analytics_tracking_code_type=GOOGLE_ANALYTICS_TRACKING_CODE_TYPE, google_tag_manager_id=GOOGLE_TAG_MANAGER_ID, google_tag_manager_auth=GOOGLE_TAG_MANAGER_AUTH, google_tag_manager_preview=GOOGLE_TAG_MANAGER_PREVIEW,
         minnpost_root=app.config["MINNPOST_ROOT"],
         lock_key=lock_key, path=path,
         stripe=app.config["STRIPE_KEYS"]["publishable_key"], plaid_link_token=plaid_link_token,

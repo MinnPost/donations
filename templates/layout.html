@@ -44,9 +44,15 @@
     {% if google_analytics_tracking_code_type %}
       {% include 'shared/analytics/' + google_analytics_tracking_code_type + '.html' %}
     {% endif %}
+    {% if google_tag_manager_id != "" %}
+      {% include 'shared/analytics/tagmanager.html' %}
+    {% endif %}
 
   </head>
   <body{% if path and path != "" and path != "give" %} class="support-single"{% endif %}>
+    {% if google_tag_manager_id != "" %}
+      {% include 'shared/analytics/tagmanager-body.html' %}
+    {% endif %}
     <header id="masthead" class="o-header o-header-support">
       <div class="o-wrapper o-wrapper-site-header">
           <div class="a-site-branding">
