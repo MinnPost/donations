@@ -294,6 +294,17 @@
               ga('send', 'pageview', window.location.pathname);
             }
 
+            // dataLayer
+            if ( 'undefined' !== typeof dataLayer ) {
+              dataLayer.push({ ecommerce: null }); // first, make sure there aren't multiple things happening.
+              dataLayer.push({
+                event: action,
+                ecommerce: {
+                  items: product
+                }
+              });
+            }
+
           }
         });
       }
