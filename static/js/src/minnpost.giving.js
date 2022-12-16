@@ -237,13 +237,15 @@
             level = data.level.level;
             that.debug('create product object: id is ' + 'minnpost_' + level.toLowerCase() + '_membership' + ' and name is ' + 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership' + ' and variant is ' + installment_period.charAt(0).toUpperCase() + installment_period.slice(1));
             var product = {
-              'id': 'minnpost_' + level.toLowerCase() + '_membership',
-              'name': 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership',
-              'category': 'Donation',
-              'brand': 'MinnPost',
-              'variant': installment_period.charAt(0).toUpperCase() + installment_period.slice(1),
+              'item_id': 'minnpost_' + level.toLowerCase() + '_membership',
+              'item_name': 'MinnPost ' + level.charAt(0).toUpperCase() + level.slice(1) + ' Membership',
+              'item_category': 'Donation',
+              'item_brand': 'MinnPost',
+              'item_variant': installment_period.charAt(0).toUpperCase() + installment_period.slice(1),
               'price': that.getTotalAmount(amount),
-              'quantity': 1
+              'quantity': 1,
+              'currency': 'USD',
+              "affiliation": 'MinnPost'
             };
             if (that.options.analytics_type == 'gtagjs') {
               gtag('event', 'checkout_progress', {
@@ -299,6 +301,10 @@
               dataLayer.push({ ecommerce: null }); // first, make sure there aren't multiple things happening.
               dataLayer.push({
                 event: action,
+                transaction_id: opp_id, // Transaction id - Type: string
+                affiliation: 'MinnPost', // Store name - Type: string
+                value: that.getTotalAmount(amount), // Total Revenue - Type: numeric
+                currency: "USD",
                 ecommerce: {
                   items: product
                 }
